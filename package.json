@@ -1,0 +1,42 @@
+{
+  "name": "mindfront-react-components",
+  "version": "0.0.1",
+  "description": "React components to share between projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mindfront/mindfront-react-components"
+  },
+  "keywords": [
+    "mindfront",
+    "react",
+    "components"
+  ],
+  "author": "Andy Edwards",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mindfront/mindfront-react-components/issues"
+  },
+  "homepage": "https://github.com/mindfront/mindfront-react-components",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^0.13.3"
+  },
+  "devDependencies": {
+    "babel": "^5.8.20",
+    "babel-core": "^5.8.20",
+    "css-loader": "^0.15.6",
+    "lodash": "^3.10.1",
+    "node-sass": "^3.2.0",
+    "react": "^0.13.3",
+    "react-hot-loader": "^1.2.8",
+    "react-router": "^0.13.3",
+    "sass-loader": "^1.0.4",
+    "style-loader": "^0.12.3",
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
+  }
+}
