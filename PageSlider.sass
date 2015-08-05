@@ -1,0 +1,15 @@
+@import ../css3-mixins
+
+.PageSlider
+  overflow: hidden
+
+  > .viewport
+    white-space: nowrap
+    @include transition(all, ease-out, 0.2s)
+
+    > *
+      display: inline-block
+      vertical-align: top
+      overflow-x: hidden
+      white-space: normal
+      width: 100%
