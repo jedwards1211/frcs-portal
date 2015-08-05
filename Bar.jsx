@@ -7,10 +7,14 @@ import _ from 'lodash';
 
 import {easeOut} from './timingFn';
 
-require('./HBar.sass');
+import {Side, sides} from './orient';
+
+require('./Bar.sass');
 
 export default React.createClass({
   propTypes: {
+    // a field from orient.Side
+    minSide: React.PropTypes.instanceOf(Side),
     min: React.PropTypes.number,
     max: React.PropTypes.number,
     value: React.PropTypes.number,
@@ -19,6 +23,7 @@ export default React.createClass({
   },
   getDefaultProps() {
     return {
+      minSide: sides.left,
       transitionPeriod: 15,
       transitionDuration: 200
     };
@@ -96,32 +101,27 @@ export default React.createClass({
     this.stopTransition();
   },
   render() {
-    var props = _.clone(this.props);
-    var min = props.min,
-        max = props.max,
+    var {minSide, min, max, children} = this.props,
         value = this.getTransitionValue(),
         opacity = this.getTransitionOpacity();
 
-    props.className = classNames('hbar', props.className);
-    for (let prop in this.propTypes) {
-      delete props[prop];
-    }
+    var zeroPct = -min * 100 / (max - min);
+    var valuePct = (value - min) * 100 / (max - min);
 
-    var zeroX = -min * 100 / (max - min);
-    var valueX = (value - min) * 100 / (max - min);
-
-    var left = Math.max(0, Math.min(zeroX, valueX));
-    var right = Math.min(100, Math.max(zeroX, valueX));
+    var minPct = Math.max(0, Math.min(zeroPct, valuePct));
+    var maxPct = Math.min(100, Math.max(zeroPct, valuePct));
 
     return (
-      <div {...props}>
-        <div key="alarm-overlay" className="alarm-overlay" />
-        <div key="fill" className="fill"
+      <div {...this.props} className={classNames('bar', this.props.className)}>
+        <div className="fill"
           style={{
             opacity: opacity,
-            left: left + '%',
-            right: (100 - right) + '%'
+            [minSide.name]: minPct + '%',
+            [minSide.opposite.name]: (100 - maxPct) + '%',
+            [minSide.axis.opposite.loSide.name]: 0,
+            [minSide.axis.opposite.hiSide.name]: 0,
           }} />
+        {children}
       </div>
     );
   }

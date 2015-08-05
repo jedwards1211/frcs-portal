@@ -4,7 +4,8 @@ import React from 'react';
 import {addons} from 'react/addons';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { addClass, removeClass } from './nojquery';
+
+import { addClass, removeClass } from '../nojquery';
 
 var ModalHeader = React.createClass({
   mixins: [addons.PureRenderMixin],

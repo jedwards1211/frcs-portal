@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import callOnTransitionEnd from './callOnTransitionEnd';
+import callOnTransitionEnd from '../callOnTransitionEnd';
 
 require('./Collapse.sass');
 
