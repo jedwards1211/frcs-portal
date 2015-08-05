@@ -1,15 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
-import TransitionMixin from './TransitionMixin';
+import callOnTransitionEnd from './callOnTransitionEnd';
 
 require('./Collapse.sass');
 
+var doShow = Symbol();
+var doHide = Symbol();
+
 export default React.createClass({
-  mixins: [TransitionMixin],
+  callOnTransitionEnd,
   propTypes: {
     component: React.PropTypes.any,
-    initOpen: React.PropTypes.bool,
-    forceOpen: React.PropTypes.bool,
+    open: React.PropTypes.bool,
     children: React.PropTypes.node,
   },
   getDefaultProps() {
@@ -19,20 +21,25 @@ export default React.createClass({
   },
   getInitialState() {
     return {
-      open: 'forceOpen' in this.props ? this.props.forceOpen : this.props.initOpen,
+      open: !!this.props.open,
       collapsing: false,
       height: 0,
     };
   },
   componentWillReceiveProps(nextProps) {
-    if (nextProps.forceOpen && !this.props.forceOpen) {
-      this.show();
+    if (nextProps.open && !this.props.open) {
+      this[doShow]();
     }
-    if (!nextProps.forceOpen && this.props.forceOpen) {
-      this.hide(); 
+    if (!nextProps.open && this.props.open) {
+      this[doHide](); 
     }
   },
   show() {
+    if (this.props.open === undefined) {
+      this[doShow]();
+    }
+  },
+  [doShow]() {
     if (!this.state.open) {
       this.setState({
         open: true,
@@ -47,6 +54,11 @@ export default React.createClass({
     }
   },
   hide() {
+    if (this.props.open === undefined) {
+      this[doHide]();
+    }
+  },
+  [doHide]() {
     if (this.state.open) {
       var content = React.findDOMNode(this.refs.collapse);
       this.setState({
@@ -66,7 +78,9 @@ export default React.createClass({
     }
   },
   toggle() {
-    this.state.open ? this.hide() : this.show();
+    if (this.props.open === undefined) {
+      this.state.open ? this.hide() : this.show();
+    }
   },
   stopCollapsing() {
     this.setState({
@@ -74,14 +88,6 @@ export default React.createClass({
       height: undefined,
     });
   },
-  // componentDidUpdate() {
-  //   var content = React.findDOMNode(this.refs.collapse);
-  //   content.offsetHeight; // force reflow
-  //   var newHeight = this.state.open ? content.scrollHeight : 0;
-  //   if (this.state.height !== newHeight) {
-  //     this.setState({height: newHeight});
-  //   }
-  // },
   render() {
     var {component, className, children, ...props} = this.props;
     var {open, collapsing, height} = this.state;

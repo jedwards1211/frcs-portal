@@ -5,12 +5,9 @@ import {addons} from 'react/addons';
 import classNames from 'classnames';
 import _ from 'lodash';
 
-require('./HBar.sass');
+import {easeOut} from './timingFn';
 
-function easeOut(f) {
-  var r = 1 - f;
-  return 1 - r * r;
-}
+require('./HBar.sass');
 
 export default React.createClass({
   propTypes: {

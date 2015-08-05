@@ -1,5 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
+import firstDefined from './firstDefined';
+import _ from 'lodash';
 
 var DropdownToggle = React.createClass({
   propTypes: {
@@ -7,7 +9,8 @@ var DropdownToggle = React.createClass({
     component: React.PropTypes.any.isRequired,
   },
   render() {
-    var {component, open, children, ...props} = this.props;
+    var {component, open, children} = this.props;
+    var props = _.clone(this.props);
     props['aria-haspopup'] = 'true';
     props['aria-expanded'] = open;
     return React.createElement(component, props, children);
@@ -19,7 +22,8 @@ var DropdownMenu = React.createClass({
     component: React.PropTypes.any.isRequired,
   },
   render() {
-    var {component, children, className, ...props} = this.props;
+    var {component, children, className} = this.props;
+    var props = _.clone(this.props);
     props.className = classNames('dropdown-menu', className);
     return React.createElement(component, props, children);
   }
@@ -27,8 +31,11 @@ var DropdownMenu = React.createClass({
 
 var Dropdown = React.createClass({
   propTypes: {
+    /*
+     * optional (overrides state.open if used)
+     */
+    open:               React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
-    onDropdownOpened:   React.PropTypes.func,
   },
   getDefaultProps() {
     return {
@@ -41,20 +48,21 @@ var Dropdown = React.createClass({
       component: React.PropTypes.any.isRequired,
     };
   },
-  onDropdownToggleClick() {
-    this.setState({
-      open: !this.state.open,
-    });
+  show() {
+    this.setState({open: true});
   },
-  componentWillUpdate(nextProps, nextState) {
-    if (!this.state.open && nextState.open) {
-      this.opening = true;
+  hide() {
+    this.setState({open: false});
+  },
+  onDropdownToggleClick() {
+    this.setState({open: !this.state.open});
+  },
+  componentWillReceiveProps(nextProps) {
+    if (this.props.open !== undefined && nextProps.open === undefined) {
+      this.setState({open: this.props.open});
     }
   },
   componentDidUpdate() {
-    var justOpened = this.opening;
-    this.opening = false;
-
     if (this.state.open && !this.isDocumentClickInstalled) {
       document.addEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = true;
@@ -63,14 +71,11 @@ var Dropdown = React.createClass({
       document.removeEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = false;
     }
-
-    if (justOpened && this.props.onDropdownOpened) {
-      this.props.onDropdownOpened();
-    }
   },
   componentWillUnmount() {
     if (this.isDocumentClickInstalled) {
       document.removeEventListener('click', this.onDocumentClick, true);
+      this.isDocumentClickInstalled = false;
     }
   },
   onDocumentClick(e) {
@@ -86,22 +91,28 @@ var Dropdown = React.createClass({
 
     if (this.props.closeOnInsideClick || 
       !isDescendant(e.target, React.findDOMNode(this.refs.dropdown))) {
-      this.setState({
-        open: false,
-      });
+      this.setState({open: false});
     }
   },
   render() {
-    var {className, component, openClassName, children, ...props} = this.props;
-    var open = this.state.open;
+    var {className, component, openClassName, children} = this.props;
+    var open = firstDefined(this.props.open, this.state.open);
+    var props = _.clone(this.props);
 
-    props.className = classNames("dropdown", className, {open: open});
-    if (open) props.className += ' ' + openClassName;
-    props.ref = "dropdown";
+    props.className = classNames(className, 'dropdown', {open: open}, openClassName && {openClassName: open});
+    props.ref = 'dropdown';
 
     children = React.Children.map(children, child => {
       if (child.type === DropdownToggle) {
-        return React.cloneElement(child, {open: open, onClick: this.onDropdownToggleClick});
+        var onClick = child.props.onClick ? 
+          () => {
+            child.props.onClick();
+            this.onDropdownToggleClick();
+          } 
+          : 
+          this.onDropdownToggleClick;
+
+        return React.cloneElement(child, {open, onClick});
       }
       return child;
     });
@@ -115,4 +126,4 @@ Dropdown.Menu = DropdownMenu;
 
 export default Dropdown;
 
-export { DropdownMenu , DropdownToggle };
+export { Dropdown, DropdownMenu , DropdownToggle };
