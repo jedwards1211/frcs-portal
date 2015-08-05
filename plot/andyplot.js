@@ -36,6 +36,24 @@ var niceTimeIncrements = [
          86400000
 ];
 
+export function chooseNiceIncrement(unitsPerPixel, minTickSpacingPixels) {
+  var rough = minTickSpacingPixels * unitsPerPixel;
+  var floor = Math.pow(10, Math.floor(Math.log10(rough)));
+  if (floor >= rough) {
+    return floor;
+  }
+  if (floor * 2 >= rough) {
+    return floor * 2;
+  }
+  if (floor * 2.5 >= rough) {
+    return floor * 2.5
+  }
+  if (floor * 5 >= rough) {
+    return floor * 5;
+  }
+  return floor * 10;
+}
+
 /**
  * Chooses a "nice" time increment that will produce tick spacing of at least
  * <code>minTickSpacingPixels</code> at a scale of <code>pixelsPerMilli</code>.
@@ -224,6 +242,10 @@ export class LinearConversion {
     }
     invert( d ) {
         return d / this.scale + this.offset;
+    }
+
+    chooseNiceIncrement(minTickSpacingPixels) {
+      return chooseNiceIncrement(1 / this.scale, minTickSpacingPixels);
     }
 
     /**

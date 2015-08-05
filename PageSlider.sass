@@ -2,10 +2,10 @@
 
 .PageSlider
   overflow: hidden
+  @include transition(max-height ease 0.2s)
 
   > .viewport
     white-space: nowrap
-    @include transition(all, ease-out, 0.2s)
 
     > *
       display: inline-block
