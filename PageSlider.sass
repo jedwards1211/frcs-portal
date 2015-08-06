@@ -13,3 +13,23 @@
       overflow-x: hidden
       white-space: normal
       width: 100%
+
+  &.fill
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+
+    > .viewport
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+
+      > *
+        position: absolute
+        top: 0
+        bottom: 0
+        overflow-y: auto

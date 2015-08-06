@@ -15,11 +15,15 @@ require('./PageSlider.sass');
 export default React.createClass({
   mixins: [addons.PureRenderMixin],
   propTypes: {
-    transitionDuration: React.PropTypes.number,
+    activeIndex:            React.PropTypes.number.isRequired,
+    transitionDuration:     React.PropTypes.number,
+    restrictMaxHeight:      React.PropTypes.bool,
+    useAbsolutePositioning: React.PropTypes.bool,
   },
   getDefaultProps() {
     return {
       transitionDuration: 200,
+      restrictMaxHeight: false,
     };
   },
   getInitialState() {
@@ -46,24 +50,31 @@ export default React.createClass({
     }
   },
   wrapChild(child, index) {
-    return (
-      <div key={index} ref={'child-' + index}>{child}</div>
-    );
+    var style = child.props.style;
+    if (this.props.useAbsolutePositioning) {
+      style = _.assign({}, style, {left: (index * 100) + '%'});
+    }
+    return React.cloneElement(child, {key: index, ref: 'child-' + index, style: style});
   },
   render() {
-    var {activeIndex, transitionDuration, style} = this.props;
+    var {activeIndex, transitionDuration, restrictMaxHeight, className, style} = this.props;
     var {height} = this.state;
 
     var transform = 'translateX(' + (-this.props.activeIndex * 100) + '%)';
 
     var transition = 'all ease-out ' + (transitionDuration / 1000) + 's';
 
-    var style = _.assign({}, style, {
-      maxHeight: height,
-    });
+    if (restrictMaxHeight) {
+      style = _.assign({}, style, {
+        maxHeight: height,
+      });
+    }
+
+    if (className) className += ' PageSlider';
+    else className = 'PageSlider;'
 
     return (
-      <div ref="pageSlider" className="PageSlider" {...this.props} style={style}>
+      <div ref="pageSlider" {...this.props} className={className} style={style}>
         <div 
           className="viewport" 
           ref="viewport" 
