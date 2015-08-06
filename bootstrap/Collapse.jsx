@@ -4,9 +4,6 @@ import callOnTransitionEnd from '../callOnTransitionEnd';
 
 require('./Collapse.sass');
 
-var doShow = Symbol();
-var doHide = Symbol();
-
 export default React.createClass({
   callOnTransitionEnd,
   propTypes: {
@@ -28,18 +25,18 @@ export default React.createClass({
   },
   componentWillReceiveProps(nextProps) {
     if (nextProps.open && !this.props.open) {
-      this[doShow]();
+      this.doShow();
     }
     if (!nextProps.open && this.props.open) {
-      this[doHide](); 
+      this.doHide(); 
     }
   },
   show() {
     if (this.props.open === undefined) {
-      this[doShow]();
+      this.doShow();
     }
   },
-  [doShow]() {
+  doShow() {
     if (!this.state.open) {
       this.setState({
         open: true,
@@ -58,7 +55,7 @@ export default React.createClass({
       this[doHide]();
     }
   },
-  [doHide]() {
+  doHide() {
     if (this.state.open) {
       var content = React.findDOMNode(this.refs.collapse);
       this.setState({
