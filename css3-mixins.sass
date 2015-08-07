@@ -114,8 +114,26 @@
   @include border-radius( $radius )
 
 // FLEX
-@mixin flex($value: 1)
-  @include css3-prefix('box-flex', $value)
+@mixin flex-prefix($property, $value)
+  -webkit-box#{$property}: #{$value}
+  -moz-box#{$property}: #{$value}
+  -webkit-#{$property}: #{$value}
+  -ms-#{$property}: #{$value}
+  #{$property}: #{$value}
+
+@mixin display-flex
+  display: -webkit-box
+  display: -moz-box
+  display: -ms-flexbox
+  display: -webkit-flex
+  display: flex
+
+@mixin flex($values)
+  -webkit-box-flex: $values
+  -moz-box-flex: $values
+  -webkit-flex: $values
+  -ms-flex: $values
+  flex: $values
 
 // FLIP
 @mixin flip($scaleX: -1)
