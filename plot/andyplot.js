@@ -555,7 +555,7 @@ export class AutoFatTracePlotter {
     {
         this[advanceColumn]( true );
     }
-    
+
     [advanceColumn]( forceFlush )
     {
         var lastX = this.domainConversion.convert( this.prevColumnEnd[0] );
@@ -591,7 +591,6 @@ export class AutoFatTracePlotter {
             }
         }
         
-        var adjacent = Math.round( startX ) === Math.round( lastX ) + 1;
         var startEqualsLast = Math.round( startX ) === Math.round( lastX ) && Math.round( startY ) === Math.round( lastY );
         var monoStartEqualsLast = Math.round( monoStartX ) === Math.round( lastX ) && Math.round( monoStartY ) === Math.round( lastY );
         var drawStart = !isNaN( startY ) && !startEqualsLast;
@@ -698,11 +697,11 @@ export class AutoFatTracePlotter {
             var minLine = this.fillMinPoints.slice( 0 );
             var maxLine = this.fillMaxPoints.slice( 0 );
 
-            var fill = minLine.slice( 0 ).concat( maxLine.length );
+            var fill = minLine.slice( 0 );
             for ( var i = 0 ; i < maxLine.length ; i += 2 )
             {
-                fill[ minLine.length + i ] = maxLine[ maxLine.length - i ];
-                fill[ minLine.length + i + 1 ]= maxLine[ maxLine.length - i + 1 ];
+                fill[ minLine.length + i ] = maxLine[ maxLine.length - i - 2 ];
+                fill[ minLine.length + i + 1 ]= maxLine[ maxLine.length - i - 1 ];
             }
         
             this.traceRenderer.drawFill( fill );
@@ -743,7 +742,7 @@ export class AutoFillToZeroPlotter extends AutoFatTracePlotter {
         
         // if the added point is not in the same column, advance the column
 
-        if( !isNaN( this.columnStart[0] ) && Math.round( viewX ) > Math.round( columnX ) )
+        if( !isNaN( columnX ) && Math.round( viewX ) > Math.round( columnX ) )
         {
             this[advanceColumn]( false );
         }
@@ -751,7 +750,7 @@ export class AutoFillToZeroPlotter extends AutoFatTracePlotter {
         if( isNaN( this.columnStart[0] ) )
         {
             this.columnStart[0] = domain;
-            this.columnStart[1] = 0;
+            this.columnStart[1] = value;
         }
 
         if (isNaN( this.columnMin[0]))
@@ -764,7 +763,7 @@ export class AutoFillToZeroPlotter extends AutoFatTracePlotter {
         }
         
         this.columnEnd[0] = domain;
-        this.columnEnd[1] = 0;
+        this.columnEnd[1] = value;
         
         if( !isNaN( value ) )
         {
@@ -779,5 +778,52 @@ export class AutoFillToZeroPlotter extends AutoFatTracePlotter {
                 this.columnMax[1] = value;
             }
         }
+    }
+
+    [advanceColumn]( forceFlush )
+    {
+        var lastX = this.domainConversion.convert( this.prevColumnEnd[0] );
+        var lastY = this.valueConversion.convert( this.prevColumnEnd[1] );
+        
+        var minX = this.domainConversion.convert( this.columnMin[0] );
+        var minY = this.valueConversion.convert( this.columnMin[1] );
+        var maxX = this.domainConversion.convert( this.columnMax[0] );
+        var maxY = this.valueConversion.convert( this.columnMax[1] );
+      
+        if( !isNaN( lastY ) )
+        {
+            if( this.fillMinPoints.length > 0 )
+            {
+                this.fillMinPoints.push( minX , minY );
+                this.fillMaxPoints.push( maxX , maxY );
+            }
+            
+            if( this.fillMinPoints.length === 0 )
+            {
+              this[flushLine]( );
+              
+              this.fillMinPoints.push( minX , minY );
+              this.fillMaxPoints.push( maxX , maxY );
+            }
+        }
+        else
+        {
+            this[flushLine]( );
+            this[flushFill]( );
+            
+            this.fillMinPoints.push( minX , minY );
+            this.fillMaxPoints.push( maxX , maxY );
+        }
+        
+        if( forceFlush )
+        {
+            this[flushLine]( );
+            this[flushFill]( );
+        }
+        
+        this.prevColumnEnd[0] = this.columnMax[0];
+        this.prevColumnEnd[1] = this.columnMax[1];
+        
+        this[resetColumn]( );
     }
 }

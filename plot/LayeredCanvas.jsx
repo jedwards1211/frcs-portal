@@ -12,8 +12,8 @@ export default React.createClass({
   },
   getInitialState() {
     return {
-      width: 200,
-      height: 200,
+      width: undefined,
+      height: undefined,
     };
   },
   getRootSize() {
@@ -24,15 +24,16 @@ export default React.createClass({
       height: parseFloat(style.height),
     };
   },
-  onResize: _.throttle(function() {
+  onResize: function() {
     var size = this.getRootSize();
     if (size.width  !== this.state.width ||
         size.height !== this.state.height) {
       this.setState(size);
     }
-  }, 50),
+  },
   componentDidMount() {
-    window.addEventListener('resize', this.onResize);
+    this.throttledOnResize = _.throttle(this.onResize, 50);
+    window.addEventListener('resize', this.throttledOnResize);
     this.componentDidUpdate();
   },
   componentDidUpdate() {
@@ -40,15 +41,20 @@ export default React.createClass({
     this.repaint();
   },
   componentWillUnmount() {
-    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('resize', this.throttledOnResize);
   },
   repaint() {
     var canvas = React.findDOMNode(this.refs.canvas);
-    this.props.layers.forEach(layer => layer.paint(canvas));
+    if (this.state.height && this.state.width) {
+      this.props.layers.forEach(layer => layer.paint(canvas));
+    }
   },
   render() {
     var {className} = this.props;
     var {width, height} = this.state;
+
+    width |= 1;
+    height |= 1;
 
     if (className) className += ' layered-canvas';
     else className = 'layered-canvas';
