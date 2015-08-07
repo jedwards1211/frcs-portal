@@ -1,6 +1,8 @@
 import React from 'react/addons';
 import _ from 'lodash';
 
+require('./LayeredCanvas.sass');
+
 export default React.createClass({
   mixins: [React.addons.PureRenderMixin],
   propTypes: {
@@ -16,9 +18,10 @@ export default React.createClass({
   },
   getRootSize() {
     var root = React.findDOMNode(this.refs.root);
+    var style = window.getComputedStyle(root);
     return {
-      width: root.offsetWidth,
-      height: root.offsetHeight
+      width: parseFloat(style.width),
+      height: parseFloat(style.height),
     };
   },
   onResize: _.throttle(function() {
@@ -44,8 +47,12 @@ export default React.createClass({
     this.props.layers.forEach(layer => layer.paint(canvas));
   },
   render() {
+    var {className} = this.props;
     var {width, height} = this.state;
-    return <div ref="root" {...this.props}>
+
+    if (className) className += ' layered-canvas';
+    else className = 'layered-canvas';
+    return <div ref="root" className={className}>
       <canvas ref="canvas" width={width} height={height}/>
     </div>;
   }
