@@ -54,7 +54,9 @@ export default React.createClass({
     if (this.props.useAbsolutePositioning) {
       style = _.assign({}, style, {left: (index * 100) + '%'});
     }
-    return React.cloneElement(child, {key: index, ref: 'child-' + index, style: style});
+    return <div key={index} ref={'child-' + index} style={style}>
+      {child}
+    </div>;
   },
   render() {
     var {activeIndex, transitionDuration, restrictMaxHeight, className, style} = this.props;
