@@ -9,6 +9,7 @@ export default React.createClass({
     layers: React.PropTypes.arrayOf(React.PropTypes.shape({
       paint: React.PropTypes.func.isRequired, 
     }).isRequired).isRequired,
+    onResize: React.PropTypes.func,
   },
   getInitialState() {
     return {
@@ -29,6 +30,7 @@ export default React.createClass({
     if (size.width  !== this.state.width ||
         size.height !== this.state.height) {
       this.setState(size);
+      if (this.props.onResize) this.props.onResize(size);
     }
   },
   componentDidMount() {

@@ -52,12 +52,13 @@ export function ceilingDay(date) {
  * @param{timeConversion} the {@linkcode andyplot.LinearConversion} for the time axis.
  */
 export class Metrics {
-  constructor(canvas, timeConversion) {
+  constructor(canvas, timeConversion, options) {
     this.startTime = timeConversion.invert(0);
     this.endTime = timeConversion.invert(canvas.width);
+    var {minMajorSpacing = 75, minMinorSpacing = 15} = options || {};
 
-    this.majorIncrement = andyplot.chooseNiceTimeIncrement(timeConversion.scale, 100);
-    this.minorIncrement = andyplot.chooseNiceTimeSubIncrement(timeConversion.scale, 30, this.majorIncrement);
+    this.majorIncrement = andyplot.chooseNiceTimeIncrement(timeConversion.scale, minMajorSpacing);
+    this.minorIncrement = andyplot.chooseNiceTimeSubIncrement(timeConversion.scale, minMinorSpacing, this.majorIncrement);
     this.firstDay = ceilingDay(new Date(this.startTime)).getTime();
     if (this.firstDay > this.endTime) this.firstDay = null;
 
