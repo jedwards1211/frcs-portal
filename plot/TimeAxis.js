@@ -32,7 +32,7 @@ export default class AxisPainter {
     }
 
     // make integer values align with the center of pixels
-    ctx.setTransform(1, 0, 0, 1, -0.5, 0.5);
+    ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
 
     if (this.printEstablishingLabel) {
       var establishingX = timeConversion.convert(metrics.establishingTime);

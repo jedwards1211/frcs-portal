@@ -28,8 +28,11 @@ export default class AxisPainter {
 
     tickSide.alignText(ctx);
 
+    var tickSidePos = tickSide.positionInCanvas(canvas);
+    if (tickSide.direction > 0) tickSidePos -= 2;
+
     // make integer values align with the center of pixels
-    ctx.setTransform(1, 0, 0, 1, -0.5, 0.5);
+    ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
 
     ctx.font = baseFont;
 
@@ -48,8 +51,8 @@ export default class AxisPainter {
 
       // paint the tick
       ctx.beginPath();
-      axis.moveTo(ctx, px, tickSide.positionInCanvas(canvas));
-      axis.lineTo(ctx, px, tickSide.positionInCanvas(canvas) - tickSize * tickSide.direction);
+      axis.moveTo(ctx, px, tickSidePos);
+      axis.lineTo(ctx, px, tickSidePos - tickSize * tickSide.direction);
       ctx.stroke();
 
       // paint a label if we're on a major increment (but the establishing label has already been painted)
@@ -71,7 +74,7 @@ export default class AxisPainter {
           axis.centerText(ctx);
         }
 
-        var textOffset = tickSide.positionInCanvas(canvas) - (tickSize + 2) * tickSide.direction;
+        var textOffset = tickSidePos - (tickSize + 2) * tickSide.direction;
 
         var textX = axis === xAxis ? px : textOffset;
         var textY = axis === yAxis ? px : textOffset;

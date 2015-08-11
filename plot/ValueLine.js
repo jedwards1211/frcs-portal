@@ -1,5 +1,7 @@
+import {xAxis} from '../orient';
+
 export default class TracePainter {
-  constructor(color, conversion, value, axis = 'x') {
+  constructor(color, conversion, value, axis = xAxis) {
     this.color = color;
     this.conversion = conversion;
     this.value = value;
@@ -10,16 +12,11 @@ export default class TracePainter {
     var cValue = conversion.convert(value);
     if (!isNaN(cValue) && cValue !== null) {
       var ctx = canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
       ctx.strokeStyle = this.color;
       ctx.beginPath();
-      if (axis === 'x') {
-        ctx.moveTo(cValue, 0);
-        ctx.lineTo(cValue, canvas.height);
-      }
-      else {
-        ctx.moveTo(0, cValue);
-        ctx.lineTo(canvas.width, cValue);
-      }
+      axis.moveTo(ctx, cValue, 0);
+      axis.lineTo(ctx, cValue, canvas[axis.opposite.span]);
       ctx.stroke();
     }
   } 

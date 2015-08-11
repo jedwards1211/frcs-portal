@@ -1,11 +1,36 @@
 .modal-transition-group
   position: fixed
+  z-index: 1000
   top: 0
   left: 0
   bottom: 0
   right: 0
+  pointer-events: none
 
-.modal-root
-  .modal-backdrop,
+  > *
+    pointer-events: initial
+
+  &.absolute
+    position: absolute
+
+    .modal-backdrop,
+    .modal-root,
+    .modal
+      position: absolute
+      top: 0
+      left: 0
+      bottom: 0
+      right: 0
+
+  .backdrop
+    display: block
+
   .modal
     display: block
+    pointer-events: none
+
+    > *
+      pointer-events: initial
+
+.modal-body.alert
+  margin: 0

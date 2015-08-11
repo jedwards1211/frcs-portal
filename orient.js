@@ -81,6 +81,9 @@ export var xAxis = new Axis({
   offsetSpan: 'offsetWidth',
   scrollSpan: 'scrollWidth',
   index: 0,
+  reorder(parallel, perp) {
+    return [parallel, perp];
+  },
   centerText(ctx) {
     ctx.textAlign = 'center';  
   },
@@ -100,6 +103,9 @@ export var yAxis = new Axis({
   offsetSpan: 'offsetHeight',
   scrollSpan: 'scrollHeight',
   index: 1,
+  reorder(parallel, perp) {
+    return [perp, parallel];
+  },
   centerText(ctx) {
     ctx.textBaseline = 'middle';
   },
