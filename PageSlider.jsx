@@ -50,6 +50,7 @@ export default React.createClass({
     }
   },
   wrapChild(child, index) {
+    if (!child) return child;
     var style = child.props.style;
     if (this.props.useAbsolutePositioning) {
       style = _.assign({}, style, {left: (index * 100) + '%'});
