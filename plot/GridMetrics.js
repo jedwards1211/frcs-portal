@@ -103,7 +103,7 @@ export class TimeMetrics extends GridMetrics {
     }
 
     var items = [];
-    if (this.showHours)    items.push(Math.floor(time % 3600000));
+    if (this.showHours)    items.push(Math.floor(time / 3600000));
     if (this.showMinutes)  items.push(pad(Math.floor((time / 60000) % 60), 2));
     if (this.showSeconds)  items.push(pad(Math.floor((time / 1000) % 60), 2));
     if (this.showMillis)   items.push(pad(Math.floor(time % 1000), 3));
