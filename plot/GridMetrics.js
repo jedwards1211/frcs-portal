@@ -76,8 +76,8 @@ export class TimeMetrics extends GridMetrics {
     super(conversion, startPx, endPx, options);
     var {minMajorSpacing = 75, minMinorSpacing = 15} = options || {};
 
-    this.majorIncrement = andyplot.chooseNiceTimeIncrement(conversion.scale, minMajorSpacing);
-    this.minorIncrement = andyplot.chooseNiceTimeSubIncrement(conversion.scale, minMinorSpacing, this.majorIncrement);
+    this.minorIncrement = andyplot.chooseNiceTimeIncrement(conversion.scale, minMinorSpacing);
+    this.majorIncrement = andyplot.chooseNiceTimeMajorIncrement(conversion.scale, minMajorSpacing, this.minorIncrement);
 
     this.firstMajor     = andyplot.modCeiling(this.startValue, this.majorIncrement);
     this.firstMinor     = andyplot.modCeiling(this.startValue, this.minorIncrement);

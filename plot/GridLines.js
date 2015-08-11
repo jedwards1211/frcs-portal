@@ -26,7 +26,7 @@ export default class GridLines {
 
       ctx.beginPath();
       axis.moveTo(ctx, px, 0);
-      axis.lineTo(ctx, px, canvas[axis.span]);
+      axis.lineTo(ctx, px, canvas[axis.opposite.span]);
       ctx.stroke();
 
       value += metrics.minorIncrement;

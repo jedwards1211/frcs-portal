@@ -97,6 +97,16 @@ export function chooseNiceTimeIncrement(pixelsPerMilli, minTickSpacingPixels) {
     return niceTimeIncrements[ceilingIndex(niceTimeIncrements, rough)];
 }
 
+export function chooseNiceTimeMajorIncrement(pixelsPerMilli, minTickSpacingPixels, minorIncrement) {
+    var i = ceilingIndex(niceTimeIncrements, minorIncrement);
+    while (++i < niceTimeIncrements.length) {
+      var increment = niceTimeIncrements[i];
+      if (increment % minorIncrement === 0 && increment * pixelsPerMilli > minTickSpacingPixels) {
+        return increment;
+      }
+    }
+}
+
 /**
  * Chooses a "nice" time increment that will produce tick spacing of at least
  * <code>minTickSpacingPixels</code> at a scale of <code>pixelsPerMilli</code>,
