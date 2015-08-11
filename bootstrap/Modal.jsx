@@ -1,122 +1,73 @@
 'use strict';
 
-import React from 'react';
-import {addons} from 'react/addons';
+import React from 'react/addons';
 import classNames from 'classnames';
 import _ from 'lodash';
 
+import RobustTransitionGroup from '../RobustTransitionGroup';
+
+import callOnTransitionEnd from '../callOnTransitionEnd';
+
 import { addClass, removeClass } from '../nojquery';
 
-var ModalHeader = React.createClass({
-  mixins: [addons.PureRenderMixin],
-  render() {
-    return (
-      <div key="modal-header" className="modal-header">
-        {this.props.children}
-      </div>
-    );
-  }
-});
-
-var ModalBody = React.createClass({
-  mixins: [addons.PureRenderMixin],
-  render() {
-    return (
-      <div key="modal-body" className="modal-body">
-        {this.props.children}
-      </div>
-    );
-  }
-});
-
-var ModalFooter = React.createClass({
-  mixins: [addons.PureRenderMixin],
-  render() {
-    return (
-      <div key="modal-footer" className="modal-footer">
-        {this.props.children}
-      </div>
-    );
-  }
-});
+import './Modal.sass';
 
 /**
- * Wrapper for a Bootstrap Modal.  Instead of showing it with a Bootstrap data-target
- * attribute, you should show it by setting its 'show' prop to true.  You should provide
- * an 'onHide' handler that sets the 'show' prop back to false, because Bootstrap
- * automatically hides the modal when the user clicks outside of it, and you will not
- * be able to show it again until the 'show' prop is set to false and then back to true.
+ * Wrapper for a Bootstrap modal.  Use inside a ReactTransitionGroup or RobustTransitionGroup.
  */
 var Modal = React.createClass({
-  mixins: [addons.PureRenderMixin],
+  mixins: [React.addons.PureRenderMixin],
   propTypes: {
-    id: React.PropTypes.string,
-    'aria-labelledby': React.PropTypes.string,
-    'aria-label': React.PropTypes.string,
-    show: React.PropTypes.bool,
-    onRequestHide: React.PropTypes.func,
-    onHidden: React.PropTypes.func,
+    onRequestHide:      React.PropTypes.func,
+    transitionDuration: React.PropTypes.number,
+  },
+  getDefaultProps() {
+    return {
+      transitionDuration: 300,
+    };
   },
   getInitialState() {
     return {
-      'actuallyShow': false,
-      'in': false
+      isIn: false,
     };
   },
-  update(show) {
-    if (show) {
-      addClass(document.body, 'modal-open');
-      if (!this.state.actuallyShow) {
-        this.setState({actuallyShow: true}, () => {
-          setTimeout(() => {
-            this.update(this.props.show);
-          }, 0);
-        });
-      }
-      else if (!this.state['in']) {
-        this.setState({'in': show});
-      }
-    }
-    else {
-      removeClass(document.body, 'modal-open');
-      if (this.state['in'])  {
-        this.setState({'in': false}, () => {
-          setTimeout(() => {
-            this.update(this.props.show);
-          }, 200);
-        });
-      }
-      else if (this.state.actuallyShow) {
-        this.setState({actuallyShow: false});
-        this.props.onHidden && this.props.onHidden();
-      }
-    }
+  componentWillAppear(callback) {
+    callOnTransitionEnd(React.findDOMNode(this.refs.modal), callback, this.props.transitionDuration);
+    this.setState({isIn: true});
   },
-  componentWillReceiveProps(newProps) {
-    if (newProps.show !== this.props.show) {
-      this.update(newProps.show);
-    }
+  componentWillEnter(callback) {
+    callOnTransitionEnd(React.findDOMNode(this.refs.modal), callback, this.props.transitionDuration);
+    this.setState({isIn: true});
+  },
+  componentWillLeave(callback) {
+    callOnTransitionEnd(React.findDOMNode(this.refs.modal), callback, this.props.transitionDuration);
+    this.setState({isIn: false});
   },
   componentDidMount() {
-    this.update(this.props.show);
+    addClass(document.body, 'modal-open');
+  },
+  componentWillUnmount() {
+    removeClass(document.body, 'modal-open');
   },
   onModalClick(event) {
-    if (event.target == React.findDOMNode(this.refs.modal)) {
+    if (event.target === React.findDOMNode(this.refs.modal)) {
       this.props.onRequestHide && this.props.onRequestHide();
     }
   },
   render() {
-    var otherProps = _.clone(this.props);
-    delete otherProps.className;
-    delete otherProps.key;
+    var {className, style} = this.props;
+    var {isIn} = this.state;
+
+    var backdropClass = classNames('modal-backdrop', 'fade', {'in': isIn});
+
+    var modalClass = classNames('modal', 'fade', className, {'in': isIn});
+
     return (
-      <div key={this.props.key}>
-        <div key="backdrop" className={classNames('modal-backdrop', 'fade', {'in': this.state['in']})}
-          style={{display: this.state.actuallyShow ? 'block' : 'none'}} />
-        <div key="modal" ref="modal" className={classNames('modal', 'fade', this.props.className, {'in': this.state['in']})} 
-          style={{display: this.state.actuallyShow ? 'block' : 'none'}} role="dialog" aria-hidden={!this.state.actuallyShow} 
-          onClick={this.onModalClick} {...otherProps}>
-          <div key="modal-dialog" className="modal-dialog">
+      <div className="modal-root">
+        <div className={backdropClass}/>
+        <div ref="modal" {...this.props} className={modalClass} role="dialog"
+          aria-hidden={!isIn} onClick={this.onModalClick}>
+          <div className="modal-dialog">
             <div className="modal-content">
               {this.props.children}
             </div>
@@ -127,4 +78,37 @@ var Modal = React.createClass({
   }
 });
 
+function createClassNameMixer(className) {
+  return React.createClass({
+    mixins: [React.addons.PureRenderMixin],
+    render() {
+      var _className = classNames(this.props.className, className);
+      return <div {...this.props} className={_className}>
+        {this.props.children}
+      </div>;
+    }
+  });
+}
+
+var ModalHeader = Modal.Header = createClassNameMixer('modal-header');
+var ModalBody   = Modal.Body   = createClassNameMixer('modal-body');
+var ModalFooter = Modal.Footer = createClassNameMixer('modal-footer');
+
+var ModalTransitionGroup = Modal.TransitionGroup = React.createClass({
+  render() {
+    var className = classNames(this.props.className, 'modal-transition-group');
+    var style = _.assign({}, this.props.style, {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+    });
+    return <RobustTransitionGroup component="div" {...this.props} className={className} style={style}>
+      {this.props.children}
+    </RobustTransitionGroup>;
+  }
+});
+
+export default Modal;
 export { Modal, ModalHeader, ModalBody, ModalFooter };
