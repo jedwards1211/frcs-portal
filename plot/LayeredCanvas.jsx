@@ -55,7 +55,7 @@ export default React.createClass({
     var {className} = this.props;
     var {width, height} = this.state;
 
-    width |= 1;
+    width  |= 1;
     height |= 1;
 
     if (className) className += ' layered-canvas';

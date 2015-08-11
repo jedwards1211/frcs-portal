@@ -1,6 +1,6 @@
 import {xAxis} from '../orient';
 
-export default class TracePainter {
+export default class ValueLine {
   constructor(color, conversion, value, axis = xAxis) {
     this.color = color;
     this.conversion = conversion;

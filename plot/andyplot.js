@@ -13,6 +13,17 @@ function requireNotZero(number) {
 }
 
 var niceTimeIncrements = [
+         1,
+         2,
+         5,
+         10,
+         20,
+         25,
+         50,
+         100,
+         200,
+         250,
+         500,
          1000,
     2  * 1000,
     5  * 1000,
@@ -247,6 +258,33 @@ export function higherIndex(array, find, low, high, comparator) {
    return i < array.length && (comparator || DEFAULT_COMPARATOR)(array[i], find) <= 0 ? i + 1 : i;
 }
 
+/**
+ * Base class for conversions.  Right now there is only LinearConversion;
+ * in the future there could also be LogConversion.
+ */
+export class Conversion {
+  /**
+   * @param d some value.
+   * @returns the display position for d, in pixels.
+   */
+  convert(d) {
+    return NaN;
+  }
+  /**
+   * @param d a display position, in px.
+   * @returns the value at d
+   */
+  invert(d) {
+    return NaN;
+  }
+  chooseNiceIncrement(minTickSpacingPixels) {
+    return NaN;
+  }  
+  chooseNiceMajorIncrement(minTickSpacingPixels, minorIncrement) {
+    return NaN;
+  }  
+}
+
 /////////////////////////////////////////////////////////////////   
 // LinearConversion
 /////////////////////////////////////////////////////////////////   
@@ -255,8 +293,9 @@ export function higherIndex(array, find, low, high, comparator) {
  * Creates a LinearConversion.  The arguments are exactly the same
  * as those for set().
  */
-export class LinearConversion {
+export class LinearConversion extends Conversion {
     constructor( a , b , c , d ) {
+        super();
         this.set( a , b , c , d );
     }
     convert( d ) {
