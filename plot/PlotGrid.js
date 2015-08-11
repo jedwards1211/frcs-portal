@@ -32,6 +32,49 @@ export function ceilingDay(date) {
   return new Date(date.getTime() + 86400000);
 }
 
+export class ValueMetrics {
+  constructor(span, conversion, options) {
+    this.minValue = conversion.invert(0);
+    this.maxValue = conversion.invert(span);
+    var {minMajorSpacing = 75, minMinorSpacing = 15} = options || {};
+
+    this.minorIncrement = conversion.chooseNiceIncrement(minMinorSpacing);
+    this.majorIncrement = conversion.chooseNiceMajorIncrement(minMajorSpacing, this.minorIncrement);
+
+    this.firstMajor = andyplot.modCeiling(this.minValue, this.majorIncrement);
+    this.firstMinor = andyplot.modCeiling(this.minValue, this.minorIncrement);
+
+    this.precision = Math.max(0, -Math.floor(Math.log10(Math.abs(this.majorIncrement))));
+    this.expPrecision = Math.pow(10, this.precision);
+  } 
+
+  formatLabel(value) {
+    return value.toFixed(this.precision);
+  }
+
+  isMajorTick(value) {
+    return (value % Math.abs(this.majorIncrement)) * this.expPrecision <= 0;
+  }
+
+  getTickSize(value) {
+    return this.isMajorTick(value) ? 4 : 2;
+  }
+
+  /**
+   * Gets the color the tick mark at the given date should be drawn with.
+   * @param{date} the tick mark date.
+   * @param{metrics} an object gotten from {@linkcode getTimeMetrics}.
+   * @returns a canvas rendering color string
+   */
+  getTickColor(value) {
+    return this.isMajorTick(value) ? '#aaa' : '#ccc';
+  }
+
+  getGridlineColor(value) {
+    return this.isMajorTick(value) ? '#aaa' : '#ccc';
+  }
+}
+
 /**
  * Creates grid metrics for the time axis.
  * Has the following properties:

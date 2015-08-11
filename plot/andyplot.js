@@ -36,22 +36,44 @@ var niceTimeIncrements = [
          86400000
 ];
 
-export function chooseNiceIncrement(unitsPerPixel, minTickSpacingPixels) {
-  var rough = minTickSpacingPixels * unitsPerPixel;
-  var floor = Math.pow(10, Math.floor(Math.log10(rough)));
-  if (floor >= rough) {
+export function niceCeiling(value) {
+  var floor = Math.pow(10, Math.floor(Math.log10(value)));
+  if (floor >= value) {
     return floor;
   }
-  if (floor * 2 >= rough) {
+  if (floor * 2 >= value) {
     return floor * 2;
   }
-  if (floor * 2.5 >= rough) {
-    return floor * 2.5
+  if (floor * 2.5 >= value) {
+    return floor * 2.5;
   }
-  if (floor * 5 >= rough) {
+  if (floor * 4 >= value) {
+    return floor * 4;
+  }
+  if (floor * 5 >= value) {
     return floor * 5;
   }
   return floor * 10;
+}
+
+export function isNiceIncrement(increment) {
+  increment = Math.abs(increment);
+  var normalized = increment / Math.pow(10, Math.floor(Math.log10(increment)));
+  return normalized === 1 || normalized === 2 || normalized === 2.5 || normalized === 4 || normalized === 5;
+}
+
+export function chooseNiceIncrement(unitsPerPixel, minTickSpacingPixels) {
+  if (unitsPerPixel < 0) return -chooseNiceIncrement(-unitsPerPixel, minTickSpacingPixels);
+  return niceCeiling(minTickSpacingPixels * unitsPerPixel);
+}
+
+export function chooseNiceMajorIncrement(unitsPerPixel, minTickSpacingPixels, minorIncrement) {
+  if (unitsPerPixel < 0) return -chooseNiceMajorIncrement(-unitsPerPixel, minTickSpacingPixels, -minorIncrement);
+  for (var i = 1; i < 20; i++) {
+    if (isNiceIncrement(minorIncrement * i) && minorIncrement * i >= minTickSpacingPixels * unitsPerPixel) {
+      return minorIncrement * i;
+    }
+  }
 }
 
 /**
@@ -246,6 +268,10 @@ export class LinearConversion {
 
     chooseNiceIncrement(minTickSpacingPixels) {
       return chooseNiceIncrement(1 / this.scale, minTickSpacingPixels);
+    }
+
+    chooseNiceMajorIncrement(minTickSpacingPixels, minorIncrement) {
+      return chooseNiceMajorIncrement(1 / this.scale, minTickSpacingPixels, minorIncrement);
     }
 
     /**
