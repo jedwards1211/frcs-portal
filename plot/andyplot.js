@@ -666,6 +666,7 @@ export class AutoFatTracePlotter {
             }
         }
         
+        var adjacent = Math.round( lastX ) + 1 === Math.round( startX );
         var startEqualsLast = Math.round( startX ) === Math.round( lastX ) && Math.round( startY ) === Math.round( lastY );
         var monoStartEqualsLast = Math.round( monoStartX ) === Math.round( lastX ) && Math.round( monoStartY ) === Math.round( lastY );
         var drawStart = !isNaN( startY ) && !startEqualsLast;
