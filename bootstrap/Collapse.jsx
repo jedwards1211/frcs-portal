@@ -52,7 +52,7 @@ export default React.createClass({
   },
   hide() {
     if (this.props.open === undefined) {
-      this[doHide]();
+      this.doHide();
     }
   },
   doHide() {
