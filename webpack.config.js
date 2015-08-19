@@ -19,10 +19,9 @@ module.exports = {
         filename: 'main.js',
         publicPath: '/assets/'
     },
-    debug: true,
-    devtool: 'eval',
+    devtool: 'eval-source-map',
     entry: [
-        'webpack-dev-server/client?http://localhost:' + port,
+        'webpack-dev-server/client?http://0.0.0.0:' + port,
         'webpack/hot/only-dev-server',
         'bootstrap-sass/assets/stylesheets/_bootstrap.scss',
         'babel/polyfill',
@@ -73,6 +72,7 @@ module.exports = {
     ],
     devServer: {
         port: port,
+        host: '0.0.0.0',
         hot: true,
         historyApiFallback: true,
     }
