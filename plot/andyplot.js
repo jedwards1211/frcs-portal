@@ -327,7 +327,8 @@ export class LinearConversion extends Conversion {
      * Sets the scale and offset.
      * 
      * If one argument is provided, copies argument.scale and
-     * argument.offset.
+     * argument.offset.  Or if offset is an array, sets offset such that
+     * convert(offset[0]) == offset[1]
      *
      * If two arguments are provided, sets scale = arg0 and
      * offset = arg1.
@@ -352,7 +353,12 @@ export class LinearConversion extends Conversion {
             }
         } else {
             this.scale = requireNotZero( a.scale );
-            this.offset = a.offset;
+            if (a.offset instanceof Array) {
+                this.offset = requireNotNaN(a.offset[0] - a.offset[1] / this.scale);
+            }
+            else {
+                this.offset = a.offset;
+            }                
         }
     }
 
