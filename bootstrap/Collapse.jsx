@@ -9,11 +9,12 @@ export default React.createClass({
   propTypes: {
     component: React.PropTypes.any,
     open: React.PropTypes.bool,
-    children: React.PropTypes.node,
+    keepChildrenMounted: React.PropTypes.bool,
   },
   getDefaultProps() {
     return {
       component: 'div',
+      keepChildrenMounted: true,
     };
   },
   getInitialState() {
@@ -52,7 +53,7 @@ export default React.createClass({
   },
   hide() {
     if (this.props.open === undefined) {
-      this[doHide]();
+      this.doHide();
     }
   },
   doHide() {
@@ -86,7 +87,7 @@ export default React.createClass({
     });
   },
   render() {
-    var {component, className, children, ...props} = this.props;
+    var {component, className, children, keepChildrenMounted, ...props} = this.props;
     var {open, collapsing, height} = this.state;
     props.className = classNames(className, {'collapse': !collapsing, 'in': open && !collapsing, collapsing: collapsing});
     if (height) {
@@ -96,6 +97,6 @@ export default React.createClass({
     props.ref = 'collapse';
     props['aria-expanded'] = open;
 
-    return React.createElement(component, props, children);
+    return React.createElement(component, props, open || collapsing || keepChildrenMounted ? children : undefined);
   },
 });

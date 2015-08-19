@@ -7,16 +7,18 @@ import RobustTransitionGroup from '../RobustTransitionGroup';
 import * as nojquery from '../nojquery';
 
 import addClass from '../wrappers/addClass';
+import addProps from '../wrappers/addProps';
 import addClassWhenIn from '../wrappers/transition/addClassWhenIn';
 
 import './Modal.sass';
 
-var Modal = React.createClass({
+var ModalBase = React.createClass({
   render() {
-    var {className, children} = this.props;
+    var {className, dialogClassName, children} = this.props;
     className = classNames('modal fade', className);
+    dialogClassName = classNames('modal-dialog', dialogClassName);
     return <div ref="modal" {...this.props} className={className} role="dialog">
-      <div className="modal-dialog">
+      <div className={dialogClassName}>
         <div className="modal-content">
           {children}
         </div>
@@ -25,7 +27,8 @@ var Modal = React.createClass({
   }
 });
 
-Modal = addClassWhenIn(Modal, 'in');
+var Modal = addClassWhenIn(ModalBase, 'in');
+Modal.Small = addClassWhenIn(addProps(ModalBase, {dialogClassName: 'modal-sm'}), 'in');
 
 var ModalBackdrop = React.createClass({
   componentDidMount() {
@@ -51,6 +54,7 @@ ModalBackdrop = Modal.Backdrop = addClassWhenIn(ModalBackdrop, 'in');
 var ModalHeader = Modal.Header = addClass('div', 'modal-header');
 var ModalBody   = Modal.Body   = addClass('div', 'modal-body');
 var ModalFooter = Modal.Footer = addClass('div', 'modal-footer');
+var ModalTitle  = Modal.Title  = addClass('h4', 'modal-title');
 
 var ModalTransitionGroup = Modal.TransitionGroup = React.createClass({
   getDefaultProps() {
@@ -67,4 +71,4 @@ var ModalTransitionGroup = Modal.TransitionGroup = React.createClass({
 });
 
 export default Modal;
-export { Modal, ModalHeader, ModalBody, ModalFooter, ModalBackdrop, ModalTransitionGroup};
+export { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter, ModalBackdrop, ModalTransitionGroup};
