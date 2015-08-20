@@ -93,11 +93,13 @@ export function chooseNiceMajorIncrement(unitsPerPixel, minTickSpacingPixels, mi
  * Returns undefined if even an increment of one day would span less than <code>minTickSpacingPixels</code>.
  */ 
 export function chooseNiceTimeIncrement(pixelsPerMilli, minTickSpacingPixels) {
+    if (pixelsPerMilli < 0) return -chooseNiceTimeIncrement(-pixelsPerMilli, minTickSpacingPixels);
     var rough = minTickSpacingPixels / pixelsPerMilli;
     return niceTimeIncrements[ceilingIndex(niceTimeIncrements, rough)];
 }
 
 export function chooseNiceTimeMajorIncrement(pixelsPerMilli, minTickSpacingPixels, minorIncrement) {
+    if (pixelsPerMilli < 0) return -chooseNiceTimeMajorIncrement(-pixelsPerMilli, minTickSpacingPixels, -minorIncrement);
     var i = ceilingIndex(niceTimeIncrements, minorIncrement);
     while (++i < niceTimeIncrements.length) {
       var increment = niceTimeIncrements[i];

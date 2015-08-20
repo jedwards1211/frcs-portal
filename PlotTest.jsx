@@ -18,8 +18,8 @@ import './PlotTest.sass';
 export default React.createClass({
   getInitialState() {
     return {
-      timeConversion: new andyplot.LinearConversion(0, 0, 3600000, 1000),
-      valueConversion: new andyplot.LinearConversion(1, 0, -1, 200),
+      timeConversion: new andyplot.LinearConversion(0, 0.5, 3600000, 999.5),
+      valueConversion: new andyplot.LinearConversion(1, 0.5, -1, 199.5),
     };
   },
   onPlotResize(newSize) {
@@ -53,11 +53,11 @@ export default React.createClass({
     var valueAxisLayers = [];
 
     if (plotSize && plotSize.width > 1 && plotSize.height > 1) {
-      var timeMetrics = new TimeMetrics(timeConversion, 0, plotSize.width - 1, {
+      var timeMetrics = new TimeMetrics(timeConversion, 0.5, plotSize.width - 0.5, {
         minMajorSpacing: Math.min(80, plotSize.width / 2),
         minMinorSpacing: Math.min(20, plotSize.width / 2),
       });
-      var valueMetrics = new ValueMetrics(valueConversion, 0, plotSize.height - 1, {
+      var valueMetrics = new ValueMetrics(valueConversion, 0.5, plotSize.height - 0.5, {
         minMajorSpacing: 30,
         minMinorSpacing: 15,
       });
@@ -86,7 +86,7 @@ export default React.createClass({
       ];
     }
 
-    return <PlotInteractionController xConversion={timeConversion} onMove={this.onMove}>
+    return <PlotInteractionController xConversion={timeConversion} yConversion={valueConversion} onMove={this.onMove}>
       <div className="plot-test">
         <div className="plot-border">
           <LayeredCanvas className="plot" ref="plot" onResize={this.onPlotResize} layers={plotLayers}/>

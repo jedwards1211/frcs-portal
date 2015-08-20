@@ -12,7 +12,6 @@ export default class ValueLine {
     var cValue = conversion.convert(value);
     if (!isNaN(cValue) && cValue !== null) {
       var ctx = canvas.getContext('2d');
-      ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
       ctx.strokeStyle = this.color;
       ctx.beginPath();
       axis.moveTo(ctx, cValue, 0);

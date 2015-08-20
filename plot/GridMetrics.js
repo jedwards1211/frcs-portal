@@ -4,8 +4,8 @@ export class GridMetrics {
   constructor(conversion, startPx, endPx, options = {}) {
     this.conversion     = conversion;
 
-    this.startPx        = startPx;
-    this.endPx          = endPx;
+    this.startPx        = Math.min(startPx, endPx);
+    this.endPx          = Math.max(startPx, endPx);
 
     this.startValue     = conversion.invert(startPx);
     this.endValue       = conversion.invert(endPx);
@@ -59,7 +59,7 @@ export class ValueMetrics extends GridMetrics {
     this.firstMinor = andyplot.modCeiling(this.startValue, this.minorIncrement);
 
     this.precision = Math.max(0, -Math.floor(Math.log10(Math.abs(this.majorIncrement))));
-    this.expPrecision = Math.pow(10, this.precision);
+    this.majorTickThreshold = Math.pow(10, -this.precision - 6);
   } 
 
   formatLabel(value) {
@@ -67,7 +67,9 @@ export class ValueMetrics extends GridMetrics {
   }
 
   isMajorTick(value) {
-    return (value % Math.abs(this.majorIncrement)) * this.expPrecision <= 0;
+    value = Math.abs(value);
+    var mod = value % this.majorIncrement;
+    return Math.min(mod, Math.abs(this.majorIncrement) - mod) < this.majorTickThreshold;
   }
 }
 
@@ -83,10 +85,10 @@ export class TimeMetrics extends GridMetrics {
     this.firstMinor     = andyplot.modCeiling(this.startValue, this.minorIncrement);
 
     var maxTime         = Math.max(this.startValue, this.endValue);
-    this.showHours      = maxTime >= 3600000;
+    this.showHours      = Math.abs(maxTime) >= 3600000;
     this.showMinutes    = true
-    this.showSeconds    = this.majorIncrement < 60000 || !this.showHours;
-    this.showMillis     = this.majorIncrement < 1000;
+    this.showSeconds    = Math.abs(this.majorIncrement) < 60000 || !this.showHours;
+    this.showMillis     = Math.abs(this.majorIncrement) < 1000;
   }
 
   isMajorTick(time) {

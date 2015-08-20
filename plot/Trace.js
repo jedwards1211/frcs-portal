@@ -19,14 +19,11 @@ export default class Trace {
     this.valueConversion = options.valueConversion;
     this.plotter = options.plotter;
     this.domainAxis = options.domainAxis || xAxis;
-    this.transform = this.domainAxis === xAxis ? [1,0,0,1,.5,.5] : [0,1,1,0,.5,.5];
   }
   paint(canvas) {
     var ctx = canvas.getContext('2d');
 
     var {domainConversion, valueConversion, transform, domainAxis} = this;
-
-    ctx.setTransform(...transform);
 
     var renderer = new andyplot.CanvasTraceRenderer(ctx);
 
