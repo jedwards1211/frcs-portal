@@ -364,6 +364,25 @@ export class LinearConversion extends Conversion {
         }
     }
 
+    move( a , b ) {
+        this.offset = requireNotNaN(a - b / this.scale);
+    }
+
+    /**
+     * Adjusts the scale and offset to the nearest values for which
+     * convert(anchor), convert(anchor + increment), etc. will be whole numbers (excluding
+     * round-off error).
+     */
+    align( increment , anchor =  0 ) {
+        var origAnchor = this.convert(anchor);
+        var newScale = Math.round(increment * this.scale) / increment;
+        if (newScale !== this.scale) {
+            this.scale = newScale;
+            this.offset = requireNotNaN(anchor - Math.round(origAnchor) / this.scale);
+        }
+        return this;
+    }
+
     /**
      * Sets the offset such that convert(a) == b (keeping the same scale and excepting
      * floating-point error).
