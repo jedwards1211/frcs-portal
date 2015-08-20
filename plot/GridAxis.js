@@ -3,7 +3,6 @@ export default class GridAxis {
     this.metrics = metrics;
     this.tickSide = tickSide;
     this.axis = tickSide.axis.opposite;
-    this.baseFont = options.baseFont || '10px sans-serif';
     this.backgroundColor = options.backgroundColor || 'white';
     this.transparentBackgroundColor = options.transparentBackgroundColor || 'rgba(255,255,255,0)';
     this.clip = !!options.clip || true;
@@ -11,12 +10,10 @@ export default class GridAxis {
     this.fadeSpan = options.fadeSpan || 20;
   }
   paint(canvas) {
-    var {metrics, tickSide, axis, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan, baseFont} = this;
+    var {metrics, tickSide, axis, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this;
     var {conversion, startPx, endPx} = metrics;
 
     var ctx = canvas.getContext('2d');
-
-    ctx.font = baseFont;
 
     var minSide = metrics.startValue < metrics.endValue ? axis.minSide : axis.maxSide;
     var maxSide = minSide.opposite;
@@ -59,26 +56,29 @@ export default class GridAxis {
 
       var lastLabelMinPx, lastLabelMaxPx;
 
-      // paint a label if we're on a major increment (but the establishing label has already been painted)
+      // paint a label if we're on a major increment
       if (metrics.isMajorTick(value)) {
         var label = metrics.formatLabel(value);
+        var font = ctx.font = metrics.getFont(value);
+        var labelPx;
 
         var labelMetrics = ctx.measureText(label);
-        labelMetrics.height = (parseFloat(baseFont) * 0.8) || 10;
+        labelMetrics.height = (parseFloat(font) * 0.8) || 10;
         var labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
         var labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
 
         if (justifyEndLabels && labelMinPx < startPx) {
           axis.minSide.alignText(ctx);
-          labelMinPx = alignedPx;
-          labelMaxPx = alignedPx + labelMetrics[axis.span];
+          labelPx = labelMinPx = Math.min(startPx, alignedPx);
+          labelMaxPx = labelMinPx + labelMetrics[axis.span];
         }
         else if (justifyEndLabels && labelMaxPx > endPx) {
           axis.maxSide.alignText(ctx);
-          labelMinPx = alignedPx - labelMetrics[axis.span];
-          labelMaxPx = alignedPx;
+          labelPx = labelMaxPx = Math.max(endPx, alignedPx);
+          labelMinPx = labelMaxPx - labelMetrics[axis.span];
         }
         else {
+          labelPx = alignedPx;
           axis.centerText(ctx);
         }
 
@@ -87,7 +87,7 @@ export default class GridAxis {
             labelMinPx > lastLabelMaxPx + 10  || labelMaxPx < lastLabelMinPx - 10)) {
 
           ctx.strokeStyle = ctx.fillStyle = metrics.getLabelColor(value);
-          ctx.fillText(label, ...axis.reorder(px, textOffset));
+          ctx.fillText(label, ...axis.reorder(labelPx, textOffset));
 
           if (justifyEndLabels) {
             if (labelMinPx < startPx) {

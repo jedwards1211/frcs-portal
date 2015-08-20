@@ -53,7 +53,7 @@ export default React.createClass({
     var valueAxisLayers = [];
 
     if (plotSize && plotSize.width > 1 && plotSize.height > 1) {
-      var timeMetrics = new TimeMetrics(timeConversion, 0.5, plotSize.width - 0.5, {
+      var timeMetrics = new DateMetrics(timeConversion, 0.5, plotSize.width - 0.5, {
         minMajorSpacing: Math.min(80, plotSize.width / 2),
         minMinorSpacing: Math.min(20, plotSize.width / 2),
       });
@@ -77,7 +77,9 @@ export default React.createClass({
 
       timeAxisLayers = [
         new CanvasClearer(),
-        new GridAxis(timeMetrics, topSide),
+        new GridAxis(timeMetrics, topSide, {
+          justifyEndLabels: true
+        }),
       ];
 
       valueAxisLayers = [

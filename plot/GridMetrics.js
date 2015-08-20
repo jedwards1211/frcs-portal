@@ -23,6 +23,8 @@ export class GridMetrics {
 
     this.majorLabelColor = options.majorLabelColor || '#999';
     this.minorLabelColor = options.minorLabelColor || '#bbb';
+
+    this.font = options.font || '10px sans-serif';
   }    
 
   isMajorTick(value) {
@@ -43,6 +45,10 @@ export class GridMetrics {
 
   getLabelColor(value) {
     return this.isMajorTick(value) ? this.majorLabelColor : this.minorLabelColor;
+  }
+
+  getFont(value) {
+    return this.font;
   }
 }
 
@@ -156,6 +162,8 @@ export class DateMetrics extends TimeMetrics {
     this.establishingGridlineColor = options.establishingGridlineColor || '#333';
     this.establishingLabelColor = options.establishingLabelColor || '#111';
 
+    this.establishingFont = options.establishingFont || 'bold 10px sans-serif';
+
     this.maxTickSize    = this.establishingTickSize;
 
     this.majorTickColor = options.majorTickColor || '#aaa';
@@ -216,5 +224,12 @@ export class DateMetrics extends TimeMetrics {
       return this.establishingLabelColor;
     }
     return super.getLabelColor(time);
+  }
+
+  getFont(time) {
+    if (time === this.establishingTime) {
+      return this.establishingFont;
+    }
+    return super.getFont(time);
   }
 }
