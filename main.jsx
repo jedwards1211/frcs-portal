@@ -4,8 +4,8 @@ import FastClick from 'fastclick';
 import React from 'react/addons';
 import Router from 'react-router';
 import { Redirect, RouteHandler } from 'react-router';
-var ReactTransitionGroup = React.addons.TransitionGroup;
-var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+
+import Canvas from './plot/Canvas';
 
 import PlotTest from './PlotTest';
 
@@ -23,16 +23,9 @@ var DefaultRouteHandler = React.createClass({
   }
 });
 
-var PlotTestHandler = React.createClass({
-  render() {
-    return <PlotTest/>;
-  }
-});
-
 var Routes = (
   <Route name="/">
-    <DefaultRoute handler={DefaultRouteHandler}/>
-    <Route name="plot-test" handler={PlotTestHandler}/>
+    <DefaultRoute handler={PlotTest}/>
   </Route>
 );
 

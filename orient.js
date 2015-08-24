@@ -81,7 +81,14 @@ export var xAxis = new Axis({
   offsetSpan: 'offsetWidth',
   scrollSpan: 'scrollWidth',
   index: 0,
-  reorder(parallel, perp) {
+  /**
+   * Reorders the given arguments to [x, y] or [x, y, width, height]
+   * according to which axis this is
+   */
+  reorder(parallel, perp, parallelSpan, perpSpan) {
+    if (parallelSpan !== undefined) {
+      return [parallel, perp, parallelSpan, perpSpan];
+    }
     return [parallel, perp];
   },
   centerText(ctx) {
@@ -103,7 +110,14 @@ export var yAxis = new Axis({
   offsetSpan: 'offsetHeight',
   scrollSpan: 'scrollHeight',
   index: 1,
-  reorder(parallel, perp) {
+  /**
+   * Reorders the given arguments to [x, y] or [x, y, width, height]
+   * according to which axis this is
+   */
+  reorder(parallel, perp, parallelSpan, perpSpan) {
+    if (parallelSpan !== undefined) {
+      return [perp, parallel, perpSpan, parallelSpan];
+    }
     return [perp, parallel];
   },
   centerText(ctx) {

@@ -1,11 +1,19 @@
-import {xAxis} from '../orient';
+import React from 'react';
 
-export default class ValueLine {
-  constructor(color, conversion, value, axis = xAxis) {
-    this.color = color;
-    this.conversion = conversion;
-    this.value = value;
-    this.axis = axis;
+import {Layer} from './Canvas';
+
+import {Conversion} from './andyplot';
+import {Axis, xAxis} from '../orient';
+
+export default class ValueLine extends Layer {
+  static propTypes = {
+    color:      React.PropTypes.string.isRequired,
+    conversion: React.PropTypes.instanceOf(Conversion).isRequired,
+    value:      React.PropTypes.number,
+    axis:       React.PropTypes.instanceOf(Axis),
+  }
+  static defaultProps = {
+    axis:       xAxis, 
   }
   paint(canvas) {
     var {color, conversion, value, axis} = this;
@@ -19,4 +27,4 @@ export default class ValueLine {
       ctx.stroke();
     }
   } 
-};
+}

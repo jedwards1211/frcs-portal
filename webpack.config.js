@@ -19,7 +19,7 @@ module.exports = {
         filename: 'main.js',
         publicPath: '/assets/'
     },
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     entry: [
         'webpack-dev-server/client?http://0.0.0.0:' + port,
         'webpack/hot/only-dev-server',

@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
 import 'seedrandom';
 
-import Page from './Page';
+import CachePage from './CachePage';
 import * as andyplot from './andyplot';
 
 function stretchRandom(time, period, amplitude) {
@@ -58,7 +58,7 @@ export default class FakeDataSource {
           setTimeout(makeValues, 0);
         }
         else {
-          resolve(new Page(beginTime, endTime, times, values));
+          resolve(new CachePage(beginTime, endTime, times, values));
         }
       };
 
@@ -69,7 +69,7 @@ export default class FakeDataSource {
       //   values.push(this.valueAt(time));
       // }
 
-      // resolve(new Page(beginTime, endTime, times, values));
+      // resolve(new CachePage(beginTime, endTime, times, values));
     }).delay(1000);
   }
 }

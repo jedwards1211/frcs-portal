@@ -1,10 +1,17 @@
-export default class GridLines {
-  constructor(metrics, axis) {
-    this.metrics = metrics;
-    this.axis = axis;
+import React from 'react';
+
+import {Layer} from './Canvas';
+
+import {GridMetrics} from './GridMetrics';
+import {Axis} from '../orient';
+
+export default class GridLines extends Layer {
+  static propTypes = {
+    metrics: React.PropTypes.instanceOf(GridMetrics).isRequired,
+    axis:    React.PropTypes.instanceOf(Axis).isRequired,
   }
   paint(canvas) {
-    var {metrics, axis} = this;
+    var {metrics, axis} = this.props;
     var {conversion} = metrics;
 
     var ctx = canvas.getContext('2d');

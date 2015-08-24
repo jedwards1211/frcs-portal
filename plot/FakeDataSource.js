@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 
-import Page from './Page';
+import CachePage from './CachePage';
 import * as andyplot from './andyplot';
 
 export default class FakeDataSource {
@@ -60,7 +60,7 @@ export default class FakeDataSource {
       var times = this.times.slice(startIndex, endIndex);
       var values = this.values.slice(startIndex, endIndex);
 
-      resolve(new Page(beginTime, endTime, times, values));
+      resolve(new CachePage(beginTime, endTime, times, values));
     }).delay(1000);
   }
 }

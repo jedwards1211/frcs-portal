@@ -1,19 +1,35 @@
-export default class GridAxis {
-  constructor(metrics, tickSide, options = {}) {
-    this.metrics = metrics;
-    this.tickSide = tickSide;
-    this.axis = tickSide.axis.opposite;
-    this.backgroundColor = options.backgroundColor || 'white';
-    this.transparentBackgroundColor = options.transparentBackgroundColor || 'rgba(255,255,255,0)';
-    this.clip = !!options.clip || true;
-    this.justifyEndLabels = !!options.justifyEndLabels || false;
-    this.fadeSpan = options.fadeSpan || 20;
+import React from 'react';
+
+import {Layer} from './Canvas';
+
+import {GridMetrics} from './GridMetrics';
+import {Side} from '../orient';
+
+export default class GridAxis extends Layer {
+  static propTypes = {
+    metrics:                    React.PropTypes.instanceOf(GridMetrics).isRequired,
+    tickSide:                   React.PropTypes.instanceOf(Side).isRequired,
+    backgroundColor:            React.PropTypes.string,
+    transparentBackgroundColor: React.PropTypes.string,
+    clip:                       React.PropTypes.bool,
+    justifyEndLabels:           React.PropTypes.bool,
+    fadeSpan:                   React.PropTypes.number,
+  }
+  static defaultProps = {
+    backgroundColor:            'white',
+    transparentBackgroundColor: 'rgba(255,255,255,0)',
+    clip:                       false,
+    justifyEndLabels:           false,
+    fadeSpan:                   20,
   }
   paint(canvas) {
-    var {metrics, tickSide, axis, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this;
+    var {metrics, tickSide, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this.props;
+    var axis = tickSide.axis.opposite;
     var {conversion, startPx, endPx} = metrics;
 
     var ctx = canvas.getContext('2d');
+
+    ctx.save();
 
     var minSide = metrics.startValue < metrics.endValue ? axis.minSide : axis.maxSide;
     var maxSide = minSide.opposite;
@@ -23,7 +39,7 @@ export default class GridAxis {
 
     if (clip) {
       // clip to metrics.startPx and metrics.endPx
-      ctx.rect(...axis.reorder(startPx - 0.5, 0), ...axis.reorder(length + 1, thickness));
+      ctx.rect(...axis.reorder(startPx - 0.5, 0, length + 1, thickness));
       ctx.clip();
     }
 
@@ -91,19 +107,19 @@ export default class GridAxis {
 
           if (justifyEndLabels) {
             if (labelMinPx < startPx) {
-              var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0), ...axis.reorder(startPx - 0.5 + fadeSpan, 0));
+              var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
               gradient.addColorStop(0, backgroundColor);
               gradient.addColorStop(1, transparentBackgroundColor);
               ctx.fillStyle = gradient;
-              ctx.fillRect(...axis.reorder(Math.min(startPx - 0.5, 0), 0), ...axis.reorder(fadeSpan, thickness));
+              ctx.fillRect(...axis.reorder(Math.min(startPx - 0.5, 0), 0, fadeSpan, thickness));
             }
 
             if (labelMaxPx > endPx) {
-              var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0), ...axis.reorder(endPx + 0.5 - fadeSpan, 0));
+              var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
               gradient.addColorStop(0, backgroundColor);
               gradient.addColorStop(1, transparentBackgroundColor);
               ctx.fillStyle = gradient;
-              ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0), ...axis.reorder(fadeSpan, thickness));
+              ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0, fadeSpan, thickness));
             }
           }
         }
@@ -116,17 +132,19 @@ export default class GridAxis {
     }
 
     if (!justifyEndLabels) {
-      var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0), ...axis.reorder(startPx - 0.5 + fadeSpan, 0));
+      var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
       gradient.addColorStop(0, backgroundColor);
       gradient.addColorStop(1, transparentBackgroundColor);
       ctx.fillStyle = gradient;
-      ctx.fillRect(...axis.reorder(startPx - 0.5, 0), ...axis.reorder(fadeSpan, thickness));
+      ctx.fillRect(...axis.reorder(startPx - 0.5, 0, fadeSpan, thickness));
 
-      var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0), ...axis.reorder(endPx + 0.5 - fadeSpan, 0));
+      var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
       gradient.addColorStop(0, backgroundColor);
       gradient.addColorStop(1, transparentBackgroundColor);
       ctx.fillStyle = gradient;
-      ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0), ...axis.reorder(fadeSpan, thickness));
+      ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0, fadeSpan, thickness));
     }
+
+    ctx.restore();
   }
 }

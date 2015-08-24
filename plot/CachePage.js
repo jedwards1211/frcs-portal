@@ -1,6 +1,6 @@
 import * as andyplot from './andyplot';
 
-export default class Page {
+export default class CachePage {
   constructor(beginTime, endTime, times, values) {
     if (endTime <= beginTime) {
       throw new Error(`beginTime (${beginTime}) must be > endTime(${endTime})`);
@@ -15,7 +15,7 @@ export default class Page {
   }
 
   /**
-   * Splits this Page into Pages with the given chunkDuration.  The Page beginTimes
+   * Splits this CachePage into Pages with the given chunkDuration.  The CachePage beginTimes
    * will be zero mod chunkDuration.
    * @param{chunkDuration} the desired duration (between beginTime and endTime) for
    * the pages in the result.
@@ -31,7 +31,7 @@ export default class Page {
 
     while (beginTime <= this.times[this.times.length - 1]) {
       var splitIndex = andyplot.ceilingIndex(this.times, endTime, fromIndex, this.times.length - 1);
-      result.push(new Page(
+      result.push(new CachePage(
         beginTime,
         endTime,
         this.times.slice(fromIndex, splitIndex),

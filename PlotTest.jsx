@@ -2,7 +2,7 @@ import React from 'react';
 
 import _ from 'lodash';
 
-import LayeredCanvas from './plot/LayeredCanvas';
+import Canvas from './plot/Canvas';
 import CanvasClearer from './plot/CanvasClearer';
 import Trace from './plot/Trace';
 import GridAxis from './plot/GridAxis';
@@ -21,38 +21,49 @@ import './PlotTest.sass';
 var dataSource = new FakeDataSource();
 var dataCache = new DataCache(dataSource, 3600000);
 
-export default React.createClass({
-  getInitialState() {
-    return {
+var traceDataSource = {
+  get(...args) {
+    return dataCache.get('', ...args);
+  }
+};
+
+export default class PlotTest extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      plotSize: {
+        width: 1,
+        height: 1,
+      },
       timeConversion: new andyplot.LinearConversion(0, 0.5, 3600000, 999.5),
       valueConversion: new andyplot.LinearConversion(3, 0.5, -3, 199.5),
     };
-  },
-  onPlotResize(newSize) {
+  }
+  onPlotResize = (newSize) => {
     this.setState({plotSize: newSize});
-  },
-  onMove(newXConversion, newYConversion) {
+  }
+  onMove = (newXConversion, newYConversion) => {
     if (newXConversion) newXConversion.align(3600000);
     if (newYConversion) newYConversion.align(0.2);
     this.setState({
       timeConversion:  newXConversion || this.state.timeConversion,
       valueConversion: newYConversion || this.state.valueConversion,
     });
-  },
+  }
   componentDidMount() {
     dataCache.on('dataAdded', this.onDataAdded);
-  },
+  }
   componentWillUnmount() {
     dataCache.removeListener('dataAdded', this.onDataAdded);
-  },
-  onDataAdded(details) {
+  }
+  onDataAdded = (details) => {
     var {plotSize, timeConversion} = this.state;
     var minTime = timeConversion.invert(0.5);
     var maxTime = timeConversion.invert(plotSize.width - 0.5);
-    if (this.isMounted() && details.beginTime < maxTime && details.endTime > minTime) {
+    if (details.beginTime < maxTime && details.endTime > minTime) {
       this.forceUpdate();
     }
-  },
+  }
   render() {
     var {plotSize, timeConversion, valueConversion} = this.state;
 
@@ -62,54 +73,33 @@ export default React.createClass({
     var timeAxisLayers = [];
     var valueAxisLayers = [];
 
-    if (plotSize && plotSize.width > 1 && plotSize.height > 1) {
-      var timeMetrics = new DateMetrics(timeConversion, 0.5, plotSize.width - 0.5, {
-        minMajorSpacing: Math.min(80, plotSize.width / 2),
-        minMinorSpacing: Math.min(20, plotSize.width / 2),
-      });
-      var valueMetrics = new ValueMetrics(valueConversion, 0.5, plotSize.height - 0.5, {
-        minMajorSpacing: 30,
-        minMinorSpacing: 15,
-      });
-
-      plotLayers = [
-        new CanvasClearer(),
-        new GridLines(timeMetrics, xAxis),
-        new Trace({
-          dataSource: {
-            get(...args) {
-              return dataCache.get('', ...args);
-            }
-          },
-          lineColor: '#00f',
-          fillColor: 'rgba(0,0,255,0.5)',
-          domainConversion: timeConversion, 
-          valueConversion, 
-          plotter: andyplot.AutoFatTracePlotter,
-        }),
-      ];
-
-      timeAxisLayers = [
-        new CanvasClearer(),
-        new GridAxis(timeMetrics, topSide, {
-          justifyEndLabels: true
-        }),
-      ];
-
-      valueAxisLayers = [
-        new CanvasClearer(),
-        new GridAxis(valueMetrics, leftSide),
-      ];
-    }
+    var timeMetrics = new DateMetrics(timeConversion, 0.5, plotSize.width - 0.5, {
+      minMajorSpacing: Math.min(80, plotSize.width / 2),
+      minMinorSpacing: Math.min(20, plotSize.width / 2),
+    });
+    var valueMetrics = new ValueMetrics(valueConversion, 0.5, plotSize.height - 0.5, {
+      minMajorSpacing: 30,
+      minMinorSpacing: 15,
+    });
 
     return <PlotInteractionController xConversion={timeConversion} onMove={this.onMove}>
       <div className="plot-test">
         <div className="plot-border">
-          <LayeredCanvas className="plot" ref="plot" onResize={this.onPlotResize} layers={plotLayers}/>
+          <Canvas className="plot" ref="plot" onResize={this.onPlotResize}>
+            <CanvasClearer/>
+            <GridLines metrics={timeMetrics} axis={xAxis}/>
+            <Trace dataSource={traceDataSource} domainConversion={timeConversion} valueConversion={valueConversion} axis={xAxis}/>
+          </Canvas>
         </div>
-        <LayeredCanvas className="time-axis" layers={timeAxisLayers}/>
-        <LayeredCanvas className="value-axis" layers={valueAxisLayers}/>
+        <Canvas className="time-axis">
+          <CanvasClearer/>
+          <GridAxis metrics={timeMetrics} tickSide={topSide} justifyEndLabels={true}/>
+        </Canvas>
+        <Canvas className="value-axis">
+          <CanvasClearer/>
+          <GridAxis metrics={valueMetrics} tickSide={leftSide}/>
+        </Canvas>
       </div>
     </PlotInteractionController>;
   } 
-});
+}

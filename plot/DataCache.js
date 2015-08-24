@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 
 import * as andyplot from './andyplot';
-import Page from './Page';
+import CachePage from './CachePage';
 
 export default class DataCache extends EventEmitter {
   /**
@@ -107,7 +107,7 @@ export default class DataCache extends EventEmitter {
         consumer(pageStart, NaN);
 
         // create a placeholder page so that we don't request this data again
-        page = pages[pageStart] = new Page(pageStart, pageEnd, [pageStart], [NaN]);
+        page = pages[pageStart] = new CachePage(pageStart, pageEnd, [pageStart], [NaN]);
         page.placeholder = true;
 
         if(this.dataSource) {
@@ -174,7 +174,7 @@ export default class DataCache extends EventEmitter {
       if (historical.hasOwnProperty(channelId)) {
         channelData = historical[channelId];
         if (channelData && channelData.t && channelData.t.length && channelData.v) {
-          var newPages = new Page(beginTime, rawData.endTime,
+          var newPages = new CachePage(beginTime, rawData.endTime,
             channelData.t, channelData.v).chunk(this.pageRange);
 
           if (newPages.length > 0) {
