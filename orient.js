@@ -81,6 +81,9 @@ export var xAxis = new Axis({
   offsetSpan: 'offsetWidth',
   scrollSpan: 'scrollWidth',
   index: 0,
+  select(x, y) {
+    return x;
+  },
   /**
    * Reorders the given arguments to [x, y] or [x, y, width, height]
    * according to which axis this is
@@ -110,6 +113,9 @@ export var yAxis = new Axis({
   offsetSpan: 'offsetHeight',
   scrollSpan: 'scrollHeight',
   index: 1,
+  select(x, y) {
+    return y;
+  },
   /**
    * Reorders the given arguments to [x, y] or [x, y, width, height]
    * according to which axis this is

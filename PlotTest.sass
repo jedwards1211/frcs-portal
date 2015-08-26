@@ -1,11 +1,25 @@
 $plot-height: 200px
 $time-axis-height: 20px
 
+body
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+#content
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
 .plot-test
   position: relative
   height: $plot-height + $time-axis-height
 
-  > .plot-border
+  .plot-border
     position: absolute
     top: 0
     left: 0
@@ -20,16 +34,53 @@ $time-axis-height: 20px
       right: -1px
       bottom: -1px
 
-  > .time-axis
+  .time-axis
     position: absolute
     top: $plot-height
     left: 0
     right: 30px
     height: $time-axis-height
 
-  > .value-axis
+  .value-axis
     position: absolute
     top: 0
     right: 0
     width: 30px
     height: $plot-height
+
+  .axis-toggle-btn
+    position: absolute
+    top: $plot-height + $time-axis-height + 10px
+    left: 0
+
+  &.y-axis
+    position: absolute
+    height: initial
+    top: 0
+    left: 0
+    bottom: 0
+    width: $plot-height + 200px
+
+    .plot-border
+      height: initial
+      right: $plot-height
+      bottom: $time-axis-height
+
+    .time-axis
+      height: initial
+      top: 0
+      left: $plot-height
+      width: 200px
+      bottom: $time-axis-height
+
+    .value-axis
+      top: initial
+      right: initial
+      left: 0
+      width: $plot-height
+      height: $time-axis-height
+      bottom: 0
+
+    .axis-toggle-btn
+      top: 0
+      left: $plot-height + 210px

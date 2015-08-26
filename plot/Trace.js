@@ -5,19 +5,24 @@ import {Layer} from './Canvas';
 import AutoFatTracePlotter from './AutoFatTracePlotter';
 import CanvasTraceRenderer from './CanvasTraceRenderer';
 
-import Conversion from './Conversion';
 import {Axis, xAxis, yAxis} from '../orient';
+
+const conversionPropType = React.PropTypes.shape({
+  convert: React.PropTypes.func.isRequired,
+  invert:  React.PropTypes.func.isRequired,
+});
 
 export default class Trace extends Layer {
   static propTypes = {
-    dataSource:       React.PropTypes.shape({
-      get:              React.PropTypes.func.isRequired,
-    }).isRequired,
+    // function(from: number, to: number, surround: bool, callback: function(x: number, y: number))
+    forEachPoint:     React.PropTypes.func.isRequired,
     lineColor:        React.PropTypes.string,
     fillColor:        React.PropTypes.string,
-    domainConversion: React.PropTypes.instanceOf(Conversion).isRequired,
-    valueConversion:  React.PropTypes.instanceOf(Conversion).isRequired,
+    domainConversion: conversionPropType.isRequired,
+    valueConversion:  conversionPropType.isRequired,
+    // (domainConversion, valueConversion, renderer) => TracePlotter
     plotter:          React.PropTypes.func,
+    // (CanvasRenderingContext2D) => TraceRenderer
     renderer:         React.PropTypes.func,
     domainAxis:       React.PropTypes.instanceOf(Axis),
   }
@@ -32,7 +37,7 @@ export default class Trace extends Layer {
     var ctx = canvas.getContext('2d');
     ctx.save();
 
-    var {dataSource, lineColor, fillColor, domainConversion, valueConversion, 
+    var {forEachPoint, lineColor, fillColor, domainConversion, valueConversion, 
         plotter, renderer, domainAxis} = this.props;
 
     if (domainAxis === yAxis) {
@@ -50,8 +55,7 @@ export default class Trace extends Layer {
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
 
-    // pass plotter.addPoint as the consumer
-    dataSource.get(leftDomain, rightDomain, true, (x, y) => plotter.addPoint(x, y));
+    forEachPoint(leftDomain, rightDomain, true, (x, y) => plotter.addPoint(x, y));
 
     // don't forget to flush, otherwise some of the plotted data might not get drawn.
     plotter.flush();

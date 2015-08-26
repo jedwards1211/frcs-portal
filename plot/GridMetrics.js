@@ -66,8 +66,8 @@ export class ValueMetrics extends GridMetrics {
 
     var {minMajorSpacing = 75, minMinorSpacing = 15} = options;
 
-    this.minorIncrement = GridMath.chooseNiceIncrement(1 / conversion.scale, minMinorSpacing);
-    this.majorIncrement = GridMath.chooseNiceMajorIncrement(1 / conversion.scale, minMajorSpacing, this.minorIncrement);
+    this.minorIncrement = conversion.chooseNiceIncrement(minMinorSpacing);
+    this.majorIncrement = conversion.chooseNiceIncrement(minMajorSpacing, this.minorIncrement);
 
     this.firstMajor = GridMath.modCeiling(this.startValue, this.majorIncrement);
     this.firstMinor = GridMath.modCeiling(this.startValue, this.minorIncrement);
@@ -92,8 +92,8 @@ export class TimeMetrics extends GridMetrics {
     super(conversion, startPx, endPx, options);
     var {minMajorSpacing = 75, minMinorSpacing = 15} = options || {};
 
-    this.minorIncrement = GridMath.chooseNiceTimeIncrement(conversion.scale, minMinorSpacing);
-    this.majorIncrement = GridMath.chooseNiceTimeMajorIncrement(conversion.scale, minMajorSpacing, this.minorIncrement);
+    this.minorIncrement = conversion.chooseNiceTimeIncrement(minMinorSpacing);
+    this.majorIncrement = conversion.chooseNiceTimeIncrement(minMajorSpacing, this.minorIncrement);
 
     this.firstMajor     = GridMath.modCeiling(this.startValue, this.majorIncrement);
     this.firstMinor     = GridMath.modCeiling(this.startValue, this.minorIncrement);

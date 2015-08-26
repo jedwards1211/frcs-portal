@@ -45,12 +45,10 @@ export default class PlotInteractionController extends React.Component {
     var newXConversion, newYConversion;
 
     if (this.startXConversion) {
-      var x = this.startXConversion.invert(e.clientX - this.target.offsetLeft);
-      newXConversion = new LinearConversion(this.startXConversion.scale, this.startXConversion.offset - x + this.startX);
+      newXConversion = this.startXConversion.clone().set(this.startX, e.clientX - this.target.offsetLeft);
     }
     if (this.startYConversion) {
-      var y = this.startYConversion.invert(e.clientY - this.target.offsetTop);
-      newYConversion = new LinearConversion(this.startYConversion.scale, this.startYConversion.offset - y + this.startY);
+      newYConversion = this.startYConversion.clone().set(this.startY, e.clientY - this.target.offsetLeft);
     }
 
     if (this.props.onMove) {
@@ -114,10 +112,8 @@ export default class PlotInteractionController extends React.Component {
       var touchCount = keys.length;
       if (touchCount === 1) {
         var t = this.touches[keys[0]];
-        if (xConversion) newXConversion = new LinearConversion(
-          {scale: xConversion.scale, offset: [t.startX, t.elementX]});
-        if (yConversion) newYConversion = new LinearConversion(
-          {scale: yConversion.scale, offset: [t.startY, t.elementY]});
+        if (xConversion) newXConversion = xConversion.clone().set(t.startX, t.elementX);
+        if (yConversion) newYConversion = yConversion.clone().set(t.startY, t.elementY);
       }
       else if (touchCount > 1) {
         if (xConversion) {
