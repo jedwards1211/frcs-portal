@@ -1,13 +1,14 @@
 import * as andyplot from './andyplot';
 
 export default class CachePage {
-  constructor(beginTime, endTime, times, values) {
+  constructor(channelId, beginTime, endTime, times, values) {
     if (endTime <= beginTime) {
       throw new Error(`beginTime (${beginTime}) must be > endTime(${endTime})`);
     }
     if (times.length !== values.length) {
       throw new Error(`times.length (${times.length}) must be === values.length(${values.length})`);
     }
+    this.channelId = channelId;
     this.beginTime = beginTime;
     this.endTime = endTime;
     this.times = times;
@@ -32,6 +33,7 @@ export default class CachePage {
     while (beginTime <= this.times[this.times.length - 1]) {
       var splitIndex = andyplot.ceilingIndex(this.times, endTime, fromIndex, this.times.length - 1);
       result.push(new CachePage(
+        this.channelId, 
         beginTime,
         endTime,
         this.times.slice(fromIndex, splitIndex),
@@ -46,6 +48,16 @@ export default class CachePage {
     return result;
   }
 
+  replaceData(page) {
+    if (page.channelId !== this.channelId ||
+        page.beginTime !== this.beginTime ||
+        page.endTime   !== this.endTime) {
+      throw new Error("page must have same channelId and time range as this one");
+    }
+    this.times  = page.times;
+    this.values = page.values;
+  }
+
   /**
    * Replaces all data in this page on or after the given page's beginTime with
    * data in the given page.
@@ -53,6 +65,9 @@ export default class CachePage {
    * and times should be contained within this page's beginTime and endTime.
    */
   tailMerge(pageToMerge) {
+    if (pageToMerge.channelId !== this.channelId) {
+      throw new Error(`pageToMerge.channelId (${pageToMerge.channelId}) must === this.channelId (${this.channelId})`);
+    }
     if (pageToMerge.beginTime < this.beginTime ||
       pageToMerge.endTime > this.endTime) {
 

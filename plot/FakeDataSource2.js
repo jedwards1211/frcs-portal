@@ -38,8 +38,10 @@ export default class FakeDataSource {
   }
 
   query(options) {
+    var {channelId, beginTime, endTime} = options;
+
+    var canceled;
     return new Promise((resolve, reject) => {
-      var {beginTime, endTime} = options;
       var times = [];
       var values = [];
 
@@ -48,6 +50,9 @@ export default class FakeDataSource {
       var time = andyplot.modCeiling(beginTime, increment);
 
       var makeValues = () => {
+        if (canceled) {
+          return;
+        }
         var i = 0;
         while (time < endTime && i++ < 500) {
           times.push(time);
@@ -58,18 +63,14 @@ export default class FakeDataSource {
           setTimeout(makeValues, 0);
         }
         else {
-          resolve(new CachePage(beginTime, endTime, times, values));
+          resolve(new CachePage(channelId, beginTime, endTime, times, values));
         }
       };
 
       setTimeout(makeValues, 0);
 
-      // for (var time = andyplot.modCeiling(beginTime, increment); time < endTime; time += increment) {
-      //   times.push(time);
-      //   values.push(this.valueAt(time));
-      // }
-
-      // resolve(new CachePage(beginTime, endTime, times, values));
-    }).delay(1000);
+    }).delay(500).cancellable().catch(Promise.CancellationError, e => {
+      canceled = true; 
+    });
   }
 }

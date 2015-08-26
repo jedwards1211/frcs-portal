@@ -19,7 +19,7 @@ import DataCache from './plot/DataCache';
 import './PlotTest.sass';
 
 var dataSource = new FakeDataSource();
-var dataCache = new DataCache(dataSource, 3600000);
+var dataCache = new DataCache({dataSource, pageRange: 3600000, maxPages: 10});
 
 var traceDataSource = {
   get(...args) {
@@ -43,20 +43,20 @@ export default class PlotTest extends React.Component {
     this.setState({plotSize: newSize});
   }
   onMove = (newXConversion, newYConversion) => {
-    if (newXConversion) newXConversion.align(3600000);
-    if (newYConversion) newYConversion.align(0.2);
+    // if (newXConversion) newXConversion.align(3600000);
+    // if (newYConversion) newYConversion.align(0.2);
     this.setState({
       timeConversion:  newXConversion || this.state.timeConversion,
       valueConversion: newYConversion || this.state.valueConversion,
     });
   }
   componentDidMount() {
-    dataCache.on('dataAdded', this.onDataAdded);
+    dataCache.on('dataChange', this.onDataChange);
   }
   componentWillUnmount() {
-    dataCache.removeListener('dataAdded', this.onDataAdded);
+    dataCache.removeListener('dataChange', this.onDataChange);
   }
-  onDataAdded = (details) => {
+  onDataChange = (details) => {
     var {plotSize, timeConversion} = this.state;
     var minTime = timeConversion.invert(0.5);
     var maxTime = timeConversion.invert(plotSize.width - 0.5);
@@ -81,6 +81,8 @@ export default class PlotTest extends React.Component {
       minMajorSpacing: 30,
       minMinorSpacing: 15,
     });
+
+    setTimeout(() => dataCache.touch([''], timeMetrics.startValue, timeMetrics.endValue, true), 0);
 
     return <PlotInteractionController xConversion={timeConversion} onMove={this.onMove}>
       <div className="plot-test">

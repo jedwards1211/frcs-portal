@@ -52,7 +52,7 @@ export default class FakeDataSource {
 
   query(options) {
     return new Promise((resolve, reject) => {
-      var {beginTime, endTime} = options;
+      var {channelId, beginTime, endTime} = options;
 
       var startIndex = andyplot.ceilingIndex(this.times, beginTime);
       var endIndex = andyplot.ceilingIndex(this.times, endTime);
@@ -60,7 +60,7 @@ export default class FakeDataSource {
       var times = this.times.slice(startIndex, endIndex);
       var values = this.values.slice(startIndex, endIndex);
 
-      resolve(new CachePage(beginTime, endTime, times, values));
+      resolve(new CachePage(channelId, beginTime, endTime, times, values));
     }).delay(1000);
   }
 }
