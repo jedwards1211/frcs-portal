@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 import 'seedrandom';
 
 import CachePage from './CachePage';
-import * as andyplot from './andyplot';
+import * as GridMath from './GridMath';
 
 function stretchRandom(time, period, amplitude) {
     var m = time / period;
@@ -32,7 +32,7 @@ export default class FakeDataSource {
   }
 
   get(from, to, surround, callback) {
-    for (var time = andyplot.modLower(from, this.increment); time < to + this.increment; time += this.increment) {
+    for (var time = GridMath.modLower(from, this.increment); time < to + this.increment; time += this.increment) {
       callback(time, this.valueAt(time));
     }
   }
@@ -47,7 +47,7 @@ export default class FakeDataSource {
 
       var {increment} = this;
 
-      var time = andyplot.modCeiling(beginTime, increment);
+      var time = GridMath.modCeiling(beginTime, increment);
 
       var makeValues = () => {
         if (canceled) {

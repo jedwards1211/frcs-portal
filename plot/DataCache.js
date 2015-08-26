@@ -1,8 +1,10 @@
 import {EventEmitter} from 'events';
 
-import * as andyplot from './andyplot';
+import * as GridMath from './GridMath';
 import CachePage from './CachePage';
 import LinkedList from './LinkedList';
+
+import {floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
 
 export default class DataCache extends EventEmitter {
   /**
@@ -130,8 +132,8 @@ export default class DataCache extends EventEmitter {
    *      used and possibly ejecting old pages.
    */
   get(channelId, from, to, surround, consumer, touch) {
-    var fromAdj = (surround ? andyplot.modLower  : andyplot.modFloor  )(from, this.pageRange);
-    var toAdj   = (surround ? andyplot.modHigher : andyplot.modCeiling)(to  , this.pageRange);
+    var fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
+    var toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
     var pageStart = fromAdj;
     var pageEnd = pageStart + this.pageRange;
@@ -143,13 +145,13 @@ export default class DataCache extends EventEmitter {
         // determine where to start and end within the page, in case from and to fall within the page.
         // we want to return from the greatest value less than {from} to the least value greater than {to}.
         var startIndex = pageStart === fromAdj ?
-          Math.max(0, (surround ? andyplot.lowerIndex : andyplot.floorIndex)(page.times, from))
+          Math.max(0, (surround ? lowerIndex : floorIndex)(page.times, from))
           :
           0;
 
         var endIndex = pageEnd === toAdj ?
           Math.min(page.times.length - 1,
-            (surround ? andyplot.higherIndex : andyplot.lowerIndex)(page.times, to, startIndex, page.times.length - 1))
+            (surround ? higherIndex : lowerIndex)(page.times, to, startIndex, page.times.length - 1))
           :
           page.times.length - 1;
 
@@ -172,8 +174,8 @@ export default class DataCache extends EventEmitter {
    * from the range.  May eject old pages if the cache is or becomes full.
    */
   touch(channelIds, from, to, surround) {
-    var fromAdj = (surround ? andyplot.modLower  : andyplot.modFloor  )(from, this.pageRange);
-    var toAdj   = (surround ? andyplot.modHigher : andyplot.modCeiling)(to  , this.pageRange);
+    var fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
+    var toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
     var pageStart = fromAdj;
     var pageCount = 0;

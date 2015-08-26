@@ -1,7 +1,8 @@
 import Promise from 'bluebird';
 
 import CachePage from './CachePage';
-import * as andyplot from './andyplot';
+
+import {floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
 
 export default class FakeDataSource {
   constructor(options = {}) {
@@ -37,12 +38,12 @@ export default class FakeDataSource {
 
     var beginIndex, endIndex;
     if (surround) {
-      beginIndex = andyplot.lowerIndex(times, from);
-      endIndex = andyplot.higherIndex(times, to);
+      beginIndex = lowerIndex(times, from);
+      endIndex = higherIndex(times, to);
     }
     else {
-      beginIndex = andyplot.ceilingIndex(times, from);
-      endIndex = andyplot.floorIndex(times, to);
+      beginIndex = ceilingIndex(times, from);
+      endIndex = floorIndex(times, to);
     }
 
     for (var i = beginIndex; i <= endIndex; i++) {
@@ -54,8 +55,8 @@ export default class FakeDataSource {
     return new Promise((resolve, reject) => {
       var {channelId, beginTime, endTime} = options;
 
-      var startIndex = andyplot.ceilingIndex(this.times, beginTime);
-      var endIndex = andyplot.ceilingIndex(this.times, endTime);
+      var startIndex = ceilingIndex(this.times, beginTime);
+      var endIndex ceilingIndex(this.times, endTime);
 
       var times = this.times.slice(startIndex, endIndex);
       var values = this.values.slice(startIndex, endIndex);

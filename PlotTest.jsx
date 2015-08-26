@@ -9,7 +9,7 @@ import GridAxis from './plot/GridAxis';
 import GridLines from './plot/GridLines';
 import PlotInteractionController from './plot/PlotInteractionController';
 
-import * as andyplot from './plot/andyplot';
+import LinearConversion from './plot/LinearConversion';
 import {TimeMetrics, DateMetrics, ValueMetrics} from './plot/GridMetrics';
 import {xAxis, yAxis, topSide, bottomSide, leftSide, rightSide} from './orient';
 
@@ -35,8 +35,8 @@ export default class PlotTest extends React.Component {
         width: 1,
         height: 1,
       },
-      timeConversion: new andyplot.LinearConversion(0, 0.5, 3600000, 999.5),
-      valueConversion: new andyplot.LinearConversion(3, 0.5, -3, 199.5),
+      timeConversion: new LinearConversion(0, 0.5, 3600000, 999.5),
+      valueConversion: new LinearConversion(3, 0.5, -3, 199.5),
     };
   }
   onPlotResize = (newSize) => {

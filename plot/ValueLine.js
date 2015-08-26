@@ -2,7 +2,7 @@ import React from 'react';
 
 import {Layer} from './Canvas';
 
-import {Conversion} from './andyplot';
+import Conversion from './Conversion';
 import {Axis, xAxis} from '../orient';
 
 export default class ValueLine extends Layer {

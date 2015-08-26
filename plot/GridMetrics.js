@@ -1,4 +1,4 @@
-import * as andyplot from './andyplot';
+import * as GridMath from './GridMath';
 
 export class GridMetrics {
   constructor(conversion, startPx, endPx, options = {}) {
@@ -66,11 +66,11 @@ export class ValueMetrics extends GridMetrics {
 
     var {minMajorSpacing = 75, minMinorSpacing = 15} = options;
 
-    this.minorIncrement = conversion.chooseNiceIncrement(minMinorSpacing);
-    this.majorIncrement = conversion.chooseNiceMajorIncrement(minMajorSpacing, this.minorIncrement);
+    this.minorIncrement = GridMath.chooseNiceIncrement(1 / conversion.scale, minMinorSpacing);
+    this.majorIncrement = GridMath.chooseNiceMajorIncrement(1 / conversion.scale, minMajorSpacing, this.minorIncrement);
 
-    this.firstMajor = andyplot.modCeiling(this.startValue, this.majorIncrement);
-    this.firstMinor = andyplot.modCeiling(this.startValue, this.minorIncrement);
+    this.firstMajor = GridMath.modCeiling(this.startValue, this.majorIncrement);
+    this.firstMinor = GridMath.modCeiling(this.startValue, this.minorIncrement);
 
     this.precision = Math.max(0, -Math.floor(Math.log10(Math.abs(this.majorIncrement))));
     this.majorTickThreshold = Math.pow(10, -this.precision - 6);
@@ -92,11 +92,11 @@ export class TimeMetrics extends GridMetrics {
     super(conversion, startPx, endPx, options);
     var {minMajorSpacing = 75, minMinorSpacing = 15} = options || {};
 
-    this.minorIncrement = andyplot.chooseNiceTimeIncrement(conversion.scale, minMinorSpacing);
-    this.majorIncrement = andyplot.chooseNiceTimeMajorIncrement(conversion.scale, minMajorSpacing, this.minorIncrement);
+    this.minorIncrement = GridMath.chooseNiceTimeIncrement(conversion.scale, minMinorSpacing);
+    this.majorIncrement = GridMath.chooseNiceTimeMajorIncrement(conversion.scale, minMajorSpacing, this.minorIncrement);
 
-    this.firstMajor     = andyplot.modCeiling(this.startValue, this.majorIncrement);
-    this.firstMinor     = andyplot.modCeiling(this.startValue, this.minorIncrement);
+    this.firstMajor     = GridMath.modCeiling(this.startValue, this.majorIncrement);
+    this.firstMinor     = GridMath.modCeiling(this.startValue, this.minorIncrement);
 
     var maxTime         = Math.max(this.startValue, this.endValue);
     this.showHours      = Math.abs(maxTime) >= 3600000;
@@ -184,8 +184,8 @@ export class DateMetrics extends TimeMetrics {
     // straddling them by 2 hours
     this.dayAnchor = new Date(2000, 0, 1).getTime() % 86400000;
 
-    this.firstMajor = andyplot.modCeiling(this.startValue, this.majorIncrement, this.dayAnchor);
-    this.firstMinor = andyplot.modCeiling(this.startValue, this.minorIncrement, this.dayAnchor);
+    this.firstMajor = GridMath.modCeiling(this.startValue, this.majorIncrement, this.dayAnchor);
+    this.firstMinor = GridMath.modCeiling(this.startValue, this.minorIncrement, this.dayAnchor);
 
     // this is the time that establishes context for the rest of the axis, its label will be more verbose than
     // all others.

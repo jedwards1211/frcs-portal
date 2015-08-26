@@ -1,4 +1,4 @@
-import * as andyplot from './andyplot';
+import {floorIndex, ceilingIndex} from './precisebs';
 
 /**
  * Stores one-dimensional regions and allows you to insert new regions only if they don't
@@ -31,8 +31,8 @@ export default class OverlapPreventer {
       return true;
     }
 
-    var loIndex = andyplot.floorIndex  (this.mins , max - minSpacing);
-    var hiIndex = andyplot.ceilingIndex(this.maxes, min + minSpacing);
+    var loIndex = floorIndex  (this.mins , max - minSpacing);
+    var hiIndex = ceilingIndex(this.maxes, min + minSpacing);
 
     if (loIndex >= 0 && this.maxes[loIndex] + minSpacing >= min) {
       return false;

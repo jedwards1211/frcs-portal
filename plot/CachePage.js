@@ -1,4 +1,6 @@
-import * as andyplot from './andyplot';
+import * as GridMath from './GridMath';
+
+import {binarySearch, ceilingIndex} from './precisebs';
 
 export default class CachePage {
   constructor(channelId, beginTime, endTime, times, values) {
@@ -25,13 +27,13 @@ export default class CachePage {
   chunk(chunkDuration) {
     var result = [];
 
-    var beginTime = andyplot.modFloor(this.beginTime, chunkDuration);
+    var beginTime = GridMath.modFloor(this.beginTime, chunkDuration);
     var endTime = beginTime + chunkDuration;
 
     var fromIndex = 0;
 
     while (beginTime <= this.times[this.times.length - 1]) {
-      var splitIndex = andyplot.ceilingIndex(this.times, endTime, fromIndex, this.times.length - 1);
+      var splitIndex = ceilingIndex(this.times, endTime, fromIndex, this.times.length - 1);
       result.push(new CachePage(
         this.channelId, 
         beginTime,
@@ -77,7 +79,7 @@ export default class CachePage {
         ', endTime: ' + this.endTime);
     }
 
-    var mergeIndex = andyplot.binarySearch(this.times, pageToMerge.times[0]);
+    var mergeIndex = binarySearch(this.times, pageToMerge.times[0]);
     this.times .splice(mergeIndex, this.times .length - mergeIndex, ...pageToMerge.times );
     this.values.splice(mergeIndex, this.values.length - mergeIndex, ...pageToMerge.values);
   }

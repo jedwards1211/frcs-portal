@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import {Conversion, LinearConversion} from './andyplot';
+
+import LinearConversion from './LinearConversion';
 
 function copyTouch(touch) {
   return {
@@ -17,8 +18,8 @@ export default class PlotInteractionController extends React.Component {
   }
 
   static propTypes = {
-    xConversion: React.PropTypes.instanceOf(Conversion),
-    yConversion: React.PropTypes.instanceOf(Conversion),
+    xConversion: React.PropTypes.instanceOf(LinearConversion),
+    yConversion: React.PropTypes.instanceOf(LinearConversion),
     onMove: React.PropTypes.func,
     children: React.PropTypes.node.isRequired,
   }
