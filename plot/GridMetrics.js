@@ -50,6 +50,14 @@ export class GridMetrics {
   getFont(value) {
     return this.font;
   }
+
+  /**
+   * @return {number[]} values for which labels should be painted, in the order returned,
+   * before any major tick labels.
+   */
+  getPriorityLabelValues() {
+    return undefined;
+  }
 }
 
 export class ValueMetrics extends GridMetrics {
@@ -231,5 +239,9 @@ export class DateMetrics extends TimeMetrics {
       return this.establishingFont;
     }
     return super.getFont(time);
+  }
+
+  getPriorityLabelValues() {
+    return [this.establishingTime];
   }
 }

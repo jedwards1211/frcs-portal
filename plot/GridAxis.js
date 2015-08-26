@@ -4,6 +4,7 @@ import {Layer} from './Canvas';
 
 import {GridMetrics} from './GridMetrics';
 import {Side} from '../orient';
+import OverlapPreventer from './OverlapPreventer';
 
 export default class GridAxis extends Layer {
   static propTypes = {
@@ -50,6 +51,63 @@ export default class GridAxis extends Layer {
 
     var textOffset = tickSidePos - (metrics.maxTickSize + 2) * tickSide.direction;
 
+    var labelOverlapPreventer = new OverlapPreventer();
+
+    function paintLabel(label, value) {
+      var px = conversion.convert(value);
+      var alignedPx = Math.round(px + 0.5) - 0.5;
+      var font = ctx.font = metrics.getFont(value);
+      var labelPx;
+
+      var labelMetrics = ctx.measureText(label);
+      labelMetrics.height = (parseFloat(font) * 0.8) || 10;
+      var labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
+      var labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
+
+      if (justifyEndLabels && labelMinPx < startPx) {
+        axis.minSide.alignText(ctx);
+        labelPx = labelMinPx = Math.min(startPx, alignedPx);
+        labelMaxPx = labelMinPx + labelMetrics[axis.span];
+      }
+      else if (justifyEndLabels && labelMaxPx > endPx) {
+        axis.maxSide.alignText(ctx);
+        labelPx = labelMaxPx = Math.max(endPx, alignedPx);
+        labelMinPx = labelMaxPx - labelMetrics[axis.span];
+      }
+      else {
+        labelPx = alignedPx;
+        axis.centerText(ctx);
+      }
+
+      if (labelOverlapPreventer.insert(labelMinPx, labelMaxPx, 10)) {
+        ctx.strokeStyle = ctx.fillStyle = metrics.getLabelColor(value);
+        ctx.fillText(label, ...axis.reorder(labelPx, textOffset));
+
+        if (justifyEndLabels) {
+          if (labelMinPx < startPx) {
+            var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
+            gradient.addColorStop(0, backgroundColor);
+            gradient.addColorStop(1, transparentBackgroundColor);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(...axis.reorder(Math.min(startPx - 0.5, 0), 0, fadeSpan, thickness));
+          }
+
+          if (labelMaxPx > endPx) {
+            var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
+            gradient.addColorStop(0, backgroundColor);
+            gradient.addColorStop(1, transparentBackgroundColor);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0, fadeSpan, thickness));
+          }
+        }
+      }
+    }
+
+    var priorityLabelValues = metrics.getPriorityLabelValues();
+    if (priorityLabelValues && priorityLabelValues.forEach) {
+      priorityLabelValues.forEach(value => paintLabel(metrics.formatLabel(value), value));
+    }
+
     // start on the nearest major tick offscreen to the left in case some of its label extends into view
     var value = metrics.firstMajor - metrics.majorIncrement;
 
@@ -70,63 +128,8 @@ export default class GridAxis extends Layer {
         ctx.stroke();
       }
 
-      var lastLabelMinPx, lastLabelMaxPx;
-
       // paint a label if we're on a major increment
-      if (metrics.isMajorTick(value)) {
-        var label = metrics.formatLabel(value);
-        var font = ctx.font = metrics.getFont(value);
-        var labelPx;
-
-        var labelMetrics = ctx.measureText(label);
-        labelMetrics.height = (parseFloat(font) * 0.8) || 10;
-        var labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
-        var labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
-
-        if (justifyEndLabels && labelMinPx < startPx) {
-          axis.minSide.alignText(ctx);
-          labelPx = labelMinPx = Math.min(startPx, alignedPx);
-          labelMaxPx = labelMinPx + labelMetrics[axis.span];
-        }
-        else if (justifyEndLabels && labelMaxPx > endPx) {
-          axis.maxSide.alignText(ctx);
-          labelPx = labelMaxPx = Math.max(endPx, alignedPx);
-          labelMinPx = labelMaxPx - labelMetrics[axis.span];
-        }
-        else {
-          labelPx = alignedPx;
-          axis.centerText(ctx);
-        }
-
-        if (labelMaxPx >= startPx && labelMinPx <= endPx &&
-            (lastLabelMinPx === undefined ||
-            labelMinPx > lastLabelMaxPx + 10  || labelMaxPx < lastLabelMinPx - 10)) {
-
-          ctx.strokeStyle = ctx.fillStyle = metrics.getLabelColor(value);
-          ctx.fillText(label, ...axis.reorder(labelPx, textOffset));
-
-          if (justifyEndLabels) {
-            if (labelMinPx < startPx) {
-              var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
-              gradient.addColorStop(0, backgroundColor);
-              gradient.addColorStop(1, transparentBackgroundColor);
-              ctx.fillStyle = gradient;
-              ctx.fillRect(...axis.reorder(Math.min(startPx - 0.5, 0), 0, fadeSpan, thickness));
-            }
-
-            if (labelMaxPx > endPx) {
-              var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
-              gradient.addColorStop(0, backgroundColor);
-              gradient.addColorStop(1, transparentBackgroundColor);
-              ctx.fillStyle = gradient;
-              ctx.fillRect(...axis.reorder(endPx + 0.5 - fadeSpan, 0, fadeSpan, thickness));
-            }
-          }
-        }
-    
-        lastLabelMinPx = labelMinPx;
-        lastLabelMaxPx = labelMaxPx;
-      }
+      if (metrics.isMajorTick(value)) paintLabel(metrics.formatLabel(value), value);
 
       value += metrics.minorIncrement;
     }
