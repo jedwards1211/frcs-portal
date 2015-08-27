@@ -20,6 +20,7 @@
     "fastclick": "^1.0.6",
     "lodash": "^3.6.0",
     "react": "~0.13.x",
+    "react-pure-render": "^1.0.2",
     "react-router": "~0.13.x",
     "superagent": "^1.2.0",
     "superagent-bluebird-promise": "^2.0.2"

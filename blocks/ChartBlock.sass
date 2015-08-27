@@ -1,0 +1,57 @@
+@import block-theme
+@import ../css3-mixins
+
+$name-width: 20%
+$value-width: 40%
+$units-width: 15%
+$valueAndUnit-width: $value-width + $units-width
+$range-width: 100% - $name-width - $valueAndUnit-width
+
+.chart-block
+  position: relative
+
+  .valueAndUnit
+    position: absolute
+    top: 0
+    bottom: 0
+    left: $name-width
+    width: $valueAndUnit-width
+
+  .value,
+  .units
+    display: inline-block
+    vertical-align: baseline
+
+  .name
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    width: $name-width
+    @include display-flex
+    @include align-items(center)
+
+    > *
+      display: inline-block
+
+  .value
+    width: $value-width * 100% / $valueAndUnit-width
+    text-align: right
+
+  .units
+    width: $units-width * 100% / $valueAndUnit-width
+
+  .min,
+  .max
+    position: absolute
+    line-height: 90%
+    overflow: hidden
+    width: $range-width
+    right: 0
+    text-align: right
+
+  .min
+    top: 50%
+
+  .max
+    bottom: 50%

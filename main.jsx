@@ -8,6 +8,8 @@ import { Redirect, RouteHandler } from 'react-router';
 import Canvas from './plot/Canvas';
 
 import PlotTest from './PlotTest';
+import FittedText from './FittedText';
+import ChartBlock from './blocks/ChartBlock';
 
 React.initializeTouchEvents(true);
 
@@ -23,9 +25,34 @@ var DefaultRouteHandler = React.createClass({
   }
 });
 
+class FittedTextHandler extends React.Component {
+  render() {
+    return <FittedText style={{width: '100%', height: '100%', border: '1px solid black'}}>This is a test</FittedText>;
+  }
+}
+
+class ChartBlockHandler extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {min: 0, max: 1000000.0, value: 500.0, units: 'dollars', precision: 2, name: 'Financial > GOOG'};
+  }
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.setState({value: Math.random() * this.state.max});
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+  render() {
+    return <ChartBlock {...this.state} style={{width: '100%', height: '100%'}}/>;
+  }
+}
+
 var Routes = (
   <Route name="/">
     <DefaultRoute handler={PlotTest}/>
+    <Route name="ChartBlock" handler={ChartBlockHandler}/>
   </Route>
 );
 
