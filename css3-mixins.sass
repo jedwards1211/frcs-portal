@@ -124,6 +124,7 @@
 @mixin display-flex
   display: -webkit-box
   display: -moz-box
+  display: -o-box
   display: -ms-flexbox
   display: -webkit-flex
   display: flex
@@ -131,6 +132,7 @@
 @mixin flex($values)
   -webkit-box-flex: $values
   -moz-box-flex: $values
+  -o-box-flex: $values
   -webkit-flex: $values
   -ms-flex: $values
   flex: $values
@@ -143,11 +145,16 @@
   justify-content: $value
 
 @mixin align-items($value)
-  -webkit-box-align-items: $value
-  -moz-box-align-items: $value
+  -webkit-box-align: $value
+  -moz-box-align: $value
   -webkit-align-items: $value
   -ms-align-items: $value
   align-items: $value
+
+@mixin align-self($value)
+  -webkit-align-self: $value
+  -moz-align-self: $value
+  align-self: $value
 
 // FLIP
 @mixin flip($scaleX: -1)

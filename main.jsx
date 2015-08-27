@@ -34,7 +34,16 @@ class FittedTextHandler extends React.Component {
 class ChartBlockHandler extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {min: 0, max: 1000000.0, value: 500.0, units: 'dollars', precision: 2, name: 'Financial > GOOG'};
+    this.state = {
+      name: 'Financial > GOOG',
+      value: 500.0, 
+      units: 'dollars', 
+      min: 0, 
+      max: 1000000.0, 
+      precision: 2, 
+      color: 'blue',
+      alarmState: 'alarm',
+    };
   }
   componentDidMount() {
     this.interval = setInterval(() => {

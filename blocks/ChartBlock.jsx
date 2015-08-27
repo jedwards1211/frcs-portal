@@ -14,6 +14,19 @@ export default class ChartBlock extends React.Component {
     super(props);
     this.state = {width: 0, height: 0};
   }
+  static propTypes = {
+    color:      React.PropTypes.string,
+    name:       React.PropTypes.string,
+    value:      React.PropTypes.number,
+    units:      React.PropTypes.string,
+    min:        React.PropTypes.number,
+    max:        React.PropTypes.number,
+    precision:  React.PropTypes.number,
+    alarmState: React.PropTypes.oneOf(['alarm', 'warning'])
+  }
+  static defaultPropTypes = {
+    color: 'black',
+  }
   resize() {
     var root = React.findDOMNode(this.refs.root);
     var name = React.findDOMNode(this.refs.name);
@@ -41,7 +54,7 @@ export default class ChartBlock extends React.Component {
     this.resize();
   }
   render() {
-    var {className, name, value, units, min, max, precision, alarmState} = this.props;
+    var {className, color, name, value, units, min, max, precision, alarmState} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
     className = classNames('block', 'chart-block', className, {
@@ -58,26 +71,19 @@ export default class ChartBlock extends React.Component {
     min = formatValue(min);
     max = formatValue(max);
 
-    var valueAndUnitStyle = {};
-    var nameStyle         = {};
-    var innerNameStyle    = {};
-    var valueStyle        = {};
-    var unitsStyle        = {};
+    var nameStyle         = {color};
+    var valueStyle        = {color};
+    var unitsStyle        = {color};
     var rangeStyle        = {};
 
     var padding = width / 50;
 
     if (width && height && fontFamily && fontWeight) {
-      valueAndUnitStyle.lineHeight = height + 'px';
-
       var ctx = dummyCanvas.getContext('2d');
       ctx.font = `${fontWeight} 10px ${fontFamily}`;
 
       var nameMetrics = ctx.measureText(name);
       nameStyle.fontSize = Math.min(height / 3, 10 * nameWidth * 2 / nameMetrics.width);
-
-      var valueMetrics = ctx.measureText(value);
-      valueStyle.fontSize = Math.min(height, 10 * (valueWidth - padding) / valueMetrics.width);
 
       var unitsMetrics = ctx.measureText(units);
       unitsStyle.fontSize = Math.min(height / 2, 10 * unitsWidth / unitsMetrics.width);
@@ -85,18 +91,23 @@ export default class ChartBlock extends React.Component {
       var rangeMinMetrics = ctx.measureText(min);
       var rangeMaxMetrics = ctx.measureText(max);
 
-      rangeStyle.fontSize = Math.min(height / 2, 10 * (rangeWidth - padding) / (Math.max(rangeMinMetrics.width, rangeMaxMetrics.width)));
+      rangeStyle.fontSize = Math.min(height / 2, 10 * (rangeWidth - padding) / Math.max(rangeMinMetrics.width, rangeMaxMetrics.width));
+
+      var valueMetrics = ctx.measureText(value);
+      valueStyle.fontSize = Math.min(height, 10 * (valueWidth - padding) / Math.max(
+        valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width));
     }
+
     return <div ref="root" {...this.props} className={className}>
-      <div ref="name" className="name" style={nameStyle}>
-        <div style={innerNameStyle}>{name}</div>
-      </div>
-      <div className="valueAndUnit" style={valueAndUnitStyle}>
+      <span ref="name" className="name" style={nameStyle}>{name}</span>
+      <div className="value-and-units">
         <span ref="value" className="value" style={valueStyle}>{value}</span>
         <span ref="units" className="units" style={unitsStyle}>{units}</span>
       </div>
-      <div ref="min"   className="min"   style={rangeStyle}>{min}</div>
-      <div ref="max"   className="max"   style={rangeStyle}>{max}</div>
+      <div ref="range" className="range" style={rangeStyle}>
+        <div ref="min"   className="min">{min}</div>
+        <div ref="max"   className="max">{max}</div>
+      </div>
     </div>
   }
 }
