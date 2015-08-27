@@ -17,13 +17,6 @@ $block-legend-color-warning:    #fc0
 $block-legend-color-alarm:      red
 $block-pulse-duration:          1.2s
 
-.block
-  background-color: $block-bg-color
-
-  &.block-warning
-    background-color: $block-bg-color-warning
-  &.block-alarm
-    background-color: $block-bg-color-alarm
 
 @include keyframes(block-bg-warning-pulse)
   from
@@ -72,3 +65,14 @@ $block-pulse-duration:          1.2s
     fill: $block-fill-color-alarm-hot
   to
     fill: $block-fill-color-alarm
+
+.block
+  background-color: $block-bg-color
+
+  &.block-warning
+    background-color: $block-bg-color-warning
+    @include animation(block-bg-warning-pulse infinite linear $block-pulse-duration)
+
+  &.block-alarm
+    background-color: $block-bg-color-alarm
+    @include animation(block-bg-alarm-pulse infinite linear $block-pulse-duration)
