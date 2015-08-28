@@ -23,7 +23,7 @@ import './PlotTest2.sass';
 var dataSource = new FakeDataSource();
 var dataCache = new DataCache({dataSource, pageRange: 3600000, maxPages: 100});
 
-export default class PlotTest extends React.Component {
+export default class PlotTest2 extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -111,13 +111,17 @@ export default class PlotTest extends React.Component {
         domainMetrics={timeMetrics} 
         onMove={this.onMove}
         dataCache={dataCache}
-        onResize={!plots.length && this.onPlotResize}
+        onResize={!plots.length ? this.onPlotResize : undefined}
         traces={traces}/>);
     });
 
     var className = classNames('plot-test-2', axis.name + '-axis');
 
     return <div className={className}>
+      <Canvas className="plot time-axis" style={{[axis.span]: plotSize[axis.span]}}>
+        <CanvasClearer/>
+        <GridAxis metrics={timeMetrics} tickSide={axis.opposite.maxSide} justifyEndLabels={true}/>
+      </Canvas>
       {plots}
       <button className="axis-toggle-btn" onClick={this.onToggleAxisClick}>Toggle Axis</button>
     </div>;

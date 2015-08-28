@@ -107,11 +107,13 @@ export default class Plot extends React.Component {
       <div className="trace-blocks">
       </div>
       <PlotInteractionController {...plotInteractionControllerProps} onMove={onMove}>
-        <Canvas className="plot-canvas" ref="plot" onResize={this.onPlotResize}>
-          <CanvasClearer/>
-          <GridLines metrics={domainMetrics} axis={domainAxis}/>
-          {mappedTraces}
-        </Canvas>
+        <div className="plot-border">
+          <Canvas className="plot-canvas" ref="plot" onResize={this.onPlotResize}>
+            <CanvasClearer/>
+            <GridLines metrics={domainMetrics} axis={domainAxis}/>
+            {mappedTraces}
+          </Canvas>
+        </div>
       </PlotInteractionController>
     </div>;
   } 

@@ -47,7 +47,7 @@ export default class GridAxis extends Layer {
     tickSide.alignText(ctx);
 
     var tickSidePos = tickSide.positionInCanvas(canvas);
-    if (tickSide.direction > 0) tickSidePos -= 2;
+    if (tickSide.direction > 0) tickSidePos -= 1;
 
     var textOffset = tickSidePos - (metrics.maxTickSize + 2) * tickSide.direction;
 
