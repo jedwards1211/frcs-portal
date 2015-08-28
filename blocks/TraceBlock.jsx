@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import './ChartBlock.sass';
+import './TraceBlock.sass';
 import dummyCanvas from '../dummyCanvas';
 
 import shouldPureComponentUpdate from 'react-pure-render/function';
 
-export default class ChartBlock extends React.Component {
+export default class TraceBlock extends React.Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
   constructor(props) {
     super(props);
@@ -55,7 +55,7 @@ export default class ChartBlock extends React.Component {
     var {className, color, name, value, units, min, max, precision, alarmState} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
-    className = classNames('block', 'chart-block', className, {
+    className = classNames('block', 'trace-block', className, {
       'block-alarm': alarmState === 'alarm',
       'block-warning': alarmState === 'warning',
     });

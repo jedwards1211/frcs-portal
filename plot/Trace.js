@@ -7,10 +7,20 @@ import CanvasTraceRenderer from './CanvasTraceRenderer';
 
 import {Axis, xAxis, yAxis} from '../orient';
 
+import color from 'css-color-converter';
+
 const conversionPropType = React.PropTypes.shape({
   convert: React.PropTypes.func.isRequired,
   invert:  React.PropTypes.func.isRequired,
 });
+
+function parseHexColor(color) {
+  if (color.length === 4) {
+    return {
+      red: color.charAt(1)
+    }
+  }
+}
 
 export default class Trace extends Layer {
   static propTypes = {
@@ -28,7 +38,6 @@ export default class Trace extends Layer {
   }
   static defaultProps = {
     lineColor:        '#00f',
-    fillColor:        'rgba(0,0,255,0.5)',
     plotter:          (...args) => new AutoFatTracePlotter(...args),
     renderer:         ctx => new CanvasTraceRenderer(ctx),
     domainAxis:       xAxis,
@@ -39,6 +48,12 @@ export default class Trace extends Layer {
 
     var {forEachPoint, lineColor, fillColor, domainConversion, valueConversion, 
         plotter, renderer, domainAxis} = this.props;
+
+    if (!fillColor) {
+      var rgba = color(lineColor).toRgbaArray();
+      rgba[3] = 0.5;
+      fillColor = color(rgba).toRgbString();
+    }
 
     if (domainAxis === yAxis) {
       // swap x and y

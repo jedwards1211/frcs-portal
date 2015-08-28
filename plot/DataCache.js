@@ -87,7 +87,7 @@ export default class DataCache extends EventEmitter {
         page.replaceData(newPage);
         delete page.isPending;
         delete page.isMerged;
-        this.emit('dataChange', {channels: [channelId], beginTime, endTime});
+        this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
       }
     }
   }

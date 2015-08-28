@@ -8,7 +8,8 @@ import { Redirect, RouteHandler } from 'react-router';
 import Canvas from './plot/Canvas';
 
 import PlotTest from './PlotTest';
-import ChartBlock from './blocks/ChartBlock';
+import PlotTest2 from './PlotTest2';
+import TraceBlock from './blocks/TraceBlock';
 
 React.initializeTouchEvents(true);
 
@@ -24,7 +25,7 @@ var DefaultRouteHandler = React.createClass({
   }
 });
 
-class ChartBlockHandler extends React.Component {
+class TraceBlockHandler extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,14 +48,14 @@ class ChartBlockHandler extends React.Component {
     clearInterval(this.interval);
   }
   render() {
-    return <ChartBlock {...this.state} style={{width: '100%', height: '100%'}}/>;
+    return <TraceBlock {...this.state} style={{width: '100%', height: '100%'}}/>;
   }
 }
 
 var Routes = (
   <Route name="/">
-    <DefaultRoute handler={PlotTest}/>
-    <Route name="ChartBlock" handler={ChartBlockHandler}/>
+    <DefaultRoute handler={PlotTest2}/>
+    <Route name="TraceBlock" handler={TraceBlockHandler}/>
   </Route>
 );
 

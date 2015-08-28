@@ -4,13 +4,13 @@ import 'seedrandom';
 import CachePage from './CachePage';
 import * as GridMath from './GridMath';
 
-function stretchRandom(time, period, amplitude) {
+function stretchRandom(seed, time, period, amplitude) {
     var m = time / period;
     var m0 = Math.floor(m);
     var m1 = m0 + 1;
     var f = m - m0;
-    Math.seedrandom(m0); m0 = Math.random();
-    Math.seedrandom(m1); m1 = Math.random();
+    Math.seedrandom(m0 + seed); m0 = Math.random();
+    Math.seedrandom(m1 + seed); m1 = Math.random();
     return ((1 - f) * m0 + f * m1 - 0.5) * amplitude;
 }
 
@@ -24,16 +24,16 @@ export default class FakeDataSource {
     this.delay                = options.delay               || 1000;
   }
 
-  valueAt(time) {
-    var m = stretchRandom(time, this.majorPeriod, this.majorAmplitude);
-    var v = stretchRandom(time, this.variancePeriod, this.varianceAmplitude) + this.varianceAmplitude;
-    Math.seedrandom(time);
+  valueAt(channelId, time) {
+    var m = stretchRandom(channelId, time, this.majorPeriod, this.majorAmplitude);
+    var v = stretchRandom(channelId, time, this.variancePeriod, this.varianceAmplitude) + this.varianceAmplitude;
+    Math.seedrandom(time + channelId);
     return m + v * (Math.random() - 0.5);
   }
 
-  get(from, to, surround, callback) {
+  get(channelId, from, to, surround, callback) {
     for (var time = GridMath.modLower(from, this.increment); time < to + this.increment; time += this.increment) {
-      callback(time, this.valueAt(time));
+      callback(time, this.valueAt(channelId, time));
     }
   }
 
@@ -56,7 +56,7 @@ export default class FakeDataSource {
         var i = 0;
         while (time < endTime && i++ < 500) {
           times.push(time);
-          values.push(this.valueAt(time));
+          values.push(this.valueAt(channelId, time));
           time += increment;
         }
         if (time < endTime) {

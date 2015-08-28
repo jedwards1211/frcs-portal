@@ -1,0 +1,41 @@
+$trace-blocks-width: 300px
+$trace-blocks-height: 200px
+
+.plot
+  position: relative
+
+  .plot-canvas, 
+  .trace-blocks
+    position: absolute
+    border: 1px solid #ccc
+
+  .trace-blocks
+    background-color: #eee
+    overflow-x: hidden
+    overflow-y: auto
+
+.plot.plot-x-axis
+  .trace-blocks
+    top: 0
+    bottom: 0
+    right: 0
+    width: $trace-blocks-width
+
+  .plot-canvas
+    top: 0
+    bottom: 0
+    left: 0
+    right: $trace-blocks-width - 1px
+
+.plot.plot-y-axis
+  .trace-blocks
+    left: 0
+    right: 0
+    bottom: 0
+    height: $trace-blocks-height
+
+  .plot-canvas
+    left: 0
+    right: 0
+    top: 0
+    bottom: $trace-blocks-height - 1px
