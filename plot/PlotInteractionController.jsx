@@ -3,11 +3,11 @@ import _ from 'lodash';
 
 import LinearConversion from './LinearConversion';
 
-function copyTouch(touch) {
+function copyTouch(touch, boundingClientRect) {
   return {
     id: touch.identifier,
-    elementX: touch.pageX - touch.target.offsetLeft,
-    elementY: touch.pageY - touch.target.offsetTop,
+    elementX: touch.pageX - boundingClientRect.left,
+    elementY: touch.pageY - boundingClientRect.top,
   };
 }
 
@@ -30,8 +30,9 @@ export default class PlotInteractionController extends React.Component {
       e.preventDefault();
 
       this.target = e.target;
-      if (xConversion) this.startX = xConversion.invert(e.clientX - e.target.offsetLeft);
-      if (yConversion) this.startY = yConversion.invert(e.clientY - e.target.offsetTop);
+      var rect = e.target.getBoundingClientRect();
+      if (xConversion) this.startX = xConversion.invert(e.clientX - rect.left);
+      if (yConversion) this.startY = yConversion.invert(e.clientY - rect.top);
       this.startXConversion = xConversion;
       this.startYConversion = yConversion;
 
@@ -42,13 +43,15 @@ export default class PlotInteractionController extends React.Component {
   onMouseMove = (e) => {
     e.preventDefault();
 
+    var rect = e.target.getBoundingClientRect();
+
     var newXConversion, newYConversion;
 
     if (this.startXConversion) {
-      newXConversion = this.startXConversion.clone().set(this.startX, e.clientX - this.target.offsetLeft);
+      newXConversion = this.startXConversion.clone().set(this.startX, e.clientX - rect.left);
     }
     if (this.startYConversion) {
-      newYConversion = this.startYConversion.clone().set(this.startY, e.clientY - this.target.offsetLeft);
+      newYConversion = this.startYConversion.clone().set(this.startY, e.clientY - rect.top);
     }
 
     if (this.props.onMove) {
@@ -65,6 +68,8 @@ export default class PlotInteractionController extends React.Component {
   onWheel = (e) => {
     e.preventDefault();
 
+    var rect = e.target.getBoundingClientRect();
+
     var {xConversion, yConversion} = this.props;
     var wheelDirection = (e.detail < 0 || e.deltaY < 0) ? 1 : -1;
 
@@ -73,11 +78,11 @@ export default class PlotInteractionController extends React.Component {
 
     if (xConversion) {
       newXConversion = new LinearConversion(xConversion);
-      newXConversion.zoom(xConversion.invert(e.clientX - e.target.offsetLeft), zoom);
+      newXConversion.zoom(xConversion.invert(e.clientX - rect.left), zoom);
     }
     if (yConversion) {
       newYConversion = new LinearConversion(yConversion);
-      newYConversion.zoom(yConversion.invert(e.clientY - e.target.offsetTop), zoom);
+      newYConversion.zoom(yConversion.invert(e.clientY - rect.top), zoom);
     }
     if (this.props.onMove) {
       this.props.onMove(newXConversion, newYConversion);
@@ -89,8 +94,10 @@ export default class PlotInteractionController extends React.Component {
     var {xConversion, yConversion} = this.props;
     var target = React.findDOMNode(this.refs.target);
 
+    var rect = e.target.getBoundingClientRect();
+
     _.forEach(e.changedTouches, t => {
-      t = copyTouch(t);
+      t = copyTouch(t, rect);
       t.startElementX = t.elementX;
       t.startElementY = t.elementY;
       if (xConversion) t.startX = xConversion.invert(t.elementX);
@@ -102,8 +109,10 @@ export default class PlotInteractionController extends React.Component {
     e.preventDefault();
     var {onMove, xConversion, yConversion} = this.props;
 
+    var rect = e.target.getBoundingClientRect();
+
     var target = React.findDOMNode(this.refs.target);
-    _.forEach(e.changedTouches, t => _.assign(this.touches[t.identifier], copyTouch(t)));
+    _.forEach(e.changedTouches, t => _.assign(this.touches[t.identifier], copyTouch(t, rect)));
 
     if (onMove) {
       var newXConversion, newYConversion;
