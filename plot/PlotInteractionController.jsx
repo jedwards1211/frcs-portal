@@ -28,11 +28,10 @@ export default class PlotInteractionController extends React.Component {
 
   onMouseDown = (e) => {
     if (e.button === 0) {
-      var {xConversion, yConversion, onMoveStart} = this.props;
+      let {xConversion, yConversion, onMoveStart} = this.props;
       e.preventDefault();
 
-      this.target = e.target;
-      var rect = e.target.getBoundingClientRect();
+      let rect = e.target.getBoundingClientRect();
       if (xConversion) this.startX = xConversion.invert(e.clientX - rect.left);
       if (yConversion) this.startY = yConversion.invert(e.clientY - rect.top);
       this.startXConversion = xConversion;
@@ -47,9 +46,9 @@ export default class PlotInteractionController extends React.Component {
   onMouseMove = (e) => {
     e.preventDefault();
 
-    var rect = e.target.getBoundingClientRect();
+    let rect = e.target.getBoundingClientRect();
 
-    var newXConversion, newYConversion;
+    let newXConversion, newYConversion;
 
     if (this.startXConversion) {
       newXConversion = this.startXConversion.clone().set(this.startX, e.clientX - rect.left);
@@ -74,13 +73,13 @@ export default class PlotInteractionController extends React.Component {
   onWheel = (e) => {
     e.preventDefault();
 
-    var rect = e.target.getBoundingClientRect();
+    let rect = e.target.getBoundingClientRect();
 
-    var {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
-    var wheelDirection = (e.detail < 0 || e.deltaY < 0) ? 1 : -1;
+    let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
+    let wheelDirection = (e.detail < 0 || e.deltaY < 0) ? 1 : -1;
 
-    var zoom = Math.pow(0.9, wheelDirection);
-    var newXConversion, newYConversion;
+    let zoom = Math.pow(0.9, wheelDirection);
+    let newXConversion, newYConversion;
 
     if (xConversion) {
       newXConversion = new LinearConversion(xConversion);
@@ -95,13 +94,12 @@ export default class PlotInteractionController extends React.Component {
     if (onMoveEnd)    onMoveEnd();
   }
   onTouchStart = (e) => {
-    var alreadyMoving = Object.keys(this.touches).length;
+    let alreadyMoving = Object.keys(this.touches).length;
     if (alreadyMoving) e.preventDefault();
 
-    var {xConversion, yConversion, onMoveStart} = this.props;
-    var target = React.findDOMNode(this.refs.target);
+    let {xConversion, yConversion, onMoveStart} = this.props;
 
-    var rect = e.target.getBoundingClientRect();
+    let rect = e.target.getBoundingClientRect();
 
     _.forEach(e.changedTouches, t => {
       t = copyTouch(t, rect);
@@ -116,34 +114,33 @@ export default class PlotInteractionController extends React.Component {
   }
   onTouchMove = (e) => {
     e.preventDefault();
-    var {onMove, xConversion, yConversion} = this.props;
+    let {onMove, xConversion, yConversion} = this.props;
 
-    var rect = e.target.getBoundingClientRect();
+    let rect = e.target.getBoundingClientRect();
 
-    var target = React.findDOMNode(this.refs.target);
     _.forEach(e.changedTouches, t => _.assign(this.touches[t.identifier], copyTouch(t, rect)));
 
     if (onMove) {
-      var newXConversion, newYConversion;
+      let newXConversion, newYConversion;
 
-      var keys = Object.keys(this.touches);
-      var touchCount = keys.length;
+      let keys = Object.keys(this.touches);
+      let touchCount = keys.length;
       if (touchCount === 1) {
-        var t = this.touches[keys[0]];
+        let t = this.touches[keys[0]];
         if (xConversion) newXConversion = xConversion.clone().set(t.startX, t.elementX);
         if (yConversion) newYConversion = yConversion.clone().set(t.startY, t.elementY);
       }
       else if (touchCount > 1) {
         if (xConversion) {
-          var t1, t2;
+          let t1, t2;
           // I tried using _.min and _.max for this, and it completely froze Safari on my iPad 2...WTF???
           for (let key of keys) {
-            var t = this.touches[key];
+            let t = this.touches[key];
             if (!t1 || t.elementX < t1.elementX) t1 = t;
             if (!t2 || t.elementX > t2.elementX) t2 = t;
           }
           if (t1.startX !== t2.startX && t1.elementX !== t2.elementX) {
-            var x1, x2;
+            let x1, x2;
             if ((t1.startElementX > t2.startElementX) != (t1.elementX > t2.elementX)) {
               x1 = t2.startX;
               x2 = t1.startX;
@@ -156,15 +153,15 @@ export default class PlotInteractionController extends React.Component {
           }
         }
         if (yConversion) {
-          var t1, t2;
+          let t1, t2;
           // I tried using _.min and _.max for this, and it completely froze Safari on my iPad 2...WTF???
           for (let key of keys) {
-            var t = this.touches[key];
+            let t = this.touches[key];
             if (!t1 || t.elementY < t1.elementY) t1 = t;
             if (!t2 || t.elementY > t2.elementY) t2 = t;
           }
           if (t1.startY !== t2.startY && t1.elementY !== t2.elementY) {
-            var y1, y2;
+            let y1, y2;
             if ((t1.startElementY > t2.startElementY) != (t1.elementY > t2.elementY)) {
               y1 = t2.startY;
               y2 = t1.startY;

@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
-import Dropdown from './Dropdown';
 import {Link, State} from 'react-router';
 
 import addClass from '../wrappers/addClass';
@@ -104,7 +103,7 @@ Navbar.Nav.Link = React.createClass({
     var {to, params, query, className} = this.props;
     className = classNames(className, {active: this.isActive(to, params, query)});
     return <li><Link {...this.props} className={className}>{this.props.children}</Link></li>;
-  }
+  },
 });
 
 export var NavLink = Navbar.Nav.Link;

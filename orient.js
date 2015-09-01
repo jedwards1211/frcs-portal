@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: [1, {"args": "none"}] */
+
 import _ from 'lodash';
 
 export function Side(props) {
@@ -16,7 +18,7 @@ export var leftSide = new Side({
   },
   isInside(x, threshold) {
     return x >= threshold; 
-  }
+  },
 });
 export var rightSide = new Side({
   name: 'right',
@@ -30,7 +32,7 @@ export var rightSide = new Side({
   },
   isInside(x, threshold) {
     return x <= threshold; 
-  }
+  },
 });
 export var topSide = new Side({
   name: 'top',
@@ -44,7 +46,7 @@ export var topSide = new Side({
   },
   isInside(y, threshold) {
     return y >= threshold; 
-  }
+  },
 });
 export var bottomSide = new Side({
   name: 'bottom',
@@ -58,14 +60,14 @@ export var bottomSide = new Side({
   },
   isInside(y, threshold) {
     return y <= threshold; 
-  }
+  },
 });
 
 export var sides = {
   left: leftSide,
   right: rightSide,
   top: topSide,
-  bottom: bottomSide
+  bottom: bottomSide,
 };
 
 export function Axis(props) {
@@ -102,7 +104,7 @@ export var xAxis = new Axis({
   },
   lineTo(ctx, parallel, perp) {
     ctx.lineTo(parallel, perp);
-  }
+  },
 });
 export var yAxis = new Axis({
   name: 'y',
@@ -139,7 +141,7 @@ export var yAxis = new Axis({
 
 export var axes = {
   x: xAxis,
-  y: yAxis
+  y: yAxis,
 };
 
 xAxis.opposite = yAxis;

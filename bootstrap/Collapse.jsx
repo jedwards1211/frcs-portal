@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import callOnTransitionEnd from '../callOnTransitionEnd';
 
-require('./Collapse.sass');
+import './Collapse.sass';
 
 export default React.createClass({
   callOnTransitionEnd,

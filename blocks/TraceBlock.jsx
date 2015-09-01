@@ -65,13 +65,13 @@ export default class TraceBlock extends React.Component {
     
     var value, min, max, name, color, units, precision, alarmState;
 
+    function formatValue(value) {
+      if (isNaN(value) || value === null) return 'NA';
+      return value.toFixed(precision);
+    }
+
     if (model) {
       precision = model.get('precision') || 0;
-
-      function formatValue(value) {
-        if (isNaN(value) || value === null) return 'NA';
-        return value.toFixed(precision);
-      }
 
       value       = formatValue(model.get('value')),
       min         = formatValue(model.get('min')),

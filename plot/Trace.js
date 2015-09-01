@@ -14,14 +14,6 @@ const conversionPropType = React.PropTypes.shape({
   invert:  React.PropTypes.func.isRequired,
 });
 
-function parseHexColor(color) {
-  if (color.length === 4) {
-    return {
-      red: color.charAt(1)
-    }
-  }
-}
-
 export default class Trace extends Layer {
   static propTypes = {
     // function(from: number, to: number, surround: bool, callback: function(x: number, y: number))
@@ -60,12 +52,12 @@ export default class Trace extends Layer {
       ctx.setTransform(0,1,1,0,0,0);
     }
 
-    var renderer    = renderer(ctx);
+    renderer        = renderer(ctx);
 
     ctx.strokeStyle = lineColor;
     ctx.fillStyle   = fillColor;
 
-    var plotter     = plotter(domainConversion, valueConversion, renderer);
+    plotter         = plotter(domainConversion, valueConversion, renderer);
 
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);

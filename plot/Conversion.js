@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: [1, {"args": "none"}] */
+
 /**
  * Base class for conversions.  Right now there is only LinearConversion;
  * in the future there could also be LogConversion.

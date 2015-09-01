@@ -15,7 +15,7 @@ var DropdownToggle = React.createClass({
     props['aria-haspopup'] = 'true';
     props['aria-expanded'] = open;
     return React.createElement(component, props, children);
-  }
+  },
 });
 
 var DropdownMenu = React.createClass({
@@ -27,7 +27,7 @@ var DropdownMenu = React.createClass({
     var props = _.clone(this.props);
     props.className = classNames('dropdown-menu', className);
     return React.createElement(component, props, children);
-  }
+  },
 });
 
 var Dropdown = React.createClass({
@@ -119,7 +119,7 @@ var Dropdown = React.createClass({
     });
 
     return React.createElement(component, props, children);
-  } 
+  },
 });
 
 Dropdown.Toggle = DropdownToggle;

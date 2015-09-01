@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: [1, {"args": "none"}] */
+
 import * as GridMath from './GridMath';
 
 export class GridMetrics {

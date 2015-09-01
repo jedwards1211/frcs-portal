@@ -1,5 +1,3 @@
-import TracePlotter from './TracePlotter';
-
 /**
  * Plots a trace from points you provide sequentially.  If zoomed
  * out far enough that more than two data points are in a given
@@ -21,9 +19,8 @@ import TracePlotter from './TracePlotter';
  *     drawFill(array): draws a fill bounded by alternating x/y 
  *                         coordinates in the given flat array
  */
-export default class AutoFatTracePlotter extends TracePlotter {
+export default class AutoFatTracePlotter {
     constructor(domainConversion, valueConversion, traceRenderer) {
-        super();
         this.domainConversion = domainConversion;
         this.valueConversion = valueConversion;
         this.traceRenderer = traceRenderer;

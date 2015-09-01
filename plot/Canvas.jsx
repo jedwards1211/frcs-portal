@@ -1,7 +1,7 @@
 import React from 'react/addons';
 import _ from 'lodash';
 
-require('./Canvas.sass');
+import './Canvas.sass';
 
 export default class Canvas extends React.Component {
   constructor(props) {
@@ -25,7 +25,6 @@ export default class Canvas extends React.Component {
   }
   doResize = () => {
     var size = this.getRootSize();
-    var canvas = React.findDOMNode(this.refs.canvas);
     if (size.width  !== this.state.width ||
         size.height !== this.state.height) {
       // repaint immediately after resize to avoid flickering
@@ -58,7 +57,7 @@ export default class Canvas extends React.Component {
     var {className, children} = this.props;
     var {width = 1, height = 1} = this.state;
 
-    var refChildren = React.Children.map(this.props.children, 
+    var refChildren = React.Children.map(children, 
       (child, index) => React.cloneElement(child, {ref: index, repaint}));
 
     if (className) className += ' canvas';
@@ -68,7 +67,7 @@ export default class Canvas extends React.Component {
       {refChildren}
     </div>;
   }
-};
+}
 
 export class Layer extends React.Component {
   constructor(props) {

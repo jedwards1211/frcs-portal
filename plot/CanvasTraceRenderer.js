@@ -1,14 +1,11 @@
-import TraceRenderer from './TraceRenderer';
-
 /**
  * Creates a CanvasTraceRenderer that will draw into the given
  * CanvasRendereringContext2D.
  *
  * @param {ctx} a CanvasRenderingContext2D.
  */
-export default class CanvasTraceRenderer extends TraceRenderer {
+export default class CanvasTraceRenderer {
     constructor( ctx ) {
-        super();
         this.ctx = ctx;
     }
 

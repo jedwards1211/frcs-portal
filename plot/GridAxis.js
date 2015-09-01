@@ -24,19 +24,19 @@ export default class GridAxis extends Layer {
     fadeSpan:                   20,
   }
   paint(canvas) {
-    var {metrics, tickSide, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this.props;
-    var axis = tickSide.axis.opposite;
-    var {conversion, startPx, endPx} = metrics;
+    let {metrics, tickSide, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this.props;
+    let axis = tickSide.axis.opposite;
+    let {conversion, startPx, endPx} = metrics;
 
-    var ctx = canvas.getContext('2d');
+    let ctx = canvas.getContext('2d');
 
     ctx.save();
 
-    var minSide = metrics.startValue < metrics.endValue ? axis.minSide : axis.maxSide;
-    var maxSide = minSide.opposite;
+    let minSide = metrics.startValue < metrics.endValue ? axis.minSide : axis.maxSide;
+    let maxSide = minSide.opposite;
 
-    var length = endPx - startPx;
-    var thickness = canvas[axis.opposite.span];
+    let length = endPx - startPx;
+    let thickness = canvas[axis.opposite.span];
 
     if (clip) {
       // clip to metrics.startPx and metrics.endPx
@@ -46,23 +46,23 @@ export default class GridAxis extends Layer {
 
     tickSide.alignText(ctx);
 
-    var tickSidePos = tickSide.positionInCanvas(canvas);
+    let tickSidePos = tickSide.positionInCanvas(canvas);
     if (tickSide.direction > 0) tickSidePos -= 1;
 
-    var textOffset = tickSidePos - (metrics.maxTickSize + 2) * tickSide.direction;
+    let textOffset = tickSidePos - (metrics.maxTickSize + 2) * tickSide.direction;
 
-    var labelOverlapPreventer = new OverlapPreventer();
+    let labelOverlapPreventer = new OverlapPreventer();
 
     function paintLabel(label, value) {
-      var px = conversion.convert(value);
-      var alignedPx = Math.round(px + 0.5) - 0.5;
-      var font = ctx.font = metrics.getFont(value);
-      var labelPx;
+      let px = conversion.convert(value);
+      let alignedPx = Math.round(px + 0.5) - 0.5;
+      let font = ctx.font = metrics.getFont(value);
+      let labelPx;
 
-      var labelMetrics = ctx.measureText(label);
+      let labelMetrics = ctx.measureText(label);
       labelMetrics.height = (parseFloat(font) * 0.8) || 10;
-      var labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
-      var labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
+      let labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
+      let labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
 
       if (justifyEndLabels && labelMinPx < startPx) {
         axis.minSide.alignText(ctx);
@@ -85,7 +85,7 @@ export default class GridAxis extends Layer {
 
         if (justifyEndLabels) {
           if (labelMinPx < startPx) {
-            var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
+            let gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
             gradient.addColorStop(0, backgroundColor);
             gradient.addColorStop(1, transparentBackgroundColor);
             ctx.fillStyle = gradient;
@@ -93,7 +93,7 @@ export default class GridAxis extends Layer {
           }
 
           if (labelMaxPx > endPx) {
-            var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
+            let gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
             gradient.addColorStop(0, backgroundColor);
             gradient.addColorStop(1, transparentBackgroundColor);
             ctx.fillStyle = gradient;
@@ -103,20 +103,20 @@ export default class GridAxis extends Layer {
       }
     }
 
-    var priorityLabelValues = metrics.getPriorityLabelValues();
+    let priorityLabelValues = metrics.getPriorityLabelValues();
     if (priorityLabelValues && priorityLabelValues.forEach) {
       priorityLabelValues.forEach(value => paintLabel(metrics.formatLabel(value), value));
     }
 
     // start on the nearest major tick offscreen to the left in case some of its label extends into view
-    var value = metrics.firstMajor - metrics.majorIncrement;
+    let value = metrics.firstMajor - metrics.majorIncrement;
 
     // go up to the nearest major tick offscreen to the right in case some of its label extends into view
     while (maxSide.isInside(value, metrics.endValue + metrics.majorIncrement)) {
-      var px = conversion.convert(value);
-      var alignedPx = Math.round(px + 0.5) - 0.5;
+      let px = conversion.convert(value);
+      let alignedPx = Math.round(px + 0.5) - 0.5;
 
-      var tickSize = metrics.getTickSize(value);
+      let tickSize = metrics.getTickSize(value);
 
       ctx.strokeStyle = metrics.getTickColor(value);
 
@@ -135,13 +135,14 @@ export default class GridAxis extends Layer {
     }
 
     if (!justifyEndLabels) {
-      var gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
+      let gradient;
+      gradient = ctx.createLinearGradient(...axis.reorder(startPx - 0.5, 0, startPx - 0.5 + fadeSpan, 0));
       gradient.addColorStop(0, backgroundColor);
       gradient.addColorStop(1, transparentBackgroundColor);
       ctx.fillStyle = gradient;
       ctx.fillRect(...axis.reorder(startPx - 0.5, 0, fadeSpan, thickness));
 
-      var gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
+      gradient = ctx.createLinearGradient(...axis.reorder(endPx + 0.5, 0, endPx + 0.5 - fadeSpan, 0));
       gradient.addColorStop(0, backgroundColor);
       gradient.addColorStop(1, transparentBackgroundColor);
       ctx.fillStyle = gradient;

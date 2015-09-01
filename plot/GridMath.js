@@ -1,4 +1,4 @@
-import {binarySearch, floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
+import {ceilingIndex} from './precisebs';
 
 /**
  * @return a value >= x and < x * 10 that divides evenly into a power of 10.
@@ -82,7 +82,7 @@ const niceTimeIncrements = [
     4  * 3600000,
     6  * 3600000,
     12 * 3600000,
-         86400000
+         86400000,
 ];
 
 /**
@@ -93,7 +93,7 @@ const niceTimeIncrements = [
  * If minTickSpacingPixels * unitsPerPixel > one day (in milliseconds), returns undefined.
  */ 
 export function chooseNiceTimeIncrement(unitsPerPixel, minTickSpacingPixels, subIncrement) {
-    if (unitsPerPixel < 0) return -chooseNiceTimeMajorIncrement(-unitsPerPixel, minTickSpacingPixels, -subIncrement);
+    if (unitsPerPixel < 0) return -chooseNiceTimeIncrement(-unitsPerPixel, minTickSpacingPixels, -subIncrement);
     if (subIncrement !== undefined) {
       var i = ceilingIndex(niceTimeIncrements, subIncrement);
       while (++i < niceTimeIncrements.length) {
