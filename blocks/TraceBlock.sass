@@ -1,7 +1,7 @@
 @import block-theme
 @import ../css3-mixins
 
-$name-width: 20%
+$name-width: 25%
 $value-width: 40%
 $units-width: 15%
 $value-and-units-width: $value-width + $units-width
@@ -9,6 +9,7 @@ $range-width: 100% - $name-width - $value-and-units-width
 
 .trace-block
   position: relative
+  padding: 3px
   @include display-flex
   @include align-items(center)
 

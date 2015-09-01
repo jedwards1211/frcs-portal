@@ -32,11 +32,13 @@ export default class TraceBlock extends React.Component {
     var units = React.findDOMNode(this.refs.units);
     var max = React.findDOMNode(this.refs.max);
     var {offsetWidth, offsetHeight} = root;
-    var {fontFamily, fontWeight} = window.getComputedStyle(root);
+    var {fontFamily, fontWeight, paddingTop, paddingBottom} = window.getComputedStyle(root);
+
+    var vpadding = (parseFloat(paddingTop) || 0) + (parseFloat(paddingBottom) || 0);
 
     this.setState({
       width: offsetWidth,
-      height: offsetHeight,
+      height: offsetHeight - vpadding,
       nameWidth: name.offsetWidth,
       valueWidth: value.offsetWidth,
       unitsWidth: units.offsetWidth,
@@ -74,12 +76,12 @@ export default class TraceBlock extends React.Component {
     var unitsStyle        = {color};
     var rangeStyle        = {};
 
-    if (width && height && fontFamily && fontWeight) {
+    if (width > 0 && height > 0 && fontFamily && fontWeight) {
       var ctx = dummyCanvas.getContext('2d');
       ctx.font = `${fontWeight} 10px ${fontFamily}`;
 
       var nameMetrics = ctx.measureText(name);
-      nameStyle.fontSize = Math.min(height * 0.4, 10 * nameWidth * 2 / nameMetrics.width);
+      nameStyle.fontSize = Math.min(height * 0.4, 17 * nameWidth / nameMetrics.width);
 
       var unitsMetrics = ctx.measureText(units);
       unitsStyle.fontSize = Math.min(height / 2, 10 * unitsWidth / unitsMetrics.width);
