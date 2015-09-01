@@ -16,11 +16,11 @@ export default class ValueLine extends Layer {
     axis:       xAxis, 
   }
   paint(canvas) {
-    var {color, conversion, value, axis} = this;
+    var {color, conversion, value, axis} = this.props;
     var cValue = conversion.convert(value);
     if (!isNaN(cValue) && cValue !== null) {
       var ctx = canvas.getContext('2d');
-      ctx.strokeStyle = this.color;
+      ctx.strokeStyle = color;
       ctx.beginPath();
       axis.moveTo(ctx, cValue, 0);
       axis.lineTo(ctx, cValue, canvas[axis.opposite.span]);

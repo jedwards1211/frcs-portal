@@ -20,13 +20,15 @@ export default class PlotInteractionController extends React.Component {
   static propTypes = {
     xConversion: React.PropTypes.instanceOf(LinearConversion),
     yConversion: React.PropTypes.instanceOf(LinearConversion),
-    onMove: React.PropTypes.func,
-    children: React.PropTypes.node.isRequired,
+    onMoveStart: React.PropTypes.func,
+    onMove:      React.PropTypes.func,
+    onMoveEnd:   React.PropTypes.func,
+    children:    React.PropTypes.node.isRequired,
   }
 
   onMouseDown = (e) => {
     if (e.button === 0) {
-      var {xConversion, yConversion} = this.props;
+      var {xConversion, yConversion, onMoveStart} = this.props;
       e.preventDefault();
 
       this.target = e.target;
@@ -38,6 +40,8 @@ export default class PlotInteractionController extends React.Component {
 
       document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup'  , this.onMouseUp, true);
+
+      if (onMoveStart) onMoveStart();
     }
   }
   onMouseMove = (e) => {
@@ -63,6 +67,8 @@ export default class PlotInteractionController extends React.Component {
       e.preventDefault();
       document.removeEventListener('mousemove', this.onMouseMove);
       document.removeEventListener('mouseup'  , this.onMouseUp, true);
+
+      if (this.props.onMoveEnd) this.props.onMoveEnd();
     }
   }
   onWheel = (e) => {
@@ -70,7 +76,7 @@ export default class PlotInteractionController extends React.Component {
 
     var rect = e.target.getBoundingClientRect();
 
-    var {xConversion, yConversion} = this.props;
+    var {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
     var wheelDirection = (e.detail < 0 || e.deltaY < 0) ? 1 : -1;
 
     var zoom = Math.pow(0.9, wheelDirection);
@@ -84,14 +90,15 @@ export default class PlotInteractionController extends React.Component {
       newYConversion = new LinearConversion(yConversion);
       newYConversion.zoom(yConversion.invert(e.clientY - rect.top), zoom);
     }
-    if (this.props.onMove) {
-      this.props.onMove(newXConversion, newYConversion);
-    }
+    if (onMoveStart)  onMoveStart();
+    if (onMove)       onMove(newXConversion, newYConversion);
+    if (onMoveEnd)    onMoveEnd();
   }
   onTouchStart = (e) => {
-    if (Object.keys(this.touches).length) e.preventDefault();
+    var alreadyMoving = Object.keys(this.touches).length;
+    if (alreadyMoving) e.preventDefault();
 
-    var {xConversion, yConversion} = this.props;
+    var {xConversion, yConversion, onMoveStart} = this.props;
     var target = React.findDOMNode(this.refs.target);
 
     var rect = e.target.getBoundingClientRect();
@@ -104,6 +111,8 @@ export default class PlotInteractionController extends React.Component {
       if (yConversion) t.startY = yConversion.invert(t.elementY);
       this.touches[t.id] = t;
     });
+
+    if (!alreadyMoving && onMoveStart) onMoveStart();
   }
   onTouchMove = (e) => {
     e.preventDefault();
@@ -174,6 +183,9 @@ export default class PlotInteractionController extends React.Component {
   }
   onTouchEnd = (e) => {
     _.forEach(e.changedTouches, t => delete this.touches[t.identifier]);
+    if (!Object.keys(this.touches).length && this.props.onMoveEnd) {
+      this.props.onMoveEnd();
+    }
   }
   onTouchCancel = (e) => {
     this.onTouchEnd(e);

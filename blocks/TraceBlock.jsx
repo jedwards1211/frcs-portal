@@ -1,4 +1,5 @@
 import React from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
 
 import './TraceBlock.sass';
@@ -13,17 +14,16 @@ export default class TraceBlock extends React.Component {
     this.state = {width: 0, height: 0};
   }
   static propTypes = {
-    color:      React.PropTypes.string,
-    name:       React.PropTypes.string,
-    value:      React.PropTypes.number,
-    units:      React.PropTypes.string,
-    min:        React.PropTypes.number,
-    max:        React.PropTypes.number,
-    precision:  React.PropTypes.number,
-    alarmState: React.PropTypes.oneOf(['alarm', 'warning'])
-  }
-  static defaultPropTypes = {
-    color: 'black',
+    model:      ImmutablePropTypes.shape({
+      color:      React.PropTypes.string,
+      name:       React.PropTypes.string,
+      value:      React.PropTypes.number,
+      units:      React.PropTypes.string,
+      min:        React.PropTypes.number,
+      max:        React.PropTypes.number,
+      precision:  React.PropTypes.number,
+      alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
+    }),
   }
   resize() {
     var root = React.findDOMNode(this.refs.root);
@@ -54,22 +54,36 @@ export default class TraceBlock extends React.Component {
     this.resize();
   }
   render() {
-    var {className, color, name, value, units, min, max, precision, alarmState} = this.props;
+    var {className, model} = this.props;
+    // var {className, color, name, value, units, min, max, precision, alarmState} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
     className = classNames('block', 'trace-block', className, {
       'block-alarm': alarmState === 'alarm',
       'block-warning': alarmState === 'warning',
     });
+    
+    var value, min, max, name, color, units, precision, alarmState;
 
-    function formatValue(value) {
-      if (isNaN(value) || value === null) return 'NA';
-      return value.toFixed(precision);
+    if (model) {
+      precision = model.get('precision') || 0;
+
+      function formatValue(value) {
+        if (isNaN(value) || value === null) return 'NA';
+        return value.toFixed(precision);
+      }
+
+      value       = formatValue(model.get('value')),
+      min         = formatValue(model.get('min')),
+      max         = formatValue(model.get('max')),
+      name        = model.get('name'),
+      color       = model.get('color'),
+      units       = model.get('units'),
+      alarmState  = model.get('alarmState');
     }
-
-    value = formatValue(value);
-    min = formatValue(min);
-    max = formatValue(max);
+    else {
+      value = min = max = 'NA';
+    }
 
     var nameStyle         = {color};
     var valueStyle        = {color};

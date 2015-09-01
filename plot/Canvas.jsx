@@ -54,11 +54,12 @@ export default class Canvas extends React.Component {
     this.repaint();
   }
   render() {
+    var {repaint} = this;
     var {className, children} = this.props;
     var {width = 1, height = 1} = this.state;
 
     var refChildren = React.Children.map(this.props.children, 
-      (child, index) => React.cloneElement(child, {ref: index}));
+      (child, index) => React.cloneElement(child, {ref: index, repaint}));
 
     if (className) className += ' canvas';
     else className = 'canvas';
