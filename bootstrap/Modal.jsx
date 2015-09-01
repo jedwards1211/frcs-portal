@@ -12,6 +12,10 @@ import addClassWhenIn from '../wrappers/transition/addClassWhenIn';
 
 import './Modal.sass';
 
+/////////////////////////////////////////////////////////////////////////////////
+// See ModalExample.jsx for an example of how to use this
+/////////////////////////////////////////////////////////////////////////////////
+
 var ModalBase = React.createClass({
   render() {
     var {className, dialogClassName, children} = this.props;
