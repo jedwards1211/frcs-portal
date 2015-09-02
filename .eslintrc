@@ -9,11 +9,13 @@
     "comma-dangle": 0,
     "strict": 0,
     "no-unused-vars": [1, {"args": "none", "varsIgnorePattern": "React"}],
+    "no-console": 1,
     "react/react-in-jsx-scope": 1
   },
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "commonjs": true
   },
   "plugins": [
     "react"

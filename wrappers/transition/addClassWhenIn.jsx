@@ -39,4 +39,4 @@ export default function addClassWhenIn(Component, inClassName) {
       </Component>;
     }
   });
-};
+}

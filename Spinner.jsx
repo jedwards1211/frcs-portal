@@ -1,7 +1,7 @@
 import React from 'react';
 import arcPath from './arcPath';
 
-require('./Spinner.sass');
+import './Spinner.sass';
 
 export default React.createClass({
   propTypes: {

@@ -1,15 +1,11 @@
-'use strict';
+import React from 'react';
+import classNames from 'classnames';
+import _ from 'lodash';
 
-import React from 'react'
-import classNames from 'classnames'
-import {addons} from 'react/addons'
-
-require('./Toggle.sass');
-
-var PureRenderMixin = addons.PureRenderMixin;
+import './Toggle.sass';
 
 export default React.createClass({
-  mixins: [PureRenderMixin],
+  mixins: [React.addons.PureRenderMixin],
 
   displayName: 'Toggle',
 
