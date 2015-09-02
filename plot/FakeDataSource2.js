@@ -16,7 +16,7 @@ function stretchRandom(seed, time, period, amplitude) {
 
 export default class FakeDataSource {
   constructor(options = {}) {
-    this.increment            = options.increment           || 1000;
+    this.increment            = options.increment           || 30000;
     this.majorPeriod          = options.majorPeriod         || 3600000;
     this.majorAmplitude       = options.majorAmplitude      || 5;
     this.variancePeriod       = options.variancePeriod      || 4782052;

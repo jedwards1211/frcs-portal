@@ -35,7 +35,8 @@ export default class Canvas extends React.Component {
   doRepaint = () => {
     var canvas = React.findDOMNode(this.refs.canvas);
     for (var i = 0; i < React.Children.count(this.props.children); i++) {
-      this.refs[i].paint(canvas); 
+      var child = this.refs[i];
+      if (child) child.paint(canvas);
     }
   }
 
@@ -58,7 +59,7 @@ export default class Canvas extends React.Component {
     var {width = 1, height = 1} = this.state;
 
     var refChildren = React.Children.map(children, 
-      (child, index) => React.cloneElement(child, {ref: index, repaint}));
+      (child, index) => child && React.cloneElement(child, {ref: index, repaint}));
 
     if (className) className += ' canvas';
     else className = 'canvas';

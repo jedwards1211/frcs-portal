@@ -1,29 +1,23 @@
 import React from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
 
 import './TraceBlock.sass';
 import dummyCanvas from '../dummyCanvas';
 
-import shouldPureComponentUpdate from 'react-pure-render/function';
-
 export default class TraceBlock extends React.Component {
-  shouldComponentUpdate = shouldPureComponentUpdate;
   constructor(props) {
     super(props);
     this.state = {width: 0, height: 0};
   }
   static propTypes = {
-    model:      ImmutablePropTypes.shape({
-      color:      React.PropTypes.string,
-      name:       React.PropTypes.string,
-      value:      React.PropTypes.number,
-      units:      React.PropTypes.string,
-      min:        React.PropTypes.number,
-      max:        React.PropTypes.number,
-      precision:  React.PropTypes.number,
-      alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
-    }),
+    color:      React.PropTypes.string,
+    name:       React.PropTypes.string,
+    value:      React.PropTypes.number,
+    units:      React.PropTypes.string,
+    min:        React.PropTypes.number,
+    max:        React.PropTypes.number,
+    precision:  React.PropTypes.number,
+    alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
   }
   resize() {
     var root = React.findDOMNode(this.refs.root);
@@ -36,16 +30,20 @@ export default class TraceBlock extends React.Component {
 
     var vpadding = (parseFloat(paddingTop) || 0) + (parseFloat(paddingBottom) || 0);
 
-    this.setState({
-      width: offsetWidth,
-      height: offsetHeight - vpadding,
-      nameWidth: name.offsetWidth,
-      valueWidth: value.offsetWidth,
-      unitsWidth: units.offsetWidth,
-      rangeWidth: max.offsetWidth,
-      fontFamily,
-      fontWeight,
-    });
+    var width = offsetWidth;
+    var height = offsetHeight - vpadding;
+
+    if (width !== this.state.width || height !== this.state.height) {
+      this.setState({
+        width, height,
+        nameWidth: name.offsetWidth,
+        valueWidth: value.offsetWidth,
+        unitsWidth: units.offsetWidth,
+        rangeWidth: max.offsetWidth,
+        fontFamily,
+        fontWeight,
+      });
+    }
   }
   componentDidMount() {
     this.resize();
@@ -54,8 +52,7 @@ export default class TraceBlock extends React.Component {
     this.resize();
   }
   render() {
-    var {className, model} = this.props;
-    // var {className, color, name, value, units, min, max, precision, alarmState} = this.props;
+    var {className, value, min, max, name, color, units, precision = 0, alarmState, ...props} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
     className = classNames('block', 'trace-block', className, {
@@ -63,27 +60,14 @@ export default class TraceBlock extends React.Component {
       'block-warning': alarmState === 'warning',
     });
     
-    var value, min, max, name, color, units, precision, alarmState;
-
     function formatValue(value) {
       if (isNaN(value) || value === null) return 'NA';
       return value.toFixed(precision);
     }
 
-    if (model) {
-      precision = model.get('precision') || 0;
-
-      value       = formatValue(model.get('value')),
-      min         = formatValue(model.get('min')),
-      max         = formatValue(model.get('max')),
-      name        = model.get('name'),
-      color       = model.get('color'),
-      units       = model.get('units'),
-      alarmState  = model.get('alarmState');
-    }
-    else {
-      value = min = max = 'NA';
-    }
+    value       = formatValue(value);
+    min         = formatValue(min);
+    max         = formatValue(max);
 
     var nameStyle         = {color};
     var valueStyle        = {color};
@@ -110,7 +94,7 @@ export default class TraceBlock extends React.Component {
         valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width));
     }
 
-    return <div ref="root" {...this.props} className={className}>
+    return <div ref="root" {...props} className={className}>
       <span ref="name" className="name" style={nameStyle}>{name}</span>
       <div className="value-and-units">
         <span ref="value" className="value" style={valueStyle}>{value}</span>
