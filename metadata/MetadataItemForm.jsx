@@ -12,7 +12,7 @@ import './MetadataItemForm.sass';
 export function hasErrors(metadataItem) {
   return !numberRegExp.test(metadataItem.min) ||
     !numberRegExp.test(metadataItem.max) ||
-    _.any(metadataItem.alarms, alarm => !numberOrBlankRegExp.test(alarm.setpoint));
+    _.any(metadataItem.alarms, alarm => typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint));
 }
 
 /**
@@ -36,7 +36,8 @@ let AlarmRow = React.createClass({
     let disabled = this.props.disabled;
 
     return (
-      <div className={classNames('AlarmRow', 'form-group', {'has-error': !numberOrBlankRegExp.test(alarm.setpoint)})}>
+      <div className={classNames('AlarmRow', 'form-group', 
+        {'has-error': typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint)})}>
         <div key="alarm-name" className="alarm-name">
           <h4 className="control-label">{humanName}</h4>
         </div>
