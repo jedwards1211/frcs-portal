@@ -4,16 +4,6 @@ import 'seedrandom';
 import CachePage from './CachePage';
 import * as GridMath from './GridMath';
 
-function stretchRandom(seed, time, period, amplitude) {
-    var m = time / period;
-    var m0 = Math.floor(m);
-    var m1 = m0 + 1;
-    var f = m - m0;
-    Math.seedrandom(m0 + seed); m0 = Math.random();
-    Math.seedrandom(m1 + seed); m1 = Math.random();
-    return ((1 - f) * m0 + f * m1 - 0.5) * amplitude;
-}
-
 class NoiseGen {
   constructor(seed, period, amplitude) {
     this.seed = seed;
