@@ -2,6 +2,9 @@ import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
+import Collapse from '../bootstrap/Collapse';
+import Alert from '../bootstrap/Alert';
+
 import Toggle from '../Toggle';
 import alarmTypes from './alarmTypes';
 
@@ -9,10 +12,20 @@ import { numberRegExp, numberOrBlankRegExp } from '../validationRegExps';
 
 import './MetadataItemForm.sass';
 
+function alarmHasErrors(alarm) {
+  if (typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint)) {
+    return true;
+  }
+  if (alarm.enabled && !alarm.setpoint && alarm.setpoint !== 0) {
+    return true; 
+  }
+  return false;
+}
+
 export function hasErrors(metadataItem) {
   return !numberRegExp.test(metadataItem.min) ||
     !numberRegExp.test(metadataItem.max) ||
-    _.any(metadataItem.alarms, alarm => typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint));
+    _.any(metadataItem.alarms, alarmHasErrors);
 }
 
 /**
@@ -36,8 +49,7 @@ let AlarmRow = React.createClass({
     let disabled = this.props.disabled;
 
     return (
-      <div className={classNames('AlarmRow', 'form-group', 
-        {'has-error': typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint)})}>
+      <div className={classNames('AlarmRow', 'form-group', {'has-error': alarmHasErrors(alarm)})}>
         <div key="alarm-name" className="alarm-name">
           <h4 className="control-label">{humanName}</h4>
         </div>
@@ -148,17 +160,15 @@ export default React.createClass({
     let {className, metadataItem} = this.props;
     className = classNames(className, 'metadata-item-form');
 
-    let errorAlert = hasErrors(metadataItem) && (
-      <div key="error-alert" className="alert alert-danger">
-        Please correct invalid input in the fields outlined in red before continuing
-      </div>
-    );
-
     return (
       <div {...this.props} className={className}>
         {this.renderRange()}
         {this.renderAlarms()}
-        {errorAlert}
+        <Collapse className="error-alert" open={hasErrors(metadataItem)}>
+          <Alert.Danger>
+            Please correct invalid input in the fields outlined in red before continuing
+          </Alert.Danger>
+        </Collapse>
       </div>
     );
   }
