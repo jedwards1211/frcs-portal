@@ -1,0 +1,6 @@
+@import css3-mixins
+
+.collapse-icon
+  @include transition(transform linear 0.35s) 
+  &.open
+    @include transform(rotate(90deg))
