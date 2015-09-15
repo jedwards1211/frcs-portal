@@ -1,68 +1,65 @@
-import React from 'react';
+import React, {Component} from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
 import firstDefined from '../firstDefined';
 
-var DropdownToggle = React.createClass({
-  propTypes: {
-    open: React.PropTypes.bool,
+class DropdownToggle extends Component {
+  static propTypes = {
+    open:      React.PropTypes.bool,
     component: React.PropTypes.any.isRequired,
-  },
+  }
   render() {
-    var {component, open, children} = this.props;
-    var props = _.clone(this.props);
+    var {component, open, children, ...props} = this.props;
     props['aria-haspopup'] = 'true';
     props['aria-expanded'] = open;
     return React.createElement(component, props, children);
-  },
-});
+  }
+}
 
-var DropdownMenu = React.createClass({
-  propTypes: {
+class DropdownMenu extends Component {
+  static propTypes = {
     component: React.PropTypes.any.isRequired,
-  },
+  }
   render() {
-    var {component, children, className} = this.props;
-    var props = _.clone(this.props);
+    var {component, children, className, ...props} = this.props;
     props.className = classNames('dropdown-menu', className);
     return React.createElement(component, props, children);
-  },
-});
+  }
+}
 
-var Dropdown = React.createClass({
-  propTypes: {
+class Dropdown extends Component {
+  static propTypes = {
     /*
      * optional (overrides state.open if used)
      */
     open:               React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
-  },
-  getDefaultProps() {
-    return {
-      closeOnInsideClick: true,
-    };
-  },
-  getInitialState() {
-    return {
+    component:          React.PropTypes.any.isRequired,
+  }
+  static defaultProps = {
+    closeOnInsideClick: true,
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
       open: false,
-      component: React.PropTypes.any.isRequired,
     };
-  },
+  }
   show() {
     this.setState({open: true});
-  },
+  }
   hide() {
     this.setState({open: false});
-  },
-  onDropdownToggleClick() {
+  }
+  onDropdownToggleClick = () => {
     this.setState({open: !this.state.open});
-  },
+  }
   componentWillReceiveProps(nextProps) {
     if (this.props.open !== undefined && nextProps.open === undefined) {
       this.setState({open: this.props.open});
     }
-  },
+  }
   componentDidUpdate() {
     if (this.state.open && !this.isDocumentClickInstalled) {
       document.addEventListener('click', this.onDocumentClick, true);
@@ -72,14 +69,14 @@ var Dropdown = React.createClass({
       document.removeEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = false;
     }
-  },
+  }
   componentWillUnmount() {
     if (this.isDocumentClickInstalled) {
       document.removeEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = false;
     }
-  },
-  onDocumentClick(e) {
+  }
+  onDocumentClick = (e) => {
     function isDescendant(el, ancestor) {
       while (el && el !== document.body.parentElement) {
         if (el === ancestor) {
@@ -91,10 +88,10 @@ var Dropdown = React.createClass({
     }
 
     if (this.props.closeOnInsideClick || 
-      !isDescendant(e.target, React.findDOMNode(this.refs.dropdown))) {
+      !isDescendant(e.target, React.findDOMNode(this.refs.menu))) {
       this.setState({open: false});
     }
-  },
+  }
   render() {
     var {className, component, openClassName, children} = this.props;
     var open = firstDefined(this.props.open, this.state.open);
@@ -115,12 +112,15 @@ var Dropdown = React.createClass({
 
         return React.cloneElement(child, {open, onClick});
       }
+      if (child.type === DropdownMenu) {
+        return React.cloneElement(child, {ref: 'menu'});
+      }
       return child;
     });
 
     return React.createElement(component, props, children);
-  },
-});
+  }
+}
 
 Dropdown.Toggle = DropdownToggle;
 Dropdown.Menu = DropdownMenu;
