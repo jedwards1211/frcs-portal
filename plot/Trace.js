@@ -55,6 +55,7 @@ export default class Trace extends Layer {
     renderer        = renderer(ctx);
 
     ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 1.3;
     ctx.fillStyle   = fillColor;
 
     plotter         = plotter(domainConversion, valueConversion, renderer);

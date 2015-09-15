@@ -87,6 +87,7 @@ export default class FakeDataSource {
           values.push(this.valueAt(channelId, time));
           time += increment;
         }
+        Math.seedrandom(new Date().toISOString());
         if (time < endTime) {
           setTimeout(makeValues, 0);
         }

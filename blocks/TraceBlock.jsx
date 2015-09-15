@@ -94,7 +94,7 @@ export default class TraceBlock extends React.Component {
         valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width));
     }
 
-    return <div ref="root" {...props} className={className}>
+    return <div ref="root" {...props} className={className} tabIndex={0}>
       <span ref="name" className="name" style={nameStyle}>{name}</span>
       <div className="value-and-units">
         <span ref="value" className="value" style={valueStyle}>{value}</span>
