@@ -52,7 +52,7 @@ export default class TraceBlock extends React.Component {
     this.resize();
   }
   render() {
-    var {className, value, min, max, name, color, units, precision = 0, alarmState, ...props} = this.props;
+    var {className, value, min, max, name, color, units, precision = 0, alarmState, children, ...props} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
     className = classNames('block', 'trace-block', className, {
@@ -104,6 +104,7 @@ export default class TraceBlock extends React.Component {
         <div ref="min"   className="min">{min}</div>
         <div ref="max"   className="max">{max}</div>
       </div>
+      {children}
     </div>
   }
 }
