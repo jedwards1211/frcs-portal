@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
-import {Link, State} from 'react-router';
+import {Link, History} from 'react-router';
 
 import addClass from '../wrappers/addClass';
 
@@ -25,6 +25,9 @@ export default class Navbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {collapseOpen: false};
+  }
+  static contextTypes = {
+    history: React.PropTypes.object.isRequired,
   }
   static propTypes = {
     headerContent: React.PropTypes.any,
@@ -73,6 +76,9 @@ export default class Navbar extends React.Component {
   closeNavbarCollapse = () => {
     this.setState({collapseOpen: false});
   }
+  isActive = (...args) => {
+    return this.context.history.isActive(...args);
+  }
   render() {
     var {className, children, headerContent, navbarToggle} = this.props;
     var {collapseOpen} = this.state;
@@ -98,10 +104,10 @@ Navbar.Nav = addClass('ul', 'nav navbar-nav');
 Navbar.Nav.Right = addClass('ul', 'nav navbar-nav navbar-right');
 
 Navbar.Nav.Link = React.createClass({
-  mixins: [State],
+  mixins: [History],
   render() {
     var {to, params, query, className} = this.props;
-    className = classNames(className, {active: this.isActive(to, params, query)});
+    className = classNames(className, {active: this.history.isActive(to, params, query)});
     return <li><Link {...this.props} className={className}>{this.props.children}</Link></li>;
   },
 });
