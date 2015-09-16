@@ -68,7 +68,17 @@ export default class FakeDataSource {
   query(options) {
     var {channelId, beginTime, endTime} = options;
 
-    var canceled;
+    var majorGen = this.majorGens[channelId];
+    if (!majorGen) {
+      majorGen = this.majorGens[channelId] = new NoiseGen(channelId, this.majorPeriod, this.majorAmplitude);
+    }
+    var varianceGen = this.varianceGens[channelId];
+    if (!varianceGen) {
+      varianceGen = this.varianceGens[channelId] = new NoiseGen(channelId, this.variancePeriod, this.varianceAmplitude);
+    }
+
+    Math.seedrandom(beginTime + channelId);
+
     return new Promise((resolve, reject) => {
       var times = [];
       var values = [];
@@ -77,29 +87,18 @@ export default class FakeDataSource {
 
       var time = GridMath.modCeiling(beginTime, increment);
 
-      var makeValues = () => {
-        if (canceled) {
-          return;
-        }
-        var i = 0;
-        while (time < endTime && i++ < 500) {
-          times.push(time);
-          values.push(this.valueAt(channelId, time));
-          time += increment;
-        }
-        Math.seedrandom(new Date().toISOString());
-        if (time < endTime) {
-          setTimeout(makeValues, 0);
-        }
-        else {
-          resolve(new CachePage(channelId, beginTime, endTime, times, values));
-        }
-      };
+      while (time < endTime) {
+        times.push(time);
+        // values.push(this.valueAt(channelId, time));
+        var m = majorGen.valueAt(time);
+        var v = varianceGen.valueAt(time) + this.varianceAmplitude;
+        var value = m + v * (Math.random() - 0.5);
+        values.push(value);
+        time += increment;
+      }
+      Math.seedrandom(new Date().toISOString());
 
-      setTimeout(makeValues, 0);
-
-    }).delay(500).cancellable().catch(Promise.CancellationError, e => {
-      canceled = true; 
-    });
+      resolve(new CachePage(channelId, beginTime, endTime, times, values));
+    }).delay(500);
   }
 }
