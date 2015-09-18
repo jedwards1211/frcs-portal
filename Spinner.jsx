@@ -16,7 +16,7 @@ export default React.createClass({
     return false;
   },
   render() {
-    var {period, size, className, pathStyle} = this.props;
+    var {size, className, pathStyle} = this.props;
     if (className) className += ' spinner';
     else className = 'spinner';
 
