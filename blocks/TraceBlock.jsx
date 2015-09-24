@@ -80,9 +80,11 @@ export default class TraceBlock extends React.Component {
 
       var nameMetrics = ctx.measureText(name);
       nameStyle.fontSize = Math.min(height * 0.4, 17 * nameWidth / nameMetrics.width);
+      nameStyle.lineHeight = nameStyle.fontSize + 'px';
 
       var unitsMetrics = ctx.measureText(units);
       unitsStyle.fontSize = Math.min(height / 2, 10 * unitsWidth / unitsMetrics.width);
+      unitsStyle.lineHeight = unitsStyle.fontSize + 'px';
 
       var rangeMinMetrics = ctx.measureText(min);
       var rangeMaxMetrics = ctx.measureText(max);
@@ -92,6 +94,7 @@ export default class TraceBlock extends React.Component {
       var valueMetrics = ctx.measureText(value);
       valueStyle.fontSize = Math.min(height, 10 * (valueWidth) / Math.max(
         valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width));
+      valueStyle.lineHeight = valueStyle.fontSize + 'px';
     }
 
     return <div ref="root" {...props} className={className} tabIndex={0}>
