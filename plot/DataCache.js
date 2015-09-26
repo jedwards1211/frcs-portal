@@ -97,7 +97,7 @@ export default class DataCache extends EventEmitter {
     }
   }
 
-  mergeData = (pageWithNewData) => {
+  mergeData = (pageWithNewData, notify) => {
     if (!pageWithNewData || !pageWithNewData.times.length) return;
 
     let chunks = pageWithNewData.chunk(this.pageRange);
@@ -127,7 +127,9 @@ export default class DataCache extends EventEmitter {
           page.times .splice(startIndex, page.times.length  - startIndex, ...times);
           page.values.splice(startIndex, page.values.length - startIndex, ...values);
           page.isMerged = true;
-          this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: page.endTime});
+          if (notify !== false) {
+            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: page.endTime});
+          }
         }
       }
     }
@@ -175,17 +177,28 @@ export default class DataCache extends EventEmitter {
   }
 
   fetchLatestData(channelIds) {
+    let channels = {}, minBeginTime, maxEndTime;
     return Promise.settle(channelIds.map(channelId => {
       let beginTime = this.getLatestPageBeginTime(channelId);
       if (beginTime) {
         let page = this.getPage(channelId, beginTime);
         if (page) {
           let lastTime = page.times[page.times.length - 1];
-          return this.dataSource.query({channelId, beginTime: lastTime}).then(this.mergeData);
+          return this.dataSource.query({channelId, beginTime: lastTime}).then(page => {
+            let pageEndTime = page.endTime || page.times[page.times.length - 1];
+            if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime;
+            if (!maxEndTime   || pageEndTime    > maxEndTime  ) maxEndTime   = pageEndTime;
+            channels[page.channelId] = true;
+            this.mergeData(page, false);
+          });
         }
       }
       return Promise.resolve();
-    }));
+    })).then(() => {
+      if (minBeginTime && maxEndTime) {
+        this.emit('dataChange', {channels, beginTime: minBeginTime, endTime: maxEndTime});
+      }
+    });
   }
 
   /**
