@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import './TraceBlock.sass';
 import dummyCanvas from '../dummyCanvas';
 
+let decimalZerosRx = /^([^.]+)\.0+$/;
+
 export default class TraceBlock extends React.Component {
   constructor(props) {
     super(props);
@@ -65,9 +67,15 @@ export default class TraceBlock extends React.Component {
       return value.toFixed(precision);
     }
 
+    function formatRange(value) {
+      let result = formatValue(value);
+      let match = decimalZerosRx.exec(result);
+      return match ? match[1] : result;
+    }
+
     value       = formatValue(value);
-    min         = formatValue(min);
-    max         = formatValue(max);
+    min         = formatRange(min);
+    max         = formatRange(max);
 
     var nameStyle         = {color};
     var valueStyle        = {color};
