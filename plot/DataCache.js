@@ -103,25 +103,31 @@ export default class DataCache extends EventEmitter {
     let chunks = pageWithNewData.chunk(this.pageRange);
 
     for (let i = 0; i < chunks.length; i++) {
-      if (i > 0 && i < chunks.length - 1) {
-        this.replaceData(chunks[i]);
-      }
-      else {
-        let {channelId, beginTime, times, values} = chunks[i];
-        let pages = this.data[channelId];
-        if (pages) {
-          let page = pages[beginTime];
-          if (page) {
-            let firstTime  = pageWithNewData.times[0];
-            let lastTime   = pageWithNewData.times[times.length - 1];
-            let startIndex = ceilingIndex(page.times, firstTime);
-            let endIndex   = higherIndex (page.times, lastTime);
-
-            page.times .splice(startIndex, Math.max(0, endIndex - startIndex), ...times);
-            page.values.splice(startIndex, Math.max(0, endIndex - startIndex), ...values);
-            page.isMerged = true;
-            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: lastTime});
+      let chunk = chunks[i];
+      let {channelId, beginTime, times, values} = chunk;
+      let pages = this.data[channelId];
+      if (pages) {
+        let page = pages[beginTime];
+        if (!page || (i > 0 && i < chunks.length - 1)) {
+          if (!page) {
+            page = pages[beginTime] = chunk;
+            page.node = this.recentPages.prepend(page);
+            if (this.dataSource) {
+              page.promise = Promise.resolve();
+            }
           }
+          else {
+            this.replaceData(chunk);
+          }
+        }
+        else {
+          let firstTime  = times[0];
+          let startIndex = ceilingIndex(page.times, firstTime);
+
+          page.times .splice(startIndex, page.times.length  - startIndex, ...times);
+          page.values.splice(startIndex, page.values.length - startIndex, ...values);
+          page.isMerged = true;
+          this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: page.endTime});
         }
       }
     }
@@ -158,7 +164,7 @@ export default class DataCache extends EventEmitter {
     if (!(channelId in this.latestPageBeginTimes) && channelId in this.data) {
       let beginTime = 0;
       forEach(this.data[channelId], page => {
-        if (!page.isPending) beginTime = Math.max(beginTime, page.beginTime);
+        if (!page.isPending && page.times.length) beginTime = Math.max(beginTime, page.beginTime);
       });
       if (beginTime === 0) {
         return undefined;

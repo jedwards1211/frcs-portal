@@ -6,6 +6,7 @@ import './Canvas.sass';
 export default class Canvas extends React.Component {
   constructor(props) {
     super(props);
+    this.mounted = false;
     this.resize  = _.throttle(this.doResize , 50);
     this.repaint = _.throttle(this.doRepaint, 20);
     this.state = {};
@@ -24,6 +25,7 @@ export default class Canvas extends React.Component {
     };
   }
   doResize = () => {
+    if (!this.mounted) return;
     var size = this.getRootSize();
     if (size.width  !== this.state.width ||
         size.height !== this.state.height) {
@@ -33,6 +35,7 @@ export default class Canvas extends React.Component {
     }
   }
   doRepaint = () => {
+    if (!this.mounted) return;
     var canvas = React.findDOMNode(this.refs.canvas);
     for (var i = 0; i < React.Children.count(this.props.children); i++) {
       var child = this.refs[i];
@@ -41,11 +44,13 @@ export default class Canvas extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     window.addEventListener('resize', this.resize);
     this.doResize();
     this.repaint();
   }
   componentWillUnmount() {
+    this.mounted = false;
     window.removeEventListener('resize', this.resize);
   }
 
