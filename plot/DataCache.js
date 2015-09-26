@@ -3,8 +3,11 @@ import {EventEmitter} from 'events';
 import * as GridMath from './GridMath';
 import CachePage from './CachePage';
 import LinkedList from './LinkedList';
+import Promise from 'bluebird';
 
-import {floorIndex, lowerIndex, higherIndex} from './precisebs';
+import {floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
+
+import {forEach} from 'lodash';
 
 export default class DataCache extends EventEmitter {
   /**
@@ -19,6 +22,8 @@ export default class DataCache extends EventEmitter {
     this.maxPages = options.maxPages;
     this.data = {};
     this.recentPages = new LinkedList();
+    // map from channel id => begin time of latest page
+    this.latestPageBeginTimes = {};
   }
 
   /**
@@ -92,6 +97,36 @@ export default class DataCache extends EventEmitter {
     }
   }
 
+  mergeData = (pageWithNewData) => {
+    if (!pageWithNewData || !pageWithNewData.times.length) return;
+
+    let chunks = pageWithNewData.chunk(this.pageRange);
+
+    for (let i = 0; i < chunks.length; i++) {
+      if (i > 0 && i < chunks.length - 1) {
+        this.replaceData(chunks[i]);
+      }
+      else {
+        let {channelId, beginTime, times, values} = chunks[i];
+        let pages = this.data[channelId];
+        if (pages) {
+          let page = pages[beginTime];
+          if (page) {
+            let firstTime  = pageWithNewData.times[0];
+            let lastTime   = pageWithNewData.times[times.length - 1];
+            let startIndex = ceilingIndex(page.times, firstTime);
+            let endIndex   = higherIndex (page.times, lastTime);
+
+            page.times .splice(startIndex, Math.max(0, endIndex - startIndex), ...times);
+            page.values.splice(startIndex, Math.max(0, endIndex - startIndex), ...values);
+            page.isMerged = true;
+            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: lastTime});
+          }
+        }
+      }
+    }
+  }
+
   removePage(page) {
     let {channelId, beginTime} = page;
     let pages = this.data[channelId];
@@ -100,6 +135,9 @@ export default class DataCache extends EventEmitter {
     if (pages) {
       if (page === pages[beginTime]) {
         delete pages[beginTime];
+        if (beginTime === this.getLatestPageBeginTime(channelId)) {
+          delete this.latestPageBeginTimes[channelId];
+        }
       }
     }
   }
@@ -114,6 +152,34 @@ export default class DataCache extends EventEmitter {
       }
       node = prev;
     }
+  }
+
+  getLatestPageBeginTime(channelId) {
+    if (!(channelId in this.latestPageBeginTimes) && channelId in this.data) {
+      let beginTime = 0;
+      forEach(this.data[channelId], page => {
+        if (!page.isPending) beginTime = Math.max(beginTime, page.beginTime);
+      });
+      if (beginTime === 0) {
+        return undefined;
+      }
+      this.latestPageBeginTimes[channelId] = beginTime;
+    }
+    return this.latestPageBeginTimes[channelId];
+  }
+
+  fetchLatestData(channelIds) {
+    return Promise.settle(channelIds.map(channelId => {
+      let beginTime = this.getLatestPageBeginTime(channelId);
+      if (beginTime) {
+        let page = this.getPage(channelId, beginTime);
+        if (page) {
+          let lastTime = page.times[page.times.length - 1];
+          return this.dataSource.query({channelId, beginTime: lastTime}).then(this.mergeData);
+        }
+      }
+      return Promise.resolve();
+    }));
   }
 
   /**
