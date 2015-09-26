@@ -197,7 +197,7 @@ export class DateMetrics extends TimeMetrics {
   formatLabel(time) {
     var date = new Date(time);
     if (time === this.establishingTime) {
-      return date.toString();
+      return date.toDateString();
     } else if (isYearStart(date)) {
       return daysNarrow[date.getDay()] + ' ' + monthsNarrow[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
     } else if (isDayStart(date)) {

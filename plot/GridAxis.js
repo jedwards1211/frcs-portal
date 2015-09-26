@@ -66,12 +66,12 @@ export default class GridAxis extends Layer {
 
       if (justifyEndLabels && labelMinPx < startPx) {
         axis.minSide.alignText(ctx);
-        labelPx = labelMinPx = Math.min(startPx, alignedPx);
+        labelPx = labelMinPx = startPx;
         labelMaxPx = labelMinPx + labelMetrics[axis.span];
       }
       else if (justifyEndLabels && labelMaxPx > endPx) {
         axis.maxSide.alignText(ctx);
-        labelPx = labelMaxPx = Math.max(endPx, alignedPx);
+        labelPx = labelMaxPx = endPx;
         labelMinPx = labelMaxPx - labelMetrics[axis.span];
       }
       else {
