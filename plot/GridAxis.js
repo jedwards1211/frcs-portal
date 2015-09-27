@@ -64,6 +64,8 @@ export default class GridAxis extends Layer {
       let labelMinPx = alignedPx - labelMetrics[axis.span] / 2;
       let labelMaxPx = alignedPx + labelMetrics[axis.span] / 2;
 
+      if (alignedPx <= startPx || alignedPx >= endPx) return;
+
       if (justifyEndLabels && labelMinPx < startPx) {
         axis.minSide.alignText(ctx);
         labelPx = labelMinPx = startPx;
