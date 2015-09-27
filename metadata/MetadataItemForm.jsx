@@ -16,7 +16,7 @@ function alarmHasErrors(alarm) {
   if (typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint)) {
     return true;
   }
-  if (alarm.enabled && !alarm.setpoint && alarm.setpoint !== 0) {
+  if (!alarm.setpoint && alarm.setpoint !== 0) {
     return true; 
   }
   return false;
@@ -54,7 +54,7 @@ let AlarmRow = React.createClass({
           <h4 className="control-label">{humanName}</h4>
         </div>
         <div key="alarm-setpoint" className="alarm-setpoint">
-          <input name={name} type="text" inputMode="number" className="form-control" value={alarm.setpoint || ""} 
+          <input name={name} type="text" inputMode="number" className="form-control" value={alarm.setpoint}
             disabled={disabled} style={{display: 'setpoint' in alarm ? undefined : 'none'}}
             onChange={this.onSetpointChange} />
         </div>
