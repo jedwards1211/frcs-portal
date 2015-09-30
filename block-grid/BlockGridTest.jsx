@@ -6,7 +6,7 @@ import BlockGrid from './BlockGrid';
 import Block from './Block';
 import DragHandle from './DragHandle';
 import ResizeHandle from './ResizeHandle';
-import CornerHandle from './CornerHandle';
+import CornerKnob from './CornerKnob';
 
 import {hslGenerator, restrictLuminance, generateColors} from '../colorGenerators';
 
@@ -67,12 +67,9 @@ export default class BlockGridTest extends Component {
   renderBlock = (block) => {
     return <Block key={block.get('key')} {...block.toJS()}>
       <DragHandle>
-        <div style={{backgroundColor: block.get('color'), height: '100%'}}>
-          <ResizeHandle>
-            <CornerHandle/>
-          </ResizeHandle>
-        </div>
+        <div style={{backgroundColor: block.get('color'), height: '100%'}}/>
       </DragHandle>
+      <ResizeHandle><CornerKnob/></ResizeHandle>
     </Block>;
   }
   render() {

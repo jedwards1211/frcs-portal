@@ -22,7 +22,6 @@ export default class Block extends Component {
     blockKey:       React.PropTypes.string,
     grabbed:        React.PropTypes.bool,
     resizing:       React.PropTypes.bool,
-    children:       React.PropTypes.element.isRequired
   }
   static contextTypes = {
     // (observer: (prevPosition, nextPosition) => undefined) => stopObserving: () => undefined
@@ -128,10 +127,7 @@ export default class Block extends Component {
     style.WebkitTransform = style.transform;
 
     return <div ref="block" {...this.props} className={className} style={style}>
-      {React.cloneElement(this.props.children, {
-        width,
-        height,
-      })}
+      {this.props.children}
     </div>
   } 
 }
