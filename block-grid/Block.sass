@@ -1,0 +1,88 @@
+@import ../css3-mixins
+
+$block-transition-duration: 0.2s
+$resize-knob-size: 30px
+
+.block
+  cursor: pointer
+  display: inline-block
+  position: absolute
+  background-color: #eee
+  overflow: hidden  
+  border-style: none
+  border-radius: 0
+  outline: none
+  @include transition(all $block-transition-duration ease-out)
+
+  &.grabbed,
+  &.resizing
+    @include transition(opacity $block-transition-duration linear)
+
+  .delete-btn,
+  > .resize-knob
+    cursor: pointer
+    position: absolute
+    visibility: hidden
+    opacity: 0
+    border-style: none
+    background-color: #ddd
+    outline: none !important
+    z-index: 100
+    @include box-shadow(0px, 0px, 5px, rgba(0, 0, 0, 0.5))
+    @include transition(all linear $block-transition-duration)
+
+    &:hover
+      background-color: #fff
+
+  .delete-btn 
+    text-align: center
+    padding: 0
+    top: 5px
+    right: 5px
+    width: 27px
+    height: 27px
+
+    > i
+      font-size: 16px
+      line-height: 27px
+
+  > .resize-knob 
+    bottom: -$resize-knob-size
+    right: -$resize-knob-size
+    width: $resize-knob-size * 2
+    height: $resize-knob-size * 2
+    border-radius: $resize-knob-size
+    // @include transform('rotate(45deg)')
+
+  > .content 
+    position: absolute
+    top: 0
+    left: 0
+    bottom: 0
+    right: 0
+    overflow: hidden
+
+  > .overlay
+    position: absolute
+    pointer-events: none
+    top: 0
+    left: 0
+    bottom: 0
+    right: 0
+    z-index: 50
+    background-color: black
+    visibility: hidden
+    opacity: 0
+    @include transition(all linear $block-transition-duration)
+
+  &:hover
+    > .overlay
+      visibility: visible
+      opacity: 0.1
+
+
+.block-grid.editing .block
+  .delete-btn,
+  > .resize-knob
+    visibility: visible
+    opacity: 0.6

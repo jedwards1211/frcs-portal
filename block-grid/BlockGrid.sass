@@ -1,0 +1,11 @@
+@import ../css3-mixins
+@import ../noselect
+
+.block-grid
+  @extend .noselect
+
+  > .blocks
+    position: relative
+    top: 0
+    overflow: visible
+    @include transition(left ease-out 0.2s)
