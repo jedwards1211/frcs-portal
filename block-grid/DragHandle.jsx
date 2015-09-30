@@ -1,6 +1,15 @@
 import React, {Component} from 'react';
 
+export const horizontalDrag = ({x}) => ({x, y: 0});
+export const verticalDrag = ({y}) => ({x: 0, y});
+
 export default class DragHandle extends Component {
+  static propTypes = {
+    transformPosition: React.PropTypes.func,
+  }
+  static defaultProps = {
+    transformPosition: p => p,
+  }
   static contextTypes = {
     blockKey:     React.PropTypes.string.isRequired,
     onDragStart:  React.PropTypes.func.isRequired,
@@ -14,13 +23,13 @@ export default class DragHandle extends Component {
       document.addEventListener('mouseup'  , this.onMouseUp);
 
       let {blockKey, onDragStart} = this.context;
-      onDragStart(blockKey, {x: e.clientX, y: e.clientY});
+      onDragStart(blockKey, this.props.transformPosition({x: e.clientX, y: e.clientY}));
     }
   }
   onMouseMove = e => {
     e.preventDefault();
     let {blockKey, onDragMove} = this.context;
-    onDragMove(blockKey, {x: e.clientX, y: e.clientY});
+    onDragMove(blockKey, this.props.transformPosition({x: e.clientX, y: e.clientY}));
   }
   onMouseUp = e => {
     e.preventDefault();
