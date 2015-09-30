@@ -1,12 +1,13 @@
-import React, {Component} from 'react/addons';
+import React, {Component} from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
 import callOnTransitionEnd from '../callOnTransitionEnd';
+import shouldPureComponentUpdate from 'react-pure-render/function';
 
 import './Block.sass';
 
 export default class Block extends Component {
-  shouldComponentUpdate = React.addons.PureRenderMixin.shouldComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate
   static propTypes = {
     position:       ImmutablePropTypes.shape({
       x:      React.PropTypes.number,
@@ -15,8 +16,6 @@ export default class Block extends Component {
       height: React.PropTypes.number,
     }),
     blockGridProps: ImmutablePropTypes.shape({
-      // (observer: (prevPosition, nextPosition) => undefined) => stopObserving: () => undefined
-      observePosition: React.PropTypes.func.isRequired,
       spacing:        React.PropTypes.number,
       arranging:      React.PropTypes.bool,
     }),
@@ -24,6 +23,13 @@ export default class Block extends Component {
     grabbed:        React.PropTypes.bool,
     resizing:       React.PropTypes.bool,
     children:       React.PropTypes.element.isRequired
+  }
+  static contextTypes = {
+    // (observer: (prevPosition, nextPosition) => undefined) => stopObserving: () => undefined
+    observePosition:  React.PropTypes.func.isRequired,
+  }
+  static childContextTypes = {
+    blockKey:         React.PropTypes.string.isRequired,
   }
   constructor(props) {
     super(props);
@@ -34,12 +40,17 @@ export default class Block extends Component {
       position:   props.position,
     };
   }
+  getChildContext() {
+    return {
+      blockKey: this.props.blockKey,
+    };
+  }
   componentWillReceiveProps(newProps) {
     this.setState({position: newProps.position});
   }
   componentWillMount() {
-    let {blockGridProps, blockKey} = this.props;
-    this.stopObserving = blockGridProps.get('observePosition')(blockKey, (prevPosition, nextPosition) => {
+    let {blockKey} = this.props;
+    this.stopObserving = this.context.observePosition(blockKey, (prevPosition, nextPosition) => {
       this.setState({position: nextPosition});
     });
   }
@@ -54,7 +65,7 @@ export default class Block extends Component {
     this.componentWillEnter(callback);
   }
   componentWillEnter(callback) {
-    let block = React.findDOMNode(this.refs.block);
+    let block = this.refs.block;
     callOnTransitionEnd(block, callback, 1000);
     // this doesn't work without the setTimeout, I'm not
     // 100% sure why
@@ -69,7 +80,7 @@ export default class Block extends Component {
     }, 0);
   }
   componentWillLeave(callback) {
-    let block = React.findDOMNode(this.refs.block);
+    let block = this.refs.block;
     callOnTransitionEnd(block, callback, 1000);
 
     this.setState({
@@ -85,7 +96,7 @@ export default class Block extends Component {
         width  = position.get('width') || 0,
         height = position.get('height') || 0;
 
-    let {grabbed, resizing, className, blockKey, blockGridProps, style} = this.props;
+    let {grabbed, resizing, className, blockGridProps, style} = this.props;
     let arranging = blockGridProps.get('arranging'),
         spacing   = blockGridProps.get('spacing');
     className = classNames('block', className, {grabbed: grabbed, resizing: resizing});
@@ -120,10 +131,6 @@ export default class Block extends Component {
       {React.cloneElement(this.props.children, {
         width,
         height,
-        grabbed,
-        resizing,
-        blockKey,
-        blockGridProps,
       })}
     </div>
   } 

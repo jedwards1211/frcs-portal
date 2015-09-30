@@ -39,6 +39,15 @@ export default class BlockGrid extends Component {
     maxRowSpan: 10,
     snapSize: 20,
   }
+  static childContextTypes = {
+    observePosition:  React.PropTypes.func.isRequired,
+    onDragStart:      React.PropTypes.func.isRequired,
+    onDragMove:       React.PropTypes.func.isRequired,
+    onDragEnd:        React.PropTypes.func.isRequired,
+    onResizeStart:    React.PropTypes.func.isRequired,
+    onResizeMove:     React.PropTypes.func.isRequired,
+    onResizeEnd:      React.PropTypes.func.isRequired,
+  }
   constructor(props) {
     super(props);
 
@@ -62,20 +71,27 @@ export default class BlockGrid extends Component {
       })),
     });
 
-    let blockGridProps = Immutable.fromJS({
-      observePosition: (key, observer) => {
-        this.emitter.addListener(key, observer);
-        return () => this.emitter.removeListener(key, observer);
-      },
-      onDragStart:  this.onDragStart,
-      onDragMove:   this.onDragMove,
-      onDragEnd:    this.onDragEnd,
-    });
+    let blockGridProps = Immutable.Map();
 
     this.state = {
       layout, 
       blockGridProps
     };
+  }
+  getChildContext() {
+    return {
+      observePosition:  this.observePosition,
+      onDragStart:      this.onDragStart,
+      onDragMove:       this.onDragMove,
+      onDragEnd:        this.onDragEnd,
+      onResizeStart:    this.onResizeStart,
+      onResizeMove:     this.onResizeMove,
+      onResizeEnd:      this.onResizeEnd,
+    }
+  } 
+  observePosition = (key, observer) => {
+    this.emitter.addListener(key, observer);
+    return () => this.emitter.removeListener(key, observer);
   }
   componentWillReceiveProps(newProps) {
     var layout = this.state.layout.withMutations(layout => {
@@ -103,7 +119,7 @@ export default class BlockGrid extends Component {
     }
   }
   resize = () => {
-    var root = React.findDOMNode(this.refs.blockGrid);
+    var root = this.refs.blockGrid;
     var maxWidth =  _.max([this.props.minWidth, 
                     _.min([this.props.maxWidth, root.offsetWidth])]);
     var layout = this.state.layout.set('maxWidth', maxWidth)
@@ -292,7 +308,7 @@ export default class BlockGrid extends Component {
     return (
       <div ref = "blockGrid" {...props} className={className}>
         <div className="blocks" style={blocksStyle}>
-          <RobustTransitionGroup transitionName="blocks" key="blocks" ref="blocks" className="blocks" component="div">
+          <RobustTransitionGroup transitionName="blocks" key="blocks" className="blocks" component="div">
             {!!layout.get('availWidth') && newBlocks}
           </RobustTransitionGroup>
         </div>

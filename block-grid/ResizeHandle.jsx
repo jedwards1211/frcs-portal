@@ -1,34 +1,37 @@
 import React, {Component} from 'react';
 
-export default class DragHandle extends Component {
+export default class ResizeHandle extends Component {
   static contextTypes = {
     blockKey:     React.PropTypes.string.isRequired,
-    onDragStart:  React.PropTypes.func.isRequired,
-    onDragMove:   React.PropTypes.func.isRequired,
-    onDragEnd:    React.PropTypes.func.isRequired,
+    onResizeStart:  React.PropTypes.func.isRequired,
+    onResizeMove:   React.PropTypes.func.isRequired,
+    onResizeEnd:    React.PropTypes.func.isRequired,
   }
   onMouseDown = e => {
     if (e.button === 0) {
       e.preventDefault();
+      e.stopPropagation();
       document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup'  , this.onMouseUp);
 
-      let {blockKey, onDragStart} = this.context;
-      onDragStart(blockKey, {x: e.clientX, y: e.clientY});
+      let {blockKey, onResizeStart} = this.context;
+      onResizeStart(blockKey, {x: e.clientX, y: e.clientY});
     }
   }
   onMouseMove = e => {
     e.preventDefault();
-    let {blockKey, onDragMove} = this.context;
-    onDragMove(blockKey, {x: e.clientX, y: e.clientY});
+    e.stopPropagation();
+    let {blockKey, onResizeMove} = this.context;
+    onResizeMove(blockKey, {x: e.clientX, y: e.clientY});
   }
   onMouseUp = e => {
     e.preventDefault();
+    e.stopPropagation();
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup'  , this.onMouseUp);
 
-    let {blockKey, onDragEnd} = this.context;
-    onDragEnd(blockKey);
+    let {blockKey, onResizeEnd} = this.context;
+    onResizeEnd(blockKey);
   }
   render() {
     let {onMouseDown} = this;

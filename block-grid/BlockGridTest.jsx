@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
 
 import BlockGrid from './BlockGrid';
 import Block from './Block';
 import DragHandle from './DragHandle';
+import ResizeHandle from './ResizeHandle';
+import CornerHandle from './CornerHandle';
 
 import {hslGenerator, restrictLuminance, generateColors} from '../colorGenerators';
 
@@ -40,10 +43,10 @@ export default class BlockGridTest extends Component {
   onResizeBlock = (key, newSize) => {
     let {blocks} = this.state;
 
-    let index = blocks.findIndex(b => b.get('key') === key);
+    let index = blocks.findIndex(b => b.get('key') == key);
 
     if (index >= 0) {
-      blocks = blocks.mergeDeepIn([index], newSize);
+      blocks = blocks.mergeDeepIn([index], Immutable.fromJS(newSize));
       this.setState({blocks});
     }
   }
@@ -64,7 +67,11 @@ export default class BlockGridTest extends Component {
   renderBlock = (block) => {
     return <Block key={block.get('key')} {...block.toJS()}>
       <DragHandle>
-        <div style={{backgroundColor: block.get('color'), height: '100%'}}/>
+        <div style={{backgroundColor: block.get('color'), height: '100%'}}>
+          <ResizeHandle>
+            <CornerHandle/>
+          </ResizeHandle>
+        </div>
       </DragHandle>
     </Block>;
   }
@@ -84,4 +91,4 @@ export default class BlockGridTest extends Component {
   }
 }
 
-React.render(<BlockGridTest/>, document.getElementById('root'));
+ReactDOM.render(<BlockGridTest/>, document.getElementById('root'));
