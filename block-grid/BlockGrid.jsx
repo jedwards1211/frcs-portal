@@ -16,6 +16,7 @@ export default class BlockGrid extends Component {
     onReorderFinished:React.PropTypes.func,
     onResizeBlock:    React.PropTypes.func,
     onResizeFinished: React.PropTypes.func,
+    layoutBlockGrid:  React.PropTypes.func,
     cellWidth:        React.PropTypes.number,
     cellHeight:       React.PropTypes.number,
     spacing:          React.PropTypes.number,
@@ -38,6 +39,7 @@ export default class BlockGrid extends Component {
     minRowSpan: 1,
     maxRowSpan: 10,
     snapSize: 20,
+    layoutBlockGrid,
   }
   static childContextTypes = {
     observePosition:  React.PropTypes.func.isRequired,
@@ -114,8 +116,8 @@ export default class BlockGrid extends Component {
         });
       }));
     });
-    if (layout !== this.state.layout) {
-      this.setState({layout: layoutBlockGrid(layout)});
+    if (layout !== this.state.layout || this.props.layoutBlockGrid !== newProps.layoutBlockGrid) {
+      this.setState({layout: newProps.layoutBlockGrid(layout)});
     }
   }
   resize = () => {
@@ -125,11 +127,11 @@ export default class BlockGrid extends Component {
     var layout = this.state.layout.set('maxWidth', maxWidth)
                                   .set('availWidth', root.offsetWidth);
     if (layout !== this.state.layout) {
-      this.setState({layout: layoutBlockGrid(layout)});
+      this.setState({layout: this.props.layoutBlockGrid(layout)});
     }
   }
   checkOrder = () => {
-    var layout = layoutBlockGrid(this.state.layout, this.grabbed);
+    var layout = this.props.layoutBlockGrid(this.state.layout, this.grabbed);
     if (layout !== this.state.layout) {
       var newOrder = [];
       layout.get('blocks').forEach(block => newOrder.push(block.get('key')));
@@ -231,7 +233,7 @@ export default class BlockGrid extends Component {
   }
   onResizeEnd = (key) => {
     delete this.resizing;
-    this.setState({layout: layoutBlockGrid(this.state.layout)});
+    this.setState({layout: this.props.layoutBlockGrid(this.state.layout)});
     this.props.onResizeFinished();
   }
   render() {
