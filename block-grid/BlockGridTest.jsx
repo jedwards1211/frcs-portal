@@ -7,6 +7,7 @@ import Block from './Block';
 import DragHandle from './DragHandle';
 import ResizeHandle from './ResizeHandle';
 import CornerKnob from './CornerKnob';
+import TouchHoldDragRecognizer from './TouchHoldDragRecognizer';
 
 import {hslGenerator, restrictLuminance, generateColors} from '../colorGenerators';
 
@@ -66,7 +67,7 @@ export default class BlockGridTest extends Component {
   }
   renderBlock = (block) => {
     return <Block key={block.get('key')} {...block.toJS()}>
-      <DragHandle>
+      <DragHandle touchDragRecognizer={TouchHoldDragRecognizer}>
         <div style={{backgroundColor: block.get('color'), height: '100%'}}/>
       </DragHandle>
       <ResizeHandle><CornerKnob/></ResizeHandle>
