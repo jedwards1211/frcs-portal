@@ -11,6 +11,8 @@
 
 'use strict';
 
+var ExecutionEnvironment = require('../utils/ExecutionEnvironment');
+
 /**
  * EVENT_NAME_MAP is used to determine which event fired when a
  * transition/animation ends, based on the style property used to
@@ -64,7 +66,9 @@ function detectEvents() {
   }
 }
 
-detectEvents();
+if (ExecutionEnvironment.canUseDOM) {
+  detectEvents();
+}
 
 // We use the raw {add|remove}EventListener() call because EventListener
 // does not know how to remove event listeners and we really should

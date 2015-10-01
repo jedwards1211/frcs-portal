@@ -12,7 +12,7 @@
 
 'use strict';
 
-var flattenChildren = require('../utils/flattenChildren');
+var React = require('react');
 
 var ReactTransitionChildMapping = {
   /**
@@ -26,7 +26,13 @@ var ReactTransitionChildMapping = {
     if (!children) {
       return children;
     }
-    return flattenChildren(children);
+    var result = {};
+    React.Children.forEach(children, child => {
+      if ('key' in child) {
+        result[child.key] = child;
+      }
+    });
+    return result;
   },
 
   /**
