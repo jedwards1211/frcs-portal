@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import callOnTransitionEnd from '../callOnTransitionEnd';
 
@@ -44,10 +45,10 @@ export default React.createClass({
         collapsing: true,
         height: 0,
       }, () => {
-        var content = React.findDOMNode(this.refs.collapse);
+        var content = ReactDOM.findDOMNode(this.refs.collapse);
         this.setState({height: content.scrollHeight});
         this.callOnTransitionEnd(
-          React.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
+          ReactDOM.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
       });
     }
   },
@@ -58,7 +59,7 @@ export default React.createClass({
   },
   doHide() {
     if (this.state.open) {
-      var content = React.findDOMNode(this.refs.collapse);
+      var content = ReactDOM.findDOMNode(this.refs.collapse);
       this.setState({
         height: content.offsetHeight,
       }, () => {
@@ -70,7 +71,7 @@ export default React.createClass({
           content.offsetHeight; // force reflow
           this.setState({height: 0});
           this.callOnTransitionEnd(
-            React.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
+            ReactDOM.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
         });
       });
     }

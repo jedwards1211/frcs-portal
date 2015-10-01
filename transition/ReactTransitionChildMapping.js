@@ -27,7 +27,7 @@ var ReactTransitionChildMapping = {
       return children;
     }
     var result = {};
-    React.Children.forEach(children, child => {
+    React.Children.toArray(children).forEach(child => {
       if ('key' in child) {
         result[child.key] = child;
       }

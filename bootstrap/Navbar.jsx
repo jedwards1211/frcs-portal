@@ -63,7 +63,7 @@ export default class Navbar extends React.Component {
       return false;
     }
 
-    if (!isDescendant(e.target, React.findDOMNode(this.refs.navbar))) {
+    if (!isDescendant(e.target, this.refs.navbar)) {
       this.closeNavbarCollapse();
     }
   }

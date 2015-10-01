@@ -1,11 +1,12 @@
 import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import classNames from 'classnames';
 import _ from 'lodash';
 
 import './Toggle.sass';
 
 export default React.createClass({
-  mixins: [React.addons.PureRenderMixin],
+  mixins: [PureRenderMixin],
 
   displayName: 'Toggle',
 

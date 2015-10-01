@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {addons} from 'react/addons';
 import {addEventListener, removeEventListener} from './prefixedEvent';
 import _ from 'lodash';
@@ -43,7 +44,7 @@ export default React.createClass({
   },
   componentDidUpdate() {
     if (this.isMounted()) {
-      var activeElement = React.findDOMNode(this.refs['child-' + this.props.activeIndex]);
+      var activeElement = ReactDOM.findDOMNode(this.refs['child-' + this.props.activeIndex]);
       if (activeElement && this.state.height !== activeElement.scrollHeight) {
         this.setState({height: activeElement.scrollHeight});
       }

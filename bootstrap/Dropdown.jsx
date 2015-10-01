@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -88,7 +89,7 @@ class Dropdown extends Component {
     }
 
     if (this.props.closeOnInsideClick || 
-      !isDescendant(e.target, React.findDOMNode(this.refs.menu))) {
+      !isDescendant(e.target, ReactDOM.findDOMNode(this.refs.menu))) {
       this.setState({open: false});
     }
   }

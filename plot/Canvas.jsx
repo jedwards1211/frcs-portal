@@ -1,4 +1,5 @@
-import React from 'react/addons';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 
 import './Canvas.sass';
@@ -17,8 +18,8 @@ export default class Canvas extends React.Component {
   }
 
   getRootSize() {
-    var root = React.findDOMNode(this.refs.root);
-    var style = window.getComputedStyle(root);
+    var root = this.refs.root;
+    var style = getComputedStyle(root);
     return {
       width: parseFloat(style.width),
       height: parseFloat(style.height),
@@ -36,7 +37,7 @@ export default class Canvas extends React.Component {
   }
   doRepaint = () => {
     if (!this.mounted) return;
-    var canvas = React.findDOMNode(this.refs.canvas);
+    var canvas = ReactDOM.findDOMNode(this.refs.canvas);
     for (var i = 0; i < React.Children.count(this.props.children); i++) {
       var child = this.refs[i];
       if (child) child.paint(canvas);

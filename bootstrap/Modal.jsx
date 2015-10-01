@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react/addons';
+import React from 'react';
 import classNames from 'classnames';
 
 import RobustTransitionGroup from '../RobustTransitionGroup';
@@ -42,7 +42,7 @@ var ModalBackdrop = React.createClass({
     nojquery.removeClass(document.body, 'modal-open');
   },
   onClick(event) {
-    if (event.target === React.findDOMNode(this.refs.backdrop)) {
+    if (event.target === this.refs.backdrop) {
       this.props.onClick && this.props.onClick(event);
     }
   },

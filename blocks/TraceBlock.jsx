@@ -22,11 +22,11 @@ export default class TraceBlock extends React.Component {
     alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
   }
   resize() {
-    var root = React.findDOMNode(this.refs.root);
-    var name = React.findDOMNode(this.refs.name);
-    var value = React.findDOMNode(this.refs.value);
-    var units = React.findDOMNode(this.refs.units);
-    var max = React.findDOMNode(this.refs.max);
+    var root = this.refs.root;
+    var name = this.refs.name;
+    var value = this.refs.value;
+    var units = this.refs.units;
+    var max = this.refs.max;
     var {offsetWidth, offsetHeight} = root;
     var {fontFamily, fontWeight, paddingTop, paddingBottom} = window.getComputedStyle(root);
 
