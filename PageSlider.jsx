@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {addons} from 'react/addons';
+import shouldPureComponentUpdate from 'react-pure-render/function';
 import {addEventListener, removeEventListener} from './prefixedEvent';
 import _ from 'lodash';
 
@@ -14,7 +14,6 @@ require('./PageSlider.sass');
  * props.activeIndex, it translates with animation to the child at that index.
  */
 export default React.createClass({
-  mixins: [addons.PureRenderMixin],
   propTypes: {
     activeIndex:            React.PropTypes.number.isRequired,
     transitionDuration:     React.PropTypes.number,
@@ -60,6 +59,7 @@ export default React.createClass({
       {child}
     </div>;
   },
+  shouldComponentUpdate: shouldPureComponentUpdate,
   render() {
     var {activeIndex, transitionDuration, restrictMaxHeight, className, style} = this.props;
     var {height} = this.state;

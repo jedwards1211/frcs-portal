@@ -1,13 +1,11 @@
 import React from 'react';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
+import shouldPureComponentUpdate from 'react-pure-render/function';
 import classNames from 'classnames';
 import _ from 'lodash';
 
 import './Toggle.sass';
 
 export default React.createClass({
-  mixins: [PureRenderMixin],
-
   displayName: 'Toggle',
 
   propTypes: {
@@ -61,6 +59,8 @@ export default React.createClass({
   handleBlur() {
     this.setState({hasFocus: false})
   },
+
+  shouldComponentUpdate: shouldPureComponentUpdate,
 
   render() {
     var classes = classNames('react-toggle', {

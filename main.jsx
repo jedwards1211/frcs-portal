@@ -1,7 +1,7 @@
 'use strict';
 
 import FastClick from 'fastclick';
-import React from 'react/addons';
+import React from 'react';
 import Router from 'react-router';
 import { Redirect, RouteHandler } from 'react-router';
 

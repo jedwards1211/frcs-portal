@@ -68,7 +68,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.PrefetchPlugin('react/addons'),
         new webpack.PrefetchPlugin('react'),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),

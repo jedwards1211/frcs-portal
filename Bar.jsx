@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import {addons} from 'react/addons';
 import classNames from 'classnames';
 import _ from 'lodash';
 
