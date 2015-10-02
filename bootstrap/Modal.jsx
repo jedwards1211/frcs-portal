@@ -20,23 +20,32 @@ import './Modal.sass';
 // to apply the ../decorators/forwardTransitionsTo decorator to your wrapper class,
 // because otherwise the Modal's transition callbacks won't get called
 
+let openModalCount = 0;
+
 @transitionGroupChild('modal')
 export default class Modal extends Component {
   static propTypes = {
     dialogClassName: PropTypes.string,
   }
-  render(content) {
+  componentDidMount() {
+    if (++openModalCount === 1) {
+      nojquery.addClass(document.body, 'modal-open');
+    }
+  }
+  componentWillUnmount() {
+    if (--openModalCount === 0) {
+      nojquery.removeClass(document.body, 'modal-open');
+    }
+  }
+  render() {
     let {className, dialogClassName, children} = this.props;
     className = classNames('modal fade', className, {'in': this.state.isIn});
     dialogClassName = classNames('modal-dialog', dialogClassName);
-    if (!content) {
-      content = <div className="modal-content">
-        {children}
-      </div>;
-    }
     return <div ref="modal" {...this.props} className={className} role="dialog">
       <div className={dialogClassName}>
-        {content}
+        <div className="modal-content">
+          {children}
+        </div>
       </div>
     </div>;
   }
@@ -51,13 +60,9 @@ var ModalContent = Modal.Content = addClass('div', 'modal-content');
 
 @transitionGroupChild('backdrop')
 class ModalBackdrop extends Component {
-  componentDidMount() {
-    nojquery.addClass(document.body, 'modal-open');
-  }
-  componentWillUnmount() {
-    nojquery.removeClass(document.body, 'modal-open');
-  }
   onClick = (event) => {
+    // make sure the backdrop was what actually got clicked, not something
+    // on top of it like the modal
     if (event.target === this.refs.backdrop) {
       this.props.onClick && this.props.onClick(event);
     }

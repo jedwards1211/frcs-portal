@@ -1,3 +1,6 @@
+/**
+ * Forwards calls to ReactTransitionGroup child methods to this.refs[ref].
+ */
 export default function forwardTransitionsTo(ref) {
   return function decorator(target) {
     target.prototype.componentWillAppear = function(callback) {
