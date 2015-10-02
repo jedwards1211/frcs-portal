@@ -39,5 +39,6 @@ export default function forwardTransitionsTo(ref) {
         target.componentDidLeave();
       }
     }
+    return target;
   }
 }
