@@ -1,13 +1,9 @@
 import React from 'react';
 import addClass from '../wrappers/addClass';
 
-var Alert = React.createClass({
-  render() {
-    return <div {...this.props} role="alert">
-      {this.props.children}
-    </div>;
-  }
-});
+var Alert = (props) => (<div {...props} role="alert">
+  {props.children}
+</div>);
 
 Alert = addClass(Alert, 'alert');
 Alert.Info = addClass(Alert, 'alert alert-info');

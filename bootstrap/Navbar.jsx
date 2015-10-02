@@ -7,18 +7,16 @@ import addClass from '../wrappers/addClass';
 
 import './Navbar.sass';
 
-class DefaultNavbarToggle extends React.Component {
-  render() {
-    var {className} = this.props;
-    className = classNames(className, 'navbar-toggle');
+let DefaultNavbarToggle = (props) => {
+  var {className} = props;
+  className = classNames(className, 'navbar-toggle');
 
-    return <button type="button" {...this.props} className={className}>
-      <span className="sr-only">Toggle navigation</span>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-    </button>;
-  }
+  return <button type="button" {...props} className={className}>
+    <span className="sr-only">Toggle navigation</span>
+    <span className="icon-bar"></span>
+    <span className="icon-bar"></span>
+    <span className="icon-bar"></span>
+  </button>;
 }
 
 export default class Navbar extends React.Component {

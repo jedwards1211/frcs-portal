@@ -1,13 +1,9 @@
 import React from 'react';
 import addClass from '../wrappers/addClass';
 
-var Button = React.createClass({
-  render() {
-    return <button {...this.props} type="button">
-      {this.props.children}
-    </button>;
-  }
-});
+var Button = (props) => (<button {...props} type="button">
+  {props.children}
+</button>);
 
 Button = addClass(Button, 'btn btn-default');
 Button.Primary = addClass(Button, 'btn btn-primary');
