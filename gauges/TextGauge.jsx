@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import './TraceBlock.sass';
+import './TextGauge.sass';
 import dummyCanvas from '../dummyCanvas';
 
 let decimalZerosRx = /^([^.]+)\.0+$/;
 
-export default class TraceBlock extends React.Component {
+export default class TextGauge extends React.Component {
   constructor(props) {
     super(props);
     this.state = {width: 0, height: 0};
@@ -18,8 +18,12 @@ export default class TraceBlock extends React.Component {
     units:      React.PropTypes.string,
     min:        React.PropTypes.number,
     max:        React.PropTypes.number,
+    showRange:  React.PropTypes.bool,
     precision:  React.PropTypes.number,
     alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
+  }
+  static defaultProps = {
+    className: 'text-gauge',
   }
   resize() {
     var root = this.refs.root;
@@ -41,7 +45,7 @@ export default class TraceBlock extends React.Component {
         nameWidth: name.offsetWidth,
         valueWidth: value.offsetWidth,
         unitsWidth: units.offsetWidth,
-        rangeWidth: max.offsetWidth,
+        rangeWidth: max ? max.offsetWidth : 0,
         fontFamily,
         fontWeight,
       });
@@ -54,12 +58,13 @@ export default class TraceBlock extends React.Component {
     this.resize();
   }
   render() {
-    var {className, value, min, max, name, color, units, precision = 0, alarmState, children, ...props} = this.props;
+    var {className, value, min, max, showRange, name, color, units, 
+        precision = 0, alarmState, children, ...props} = this.props;
     var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
-    className = classNames('block', 'trace-block', className, {
-      'block-alarm': alarmState === 'alarm',
-      'block-warning': alarmState === 'warning',
+    className = classNames('gauge', className, {
+      'gauge-alarm': alarmState === 'alarm',
+      'gauge-warning': alarmState === 'warning',
     });
     
     function formatValue(value) {
@@ -111,10 +116,10 @@ export default class TraceBlock extends React.Component {
         <span ref="value" className="value" style={valueStyle}>{value}</span>
         <span ref="units" className="units" style={unitsStyle}>{units}</span>
       </div>
-      <div ref="range" className="range" style={rangeStyle}>
+      {showRange && <div ref="range" className="range" style={rangeStyle}>
         <div ref="min"   className="min">{min}</div>
         <div ref="max"   className="max">{max}</div>
-      </div>
+      </div>}
       {children}
     </div>
   }

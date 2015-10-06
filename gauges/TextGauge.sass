@@ -1,0 +1,38 @@
+@import gauge
+@import ../css3-mixins
+
+$name-height: 40%
+$name-width: 100%
+$value-height: 100% - $name-height
+$value-width: 70%
+$units-width: 30%
+
+.text-gauge
+  position: relative
+  padding: 3px
+  @include display-flex
+  @include align-items(center)
+
+  .value,
+  .units
+    @include align-self(baseline)
+
+  .name
+    width: $name-width
+
+    > *
+      display: inline-bloc  k
+
+  .value-and-units
+    margin: 0 2%
+    width: 100%
+    @include display-flex
+    @include align-items(baseline)
+
+  .value
+    width: $value-width
+    text-align: right
+
+  .units
+    margin-left: 2%
+    width: $units-width

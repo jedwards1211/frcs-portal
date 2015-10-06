@@ -1,0 +1,104 @@
+@import ../css3-mixins
+
+$gauge-bg-color:                #eee
+$gauge-bg-color-warning:        rgb(235, 235, 177)
+$gauge-bg-color-alarm:          rgb(255, 207, 207)
+$gauge-track-color:             darken($gauge-bg-color, 8%)
+$gauge-track-color-warning:     darken($gauge-bg-color-warning, 8%)
+$gauge-track-color-alarm:       darken($gauge-bg-color-alarm, 8%)
+$gauge-fill-color:              #00c800
+$gauge-fill-color-warning:      rgb(235, 235, 0)
+$gauge-fill-color-warning-hot:  rgb(255, 255, 50)
+$gauge-fill-color-alarm:        rgb(207, 0, 0)
+$gauge-fill-color-alarm-hot:    rgb(255, 50, 50)
+$gauge-legend-opacity:          0.5
+$gauge-legend-color:            #666
+$gauge-legend-color-warning:    #fc0
+$gauge-legend-color-alarm:      red
+$gauge-pulse-duration:          1.2s
+
+@include keyframes(gauge-bg-warning-pulse)
+  from
+    background-color: $gauge-bg-color
+  50%
+    background-color: $gauge-bg-color-warning
+  to
+    background-color: $gauge-bg-color
+
+@include keyframes(gauge-bg-alarm-pulse)
+  from
+    background-color: $gauge-bg-color
+  50%
+    background-color: $gauge-bg-color-alarm
+  to
+    background-color: $gauge-bg-color    
+
+@include keyframes(gauge-track-warning-pulse)
+  from
+    fill: $gauge-track-color
+  50%
+    fill: $gauge-track-color-warning
+  to
+    fill: $gauge-track-color
+
+@include keyframes(gauge-track-alarm-pulse)
+  from
+    fill: $gauge-track-color
+  50%
+    fill: $gauge-track-color-alarm
+  to
+    fill: $gauge-track-color    
+
+@include keyframes(gauge-fill-warning-pulse)
+  from
+    fill: $gauge-fill-color-warning
+  50%
+    fill: $gauge-fill-color-warning-hot
+  to
+    fill: $gauge-fill-color-warning
+
+@include keyframes(gauge-fill-alarm-pulse)
+  from
+    fill: $gauge-fill-color-alarm
+  50%
+    fill: $gauge-fill-color-alarm-hot
+  to
+    fill: $gauge-fill-color-alarm
+
+.gauge
+  background-color: $gauge-bg-color
+  cursor: pointer
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+  > svg
+    position: absolute
+    width: 100%
+    height: 100%
+
+  .track
+    fill: $gauge-track-color
+
+  .fill
+    fill: $gauge-fill-color
+
+  &.warning-triggered
+    @include animation(gauge-bg-warning-pulse infinite linear $gauge-pulse-duration)
+
+    .track
+      @include animation(gauge-track-warning-pulse infinite linear $gauge-pulse-duration)
+
+    .fill
+      @include animation(gauge-fill-warning-pulse infinite linear $gauge-pulse-duration)
+
+  &.alarm-triggered
+    @include animation(gauge-bg-alarm-pulse infinite linear $gauge-pulse-duration)
+
+    .track
+      @include animation(gauge-track-alarm-pulse infinite linear $gauge-pulse-duration)
+
+    .fill
+      @include animation(gauge-fill-alarm-pulse infinite linear $gauge-pulse-duration)
