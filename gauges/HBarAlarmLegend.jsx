@@ -9,22 +9,18 @@ import * as GaugePropTypes from './GaugePropTypes';
 require('./AlarmLegend.sass');
 
 export default React.createClass({
-  propTypes: {
-    metadataItem: GaugePropTypes.metadataItem,
-    alarms:       GaugePropTypes.alarms,
+  propTypes: Object.assign({}, GaugePropTypes.alarmLegend, {
     x: React.PropTypes.number.isRequired,
     y: React.PropTypes.number.isRequired,
     width: React.PropTypes.number.isRequired,
     height: React.PropTypes.number.isRequired,
-  },
+  }),
   render() {
-    var {metadataItem, alarms, x, y, width, height, className, ...restProps} = this.props;
+    var {min, max, alarms, x, y, width, height, className, ...restProps} = this.props;
 
-    if (!metadataItem || !alarms) {
+    if (!alarms) {
       return <g className={className} {...restProps}/>;
     }
-
-    var {min, max} = metadataItem;
 
     var smin = min;
     var smax = max;
@@ -55,7 +51,7 @@ export default React.createClass({
       return <rect className={className} x={rx} y={y} width={rwidth} height={height} />;
     }
 
-    if (metadataItem && !isNaN(min) && !isNaN(max) && min !== null && max !== null &&
+    if (!isNaN(min) && !isNaN(max) && min !== null && max !== null &&
         isFinite(min) && isFinite(max)) {
 
       var lowAlarm = getSetpoint(alarmTypes.lowAlarm);

@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import GaugePropTypes from './GaugePropTypes';
 import './TextGauge.sass';
 import dummyCanvas from '../dummyCanvas';
 
@@ -11,17 +12,10 @@ export default class TextGauge extends React.Component {
     super(props);
     this.state = {width: 0, height: 0};
   }
-  static propTypes = {
+  static propTypes = Object.assign({}, GaugePropTypes, {
     color:      React.PropTypes.string,
-    name:       React.PropTypes.string,
-    value:      React.PropTypes.number,
-    units:      React.PropTypes.string,
-    min:        React.PropTypes.number,
-    max:        React.PropTypes.number,
     showRange:  React.PropTypes.bool,
-    precision:  React.PropTypes.number,
-    alarmState: React.PropTypes.oneOf(['alarm', 'warning']),
-  }
+  })
   static defaultProps = {
     className: 'text-gauge',
   }

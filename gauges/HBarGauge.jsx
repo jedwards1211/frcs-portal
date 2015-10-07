@@ -4,7 +4,7 @@ import React from 'react';
 import classNames from 'classnames';
 import HBarFill from './HBarFill';
 import HBarAlarmLegend from './HBarAlarmLegend';
-import * as GaugePropTypes from './GaugePropTypes';
+import GaugePropTypes from './GaugePropTypes';
 import _ from 'lodash';
 
 require('./HBarGauge.sass');
@@ -17,14 +17,10 @@ var UNITS_WIDTH = 0.15;
 var NAME_WIDTH = 0.45;
 
 export default React.createClass({
-  propTypes: {
-    metadataItem: GaugePropTypes.metadataItem,
-    value:        React.PropTypes.number,
-    alarms:       GaugePropTypes.alarms,
-    alarmState:   GaugePropTypes.severity,
+  propTypes: Object.assign({}, GaugePropTypes, {
     width:        React.PropTypes.number,
     height:       React.PropTypes.number,
-  },
+  }),
   getInitialState() {
     return {
       width: 0,
@@ -55,7 +51,7 @@ export default React.createClass({
     }
   },
   render() {
-    var {metadataItem, alarms, value, className, alarmState, 
+    var {name, units, min, max precision, alarms, value, className, alarmState, 
         children, width, height, ...restProps} = this.props;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
@@ -64,8 +60,6 @@ export default React.createClass({
       'gauge-alarm':    alarmState === 'alarm',
       'gauge-warning':  alarmState === 'warning',
     });
-
-    if (!metadataItem) metadataItem = {};
 
     height = Math.min(height, 100);
     var padding = Math.min(10, width * 0.05, height * 0.1);
@@ -81,7 +75,7 @@ export default React.createClass({
 
     function formatValue(value) {
       value = Number(value);
-      return !isNaN(value) && value !== null ? value.toFixed(metadataItem.precision) : 'NA';
+      return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
     }
 
     // height / width
@@ -91,11 +85,11 @@ export default React.createClass({
       fontSize: Math.max(10, Math.min(maxHeight, maxWidth / textLength * fontAspect))
     });
 
-    var minText     = formatValue(metadataItem.min);
-    var maxText     = formatValue(metadataItem.max);
+    var minText     = formatValue(min);
+    var maxText     = formatValue(max);
     var valueText   = formatValue(value);
-    var unitsText   = metadataItem.units || '';
-    var nameText    = metadataItem.name  || '';
+    var unitsText   = units || '';
+    var nameText    = name  || '';
     var valueTextLength = Math.max(valueText.length, minText.length, maxText.length);
 
     var rangeTextLength = Math.max(minText.length, maxText.length);
@@ -107,7 +101,7 @@ export default React.createClass({
       legendHeight = Math.max(2, Math.round(height * LEGEND_HEIGHT));
       barHeight -= legendHeight;
       legendY = barY + barHeight;
-      legend = <HBarAlarmLegend metadataItem={metadataItem} alarms={alarms} 
+      legend = <HBarAlarmLegend min={min} max={max} alarms={alarms} 
                 x={0} y={legendY} width={width} height={legendHeight} />;
     }
 
@@ -132,8 +126,8 @@ export default React.createClass({
           <HBarFill  key="fill"
                     className={classNames('fill', {'na': isNaN(value) || value === null})}
                     x={0} y={barY} width={width} height={barHeight}
-                    min={metadataItem.min}
-                    max={metadataItem.max}
+                    min={min}
+                    max={max}
                     value={value} />
           {legend}
 

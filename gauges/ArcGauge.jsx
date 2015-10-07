@@ -31,16 +31,11 @@ var UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.
 var TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
 
 export default React.createClass({
-  propTypes: {
-    metadataItem: GaugePropTypes.metadataItem,
-    alarms: GaugePropTypes.alarms,
-    value: React.PropTypes.number,
-    alarmState: GaugePropTypes.severity,
-  },
+  propTypes: GaugePropTypes,
   render() {
-    var {metadataItem, alarms, value, className, alarmState, children, ...restProps} = this.props;
+    var {name, units, min, max, precision, alarms, value, 
+        className, alarmState, children, ...restProps} = this.props;
 
-    if (!metadataItem) metadataItem = {};
     className = classNames(className, 'gauge arc-gauge', {
       'alarm-triggered': alarmState && alarmState.severity === 'alarm',
       'warning-triggered': alarmState && alarmState.severity === 'warning',
@@ -48,7 +43,7 @@ export default React.createClass({
 
     function formatValue(value) {
       value = Number(value);
-      return !isNaN(value) && value !== null ? value.toFixed(metadataItem.precision) : 'NA';
+      return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
     }
 
     // height / width
@@ -58,10 +53,10 @@ export default React.createClass({
       fontSize: Math.min(maxHeight, maxWidth / textLength * fontAspect)
     });
 
-    var minText     = formatValue(metadataItem.min);
-    var maxText     = formatValue(metadataItem.max);
-    var unitsText   = metadataItem.units || '';
-    var nameText    = metadataItem.name  || '';
+    var minText     = formatValue(min);
+    var maxText     = formatValue(max);
+    var unitsText   = units || '';
+    var nameText    = name  || '';
     var valueText   = formatValue(value);
 
     var rangeTextLength = Math.max(minText.length, maxText.length);
@@ -77,8 +72,8 @@ export default React.createClass({
                     minAngle={Math.PI} 
                     angularSpan={-Math.PI}
                     thickness={ARC_THICKNESS}
-                    min={metadataItem.min}
-                    max={metadataItem.max}
+                    min={min}
+                    max={max}
                     value={value} />
 
           <ArcAlarmLegend key="legend"
@@ -87,7 +82,8 @@ export default React.createClass({
                           thickness={LEGEND_THICKNESS}
                           minAngle={Math.PI}
                           angularSpan={-Math.PI}
-                          metadataItem={metadataItem}
+                          min={min}
+                          max={max}
                           alarms={alarms} />
 
           <text key="min"   ref="min"   className="min"   x={0}             y={ARC_HEIGHT + PADDING} style={makeStyle(rangeTextLength, RANGE_WIDTH, RANGE_HEIGHT)}>

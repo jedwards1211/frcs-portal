@@ -10,9 +10,7 @@ import * as GaugePropTypes from './GaugePropTypes';
 require('./AlarmLegend.sass');
 
 export default React.createClass({
-  propTypes: {
-    metadataItem: GaugePropTypes.metadataItem,
-    alarms: GaugePropTypes.alarms,
+  propTypes: Object.assign({}, GaugePropTypes.alarmLegend, {
     minAngle: React.PropTypes.number.isRequired,
     angularSpan: React.PropTypes.number.isRequired,
     center: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
@@ -20,14 +18,12 @@ export default React.createClass({
     thickness: React.PropTypes.number.isRequired,
   },
   render() {
-    var {metadataItem, alarms, minAngle, angularSpan,
+    var {min, max, alarms, minAngle, angularSpan,
         center, radius, thickness, className, ...restProps} = this.props;
 
-    if (!metadataItem || !alarms) {
+    if (!alarms) {
       return <g className={className} {...restProps}/>;
     }
-
-    var {min, max} = metadataItem;
 
     className = classNames(className, 'alarm-legend');
 
@@ -58,7 +54,7 @@ export default React.createClass({
       return <path className={className} d={arcPath(center, radius, thickness, startAngle, span)} />;
     }
 
-    if (metadataItem && !isNaN(min) && !isNaN(max) && min !== null && max !== null &&
+    if (!isNaN(min) && !isNaN(max) && min !== null && max !== null &&
         isFinite(min) && isFinite(max)) {
 
       var lowAlarm = getSetpoint(alarmTypes.lowAlarm);
