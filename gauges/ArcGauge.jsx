@@ -2,12 +2,10 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import FittedText from './FittedText';
 import ArcFill from './ArcFill';
 import ArcAlarmLegend from './ArcAlarmLegend';
 import arcPath from '../arcPath';
-import _ from 'lodash';
-import * as GaugePropTypes from './GaugePropTypes';
+import GaugePropTypes from './GaugePropTypes';
 
 require('./ArcGauge.sass');
 

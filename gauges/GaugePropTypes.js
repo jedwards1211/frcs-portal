@@ -20,11 +20,11 @@ export const metadataItem = PropTypes.shape({
   precision:  PropTypes.number,
 });
 
-export const alarmLegend = PropTypes.shape({
+export const alarmLegendPropTypes = {
   min:        PropTypes.number,
   max:        PropTypes.number,
   alarms:     alarms,
-});
+};
 
 export default {
   name:       PropTypes.string,

@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import HBarFill from './HBarFill';
 import HBarAlarmLegend from './HBarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
-import _ from 'lodash';
 
 require('./HBarGauge.sass');
 
@@ -29,7 +28,7 @@ export default React.createClass({
   },
   getCurrentSize() {
     if (this.isMounted()) {
-      var gauge = React.findDOMNode(this.refs.gauge);
+      var gauge = this.refs.gauge;
       return {
         width: gauge.offsetWidth,
         height: gauge.offsetHeight,
@@ -51,7 +50,7 @@ export default React.createClass({
     }
   },
   render() {
-    var {name, units, min, max precision, alarms, value, className, alarmState, 
+    var {name, units, min, max, precision, alarms, value, className, alarmState, 
         children, width, height, ...restProps} = this.props;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
@@ -110,7 +109,6 @@ export default React.createClass({
     var nameWidth = width * NAME_WIDTH;
     var valueWidth = width * VALUE_WIDTH;
     var unitsWidth = width * UNITS_WIDTH;
-    var rangeHeight = barHeight - padding;
     var rangePadding = Math.min(padding, barHeight * 0.1);
     var rangeHeight = barHeight - rangePadding * 2;
     var rangeWidth = (width - padding) * 0.5;

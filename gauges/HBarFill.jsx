@@ -1,8 +1,6 @@
 'use strict';
 
 import React from 'react';
-import classNames from 'classnames';
-import _ from 'lodash';
 import ValueFillMixin from './ValueFillMixin';
 
 export default React.createClass({

@@ -3,13 +3,13 @@
 import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
-import alarmTypes from '../../alarmTypes';
-import * as GaugePropTypes from './GaugePropTypes';
+import alarmTypes from './alarmTypes';
+import {alarmLegendPropTypes} from './GaugePropTypes';
 
 require('./AlarmLegend.sass');
 
 export default React.createClass({
-  propTypes: Object.assign({}, GaugePropTypes.alarmLegend, {
+  propTypes: Object.assign({}, alarmLegendPropTypes, {
     x: React.PropTypes.number.isRequired,
     y: React.PropTypes.number.isRequired,
     width: React.PropTypes.number.isRequired,

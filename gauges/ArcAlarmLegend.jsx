@@ -3,20 +3,20 @@
 import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
-import alarmTypes from '../../alarmTypes';
+import alarmTypes from './alarmTypes';
 import arcPath from '../arcPath';
-import * as GaugePropTypes from './GaugePropTypes';
+import {alarmLegendPropTypes} from './GaugePropTypes';
 
 require('./AlarmLegend.sass');
 
 export default React.createClass({
-  propTypes: Object.assign({}, GaugePropTypes.alarmLegend, {
+  propTypes: Object.assign({}, alarmLegendPropTypes, {
     minAngle: React.PropTypes.number.isRequired,
     angularSpan: React.PropTypes.number.isRequired,
     center: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
     radius: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
     thickness: React.PropTypes.number.isRequired,
-  },
+  }),
   render() {
     var {min, max, alarms, minAngle, angularSpan,
         center, radius, thickness, className, ...restProps} = this.props;

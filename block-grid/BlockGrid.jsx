@@ -40,6 +40,10 @@ export default class BlockGrid extends Component {
     maxRowSpan: 10,
     snapSize: 20,
     layoutBlockGrid,
+    onReorderBlocks: _.noop,
+    onReorderFinished: _.noop,
+    onResizeBlock: _.noop,
+    onResizeFinished: _.noop,
   }
   static childContextTypes = {
     observePosition:  React.PropTypes.func.isRequired,

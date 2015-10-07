@@ -1,8 +1,6 @@
 'use strict';
 
 import React from 'react';
-import classNames from 'classnames';
-import _ from 'lodash';
 import arcPath from '../arcPath';
 import ValueFillMixin from './ValueFillMixin';
 
