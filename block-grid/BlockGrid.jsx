@@ -311,6 +311,8 @@ export default class BlockGrid extends Component {
       left:   blocksLeft
     };
 
+    blocksStyle = _.pick(blocksStyle, prop => !isNaN(prop) && prop !== null);
+
     return (
       <div ref = "blockGrid" {...props} className={className}>
         <div className="blocks" style={blocksStyle}>
