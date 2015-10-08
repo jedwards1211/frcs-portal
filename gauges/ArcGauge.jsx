@@ -35,8 +35,8 @@ export default React.createClass({
         className, alarmState, children, ...restProps} = this.props;
 
     className = classNames(className, 'gauge arc-gauge', {
-      'alarm-triggered': alarmState && alarmState.severity === 'alarm',
-      'warning-triggered': alarmState && alarmState.severity === 'warning',
+      'gauge-alarm': alarmState === 'alarm',
+      'gauge-warning': alarmState === 'warning',
     });
 
     function formatValue(value) {

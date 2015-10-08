@@ -80,7 +80,7 @@ $gauge-pulse-duration:          1.2s
   .fill
     fill: $gauge-fill-color
 
-  &.warning-triggered
+  &.gauge-warning
     @include animation(gauge-bg-warning-pulse infinite linear $gauge-pulse-duration)
 
     .track
@@ -89,7 +89,7 @@ $gauge-pulse-duration:          1.2s
     .fill
       @include animation(gauge-fill-warning-pulse infinite linear $gauge-pulse-duration)
 
-  &.alarm-triggered
+  &.gauge-alarm
     @include animation(gauge-bg-alarm-pulse infinite linear $gauge-pulse-duration)
 
     .track
