@@ -1,0 +1,22 @@
+@import ../css3-mixins
+@import BlockVars
+
+$delete-block-btn-size: 29px
+
+.delete-block-btn
+  position: absolute
+  top: 7px
+  right: 7px
+  width: $delete-block-btn-size
+  height: $delete-block-btn-size
+  line-height: $delete-block-btn-size
+  cursor: pointer
+  border-style: none
+  background-color: #ddd
+  outline: none !important
+  z-index: 100
+  @include box-shadow(0px, 0px, 5px, rgba(0, 0, 0, 0.5))
+  @include transition(all linear )
+
+  &:hover
+    background-color: #fff
