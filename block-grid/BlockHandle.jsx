@@ -45,6 +45,8 @@ export default class BlockHandle extends Component {
   onMouseMove = e => {
     e.preventDefault();
     let {blockKey} = this.context;
+    clearTimeout(this.reenableClickTimeout);
+    this.refs.handle.addEventListener('click', this.onClickCapture, true);
     this.onMove(blockKey, this.props.transformPosition(getPosition(e)));
   }
   onMouseUp = e => {
@@ -52,8 +54,15 @@ export default class BlockHandle extends Component {
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup'  , this.onMouseUp);
 
+    this.reenableClickTimeout = setTimeout(() => this.refs.handle.removeEventListener(
+      'click', this.onClickCapture, true), 4);
+
     let {blockKey} = this.context;
     this.onEnd(blockKey);
+  }
+  onClickCapture = e => {
+    e.preventDefault();
+    e.stopPropagation();
   }
   startTouchDrag = () => {
     if (this.touchOrder.length) {
@@ -150,6 +159,7 @@ export default class BlockHandle extends Component {
     }
     let {onMouseDown, onTouchStart, onTouchMove, onTouchEnd, onTouchCancel} = this;
     return React.cloneElement(this.props.children, {
+      ref: 'handle',
       onMouseDown,
       onTouchStart,
       onTouchMove,
