@@ -1,17 +1,23 @@
-import React, {Component} from 'react';
-import {forEach} from 'lodash';
+import React, {Component, PropTypes} from 'react';
+import {forEach, noop} from 'lodash';
 
 export const horizontalDrag = ({x}) => ({x, y: 0});
 export const verticalDrag = ({y}) => ({x: 0, y});
 
 export default class BlockHandle extends Component {
   static propTypes = {
-    disabled:             React.PropTypes.bool,
-    transformPosition:    React.PropTypes.func,
-    touchDragRecognizer:  React.PropTypes.func,
+    disabled:             PropTypes.bool,
+    transformPosition:    PropTypes.func,
+    touchDragRecognizer:  PropTypes.func,
+    onStart:              PropTypes.func,
+    onMove:               PropTypes.func,
+    onEnd:                PropTypes.func,
   }
   static defaultProps = {
     transformPosition: p => p,
+    onStart: noop,
+    onMove: noop,
+    onEnd: noop,
   }
   static contextTypes = {
     blockKey:     React.PropTypes.string.isRequired,
@@ -29,36 +35,34 @@ export default class BlockHandle extends Component {
         new nextProps.touchDragRecognizer() : undefined;
     }
   }
-  onStart = () => {}
-  onMove  = () => {}
-  onEnd   = () => {}
   onMouseDown = e => {
     if (e.button === 0) {
       e.preventDefault();
       document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup'  , this.onMouseUp);
+      this.handle = e.target;
 
       let {blockKey} = this.context;
-      this.onStart(blockKey, this.props.transformPosition(getPosition(e)));
+      this.props.onStart(blockKey, this.props.transformPosition(getPosition(e)));
     }
   }
   onMouseMove = e => {
     e.preventDefault();
     let {blockKey} = this.context;
     clearTimeout(this.reenableClickTimeout);
-    this.refs.handle.addEventListener('click', this.onClickCapture, true);
-    this.onMove(blockKey, this.props.transformPosition(getPosition(e)));
+    this.handle.addEventListener('click', this.onClickCapture, true);
+    this.props.onMove(blockKey, this.props.transformPosition(getPosition(e)));
   }
   onMouseUp = e => {
     e.preventDefault();
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup'  , this.onMouseUp);
 
-    this.reenableClickTimeout = setTimeout(() => this.refs.handle.removeEventListener(
+    this.reenableClickTimeout = setTimeout(() => this.handle.removeEventListener(
       'click', this.onClickCapture, true), 4);
 
     let {blockKey} = this.context;
-    this.onEnd(blockKey);
+    this.props.onEnd(blockKey);
   }
   onClickCapture = e => {
     e.preventDefault();
@@ -69,7 +73,7 @@ export default class BlockHandle extends Component {
       this.touchDragging = true;
       this.touchOffset = {x: 0, y: 0};
       let {blockKey} = this.context;
-      this.onStart(blockKey, this.props.transformPosition(
+      this.props.onStart(blockKey, this.props.transformPosition(
         addPoints(getPosition(this.touches[this.touchOrder[0]]), this.touchOffset)));
     }
   }
@@ -104,7 +108,7 @@ export default class BlockHandle extends Component {
     if (this.touchDragging) {
       e.preventDefault();
       let {blockKey} = this.context;
-      this.onMove(blockKey, this.props.transformPosition(
+      this.props.onMove(blockKey, this.props.transformPosition(
         addPoints(getPosition(this.touches[this.touchOrder[0]]), this.touchOffset)));
     }
   }
@@ -149,7 +153,7 @@ export default class BlockHandle extends Component {
       if (!this.touchOrder.length) {
         this.touchDragging = false;
         let {blockKey} = this.context;
-        this.onEnd(blockKey);
+        this.props.onEnd(blockKey);
       }
     }
   }
@@ -159,7 +163,6 @@ export default class BlockHandle extends Component {
     }
     let {onMouseDown, onTouchStart, onTouchMove, onTouchEnd, onTouchCancel} = this;
     return React.cloneElement(this.props.children, {
-      ref: 'handle',
       onMouseDown,
       onTouchStart,
       onTouchMove,
