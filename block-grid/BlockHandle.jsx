@@ -40,8 +40,9 @@ export default class BlockHandle extends Component {
       e.preventDefault();
       document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup'  , this.onMouseUp);
-      this.handle = e.target;
-
+      document.addEventListener('click', this.onClickCapture, true);
+      this.allowClick = true;
+      clearTimeout(this.removeClickCaptureTimeout);
       let {blockKey} = this.context;
       this.props.onStart(blockKey, this.props.transformPosition(getPosition(e)));
     }
@@ -49,8 +50,7 @@ export default class BlockHandle extends Component {
   onMouseMove = e => {
     e.preventDefault();
     let {blockKey} = this.context;
-    clearTimeout(this.reenableClickTimeout);
-    this.handle.addEventListener('click', this.onClickCapture, true);
+    this.allowClick = false;
     this.props.onMove(blockKey, this.props.transformPosition(getPosition(e)));
   }
   onMouseUp = e => {
@@ -58,15 +58,17 @@ export default class BlockHandle extends Component {
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup'  , this.onMouseUp);
 
-    this.reenableClickTimeout = setTimeout(() => this.handle.removeEventListener(
+    this.removeClickCaptureTimeout = setTimeout(() => document.removeEventListener(
       'click', this.onClickCapture, true), 4);
 
     let {blockKey} = this.context;
     this.props.onEnd(blockKey);
   }
   onClickCapture = e => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.button !== 0 || !this.allowClick) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
   startTouchDrag = () => {
     if (this.touchOrder.length) {
