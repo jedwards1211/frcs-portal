@@ -1,15 +1,20 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 
+import Spinner from '../Spinner';
+
 export default class DeleteButton extends Component {
   static propTypes = {
     armedText:    React.PropTypes.string,
     disarmedText: React.PropTypes.string,
+    deletingText: React.PropTypes.string,
     onArmedClick: React.PropTypes.func,
+    deleting:     React.PropTypes.bool,
   }
   static defaultProps = {
     armedText:    'Are you sure?',
     disarmedText: '',
+    deletingText: '',
   }
   constructor(props) {
     super(props);
@@ -29,14 +34,18 @@ export default class DeleteButton extends Component {
     if (this.props.onClick) this.props.onClick(e);
   }
   render() {
-    let {className} = this.props;
+    let {className, deleting, deletingText, disabled} = this.props;
     let {armed} = this.state;
     let {armedText, disarmedText} = this.props;
     className = classNames(className, 'btn', {'btn-default': !armed, 'btn-danger': armed});
 
     return <button type="button" {...this.props} className={className} 
-      onBlur={this.onBlur} onClick={this.onClick}>
-      <i className="glyphicon glyphicon-trash"/> {armed ? armedText : disarmedText}
+      onBlur={this.onBlur} onClick={this.onClick} disabled={disabled || deleting}>
+      {deleting ? 
+        <span><Spinner/> {deletingText}</span>
+        :
+        <span><i className="glyphicon glyphicon-trash"/> {armed ? armedText : disarmedText}</span>
+      }
     </button>;
   }
 }
