@@ -20,29 +20,17 @@ let DefaultNavbarToggle = (props) => {
 }
 
 export default class Navbar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {collapseOpen: false};
-  }
-  static contextTypes = {
-    history: React.PropTypes.object.isRequired,
-  }
   static propTypes = {
     headerContent: React.PropTypes.any,
     navbarToggle:  React.PropTypes.node,
+    expanded:  React.PropTypes.bool,
+    onCollapse:    React.PropTypes.func,
+    onExpand:      React.PropTypes.func,
   }
   static defaultProps = {
     navbarToggle: <DefaultNavbarToggle/>,
-  }
-  static childContextTypes = {
-    openNavbarCollapse:  React.PropTypes.func.isRequired,
-    closeNavbarCollapse: React.PropTypes.func.isRequired,
-  }
-  getChildContext() {
-    return {
-      openNavbarCollapse:  this.openNavbarCollapse,
-      closeNavbarCollapse: this.closeNavbarCollapse,
-    };
+    onCollapse: function() {},
+    onExpand: function() {},
   }
   componentDidMount() {
     document.addEventListener('click', this.onDocumentClick, true);
@@ -62,35 +50,27 @@ export default class Navbar extends React.Component {
     }
 
     if (!isDescendant(e.target, this.refs.navbar)) {
-      this.closeNavbarCollapse();
+      this.props.onCollapse();
     }
   }
-  toggleNavbarCollapse = () => {
-    this.setState({collapseOpen: !this.state.collapseOpen});
-  }
-  openNavbarCollapse = () => {
-    this.setState({collapseOpen: true});
-  }
-  closeNavbarCollapse = () => {
-    this.setState({collapseOpen: false});
-  }
-  isActive = (...args) => {
-    return this.context.history.isActive(...args);
+  toggle = () => {
+    let {expanded, onCollapse, onExpand} = this.props;
+    expanded ? onCollapse() : onExpand();
   }
   render() {
-    var {className, children, headerContent, navbarToggle} = this.props;
-    var {collapseOpen} = this.state;
+    let {className, children, headerContent, navbarToggle} = this.props;
+    let expanded = !!this.props.expanded;
 
     className = classNames(className, 'navbar');
 
     return <nav ref="navbar" className={className}>
       <div className="container-fluid">
         <div className="navbar-header">
-          {React.cloneElement(navbarToggle, {ref: 'navbarToggle', onClick: this.toggleNavbarCollapse})}
+          {React.cloneElement(navbarToggle, {onClick: this.toggle})}
           {headerContent}
         </div>
 
-        <Collapse component="div" ref="collapse" open={collapseOpen} className="navbar-collapse">
+        <Collapse component="div" ref="collapse" open={expanded} className="navbar-collapse">
           {children}
         </Collapse>
       </div>
