@@ -127,6 +127,9 @@ export default class DataCache extends EventEmitter {
           page.times .splice(startIndex, page.times.length  - startIndex, ...times);
           page.values.splice(startIndex, page.values.length - startIndex, ...values);
           page.isMerged = true;
+
+          if ('production' !== process.env.NODE_ENV) page.sanityCheck();
+
           if (notify !== false) {
             this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: page.endTime});
           }
