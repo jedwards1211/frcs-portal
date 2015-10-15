@@ -6,6 +6,7 @@ import ArcFill from './ArcFill';
 import ArcAlarmLegend from './ArcAlarmLegend';
 import arcPath from '../arcPath';
 import GaugePropTypes from './GaugePropTypes';
+import layoutSvgText from './layoutSvgText';
 
 require('./ArcGauge.sass');
 
@@ -19,10 +20,10 @@ var LEGEND_RADIUS = [ARC_RADIUS[0] - ARC_THICKNESS, ARC_RADIUS[1] - ARC_THICKNES
 var LEGEND_THICKNESS = 4;
 var VALUE_HEIGHT = ARC_HEIGHT * 0.45;
 var UNITS_HEIGHT = ARC_HEIGHT * 0.15;
-var NAME_HEIGHT  = ARC_HEIGHT * 0.2;
+var NAME_LINE_HEIGHT = ARC_HEIGHT * 0.2;
 var RANGE_HEIGHT = ARC_HEIGHT * 0.15;
 var VALUE_WIDTH  = ARC_WIDTH  * 0.8;
-var NAME_WIDTH   = ARC_WIDTH * 0.4;
+var NAME_WIDTH   = ARC_WIDTH * 0.6;
 var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH - PADDING * 2) / 2;
 var UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
 
@@ -59,9 +60,21 @@ export default React.createClass({
 
     var rangeTextLength = Math.max(minText.length, maxText.length);
 
+    let lines = layoutSvgText(nameText, {
+      separators: [/\s*>\s*/,/\s+/],
+      maxColumns: 15,
+      fontAspect,
+      maxWidth: NAME_WIDTH,
+      maxLineHeight: NAME_LINE_HEIGHT,
+      x: ARC_WIDTH / 2,
+      y: ARC_HEIGHT + PADDING,
+      props: {className: 'name'},
+    });
+
     return (
       <div ref="root" className={className} {...restProps}>
-        <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + NAME_HEIGHT + PADDING)} preserveAspectRatio="xMidYMid meet">
+        <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + lines.length * NAME_LINE_HEIGHT + PADDING)} 
+          preserveAspectRatio="xMidYMid meet">
           <path key="track" className="track" d={TRACK_PATH} />
           <ArcFill  key="fill"
                     className={classNames('fill', {'na': isNaN(value) || value === null})}
@@ -96,9 +109,7 @@ export default React.createClass({
           <text key="units" ref="units" className="units" x={ARC_WIDTH / 2} y={ARC_HEIGHT - VALUE_HEIGHT - PADDING} style={makeStyle(unitsText.length, UNITS_WIDTH, UNITS_HEIGHT)}>
             {unitsText}
           </text>
-          <text key="name"  ref="name"  className="name"  x={ARC_WIDTH / 2} y={ARC_HEIGHT + PADDING} style={makeStyle(nameText.length, NAME_WIDTH, NAME_HEIGHT)}>
-            {nameText}
-          </text>
+          {lines}
         </svg>
         {children}
       </div>

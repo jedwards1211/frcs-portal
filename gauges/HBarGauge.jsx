@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import HBarFill from './HBarFill';
 import HBarAlarmLegend from './HBarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
+import layoutSvgText from './layoutSvgText';
 
 require('./HBarGauge.sass');
 
@@ -78,7 +79,7 @@ export default React.createClass({
     }
 
     // height / width
-    var fontAspect = 1.6;
+    var fontAspect = 2;
 
     var makeStyle = (textLength, maxWidth, maxHeight) => ({
       fontSize: Math.max(10, Math.min(maxHeight, maxWidth / textLength * fontAspect))
@@ -115,6 +116,18 @@ export default React.createClass({
 
     var rangeY = barY + barHeight / 2;
 
+    let lines = layoutSvgText(nameText, {
+      separators: [/\s*>\s*/, /\s+/],
+      minFontSize: 8,
+      fontAspect,
+      maxWidth: nameWidth,
+      maxHeight: nameHeight,
+      x: 0,
+      y: nameY,
+      ascend: true,
+      props: {className: 'name'},
+    });
+
     return (
       <div ref="gauge" className={className} {...restProps}>
         <svg key="svg" ref="svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{
@@ -141,9 +154,12 @@ export default React.createClass({
           <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={makeStyle(unitsText.length, unitsWidth - padding, nameHeight)}> 
             {unitsText}
           </text>
+          {lines}
+          {/*
           <text key="name"  ref="name"  className="name"  x={0}                  y={nameY} style={makeStyle(nameText.length , nameWidth - padding, nameHeight)}>
             {nameText}
           </text>
+        */}
         </svg>
         {children}
       </div>
