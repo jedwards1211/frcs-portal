@@ -1,14 +1,14 @@
 'use strict';
 
 import React, {PropTypes, Component} from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
 import RobustTransitionGroup from '../RobustTransitionGroup';
 import * as nojquery from '../nojquery';
 
 import addClass from '../wrappers/addClass';
-
-import transitionGroupChild from '../decorators/transitionGroupChild';
+import callOnTransitionEnd from '../callOnTransitionEnd';
 
 import './Modal.sass';
 
@@ -22,7 +22,6 @@ import './Modal.sass';
 
 let openModalCount = 0;
 
-@transitionGroupChild('modal')
 export default class Modal extends Component {
   static propTypes = {
     dialogClassName: PropTypes.string,
@@ -38,8 +37,8 @@ export default class Modal extends Component {
     }
   }
   render() {
-    let {className, dialogClassName, children} = this.props;
-    className = classNames('modal fade', className, {'in': this.state.isIn});
+    let {className, dialogClassName, isIn, children} = this.props;
+    className = classNames('modal fade', className, {'in': isIn});
     dialogClassName = classNames('modal-dialog', dialogClassName);
     return <div ref="modal" {...this.props} className={className} role="dialog">
       <div className={dialogClassName}>
@@ -58,7 +57,6 @@ Modal.Small.defaultProps = {
 
 var ModalContent = Modal.Content = addClass('div', 'modal-content');
 
-@transitionGroupChild('backdrop')
 class ModalBackdrop extends Component {
   onClick = (event) => {
     // make sure the backdrop was what actually got clicked, not something
@@ -68,8 +66,7 @@ class ModalBackdrop extends Component {
     }
   }
   render() {
-    let {isIn} = this.state;
-    let {className} = this.props;
+    let {isIn, className} = this.props;
     className = classNames('modal-backdrop fade', className, {'in': isIn});
     return <div ref="backdrop" {...this.props} className={className} onClick={this.onClick}/>;
   }
@@ -82,6 +79,47 @@ var ModalBody   = Modal.Body   = addClass('div', 'modal-body');
 var ModalFooter = Modal.Footer = addClass('div', 'modal-footer');
 var ModalTitle  = Modal.Title  = addClass('h4', 'modal-title');
 
+class TransitionGroupChild extends Component {
+  constructor(props)  {
+    super(props);
+    this.state = Object.assign({}, this.state, {
+      isIn: false,
+      isEntering: false,
+      isLeaving: false,
+      ref: 'root',
+    });
+  }
+  componentWillAppear(callback) {
+    this.componentWillEnter(callback);
+  }
+  componentWillEnter(callback) {
+    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
+    // we setTimeout so that the component can mount without inClassName first,
+    // and then add it a moment later.  Otherwise it may not transition
+    setTimeout(() => this.setState({
+      isIn: true,
+      isEntering: true,
+      isLeaving: false,
+    }),  0);
+  }
+  componentDidEnter() {
+    this.setState({
+      isEntering: false,
+    });
+  }
+  componentWillLeave(callback) {
+    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
+    this.setState({
+      isIn: false,
+      isEntering: false,
+      isLeaving: true,
+    });
+  }
+  render() {
+    return React.cloneElement(this.props.children, this.state);
+  }
+}
+
 class ModalTransitionGroup extends Component {
   static defaultProps = {
     component: 'div',
@@ -89,7 +127,12 @@ class ModalTransitionGroup extends Component {
   render() {
     var className = classNames(this.props.className, 'modal-transition-group');
     return <RobustTransitionGroup {...this.props} className={className}>
-      {this.props.children}
+      {React.Children.map(this.props.children, child => {
+        if (!child) return child;
+        return <TransitionGroupChild key={child.key}>
+          {child}
+        </TransitionGroupChild>;
+      })}
     </RobustTransitionGroup>;
   }
 }
