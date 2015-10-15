@@ -20,7 +20,7 @@ var LEGEND_RADIUS = [ARC_RADIUS[0] - ARC_THICKNESS, ARC_RADIUS[1] - ARC_THICKNES
 var LEGEND_THICKNESS = 4;
 var VALUE_HEIGHT = ARC_HEIGHT * 0.45;
 var UNITS_HEIGHT = ARC_HEIGHT * 0.15;
-var NAME_LINE_HEIGHT = ARC_HEIGHT * 0.2;
+var NAME_HEIGHT = ARC_HEIGHT * 0.3;
 var RANGE_HEIGHT = ARC_HEIGHT * 0.15;
 var VALUE_WIDTH  = ARC_WIDTH  * 0.8;
 var NAME_WIDTH   = ARC_WIDTH * 0.6;
@@ -62,10 +62,10 @@ export default React.createClass({
 
     let lines = layoutSvgText(nameText, {
       separators: [/\s*>\s*/,/\s+/],
-      maxColumns: 15,
+      minFontSize: 20,
       fontAspect,
       maxWidth: NAME_WIDTH,
-      maxLineHeight: NAME_LINE_HEIGHT,
+      maxHeight: NAME_HEIGHT,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
       props: {className: 'name'},
@@ -73,7 +73,7 @@ export default React.createClass({
 
     return (
       <div ref="root" className={className} {...restProps}>
-        <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + lines.length * NAME_LINE_HEIGHT + PADDING)} 
+        <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + NAME_HEIGHT + PADDING)} 
           preserveAspectRatio="xMidYMid meet">
           <path key="track" className="track" d={TRACK_PATH} />
           <ArcFill  key="fill"

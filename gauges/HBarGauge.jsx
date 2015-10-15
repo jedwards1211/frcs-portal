@@ -79,7 +79,7 @@ export default React.createClass({
     }
 
     // height / width
-    var fontAspect = 2;
+    var fontAspect = 1.6;
 
     var makeStyle = (textLength, maxWidth, maxHeight) => ({
       fontSize: Math.max(10, Math.min(maxHeight, maxWidth / textLength * fontAspect))
@@ -118,7 +118,7 @@ export default React.createClass({
 
     let lines = layoutSvgText(nameText, {
       separators: [/\s*>\s*/, /\s+/],
-      minFontSize: 8,
+      minFontSize: 15,
       fontAspect,
       maxWidth: nameWidth,
       maxHeight: nameHeight,

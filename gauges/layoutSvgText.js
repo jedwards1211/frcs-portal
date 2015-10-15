@@ -46,7 +46,7 @@ export default function layoutSvgText(text, {separators, minFontSize,
   let fontSize = maxWidth / columns * fontAspect;
   if (maxLineHeight) fontSize = Math.min(fontSize, maxLineHeight);
   if (maxHeight) fontSize = Math.min(fontSize, maxHeight / lines.length);
-  if (minFontSize) fontSize = Math.max(fontSize, minFontSize);
+  // if (minFontSize) fontSize = Math.max(fontSize, minFontSize);
 
   return lines.map((line, i) => (
     <text {...props} key={i} x={x} y={y + (ascend ? i + 1 - lines.length : i) * fontSize} style={{fontSize}}>
