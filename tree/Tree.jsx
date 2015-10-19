@@ -4,6 +4,7 @@ import classNames from 'classnames';
 
 import Collapse from '../bootstrap/Collapse';
 import CollapseIcon from '../CollapseIcon';
+import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
 
@@ -18,16 +19,17 @@ class TreeNode extends Component {
     indent:      15,
   }
   static propTypes = {
-    depth:    PropTypes.number,
-    expanded: PropTypes.bool,
-    cell:     PropTypes.node.isRequired,
+    depth:      PropTypes.number,
+    expanded:   PropTypes.bool,
+    cell:       PropTypes.node.isRequired,
+    cellProps:  PropTypes.object,
   }
   static defaultProps = {
     depth: 0,
     expanded: true,
   }
   render() {
-    let {className, depth, expanded, cell, children} = this.props;
+    let {className, depth, expanded, cell, children, cellProps} = this.props;
     let {basePadding, indent} = this.context;
 
     let hasChildren = !!React.Children.count(children);
@@ -36,9 +38,15 @@ class TreeNode extends Component {
       'mf-tree-node-branch': hasChildren,
     });
 
+    cellProps = propAssign(cellProps, {
+      className: classNames(cellProps && cellProps.className, 'mf-tree-node-cell'),
+      style: propAssign(cellProps && cellProps.style, {
+        paddingLeft: basePadding + depth * indent,
+      }),
+    });
+
     return <div {...this.props} className={className}>
-      <div className="mf-tree-node-cell" onClick={this.onClick}
-        style={{paddingLeft: basePadding + depth * indent}}>
+      <div {...cellProps}>
         {hasChildren && <CollapseIcon open={expanded}/>} {cell}
       </div>
       {hasChildren && <Collapse open={expanded}>
@@ -54,6 +62,7 @@ class AutoTreeNode extends Component {
     depth:        PropTypes.number,
     initExpanded: PropTypes.bool,
     cell:         PropTypes.node.isRequired,
+    cellProps:    PropTypes.object,
   }
   static defaultProps = {
     initExpanded: true,
@@ -68,7 +77,9 @@ class AutoTreeNode extends Component {
     this.setState({expanded: !this.state.expanded});
   }
   render() {
-    return <TreeNode {...this.props} {...this.state} onClick={this.onClick}/>;
+    let {onClick} = this;
+    let cellProps = propAssign(this.props.cellProps, {onClick});
+    return <TreeNode {...this.props} {...this.state} cellProps={cellProps}/>;
   }
 }
 
