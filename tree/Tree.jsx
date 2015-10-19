@@ -130,3 +130,4 @@ export default class Tree extends Component {
 
 Tree.Node = TreeNode;
 Tree.Node.Auto = AutoTreeNode;
+Tree.Cell = TreeCell;
