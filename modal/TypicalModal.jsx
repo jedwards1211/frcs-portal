@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import classNames from 'classnames';
 
 import Modal from '../bootstrap/Modal';
 import CloseButton from '../bootstrap/CloseButton';
@@ -6,6 +7,8 @@ import Collapse from '../bootstrap/Collapse';
 import Alert from '../bootstrap/Alert';
 import Button from '../bootstrap/Button';
 import Spinner from '../Spinner';
+
+import './TypicalModal.sass';
 
 export default class TypicalModal extends React.Component {
   static propTypes = {
@@ -25,7 +28,9 @@ export default class TypicalModal extends React.Component {
 
     if (error) this.lastError = error;
 
-    return <Modal ref="modal" {...this.props}>
+    let className = classNames(className, 'mf-typical-modal');
+
+    return <Modal {...this.props} className={className}>
       <Modal.Header>
         <CloseButton onClick={onCancel}/>
         {title && <Modal.Title>{title}</Modal.Title>}
