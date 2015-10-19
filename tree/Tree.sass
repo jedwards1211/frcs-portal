@@ -3,6 +3,7 @@
 $item-height: 35px
 
 .mf-tree-default
+  position: relative
   padding-left: 0
   margin-bottom: 0
 
@@ -14,15 +15,16 @@ $item-height: 35px
     @include transition(transform ease 0.15s)
 
   .mf-tree-node
+    position: relative
     margin-left: 0
     padding-left: 0
     cursor: pointer
     line-height: $item-height
 
-    :not(:first-child)
-      margin-top: -1px
+    /* :not(:first-child) */
+    margin-top: -1px
 
-  .mf-tree-node-branch .mf-tree-node-cell
+  .mf-tree-node-branch > .mf-tree-node-cell
     z-index: 100
     background-color: #eee
     border: 1px solid #ddd
@@ -33,7 +35,7 @@ $item-height: 35px
       background-color: #ddd
       border: 1px solid #ccc
 
-  :not(.mf-tree-node-branch) .mf-tree-node-cell
+  :not(.mf-tree-node-branch) > .mf-tree-node-cell
     background-color: white
     color: #555
     border: 1px solid #eee
@@ -50,5 +52,6 @@ $item-height: 35px
         background-color: #fd0
 
   .mf-tree-node-cell
+    position: relative
     border-left-width: 0 !important
     border-right-width: 0 !important
