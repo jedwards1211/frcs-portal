@@ -8,6 +8,15 @@ import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
 
+class TreeCell extends Component {
+  render() {
+    let {hasChildren, expanded, children} = this.props;
+    return <div {...this.props}>
+      {hasChildren && <CollapseIcon open={expanded}/>} {children}
+    </div>;
+  }
+}
+
 class TreeNode extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate
   static contextTypes = {
@@ -22,14 +31,13 @@ class TreeNode extends Component {
     depth:      PropTypes.number,
     expanded:   PropTypes.bool,
     cell:       PropTypes.node.isRequired,
-    cellProps:  PropTypes.object,
   }
   static defaultProps = {
     depth: 0,
     expanded: true,
   }
   render() {
-    let {className, depth, expanded, cell, children, cellProps} = this.props;
+    let {className, depth, expanded, cell, children} = this.props;
     let {basePadding, indent} = this.context;
 
     let hasChildren = !!React.Children.count(children);
@@ -38,17 +46,20 @@ class TreeNode extends Component {
       'mf-tree-node-branch': hasChildren,
     });
 
-    cellProps = propAssign(cellProps, {
-      className: classNames(cellProps && cellProps.className, 'mf-tree-node-cell'),
-      style: propAssign(cellProps && cellProps.style, {
+    if (!React.isValidElement(cell)) {
+      cell = <TreeCell>{cell}</TreeCell>;
+    }
+    cell = React.cloneElement(cell, {
+      className: classNames(cell.props.className, 'mf-tree-node-cell'),
+      hasChildren,
+      expanded,
+      style: propAssign(cell.props.style, {
         paddingLeft: basePadding + depth * indent,
       }),
     });
 
     return <div {...this.props} className={className}>
-      <div {...cellProps}>
-        {hasChildren && <CollapseIcon open={expanded}/>} {cell}
-      </div>
+      {cell}
       {hasChildren && <Collapse open={expanded}>
         {React.Children.map(children, child => child && 
           React.cloneElement(child, {depth: depth + 1}))}
@@ -62,7 +73,6 @@ class AutoTreeNode extends Component {
     depth:        PropTypes.number,
     initExpanded: PropTypes.bool,
     cell:         PropTypes.node.isRequired,
-    cellProps:    PropTypes.object,
   }
   static defaultProps = {
     initExpanded: true,
@@ -77,9 +87,15 @@ class AutoTreeNode extends Component {
     this.setState({expanded: !this.state.expanded});
   }
   render() {
+    let {cell} = this.props;
     let {onClick} = this;
-    let cellProps = propAssign(this.props.cellProps, {onClick});
-    return <TreeNode {...this.props} {...this.state} cellProps={cellProps}/>;
+
+    if (!React.isValidElement(cell)) {
+      cell = <TreeCell>{cell}</TreeCell>;
+    }
+    cell = React.cloneElement(cell, {onClick});
+
+    return <TreeNode {...this.props} {...this.state} cell={cell}/>;
   }
 }
 
