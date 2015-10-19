@@ -1,15 +1,17 @@
-@import ../../mindfront-react-components/css3-mixins
+@import ../css3-mixins
 
 $transition-speed: 0.2s
 $sidebar-toggle-btn-height: 50px
 
 .mf-sidebar-view
   position: relative
+  min-height: 400px
 
   > .content
-    position: relative
+    position: absolute
+    overflow: auto
     top: 0
-    min-height: 100%
+    bottom: 0
 
   > .mf-sidebar
     position: absolute
