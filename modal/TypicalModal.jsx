@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react';
 
-import Modal from 'mindfront-react-components/bootstrap/Modal';
-import CloseButton from 'mindfront-react-components/bootstrap/CloseButton';
-import Collapse from 'mindfront-react-components/bootstrap/Collapse';
-import Alert from 'mindfront-react-components/bootstrap/Alert';
-import Button from 'mindfront-react-components/bootstrap/Button';
-import Spinner from 'mindfront-react-components/Spinner';
+import Modal from '../bootstrap/Modal';
+import CloseButton from '../bootstrap/CloseButton';
+import Collapse from '../bootstrap/Collapse';
+import Alert from '../bootstrap/Alert';
+import Button from '../bootstrap/Button';
+import Spinner from '../Spinner';
 
 export default class TypicalModal extends React.Component {
   static propTypes = {
