@@ -17,6 +17,7 @@ export default class TypicalModal extends React.Component {
     beforeButtons:          PropTypes.node,
     afterButtons:           PropTypes.node,
     afterError:             PropTypes.node,
+    OKdisabled:             PropTypes.bool,
     onOK:                   PropTypes.func,
     onCancel:               PropTypes.func,
     saving:                 PropTypes.bool,
@@ -24,7 +25,7 @@ export default class TypicalModal extends React.Component {
   }
   render() {
     let {title, header, beforeButtons, afterButtons, afterError,
-        onOK, onCancel, saving, error, children} = this.props;
+        OKdisabled, onOK, onCancel, saving, error, children} = this.props;
 
     if (error) this.lastError = error;
 
@@ -46,7 +47,7 @@ export default class TypicalModal extends React.Component {
       <Modal.Footer>
         {beforeButtons}
         <Button onClick={onCancel}>Cancel</Button>
-        <Button.Primary onClick={onOK} disabled={saving}>
+        <Button.Primary onClick={onOK} disabled={saving || OKdisabled}>
           {saving ? <span><Spinner /> Saving...</span> : 'OK'}
         </Button.Primary>
         {afterButtons}
