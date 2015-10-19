@@ -89,7 +89,8 @@ class Dropdown extends Component {
     }
 
     if (this.props.closeOnInsideClick || 
-      !isDescendant(e.target, ReactDOM.findDOMNode(this.refs.menu))) {
+      (!isDescendant(e.target, ReactDOM.findDOMNode(this.refs.menu))) &&
+      (!isDescendant(e.target, ReactDOM.findDOMNode(this.refs.toggle)))) {
       this.setState({open: false});
     }
   }
@@ -102,19 +103,21 @@ class Dropdown extends Component {
     props.ref = 'dropdown';
 
     children = React.Children.map(children, child => {
-      if (child.type === DropdownToggle) {
-        var onClick = child.props.onClick ? 
-          () => {
-            child.props.onClick();
-            this.onDropdownToggleClick();
-          } 
-          : 
-          this.onDropdownToggleClick;
+      if (child) {
+        if (child.type === DropdownToggle) {
+          var onClick = child.props.onClick ? 
+            () => {
+              child.props.onClick();
+              this.onDropdownToggleClick();
+            } 
+            : 
+            this.onDropdownToggleClick;
 
-        return React.cloneElement(child, {open, onClick});
-      }
-      if (child.type === DropdownMenu) {
-        return React.cloneElement(child, {ref: 'menu'});
+          return React.cloneElement(child, {ref: 'toggle', open, onClick});
+        }
+        if (child.type === DropdownMenu) {
+          return React.cloneElement(child, {ref: 'menu'});
+        }
       }
       return child;
     });
