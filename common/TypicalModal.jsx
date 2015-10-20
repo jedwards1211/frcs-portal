@@ -16,7 +16,6 @@ export default class TypicalModal extends React.Component {
     header:                 PropTypes.node,
     beforeButtons:          PropTypes.node,
     afterButtons:           PropTypes.node,
-    afterError:             PropTypes.node,
     OKdisabled:             PropTypes.bool,
     onOK:                   PropTypes.func,
     onCancel:               PropTypes.func,
@@ -39,12 +38,11 @@ export default class TypicalModal extends React.Component {
       </Modal.Header>
       <Modal.Body>
         {children}
-        <Collapse component="div" open={!!error}>
-          <Alert.Danger>{this.lastError && this.lastError.toString()}</Alert.Danger>
-        </Collapse>
-        {afterError}
       </Modal.Body>
       <Modal.Footer>
+        <Collapse component="div" className="error-collapse" open={!!error}>
+          <Alert.Danger>{this.lastError && this.lastError.toString()}</Alert.Danger>
+        </Collapse>
         {beforeButtons}
         <Button onClick={onCancel}>Cancel</Button>
         <Button.Primary onClick={onOK} disabled={saving || OKdisabled}>
