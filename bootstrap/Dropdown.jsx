@@ -38,6 +38,7 @@ class Dropdown extends Component {
     open:               React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
     component:          React.PropTypes.any.isRequired,
+    dropup:             React.PropTypes.any,
   }
   static defaultProps = {
     closeOnInsideClick: true,
@@ -100,7 +101,9 @@ class Dropdown extends Component {
     var open = firstDefined(this.props.open, this.state.open);
     var props = _.clone(this.props);
 
-    props.className = classNames(className, 'dropdown', {open: open}, openClassName && {openClassName: open});
+    let type = this.props.hasOwnProperty('dropup') ? 'dropup' : 'dropdown';
+
+    props.className = classNames(className, type, {open: open}, openClassName && {openClassName: open});
     props.ref = 'dropdown';
 
     children = React.Children.map(children, child => {
