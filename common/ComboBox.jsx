@@ -12,7 +12,7 @@ export default class ComboBox extends Component {
     placeholder:        PropTypes.any,
     noItemsPlaceholder: PropTypes.any,
     render:             PropTypes.func,
-    onSelect:           PropTypes.func,
+    onChange:           PropTypes.func,
     disabled:           PropTypes.bool,
   }
   static defaultProps = {
@@ -20,11 +20,11 @@ export default class ComboBox extends Component {
     placeholder: 'Select Item',
     noItemsPlaceholder: 'No Items Available',
     component: 'div',
-    onSelect: function() {},
+    onChange: function() {},
   }
   render() {
     let {items, selectedItem, render, placeholder,
-        noItemsPlaceholder, onSelect, disabled, className} = this.props;
+        noItemsPlaceholder, onChange, disabled, className} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
     let hasItems = items && items.length;
@@ -42,7 +42,7 @@ export default class ComboBox extends Component {
         </span> <span className="caret"/>
       </Dropdown.Toggle>
       {hasItems && <Dropdown.Menu component="ul">
-        {items.map((item, index) => (<li key={index} onClick={() => onSelect(item, index)}>
+        {items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
           <a>{render(item)}</a>
         </li>))}
       </Dropdown.Menu>}
