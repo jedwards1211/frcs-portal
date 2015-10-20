@@ -1,5 +1,5 @@
 import React from 'react';
-import arcPath from './arcPath';
+import arcPath from '../arcPath';
 
 import './Spinner.sass';
 

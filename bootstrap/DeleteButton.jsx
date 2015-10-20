@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 
-import Spinner from '../Spinner';
+import Spinner from '../common/Spinner';
 
 export default class DeleteButton extends Component {
   static propTypes = {

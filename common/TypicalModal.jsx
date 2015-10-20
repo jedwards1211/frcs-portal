@@ -6,7 +6,7 @@ import CloseButton from '../bootstrap/CloseButton';
 import Collapse from '../bootstrap/Collapse';
 import Alert from '../bootstrap/Alert';
 import Button from '../bootstrap/Button';
-import Spinner from '../Spinner';
+import Spinner from '../common/Spinner';
 
 import './TypicalModal.sass';
 

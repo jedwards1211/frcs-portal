@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Collapse from '../bootstrap/Collapse';
 import Alert from '../bootstrap/Alert';
 
-import Toggle from '../Toggle';
+import Toggle from '../common/Toggle';
 import alarmTypes from './alarmTypes';
 
 import { numberRegExp, numberOrBlankRegExp } from '../validationRegExps';

@@ -9,15 +9,13 @@ export default class ComboBox extends Component {
   static propTypes = {
     items:              PropTypes.arrayOf(PropTypes.any.isRequired),
     selectedItem:       PropTypes.any,
-    placeholder:        PropTypes.string,
-    noItemsPlaceholder: PropTypes.string,
-    getKey:             PropTypes.func,
+    placeholder:        PropTypes.any,
+    noItemsPlaceholder: PropTypes.any,
     render:             PropTypes.func,
     onSelect:           PropTypes.func,
     disabled:           PropTypes.bool,
   }
   static defaultProps = {
-    getKey: item => String(item),
     render: item => String(item),
     placeholder: 'Select Item',
     noItemsPlaceholder: 'No Items Available',
@@ -25,7 +23,7 @@ export default class ComboBox extends Component {
     onSelect: function() {},
   }
   render() {
-    let {items, selectedItem, getKey, render, placeholder,
+    let {items, selectedItem, render, placeholder,
         noItemsPlaceholder, onSelect, disabled, className} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
@@ -44,7 +42,7 @@ export default class ComboBox extends Component {
         </span> <span className="caret"/>
       </Dropdown.Toggle>
       {hasItems && <Dropdown.Menu component="ul">
-        {items.map(item => (<li key={getKey(item)} onClick={() => onSelect(item)}>
+        {items.map((item, index) => (<li key={index} onClick={() => onSelect(item, index)}>
           <a>{render(item)}</a>
         </li>))}
       </Dropdown.Menu>}
