@@ -11,9 +11,10 @@ class DropdownToggle extends Component {
     component: React.PropTypes.any.isRequired,
   }
   render() {
-    var {component, open, children, ...props} = this.props;
+    var {component, open, children, className, ...props} = this.props;
     props['aria-haspopup'] = 'true';
     props['aria-expanded'] = open;
+    props.className = classNames('dropdown-toggle', className);
     return React.createElement(component, props, children);
   }
 }

@@ -1,0 +1,36 @@
+@import ../css3-mixins
+@import ../noselect
+
+.mf-combo-box
+  @extend .noselect
+
+  &.no-selection
+    .dropdown-toggle .selected-item
+      color: #aaa
+
+  .dropdown-toggle
+    @include display-flex
+    @include align-items(center)
+
+    .selected-item
+      float: left
+      text-align: left
+      overflow: hidden
+      text-overflow: ellipsis
+      @include flex(1 1 auto)
+
+    .caret
+      float: right
+
+      @include flex(0 0 auto)
+
+  .dropdown-menu
+    width: 100%
+    max-height: 200px
+    overflow-y: auto
+
+    > li > a
+      cursor: pointer
+      padding: 3px 10px 
+      overflow: hidden
+      text-overflow: ellipsis
