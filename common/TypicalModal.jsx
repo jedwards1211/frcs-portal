@@ -23,12 +23,12 @@ export default class TypicalModal extends React.Component {
     error:                  PropTypes.instanceOf(Error),
   }
   render() {
-    let {title, header, beforeButtons, afterButtons, afterError,
-        OKdisabled, onOK, onCancel, saving, error, children} = this.props;
+    let {title, header, beforeButtons, afterButtons, OKdisabled, onOK, 
+        onCancel, saving, error, className, children} = this.props;
 
     if (error) this.lastError = error;
 
-    let className = classNames(className, 'mf-typical-modal');
+    className = classNames(className, 'mf-typical-modal');
 
     return <Modal {...this.props} className={className}>
       <Modal.Header>
