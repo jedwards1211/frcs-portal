@@ -109,63 +109,6 @@
 
   @include border-radius( $radius )
 
-// FLEX
-@mixin flex-prefix($property, $value)
-  -webkit-box#{$property}: #{$value}
-  -moz-box#{$property}: #{$value}
-  -webkit-#{$property}: #{$value}
-  -ms-#{$property}: #{$value}
-  #{$property}: #{$value}
-
-@mixin display-flex
-  display: -webkit-box
-  display: -moz-box
-  display: -o-box
-  display: -ms-flexbox
-  display: -webkit-flex
-  display: flex
-
-@mixin flex($values)
-  -webkit-box-flex: $values
-  -moz-box-flex: $values
-  -o-box-flex: $values
-  -webkit-flex: $values
-  -ms-flex: $values
-  flex: $values
-
-@mixin flex-wrap($value)
-  -webkit-box-flex-wrap: $value
-  -moz-box-flex-wrap: $value
-  -webkit-flex-wrap: $value
-  -ms-flex-wrap: $value
-  flex-wrap: $value 
-
-@mixin flex-direction($value)
-  -webkit-box-flex-direction: $value
-  -moz-box-flex-direction: $value
-  -webkit-flex-direction: $value
-  -ms-flex-direction: $value
-  flex-direction: $value 
-  
-@mixin justify-content($value)
-  -webkit-box-justify-content: $value
-  -moz-box-justify-content: $value
-  -webkit-justify-content: $value
-  -ms-justify-content: $value
-  justify-content: $value
-
-@mixin align-items($value)
-  -webkit-box-align: $value
-  -moz-box-align: $value
-  -webkit-align-items: $value
-  -ms-align-items: $value
-  align-items: $value
-
-@mixin align-self($value)
-  -webkit-align-self: $value
-  -moz-align-self: $value
-  align-self: $value
-
 // FLIP
 @mixin flip($scaleX: -1)
   @include css3-prefix('transform', scaleX($scaleX))

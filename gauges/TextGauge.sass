@@ -1,5 +1,5 @@
 @import gauge
-@import ../css3-mixins
+@import ~sass-flex-mixin/flex
 
 $name-height: 40%
 $name-width: 100%
@@ -10,7 +10,7 @@ $units-width: 30%
 .text-gauge
   position: relative
   padding: 3px
-  @include display-flex
+  @include flexbox
   @include align-items(center)
 
   .value,
@@ -26,7 +26,7 @@ $units-width: 30%
   .value-and-units
     margin: 0 2%
     width: 100%
-    @include display-flex
+    @include flexbox
     @include align-items(baseline)
 
   .value
