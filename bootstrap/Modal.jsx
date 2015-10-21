@@ -36,11 +36,21 @@ export default class Modal extends Component {
       nojquery.removeClass(document.body, 'modal-open');
     }
   }
+  onClick = (e) => {
+    if (e.target === this.refs.modal) {
+      // e.target will be something else if clicked within .modal-dialog
+      this.props.onOutsideClick && this.props.onOutsideClick(e);
+    }
+    else {
+      this.props.onClick && this.props.onClick(e);
+    }
+  }
   render() {
     let {className, dialogClassName, isIn, children} = this.props;
     className = classNames('modal fade', className, {'in': isIn});
     dialogClassName = classNames('modal-dialog', dialogClassName);
-    return <div ref="modal" {...this.props} className={className} role="dialog">
+    return <div ref="modal" {...this.props} className={className} role="dialog"
+      onClick={this.onClick}>
       <div className={dialogClassName}>
         <div className="modal-content">
           {children}
@@ -58,17 +68,10 @@ Modal.Small.defaultProps = {
 var ModalContent = Modal.Content = addClass('div', 'modal-content');
 
 class ModalBackdrop extends Component {
-  onClick = (event) => {
-    // make sure the backdrop was what actually got clicked, not something
-    // on top of it like the modal
-    if (event.target === this.refs.backdrop) {
-      this.props.onClick && this.props.onClick(event);
-    }
-  }
   render() {
     let {isIn, className} = this.props;
     className = classNames('modal-backdrop fade', className, {'in': isIn});
-    return <div ref="backdrop" {...this.props} className={className} onClick={this.onClick}/>;
+    return <div ref="backdrop" {...this.props} className={className}/>;
   }
 }
 
@@ -121,13 +124,23 @@ class TransitionGroupChild extends Component {
 }
 
 class ModalTransitionGroup extends Component {
-  static defaultProps = {
-    component: 'div',
-  }
   render() {
-    var className = classNames(this.props.className, 'modal-transition-group');
-    return <RobustTransitionGroup {...this.props} className={className}>
-      {React.Children.map(this.props.children, child => {
+    let className = classNames(this.props.className, 'modal-transition-group');
+    let children = React.Children.toArray(this.props.children);
+
+    for (let i = 1; i < children.length; i++) {
+      if (children[i - 1].props.onClick) {
+        // this is a hack that lets us use onClick listeners on the backdrop
+        // when in reality the transparent part of Modal gets in the way
+        children[i] = React.cloneElement(children[i], 
+          {onOutsideClick: children[i - 1].props.onClick});
+      }
+    }
+
+    return <RobustTransitionGroup component="div" {...this.props} ref="group" className={className} style={{
+      pointerEvents: children.length ? 'initial' : 'none',
+    }}>
+      {children.map(child => {
         if (!child) return child;
         return <TransitionGroupChild key={child.key}>
           {child}

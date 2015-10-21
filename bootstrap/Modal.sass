@@ -1,36 +1,66 @@
+@import ../css3-mixins
+
 .modal-transition-group
   position: fixed
   z-index: 1040
   top: 0
   left: 0
-  bottom: 0
   right: 0
+  bottom: 0
   pointer-events: none
-
-  > *
-    pointer-events: initial
 
   &.absolute
     position: absolute
 
-    .modal-backdrop,
-    .modal-root,
-    .modal
-      position: absolute
-      top: 0
-      left: 0
-      bottom: 0
-      right: 0
-
-  .backdrop
+  .modal-backdrop
     display: block
+    position: absolute
 
   .modal
     display: block
-    pointer-events: none
+    position: absolute
+    pointer-events: initial
 
-    > *
-      pointer-events: initial
+    @media (max-height: 500px), (max-width: 400px)
+      > .modal-dialog
+        margin: 10px auto
+
+    &.clamp-height
+      // if screen height is less than 400px, .modal-body will
+      // be pretty short -- use default behavior in that case
+      // (entire modal will scroll)
+      @media(min-height:400px)
+        // without this the shadow will get clipped at the bottom
+        overflow: visible
+
+        // use top/bottom margin here instead of .modal-dialog
+        // so that .modal-dialog can use height: 100%
+        margin: 30px
+
+        @media (max-height: 500px), (max-width: 400px)
+          margin: 10px
+
+        > .modal-dialog
+          margin: 0 auto
+          // height must be explicitly set for .modal-content to
+          // use percentage max-height
+          height: 100%
+
+          > .modal-content
+            @include display-flex
+            @include flex-direction(column)
+            max-height: 100%
+
+            > .modal-header,
+            > .modal-footer,
+              // don't allow header/footer to grow or shrink
+              @include flex(0 0 auto)
+
+            > .modal-body
+              // allow body to shrink but not grow
+              @include flex(0 1 auto)
+              // make body scrollable instead of entire modal
+              overflow-y: auto
 
 .modal-body.alert
   margin: 0
