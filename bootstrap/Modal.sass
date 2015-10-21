@@ -21,7 +21,11 @@
     position: absolute
     pointer-events: initial
 
-    @media (max-height: 500px), (max-width: 400px)
+    @media (max-height: 500px) and (max-width: 400px)
+      > .modal-dialog
+        margin: 10px
+
+    @media (max-height: 500px) and (min-width: 768px)
       > .modal-dialog
         margin: 10px auto
 
