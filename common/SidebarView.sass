@@ -37,6 +37,14 @@ $sidebar-toggle-btn-height: 50px
       .glyphicon
         @include transition(transform ease-out $transition-speed)
 
+  &.absolute
+    > .content
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+
   &.mf-sidebar-left
     > .content
       @include transition(margin-left ease-out $transition-speed)
