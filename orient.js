@@ -8,6 +8,7 @@ export function Side(props) {
 
 export var leftSide = new Side({
   name: 'left',
+  capName: 'Left',
   offsetName: 'offsetLeft',
   direction: -1,
   positionInCanvas(canvas) {
@@ -22,6 +23,7 @@ export var leftSide = new Side({
 });
 export var rightSide = new Side({
   name: 'right',
+  capName: 'Right',
   offsetName: 'offsetRight',
   direction: 1,
   positionInCanvas(canvas) {
@@ -36,6 +38,7 @@ export var rightSide = new Side({
 });
 export var topSide = new Side({
   name: 'top',
+  capName: 'Top',
   offsetName: 'offsetTop',
   direction: -1,
   positionInCanvas(canvas) {
@@ -50,6 +53,7 @@ export var topSide = new Side({
 });
 export var bottomSide = new Side({
   name: 'bottom',
+  capName: 'Bottom',
   offsetName: 'offsetBottom',
   direction: 1,
   positionInCanvas(canvas) {

@@ -66,8 +66,7 @@ export default class SidebarView extends Component {
     };
 
     const contentStyle = {
-      [sidebarSide.name]: contentPosition,
-      [sidebarSide.opposite.name]: 0,
+      ['margin' + sidebarSide.capName]: contentPosition,
     };
 
     var glyphTransform = sidebarOpen ? 'rotate(0)' : 'rotate(180deg)';

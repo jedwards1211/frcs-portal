@@ -5,13 +5,9 @@ $sidebar-toggle-btn-height: 50px
 
 .mf-sidebar-view
   position: relative
-  min-height: 400px
 
   > .content
-    position: absolute
     overflow: auto
-    top: 0
-    bottom: 0
 
   > .mf-sidebar
     position: absolute
@@ -42,7 +38,8 @@ $sidebar-toggle-btn-height: 50px
         @include transition(transform ease-out $transition-speed)
 
   &.mf-sidebar-left
-    > .content,
+    > .content
+      @include transition(margin-left ease-out $transition-speed)
     > .mf-sidebar,
       @include transition(left ease-out $transition-speed)
 
@@ -56,8 +53,8 @@ $sidebar-toggle-btn-height: 50px
       border-bottom-left-radius: 0
 
   &.mf-sidebar-right
-    > .content,
-    > .mf-sidebar,
+    > .content
+      @include transition(margin-right ease-out $transition-speed)
     > .mf-sidebar-toggle-btn
       @include transition(right ease-out $transition-speed)
 
