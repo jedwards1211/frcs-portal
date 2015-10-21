@@ -69,7 +69,7 @@ export default class SidebarView extends Component {
       ['margin' + sidebarSide.capName]: contentPosition,
     };
 
-    var glyphTransform = sidebarOpen ? 'rotate(0)' : 'rotate(180deg)';
+    var glyphTransform = sidebarOpen ? 'rotateY(0)' : 'rotateY(180deg)';
 
     const glyphStyle = {
       WebkitTransform: glyphTransform,
