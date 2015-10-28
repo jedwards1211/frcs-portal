@@ -1,0 +1,25 @@
+@import ../app/theme
+
+.mf-sandbox
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+  > .mf-sidebar
+    z-index: 2000
+
+    .mf-tree-node.selected > .mf-tree-node-cell
+      z-index: 150
+      color: $selected-color
+      border-color: $selected-border
+      background-color: $selected-bg
+
+      &:hover
+        color: $selected-hover-color
+        border-color: $selected-hover-border
+        background-color: $selected-hover-bg
+
+  > .content
+    min-height: 100%
