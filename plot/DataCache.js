@@ -1,5 +1,7 @@
 import {EventEmitter} from 'events';
 
+import _ from 'lodash';
+
 import * as GridMath from './GridMath';
 import CachePage from './CachePage';
 import LinkedList from './LinkedList';
@@ -12,8 +14,15 @@ import {forEach} from 'lodash';
 export default class DataCache extends EventEmitter {
   /**
    * Constructs a DataCache.
-   * @param{pageRange} the page range to use (difference between beginTime and endTime
+   * @param{object}   options.dataSource - provider of raw data without any caching
+   * @param{function} options.dataSource.query - if present, function taking argument
+   *                  ({channelId, beginTime, endTime}) and returning a promise to be fulfilled with
+   *                  the CachePage
+   * @param{function} options.dataSource.subscribe - if present, function taking arguments
+   *                  ({channelId, beginTime, endTime}, {onData, onError}) and returning an unsubscribe function
+   * @param{number}   options.pageRange - the page range to use (difference between beginTime and endTime
    * for each page).
+   *
    */
   constructor(options) {
     super();
@@ -54,7 +63,7 @@ export default class DataCache extends EventEmitter {
         // mark the mage most recently used
           page.node = this.recentPages.prepend(page);
         }
-        if (this.dataSource) {
+        if (this.dataSource && this.dataSource.query) {
           page.promise = this.dataSource.query({channelId, beginTime, endTime}).then(this.replaceData);
         }
       }
@@ -64,7 +73,8 @@ export default class DataCache extends EventEmitter {
         // mark the mage most recently used
         page.node.moveToHead();
       }
-      if (fetch && this.dataSource && page.isMerged && Date.now() >= page.endTime * 1000) {
+      if (fetch && this.dataSource && this.dataSource.query &&
+        page.isMerged && Date.now() >= page.endTime * 1000) {
         // re-request this page, in case any realtime data points are missing
         // or have slight differences from what got into historical data
         page.promise = this.dataSource.query({channelId, beginTime, endTime}).then(this.replaceData);
@@ -112,7 +122,7 @@ export default class DataCache extends EventEmitter {
           if (!page) {
             page = pages[beginTime] = chunk;
             page.node = this.recentPages.prepend(page);
-            if (this.dataSource) {
+            if (this.dataSource && this.dataSource.query) {
               page.promise = Promise.resolve();
             }
           }
@@ -122,16 +132,19 @@ export default class DataCache extends EventEmitter {
         }
         else {
           let firstTime  = times[0];
+          let lastTime   = times[times.length - 1];
           let startIndex = ceilingIndex(page.times, firstTime);
+          let endIndex   = floorIndex  (page.times, lastTime );
+          let count      = endIndex + 1 - startIndex;
 
-          page.times .splice(startIndex, page.times.length  - startIndex, ...times);
-          page.values.splice(startIndex, page.values.length - startIndex, ...values);
+          page.times .splice(startIndex, count, ...times);
+          page.values.splice(startIndex, count, ...values);
           page.isMerged = true;
 
           if ('production' !== process.env.NODE_ENV) page.sanityCheck();
 
           if (notify !== false) {
-            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: page.endTime});
+            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: lastTime});
           }
         }
       }
@@ -262,151 +275,46 @@ export default class DataCache extends EventEmitter {
    * from the range.  May eject old pages if the cache is or becomes full.
    */
   touch(channelIds, from, to, surround) {
-    let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
-    let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
+    let beginTime = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
+    let endTime   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
-    let pageStart = fromAdj;
+    let pageStart = beginTime;
     let pageCount = 0;
 
     // mark all existing pages within the range as most recently used
-    while (pageStart < toAdj && pageCount < this.maxPages) {
+    while (pageStart < endTime && pageCount < this.maxPages) {
       for (let i = 0; i < channelIds.length && pageCount < this.maxPages; i++) {
         if (this.getPage(channelIds[i], pageStart, true)) pageCount++;
       }
       pageStart += this.pageRange;
     } 
 
-    pageStart = fromAdj;
+    pageStart = beginTime;
     pageCount = 0;
 
     // now fetch pages that are missing
-    while (pageStart < toAdj && pageCount < this.maxPages) {
+    while (pageStart < endTime && pageCount < this.maxPages) {
       for (let i = 0; i < channelIds.length && pageCount++ < this.maxPages; i++) {
         this.getPage(channelIds[i], pageStart, true, true);
       }
       pageStart += this.pageRange;
-    } 
+    }
+
+    if (this.dataSource && this.dataSource.subscribe) {
+      this.resubscribe(channelIds, beginTime, endTime);
+		}
 
     this.removeExcessPendingPages();
   }
 
-  // STUFF TO REWORK LATER
-
-  // addOrMergePage(newPage) {
-  //   let pages = this.getPagesFor(newPage.channelId);
-
-  //   let mergePage = pages[newPage.beginTime];
-  //   if (mergePage) {
-  //     if (newPage.times.length === 0) {
-  //       return;
-  //     }
-
-  //     mergePage.tailMerge(newPage);
-  //   } else {
-  //     // mergePage = pages[newPage.beginTime] = newPage;
-  //     this.addOrReplacePage(newPage);
-  //   }
-  //   mergePage.isMerged = true;
-  // }
-
-  // fetchLatestData() {
-  //   let params = {};
-  //   if (this.lastFetchedData && this.lastFetchedData.endTime) {
-  //     params.beginTime = this.lastFetchedData.endTime;
-  //   }
-  //   if(this.dataSource) {
-  //     this.dataSource.query(params, this.fetchLatestDataComplete.bind(this, params.beginTime));
-  //   }
-  // }
-
-  // fetchLatestDataComplete(beginTime, rawData) {
-  //   this.lastFetchedData = rawData;
-  //   let channelId, channelData;
-
-  //   if (this.lastFetchedData.realTimeData) {
-  //     this.emit('realTimeDataReceived');
-  //   }
-
-  //   let historical = rawData.historicalData;
-  //   if (!historical) {
-  //     return;
-  //   }
-
-  //   if (isNaN(beginTime)) {
-
-  //     // default to the earliest time among the data points in the response
-  //     for (channelId in historical) {
-  //       if (historical.hasOwnProperty(channelId)) {
-  //         channelData = historical[channelId];
-  //         if (channelData && channelData.t && channelData.t.length) {
-  //           if (isNaN(beginTime)) {
-  //             beginTime = channelData.t[0];
-  //           } else {
-  //             beginTime = Math.min(beginTime, channelData.t[0]);
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     // no data points in the response?
-  //     if (isNaN(beginTime)) {
-  //       return;
-  //     }
-  //   }
-
-  //   let dataWasAdded = false;
-
-  //   for (channelId in historical) {
-  //     if (historical.hasOwnProperty(channelId)) {
-  //       channelData = historical[channelId];
-  //       if (channelData && channelData.t && channelData.t.length && channelData.v) {
-  //         let newPages = new CachePage(channelId, beginTime, rawData.endTime,
-  //           channelData.t, channelData.v).chunk(this.pageRange);
-
-  //         if (newPages.length > 0) {
-  //           dataWasAdded = true;
-
-  //           this.addOrMergePage(newPages[0]);
-
-  //           for (let i = 1; i < newPages.length; i++) {
-  //             this.addOrReplacePage(newPages[i]);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   if (dataWasAdded) {
-  //     this.emit('dataAdded', {channels: Object.keys(historical), beginTime, endTime: rawData.endTime});
-  //   }
-
-  //   if(this.metadataModCount !== rawData.metadataModCount) {
-  //     this.emit('metadataChange');
-  //     this.metadataModCount = rawData.metadataModCount;
-  //   }
-  // }
-
-  // turnOnRealTimeDataFetch(delay) {
-  //   if (!this.intervalPromise) {
-  //     this.intervalPromise = setInterval(this.fetchLatestData.bind(this), delay);
-  //   }
-  // }
-
-  // turnOffRealTimeDataFetch() {
-  //   if (this.intervalPromise) {
-  //     clearInterval(this.intervalPromise);
-  //     delete this.intervalPromise;
-  //   }
-  // }
-
-  // getLastRealTimeData(channelId) {
-  //   try {
-  //     return {
-  //       t: this.lastFetchedData.realTimeData[channelId].t,
-  //       v: this.lastFetchedData.realTimeData[channelId].v
-  //     };
-  //   } catch(err) {
-  //     return undefined;
-  //   }
-  // }
+  resubscribe = _.throttle((channelIds, beginTime, endTime) => {
+    if (this._unsubscribe) {
+      this._unsubscribe();
+    }
+    this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {
+      onData: (page) => {
+        this.mergeData(page, true);
+      },
+    });
+  }, 1000);
 }
