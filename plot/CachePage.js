@@ -116,6 +116,13 @@ export default class CachePage {
     return result;
   }
 
+  /**
+   * Replaces any data in this within the range [page.beginTime, page.endTime)
+   * with page's data within the range [this.beginTime, this.endTime).
+   *
+   * @param{CachePage} page - the source page for replacement.
+   * @throws{Error} if page.channelId !== this.channelId.
+   */
   replaceData(page) {
     if (page.channelId !== this.channelId) {
       throw new Error("page must have same channelId as this one");
