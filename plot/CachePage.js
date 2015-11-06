@@ -1,6 +1,6 @@
-import * as GridMath from './GridMath';
+import {modFloor} from './GridMath';
 
-import {binarySearch, ceilingIndex} from './precisebs';
+import {ceilingIndex} from './precisebs';
 
 export default class CachePage {
   constructor(channelId, beginTime, endTime, times, values) {
@@ -76,6 +76,11 @@ export default class CachePage {
     }
   }
 
+  clone() {
+    return new CachePage(this.channelId, this.beginTime, this.endTime,
+      this.times.slice(), this.values.slice());
+  }
+
   /**
    * Splits this CachePage into Pages with the given chunkDuration.  The CachePage beginTimes
    * will be zero mod chunkDuration.
@@ -86,20 +91,22 @@ export default class CachePage {
   chunk(chunkDuration) {
     var result = [];
 
-    var beginTime = GridMath.modFloor(this.beginTime, chunkDuration);
+    var beginTime = modFloor(this.beginTime, chunkDuration);
     var endTime = beginTime + chunkDuration;
 
     var fromIndex = 0;
 
     while (beginTime <= this.times[this.times.length - 1]) {
       var splitIndex = ceilingIndex(this.times, endTime, fromIndex, this.times.length - 1);
-      result.push(new CachePage(
-        this.channelId, 
-        beginTime,
-        endTime,
-        this.times.slice(fromIndex, splitIndex),
-        this.values.slice(fromIndex, splitIndex)
-      ));
+      if (splitIndex > fromIndex) {
+        result.push(new CachePage(
+          this.channelId, 
+          beginTime,
+          endTime,
+          this.times.slice(fromIndex, splitIndex),
+          this.values.slice(fromIndex, splitIndex)
+        ));
+      }
 
       beginTime = endTime;
       endTime += chunkDuration;
@@ -110,40 +117,40 @@ export default class CachePage {
   }
 
   replaceData(page) {
-    if (page.channelId !== this.channelId ||
-        page.beginTime !== this.beginTime ||
-        page.endTime   !== this.endTime) {
-      throw new Error("page must have same channelId and time range as this one");
+    if (page.channelId !== this.channelId) {
+      throw new Error("page must have same channelId as this one");
     }
-    this.times  = page.times;
-    this.values = page.values;
+    if (page.beginTime < this.endTime && page.endTime > this.beginTime) {
+      if (page.beginTime === this.beginTime && page.endTime === this.endTime) {
+        this.times   = page.times;
+        this.values  = page.values;
+      }
+      else {
+        let startIndex = ceilingIndex(this.times, page.beginTime);
+        let endIndex   = ceilingIndex(this.times, page.endTime  );
+        let count      = endIndex - startIndex;
 
-    if ('production' !== process.env.NODE_ENV) this.sanityCheck();
-  }
+        let srcTimes;
+        let srcValues;
+        if (page.beginTime < this.beginTime || page.endTime > this.endTime) {
+          // page spans outside of this
+          let startIndex = ceilingIndex(page.times, this.beginTime);
+          let endIndex   = ceilingIndex(page.times, this.endTime  );
+          srcTimes  = page.times .slice(startIndex, endIndex);
+          srcValues = page.values.slice(startIndex, endIndex);
+        }
+        else {
+          // page doesn't span outside of this
+          srcTimes  = page.times;
+          srcValues = page.values;
+        }
 
-  /**
-   * Replaces all data in this page on or after the given page's beginTime with
-   * data in the given page.
-   * @param{pageToMerge} the page to merge into this one, whose beginTime, endTime,
-   * and times should be contained within this page's beginTime and endTime.
-   */
-  tailMerge(pageToMerge) {
-    if (pageToMerge.channelId !== this.channelId) {
-      throw new Error(`pageToMerge.channelId (${pageToMerge.channelId}) must === this.channelId (${this.channelId})`);
+        this.times .splice(startIndex, count, ...srcTimes);
+        this.values.splice(startIndex, count, ...srcValues);
+
+        if ('production' !== process.env.NODE_ENV) this.sanityCheck();
+      }
     }
-    if (pageToMerge.beginTime < this.beginTime ||
-      pageToMerge.endTime > this.endTime) {
-
-      throw new Error('pageToMerge (beginTime: ' + pageToMerge.beginTime +
-        ', endTime: ' + pageToMerge.endTime +
-        ') spans outside of this page (beginTime: ' + this.beginTime +
-        ', endTime: ' + this.endTime);
-    }
-
-    var mergeIndex = binarySearch(this.times, pageToMerge.times[0]);
-    this.times .splice(mergeIndex, this.times .length - mergeIndex, ...pageToMerge.times );
-    this.values.splice(mergeIndex, this.values.length - mergeIndex, ...pageToMerge.values);
-
-    if ('production' !== process.env.NODE_ENV) this.sanityCheck();
+    return this;
   }
 }

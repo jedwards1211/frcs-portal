@@ -83,27 +83,35 @@ export default class DataCache extends EventEmitter {
     return page;
   }
 
-  replaceData = (newPage) => {
+  replaceData = (newPage, notify) => {
     // TODO figure out why newPage is sometimes undefined
     if (!newPage) return;
 
     let {channelId, beginTime, endTime} = newPage;
     let pages = this.data[channelId];
+    let changed = false;
     if (pages) {
-      let page = pages[beginTime];
-      if (page) {
-        // eject an old page if we just got data for a placeholder page and the cache is full
-        if (page.isPending && this.recentPages.size > this.maxPages) {
-          // remove excess pending pages first...
-          this.removeExcessPendingPages();
-          // ... to guarantee that this removed page has data
-          this.removePage(this.recentPages.tail.elem);
+      for (let time = GridMath.modCeiling(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
+        let page = pages[beginTime];
+        if (page) {
+          // eject an old page if we just got data for a placeholder page and the cache is full
+          if (page.isPending && this.recentPages.size > this.maxPages) {
+            // remove excess pending pages first...
+            this.removeExcessPendingPages();
+            // ... to guarantee that this removed page has data
+            this.removePage(this.recentPages.tail.elem);
+          }
+          page.replaceData(newPage);
+          delete page.isPending;
+          if (beginTime <= page.beginTime && endTime >= page.endTime) {
+            delete page.isMerged;
+          }
+          changed = true;
         }
-        page.replaceData(newPage);
-        delete page.isPending;
-        delete page.isMerged;
-        this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
       }
+    }
+    if (changed && notify !== false) {
+      this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
     }
   }
 
@@ -205,7 +213,7 @@ export default class DataCache extends EventEmitter {
             if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime;
             if (!maxEndTime   || pageEndTime    > maxEndTime  ) maxEndTime   = pageEndTime;
             channels[page.channelId] = true;
-            this.mergeData(page, false);
+            this.replaceData(page, false);
           });
         }
       }
