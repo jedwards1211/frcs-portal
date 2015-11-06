@@ -7,7 +7,7 @@ import CachePage from './CachePage';
 import LinkedList from './LinkedList';
 import Promise from 'bluebird';
 
-import {floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
+import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 
 import {forEach} from 'lodash';
 
@@ -112,50 +112,6 @@ export default class DataCache extends EventEmitter {
     }
     if (changed && notify !== false) {
       this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
-    }
-  }
-
-  mergeData = (pageWithNewData, notify) => {
-    if (!pageWithNewData || !pageWithNewData.times.length) return;
-
-    let chunks = pageWithNewData.chunk(this.pageRange);
-
-    for (let i = 0; i < chunks.length; i++) {
-      let chunk = chunks[i];
-      let {channelId, beginTime, times, values} = chunk;
-      let pages = this.data[channelId];
-      if (pages) {
-        let page = pages[beginTime];
-        if (!page || (i > 0 && i < chunks.length - 1)) {
-          if (!page) {
-            page = pages[beginTime] = chunk;
-            page.node = this.recentPages.prepend(page);
-            if (this.dataSource && this.dataSource.query) {
-              page.promise = Promise.resolve();
-            }
-          }
-          else {
-            this.replaceData(chunk);
-          }
-        }
-        else {
-          let firstTime  = times[0];
-          let lastTime   = times[times.length - 1];
-          let startIndex = ceilingIndex(page.times, firstTime);
-          let endIndex   = floorIndex  (page.times, lastTime );
-          let count      = endIndex + 1 - startIndex;
-
-          page.times .splice(startIndex, count, ...times);
-          page.values.splice(startIndex, count, ...values);
-          page.isMerged = true;
-
-          if ('production' !== process.env.NODE_ENV) page.sanityCheck();
-
-          if (notify !== false) {
-            this.emit('dataChange', {channels: {[channelId]: true}, beginTime: firstTime, endTime: lastTime});
-          }
-        }
-      }
     }
   }
 
@@ -321,7 +277,7 @@ export default class DataCache extends EventEmitter {
     }
     this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {
       onData: (page) => {
-        this.mergeData(page, true);
+        this.replaceData(page, true);
       },
     });
   }, 1000);
