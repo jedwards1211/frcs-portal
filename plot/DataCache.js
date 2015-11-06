@@ -91,8 +91,8 @@ export default class DataCache extends EventEmitter {
     let pages = this.data[channelId];
     let changed = false;
     if (pages) {
-      for (let time = GridMath.modCeiling(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
-        let page = pages[beginTime];
+      for (let time = GridMath.modFloor(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
+        let page = pages[time];
         if (page) {
           // eject an old page if we just got data for a placeholder page and the cache is full
           if (page.isPending && this.recentPages.size > this.maxPages) {
@@ -209,9 +209,9 @@ export default class DataCache extends EventEmitter {
         if (page) {
           let lastTime = page.times[page.times.length - 1];
           return this.dataSource.query({channelId, beginTime: lastTime}).then(page => {
-            let pageEndTime = page.endTime || page.times[page.times.length - 1];
+            page.endTime = page.endTime || page.times[page.times.length - 1] + 1;
             if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime;
-            if (!maxEndTime   || pageEndTime    > maxEndTime  ) maxEndTime   = pageEndTime;
+            if (!maxEndTime   || page.endTime   > maxEndTime  ) maxEndTime   = page.endTime;
             channels[page.channelId] = true;
             this.replaceData(page, false);
           });
