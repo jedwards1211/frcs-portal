@@ -29,6 +29,7 @@ export default class DataCache extends EventEmitter {
     this.dataSource = options.dataSource;
     this.pageRange = options.pageRange;
     this.maxPages = options.maxPages;
+    this.modCount = 0;
     this.data = {};
     this.recentPages = new LinkedList();
     // map from channel id => begin time of latest page
@@ -47,6 +48,11 @@ export default class DataCache extends EventEmitter {
    */
   getPage(channelId, beginTime, options = {}) {
     let {touch, fetch} = options;
+
+    if (touch || fetch) {
+      this.modCount++;
+    }
+
     let endTime = beginTime + this.pageRange;
     let pages = this.data[channelId];
     if (!pages) {
@@ -93,6 +99,8 @@ export default class DataCache extends EventEmitter {
    * data was changed.
    */
   replaceData = (newPage, options = {}) => {
+    this.modCount++;
+
     let {emitDataChange} = options;
 
     // TODO figure out why newPage is sometimes undefined
@@ -135,6 +143,7 @@ export default class DataCache extends EventEmitter {
   };
 
   removePage(page) {
+    this.modCount++;
     let {channelId, beginTime} = page;
     let pages = this.data[channelId];
     if (page.node) page.node.remove();
@@ -150,6 +159,7 @@ export default class DataCache extends EventEmitter {
   }
 
   removeExcessPendingPages() {
+    this.modCount++;
     let node = this.recentPages.tail;
     for (let i = this.recentPages.size; i > this.maxPages; i--) {
       let page = node.elem;
@@ -223,11 +233,12 @@ export default class DataCache extends EventEmitter {
    * @param {boolean} options.surround - if truthy, points from the greatest time less than <code>from</code> to
    *      the least time greater than <code>to</code> will be returned.  Otherwise, points in
    *      the range [from, to) will be returned.
-   * @param {boolean} options.touch - whether to touch the pages in the given range, marking them as most recently
-   *      used and possibly ejecting old pages.
+   *
+   * @throws Error if the cache is modified between two calls to next() on an iterator returned
+   *      by this method.
    */
-  get(channelId, from, to, consumer, options = {}) {
-    let {surround, touch} = options;
+  *get(channelId, from, to, options = {}) {
+    let {surround} = options;
 
     let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
     let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
@@ -235,8 +246,15 @@ export default class DataCache extends EventEmitter {
     let pageStart = fromAdj;
     let pageEnd = pageStart + this.pageRange;
 
+    let modCount = this.modCount;
+
+    let point = {
+      t: NaN,
+      v: NaN,
+    };
+
     while (pageStart < toAdj) {
-      let page = this.getPage(channelId, pageStart, {touch});
+      let page = this.getPage(channelId, pageStart);
 
       if (page) {
         // determine where to start and end within the page, in case from and to fall within the page.
@@ -253,12 +271,22 @@ export default class DataCache extends EventEmitter {
           page.times.length - 1;
 
         for (let i = startIndex; i <= endIndex; i++) {
-          consumer(page.times[i], page.values[i]);
+          point.t = page.times [i];
+          point.v = page.values[i];
+          yield point;
+          if (modCount !== this.modCount) {
+            throw new Error('cache has been modified since last call to next()');
+          }
         }
       }
       else {
         // pass a NaN value so that non-adjacent pages don't get connected by a straight line
-        consumer(pageStart, NaN);
+        point.t = pageStart;
+        point.v = NaN;
+        yield point;
+        if (modCount !== this.modCount) {
+          throw new Error('cache has been modified since last call to next()');
+        }
       }
 
       pageStart = pageEnd;
@@ -280,6 +308,8 @@ export default class DataCache extends EventEmitter {
    *      the range [from, to) will be returned.
    */
   touch(channelIds, from, to, options = {}) {
+    this.modCount++;
+
     let {surround} = options;
 
     let beginTime = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);

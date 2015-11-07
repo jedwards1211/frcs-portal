@@ -16,8 +16,9 @@ const conversionPropType = React.PropTypes.shape({
 
 export default class Trace extends Layer {
   static propTypes = {
-    // function(from: number, to: number, callback: function(x: number, y: number), {surround: bool})
-    forEachPoint:     React.PropTypes.func.isRequired,
+    // function*(from: number, to: number, {surround: bool})
+    //    yields {t: number, v: number}, or undefined when done
+    pointGenerator:   React.PropTypes.func.isRequired,
     lineColor:        React.PropTypes.string,
     fillColor:        React.PropTypes.string,
     domainConversion: conversionPropType.isRequired,
@@ -38,7 +39,7 @@ export default class Trace extends Layer {
     var ctx = canvas.getContext('2d');
     ctx.save();
 
-    var {forEachPoint, lineColor, fillColor, domainConversion, valueConversion, 
+    var {pointGenerator, lineColor, fillColor, domainConversion, valueConversion, 
         plotter, renderer, domainAxis} = this.props;
 
     if (!fillColor) {
@@ -63,7 +64,12 @@ export default class Trace extends Layer {
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
 
-    forEachPoint(leftDomain, rightDomain, (x, y) => plotter.addPoint(x, y), {surround: true});
+    let points = pointGenerator(leftDomain, rightDomain, {surround: true});
+    let next;
+    while (!(next = points.next()).done) {
+      let {t, v} = next.value;
+      plotter.addPoint(t, v);
+    }
 
     // don't forget to flush, otherwise some of the plotted data might not get drawn.
     plotter.flush();
