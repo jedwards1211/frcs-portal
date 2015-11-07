@@ -3,10 +3,9 @@ import classNames from 'classnames';
 import Immutable from 'immutable';
 import _ from 'lodash';
 import layoutBlockGrid from './layoutBlockGrid';
-import mapToArray from '../mapToArray';
 import EventEmitter from 'events';
 
-import RobustTransitionGroup from '../RobustTransitionGroup';
+import RobustTransitionGroup from '../transition/InterruptibleTransitionGroup';
 
 import './BlockGrid.sass';
 
@@ -70,7 +69,7 @@ export default class BlockGrid extends Component {
       cellWidth:  props.cellWidth,
       cellHeight: props.cellHeight,
       spacing:    props.spacing,
-      blocks:     mapToArray(props.children, child => Immutable.Map({
+      blocks:     React.Children.map(props.children, child => Immutable.Map({
         key:        child.key,
         rowSpan:    child.props.rowSpan,
         colSpan:    child.props.colSpan

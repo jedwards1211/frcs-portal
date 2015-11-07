@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import arcPath from '../arcPath';
+import arcPath from '../svg/arcPath';
 import ValueFillMixin from './ValueFillMixin';
 
 export default React.createClass({

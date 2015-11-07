@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import _ from 'lodash';
 
-import firstDefined from '../firstDefined';
-
 class DropdownToggle extends Component {
   static propTypes = {
     open:      React.PropTypes.bool,
@@ -98,7 +96,7 @@ class Dropdown extends Component {
   }
   render() {
     var {className, component, openClassName, children} = this.props;
-    var open = firstDefined(this.props.open, this.state.open);
+    var open = this.props.open !== undefined ? this.props.open : this.state.open;
     var props = _.clone(this.props);
 
     let type = this.props.hasOwnProperty('dropup') ? 'dropup' : 'dropdown';

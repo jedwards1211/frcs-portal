@@ -3,7 +3,7 @@ import shouldPureComponentUpdate from 'react-pure-render/function';
 import classNames from 'classnames';
 
 import Collapse from '../bootstrap/Collapse';
-import CollapseIcon from '../CollapseIcon';
+import CollapseIcon from 'CollapseIcon';
 import propAssign from '../utils/propAssign';
 
 import './Tree.sass';

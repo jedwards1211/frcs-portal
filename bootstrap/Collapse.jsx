@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import callOnTransitionEnd from '../callOnTransitionEnd';
+import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 
 import './Collapse.sass';
 

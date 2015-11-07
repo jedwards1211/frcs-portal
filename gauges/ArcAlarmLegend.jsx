@@ -4,7 +4,7 @@ import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 import alarmTypes from './alarmTypes';
-import arcPath from '../arcPath';
+import arcPath from '../svg/arcPath';
 import {alarmLegendPropTypes} from './GaugePropTypes';
 
 require('./AlarmLegend.sass');

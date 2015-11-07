@@ -9,7 +9,7 @@ import ResizeHandle from './ResizeHandle';
 import CornerKnob from './CornerKnob';
 import TouchHoldDragRecognizer from './TouchHoldDragRecognizer';
 
-import {hslGenerator, restrictLuminance, generateColors} from '../colorGenerators';
+import {hslGenerator, restrictLuminance, generateColors} from '../utils/colorGenerators';
 
 export default class BlockGridTest extends Component {
   static propTypes = {

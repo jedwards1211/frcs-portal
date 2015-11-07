@@ -1,4 +1,4 @@
-import ReactTransitionEvents from './transition/ReactTransitionEvents';
+import ReactTransitionEvents from './ReactTransitionEvents';
 
 var {addEndEventListener, removeEndEventListener} = ReactTransitionEvents;
 

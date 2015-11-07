@@ -5,7 +5,7 @@ import {Layer} from './Canvas';
 import AutoFatTracePlotter from './AutoFatTracePlotter';
 import CanvasTraceRenderer from './CanvasTraceRenderer';
 
-import {Axis, xAxis, yAxis} from '../orient';
+import {Axis, xAxis, yAxis} from '../utils/orient';
 
 import color from 'css-color-converter';
 

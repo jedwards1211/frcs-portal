@@ -3,7 +3,7 @@ import React from 'react';
 import {Layer} from './Canvas';
 
 import {GridMetrics} from './GridMetrics';
-import {Axis} from '../orient';
+import {Axis} from '../utils/orient';
 
 export default class GridLines extends Layer {
   static propTypes = {

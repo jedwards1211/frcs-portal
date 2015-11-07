@@ -8,7 +8,7 @@ import Alert from '../bootstrap/Alert';
 import Toggle from '../common/Toggle';
 import alarmTypes from './alarmTypes';
 
-import { numberRegExp, numberOrBlankRegExp } from '../validationRegExps';
+import { numberRegExp, numberOrBlankRegExp } from '../utils/validationRegExps';
 
 import './MetadataItemForm.sass';
 

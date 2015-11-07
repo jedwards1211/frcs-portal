@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
-import callOnTransitionEnd from '../callOnTransitionEnd';
+import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 
 import './Block.sass';

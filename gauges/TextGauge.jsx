@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import GaugePropTypes from './GaugePropTypes';
 import './TextGauge.sass';
-import dummyCanvas from '../dummyCanvas';
+import dummyCanvas from '../utils/dummyCanvas';
 
 let decimalZerosRx = /^([^.]+)\.0+$/;
 

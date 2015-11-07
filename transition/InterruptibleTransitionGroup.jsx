@@ -1,14 +1,14 @@
 'use strict';
 
 var React = require("react");
-var ReactTransitionChildMapping = require("./transition/ReactTransitionChildMapping");
+var ReactTransitionChildMapping = require("./ReactTransitionChildMapping");
 
 var APPEARING = 'appear';
 var ENTERING = 'enter';
 var LEAVING = 'leave';
 
-var RobustTransitionGroup = React.createClass({
-  displayName: 'RobustTransitionGroup',
+var InterruptibleTransitionGroup = React.createClass({
+  displayName: 'InterruptibleTransitionGroup',
 
   propTypes: {
     component: React.PropTypes.any,
@@ -200,4 +200,4 @@ var RobustTransitionGroup = React.createClass({
   }
 });
 
-module.exports = RobustTransitionGroup;
+module.exports = InterruptibleTransitionGroup;

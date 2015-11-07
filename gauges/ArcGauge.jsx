@@ -4,7 +4,7 @@ import React from 'react';
 import classNames from 'classnames';
 import ArcFill from './ArcFill';
 import ArcAlarmLegend from './ArcAlarmLegend';
-import arcPath from '../arcPath';
+import arcPath from '../svg/arcPath';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
 

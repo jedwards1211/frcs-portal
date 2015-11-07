@@ -3,7 +3,7 @@ import React from 'react';
 import {Layer} from './Canvas';
 
 import {GridMetrics} from './GridMetrics';
-import {Side} from '../orient';
+import {Side} from '../utils/orient';
 import OverlapPreventer from './OverlapPreventer';
 
 export default class GridAxis extends Layer {

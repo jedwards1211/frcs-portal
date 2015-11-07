@@ -4,11 +4,11 @@ import React, {PropTypes, Component} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
-import RobustTransitionGroup from '../RobustTransitionGroup';
-import * as nojquery from '../nojquery';
+import RobustTransitionGroup from '../transition/InterruptibleTransitionGroup';
+import * as nojquery from '../utils/nojquery';
 
 import addClass from '../wrappers/addClass';
-import callOnTransitionEnd from '../callOnTransitionEnd';
+import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 
 import './Modal.sass';
 

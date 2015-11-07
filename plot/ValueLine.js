@@ -3,7 +3,7 @@ import React from 'react';
 import {Layer} from './Canvas';
 
 import Conversion from './Conversion';
-import {Axis, xAxis} from '../orient';
+import {Axis, xAxis} from '../utils/orient';
 
 export default class ValueLine extends Layer {
   static propTypes = {

@@ -2,8 +2,8 @@ import React, {PropTypes, Component} from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
-import {leftSide, rightSide} from '../orient';
-import callOnTransitionEnd from '../callOnTransitionEnd';
+import {leftSide, rightSide} from '../utils/orient';
+import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 import fireFakeResizeEvent from '../utils/fireFakeResizeEvent';
 
 import './SidebarView.sass';
