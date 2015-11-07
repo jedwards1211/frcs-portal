@@ -12,6 +12,8 @@ import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 export default class DataCache extends EventEmitter {
   /**
    * Constructs a DataCache.
+   * @param{number}   options.maxPages - the maximum number of pages this data cache will store at one time
+   *                  (excluding pending pages)
    * @param{object}   options.dataSource - provider of raw data without any caching
    * @param{function} options.dataSource.query - if present, function taking argument
    *                  ({channelId, beginTime, endTime}) and returning a promise to be fulfilled with
@@ -19,7 +21,7 @@ export default class DataCache extends EventEmitter {
    * @param{function} options.dataSource.subscribe - if present, function taking arguments
    *                  ({channelId, beginTime, endTime}, {onData, onError}) and returning an unsubscribe function
    * @param{number}   options.pageRange - the page range to use (difference between beginTime and endTime
-   * for each page).
+   *                  for each page).
    *
    */
   constructor(options) {
@@ -60,7 +62,7 @@ export default class DataCache extends EventEmitter {
         // rather than updated
         page.isPending = true;
         if (touch) {
-        // mark the mage most recently used
+          // mark the page most recently used
           page.node = this.recentPages.prepend(page);
         }
         if (this.dataSource && this.dataSource.query) {
@@ -70,7 +72,7 @@ export default class DataCache extends EventEmitter {
     }
     else {
       if (touch && page.node) {
-        // mark the mage most recently used
+        // mark the page most recently used
         page.node.moveToHead();
       }
       if (fetch && this.dataSource && this.dataSource.query &&
@@ -83,6 +85,13 @@ export default class DataCache extends EventEmitter {
     return page;
   }
 
+  /**
+   * Replaces all data in the cache spanned by the given page.  Ejects old pages if necessary.
+   * @param{CachePage} newPage - data to add to this cache
+   * @param{object} options
+   * @param{boolean} options.emitDataChange - if false, no dataChange event will be emitted, even if
+   * data was changed.
+   */
   replaceData = (newPage, options = {}) => {
     let {emitDataChange} = options;
 
@@ -96,21 +105,26 @@ export default class DataCache extends EventEmitter {
       for (let time = GridMath.modFloor(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
         let page = pages[time];
         if (page) {
+          page.replaceData(newPage);
+
           // eject an old page if we just got data for a placeholder page and the cache is full
           if (page.isPending && this.recentPages.size > this.maxPages) {
             // remove excess pending pages first...
             this.removeExcessPendingPages();
-            // ... to guarantee that this removed page has data
-            this.removePage(this.recentPages.tail.elem);
+            // ...to guarantee that any remaining excess pages have data
+            if (this.recentPages.size > this.maxPages) {
+              this.removePage(this.recentPages.tail.elem);
+            }
           }
-          page.replaceData(newPage);
-          if (!page.isPending) {
-            page.isMerged = true;
-          }
-          else if (beginTime <= page.beginTime && endTime >= page.endTime) {
+
+          if (beginTime <= page.beginTime && endTime >= page.endTime) {
             delete page.isMerged;
           }
+          else if (!page.isPending) {
+            page.isMerged = true;
+          }
           delete page.isPending;
+
           changed = true;
         }
       }
@@ -118,7 +132,7 @@ export default class DataCache extends EventEmitter {
     if (changed && emitDataChange !== false) {
       this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
     }
-  }
+  };
 
   removePage(page) {
     let {channelId, beginTime} = page;
@@ -161,14 +175,24 @@ export default class DataCache extends EventEmitter {
     return this.latestPageBeginTimes[channelId];
   }
 
+  /**
+   * Requests data for each of the given channels, beginning at each's last data point time.
+   * Does nothing if dataSource.query is falsey.
+   * @param{string[]} channelIds - the channelIds to fetch the latest data for
+   */
   fetchLatestData(channelIds) {
+    if (!this.dataSource.query) {
+      return;
+    }
+
     let channels = {}, minBeginTime, maxEndTime;
     return Promise.settle(channelIds.map(channelId => {
       let beginTime = this.getLatestPageBeginTime(channelId);
+      // TODO this should probably still do something if there are no pages for the channel
       if (beginTime) {
         let page = this.getPage(channelId, beginTime);
         if (page) {
-          let lastTime = page.times[page.times.length - 1];
+          let lastTime = page.times[page.times.length - 1] || beginTime;
           return this.dataSource.query({channelId, beginTime: lastTime}).then(page => {
             page.endTime = page.endTime || page.times[page.times.length - 1] + 1;
             if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime;
@@ -244,7 +268,9 @@ export default class DataCache extends EventEmitter {
 
   /**
    * Marks data in the given range as most recently used, and begins fetching any data missing
-   * from the range.  May eject old pages if the cache is or becomes full.
+   * from the range.  Also updates the subscription if dataSource.subscribe is present.
+   * May eject old pages if the cache is or becomes full.
+   *
    * @param{string[]} channelIds - the channel ids to mark most recently used
    * @param{number}   from       - the begin time of the range to mark most recently used
    * @param{number}   to         - the end time of the range to mark most recently used
@@ -281,21 +307,13 @@ export default class DataCache extends EventEmitter {
       pageStart += this.pageRange;
     }
 
+    this.removeExcessPendingPages();
+
+    // update the subscription if the dataSource supports it
     if (this.dataSource && this.dataSource.subscribe) {
       this.resubscribe(channelIds, beginTime, endTime);
 		}
-
-    this.removeExcessPendingPages();
   }
-
-  onData = (...pages) => {
-    pages.forEach(page => this.replaceData(page, {emitDataChange: false}));
-    let beginTime = _.max(pages, 'beginTime');
-    let endTime   = _.max(pages, 'endTime');
-    let channels = {};
-    pages.forEach(page => channels[page.channelId] = true);
-    this.emit('dataChange', {channels, beginTime, endTime});
-  };
 
   resubscribe = _.throttle((channelIds, beginTime, endTime) => {
     if (this._unsubscribe) {
@@ -304,4 +322,21 @@ export default class DataCache extends EventEmitter {
     let {onData} = this;
     this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {onData});
   }, 1000);
+
+  /**
+   * Callback for dataSource.subscribe.
+   * @param{CachePage[]} pages - pages containing new data.  They don't have to
+   * line up with existing pages in DataCache.
+   */
+  onData = (...pages) => {
+    // merge in the data
+    pages.forEach(page => this.replaceData(page, {emitDataChange: false}));
+
+    // emit one dataChange event for the whole set of pages
+    let beginTime = _.max(pages, 'beginTime');
+    let endTime   = _.max(pages, 'endTime');
+    let channels = {};
+    pages.forEach(page => channels[page.channelId] = true);
+    this.emit('dataChange', {channels, beginTime, endTime});
+  };
 }
