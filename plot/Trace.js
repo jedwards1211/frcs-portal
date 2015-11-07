@@ -16,7 +16,7 @@ const conversionPropType = React.PropTypes.shape({
 
 export default class Trace extends Layer {
   static propTypes = {
-    // function(from: number, to: number, surround: bool, callback: function(x: number, y: number))
+    // function(from: number, to: number, callback: function(x: number, y: number), {surround: bool})
     forEachPoint:     React.PropTypes.func.isRequired,
     lineColor:        React.PropTypes.string,
     fillColor:        React.PropTypes.string,
@@ -63,7 +63,7 @@ export default class Trace extends Layer {
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
 
-    forEachPoint(leftDomain, rightDomain, true, (x, y) => plotter.addPoint(x, y));
+    forEachPoint(leftDomain, rightDomain, (x, y) => plotter.addPoint(x, y), {surround: true});
 
     // don't forget to flush, otherwise some of the plotted data might not get drawn.
     plotter.flush();

@@ -9,8 +9,6 @@ import Promise from 'bluebird';
 
 import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 
-import {forEach} from 'lodash';
-
 export default class DataCache extends EventEmitter {
   /**
    * Constructs a DataCache.
@@ -37,14 +35,16 @@ export default class DataCache extends EventEmitter {
 
   /**
    * Gets a page of data from the cache.
-   * @param {string|number} channelId - the channel id
-   * @param {number}        beginTime - the beginTime of the page
-   * @param {boolean}       touch     - if true and the page exists (or fetch) it will be marked 
-   *                                    most recently used
-   * @param {boolean}       fetch     - if true and the page does not exist, a placeholder page
-   *                                    will be created an data fetched for it
+   * @param {string|number} channelId     - the channel id
+   * @param {number}        beginTime     - the beginTime of the page
+   * @param {object}        options
+   * @param {boolean}       options.touch - if true and the page exists (or fetch) it will be marked
+   *                                        most recently used
+   * @param {boolean}       options.fetch - if true and the page does not exist, a placeholder page
+   *                                        will be created an data fetched for it
    */
-  getPage(channelId, beginTime, touch, fetch) {
+  getPage(channelId, beginTime, options = {}) {
+    let {touch, fetch} = options;
     let endTime = beginTime + this.pageRange;
     let pages = this.data[channelId];
     if (!pages) {
@@ -83,7 +83,9 @@ export default class DataCache extends EventEmitter {
     return page;
   }
 
-  replaceData = (newPage, notify) => {
+  replaceData = (newPage, options = {}) => {
+    let {emitDataChange} = options;
+
     // TODO figure out why newPage is sometimes undefined
     if (!newPage) return;
 
@@ -102,15 +104,18 @@ export default class DataCache extends EventEmitter {
             this.removePage(this.recentPages.tail.elem);
           }
           page.replaceData(newPage);
-          delete page.isPending;
-          if (beginTime <= page.beginTime && endTime >= page.endTime) {
+          if (!page.isPending) {
+            page.isMerged = true;
+          }
+          else if (beginTime <= page.beginTime && endTime >= page.endTime) {
             delete page.isMerged;
           }
+          delete page.isPending;
           changed = true;
         }
       }
     }
-    if (changed && notify !== false) {
+    if (changed && emitDataChange !== false) {
       this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
     }
   }
@@ -145,7 +150,7 @@ export default class DataCache extends EventEmitter {
   getLatestPageBeginTime(channelId) {
     if (!(channelId in this.latestPageBeginTimes) && channelId in this.data) {
       let beginTime = 0;
-      forEach(this.data[channelId], page => {
+      _.forEach(this.data[channelId], page => {
         if (!page.isPending && page.times.length) beginTime = Math.max(beginTime, page.beginTime);
       });
       if (beginTime === 0) {
@@ -169,7 +174,7 @@ export default class DataCache extends EventEmitter {
             if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime;
             if (!maxEndTime   || page.endTime   > maxEndTime  ) maxEndTime   = page.endTime;
             channels[page.channelId] = true;
-            this.replaceData(page, false);
+            this.replaceData(page, {emitDataChange: false});
           });
         }
       }
@@ -184,19 +189,22 @@ export default class DataCache extends EventEmitter {
   /**
    * Gets channel data.
    *
-   * @param{channelId} the id of the channel to get data for.
-   * @param{from} the start time of the range to get.
-   * @param{to} the end time of the range to get.
-   * @param{surround} if truthy, points from the greatest time less than <code>from</code> to
-   *      the least time greater than <code>to</code> will be returned.  Otherwise, points in
-   *      the range [from, to) will be returned.
-   * @param{consumer} a function that will be called with arguments <code>(time, value)</code>
+   * @param {string} channelId - id of the channel to get data for.
+   * @param {number} from - the start time of the range to get.
+   * @param {number} to - the end time of the range to get.
+   * @param {function} consumer - a function that will be called with arguments <code>(time, value)</code>
    *      for each successive point in the results.  The first point and last point may lie just
    *      outside the request range.
-   * @param{touch} whether to touch the pages in the given range, marking them as most recently
+   * @param {object} options
+   * @param {boolean} options.surround - if truthy, points from the greatest time less than <code>from</code> to
+   *      the least time greater than <code>to</code> will be returned.  Otherwise, points in
+   *      the range [from, to) will be returned.
+   * @param {boolean} options.touch - whether to touch the pages in the given range, marking them as most recently
    *      used and possibly ejecting old pages.
    */
-  get(channelId, from, to, surround, consumer, touch) {
+  get(channelId, from, to, consumer, options = {}) {
+    let {surround, touch} = options;
+
     let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
     let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
@@ -204,7 +212,7 @@ export default class DataCache extends EventEmitter {
     let pageEnd = pageStart + this.pageRange;
 
     while (pageStart < toAdj) {
-      let page = this.getPage(channelId, pageStart, touch);
+      let page = this.getPage(channelId, pageStart, {touch});
 
       if (page) {
         // determine where to start and end within the page, in case from and to fall within the page.
@@ -237,8 +245,17 @@ export default class DataCache extends EventEmitter {
   /**
    * Marks data in the given range as most recently used, and begins fetching any data missing
    * from the range.  May eject old pages if the cache is or becomes full.
+   * @param{string[]} channelIds - the channel ids to mark most recently used
+   * @param{number}   from       - the begin time of the range to mark most recently used
+   * @param{number}   to         - the end time of the range to mark most recently used
+   * @param{object}   options
+   * @param{boolean}  options.surround - if truthy, points from the greatest time less than <code>from</code> to
+   *      the least time greater than <code>to</code> will be returned.  Otherwise, points in
+   *      the range [from, to) will be returned.
    */
-  touch(channelIds, from, to, surround) {
+  touch(channelIds, from, to, options = {}) {
+    let {surround} = options;
+
     let beginTime = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
     let endTime   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
@@ -248,7 +265,7 @@ export default class DataCache extends EventEmitter {
     // mark all existing pages within the range as most recently used
     while (pageStart < endTime && pageCount < this.maxPages) {
       for (let i = 0; i < channelIds.length && pageCount < this.maxPages; i++) {
-        if (this.getPage(channelIds[i], pageStart, true)) pageCount++;
+        if (this.getPage(channelIds[i], pageStart, {touch: true})) pageCount++;
       }
       pageStart += this.pageRange;
     } 
@@ -259,7 +276,7 @@ export default class DataCache extends EventEmitter {
     // now fetch pages that are missing
     while (pageStart < endTime && pageCount < this.maxPages) {
       for (let i = 0; i < channelIds.length && pageCount++ < this.maxPages; i++) {
-        this.getPage(channelIds[i], pageStart, true, true);
+        this.getPage(channelIds[i], pageStart, {touch: true, fetch: true});
       }
       pageStart += this.pageRange;
     }
@@ -271,14 +288,20 @@ export default class DataCache extends EventEmitter {
     this.removeExcessPendingPages();
   }
 
+  onData = (...pages) => {
+    pages.forEach(page => this.replaceData(page, {emitDataChange: false}));
+    let beginTime = _.max(pages, 'beginTime');
+    let endTime   = _.max(pages, 'endTime');
+    let channels = {};
+    pages.forEach(page => channels[page.channelId] = true);
+    this.emit('dataChange', {channels, beginTime, endTime});
+  };
+
   resubscribe = _.throttle((channelIds, beginTime, endTime) => {
     if (this._unsubscribe) {
       this._unsubscribe();
     }
-    this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {
-      onData: (page) => {
-        this.replaceData(page, true);
-      },
-    });
+    let {onData} = this;
+    this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {onData});
   }, 1000);
 }
