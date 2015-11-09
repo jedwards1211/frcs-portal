@@ -347,10 +347,17 @@ export default class DataCache extends EventEmitter {
 
   resubscribe = _.throttle((channelIds, beginTime, endTime) => {
     if (this._unsubscribe) {
-      this._unsubscribe();
+      if (this.dataSource.modifySubscription) {
+        this.dataSource.modifySubscription({channelIds, beginTime, endTime});
+      }
+      else {
+        this._unsubscribe();
+      }
     }
-    let {onData} = this;
-    this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {onData});
+    else {
+      let {onData} = this;
+      this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {onData});
+    }
   }, 1000);
 
   /**
