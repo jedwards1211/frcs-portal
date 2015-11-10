@@ -370,8 +370,10 @@ export default class DataCache extends EventEmitter {
     pages.forEach(page => this.replaceData(page, {emitDataChange: false}));
 
     // emit one dataChange event for the whole set of pages
-    let beginTime = _.max(pages, 'beginTime');
-    let endTime   = _.max(pages, 'endTime');
+    let beginPage = _.max(pages, 'beginTime');
+    let endPage   = _.max(pages, 'endTime');
+    let beginTime = beginPage && beginPage.beginTime;
+    let endTime   = endPage   && endPage  .endTime;
     let channels = {};
     pages.forEach(page => channels[page.channelId] = true);
     this.emit('dataChange', {channels, beginTime, endTime});
