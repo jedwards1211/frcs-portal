@@ -9,6 +9,8 @@ import Promise from 'bluebird';
 
 import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 
+const SUB_SYM = Symbol("DataCache Subscription");
+
 export default class DataCache extends EventEmitter {
   /**
    * Constructs a DataCache.
@@ -341,29 +343,10 @@ export default class DataCache extends EventEmitter {
 
     // update the subscription if the dataSource supports it
     if (this.dataSource && this.dataSource.subscribe) {
-      this.resubscribe(channelIds, beginTime, endTime);
+      let {onData} = this;
+      this.dataSource.subscribe(SUB_SYM, {channelIds, beginTime, endTime}, {onData});
 		}
   }
-
-  resubscribe = _.throttle((channelIds, beginTime, endTime) => {
-    let newSelector = {channelIds, beginTime, endTime};
-    if (!_.isEqual(this._selector, newSelector)) {
-      this._selector = newSelector;
-
-      if (this._unsubscribe) {
-        if (this.dataSource.modifySubscription) {
-          this.dataSource.modifySubscription({channelIds, beginTime, endTime});
-        }
-        else {
-          this._unsubscribe();
-        }
-      }
-      else {
-        let {onData} = this;
-        this._unsubscribe = this.dataSource.subscribe({channelIds, beginTime, endTime}, {onData});
-      }
-    }
-  }, 1000);
 
   /**
    * Callback for dataSource.subscribe.
