@@ -9,8 +9,6 @@ import Promise from 'bluebird';
 
 import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 
-const SUB_SYM = Symbol("DataCache Subscription");
-
 export default class DataCache extends EventEmitter {
   /**
    * Constructs a DataCache.
@@ -20,8 +18,6 @@ export default class DataCache extends EventEmitter {
    * @param{function} options.dataSource.query - if present, function taking argument
    *                  ({channelId, beginTime, endTime}) and returning a promise to be fulfilled with
    *                  the CachePage
-   * @param{function} options.dataSource.subscribe - if present, function taking arguments
-   *                  ({channelId, beginTime, endTime}, {onData, onError}) and returning an unsubscribe function
    * @param{number}   options.pageRange - the page range to use (difference between beginTime and endTime
    *                  for each page).
    *
@@ -95,52 +91,71 @@ export default class DataCache extends EventEmitter {
 
   /**
    * Replaces all data in the cache spanned by the given page.  Ejects old pages if necessary.
-   * @param{CachePage} newPage - data to add to this cache
+   * @param{CachePage|CachePage[]} newPages - data to add to this cache
    * @param{object} options
    * @param{boolean} options.emitDataChange - if false, no dataChange event will be emitted, even if
    * data was changed.
    */
-  replaceData = (newPage, options = {}) => {
+  replaceData = (newPages, options = {}) => {
     this.modCount++;
 
     let {emitDataChange} = options;
 
     // TODO figure out why newPage is sometimes undefined
-    if (!newPage) return;
+    if (!newPages) return;
 
-    let {channelId, beginTime, endTime} = newPage;
-    let pages = this.data[channelId];
+    if (!_.isArray(newPages)) {
+      newPages = [newPages];
+    }
+
+    if (!newPages.length) {
+      return;
+    }
+
     let changed = false;
-    if (pages) {
-      for (let time = GridMath.modFloor(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
-        let page = pages[time];
-        if (page) {
-          page.replaceData(newPage);
 
-          // eject an old page if we just got data for a placeholder page and the cache is full
-          if (page.isPending && this.recentPages.size > this.maxPages) {
-            // remove excess pending pages first...
-            this.removeExcessPendingPages();
-            // ...to guarantee that any remaining excess pages have data
-            if (this.recentPages.size > this.maxPages) {
-              this.removePage(this.recentPages.tail.elem);
+    for (let newPage of newPages) {
+      let {channelId, beginTime, endTime} = newPage;
+      let pages = this.data[channelId];
+      if (pages) {
+        for (let time = GridMath.modFloor(beginTime, this.pageRange); time < endTime; time += this.pageRange) {
+          let page = pages[time];
+          if (page) {
+            page.replaceData(newPage);
+
+            // eject an old page if we just got data for a placeholder page and the cache is full
+            if (page.isPending && this.recentPages.size > this.maxPages) {
+              // remove excess pending pages first...
+              this.removeExcessPendingPages();
+              // ...to guarantee that any remaining excess pages have data
+              if (this.recentPages.size > this.maxPages) {
+                this.removePage(this.recentPages.tail.elem);
+              }
             }
-          }
 
-          if (beginTime <= page.beginTime && endTime >= page.endTime) {
-            delete page.isMerged;
-          }
-          else if (!page.isPending) {
-            page.isMerged = true;
-          }
-          delete page.isPending;
+            if (beginTime <= page.beginTime && endTime >= page.endTime) {
+              delete page.isMerged;
+            }
+            else if (!page.isPending) {
+              page.isMerged = true;
+            }
+            delete page.isPending;
 
-          changed = true;
+            changed = true;
+          }
         }
       }
     }
+
     if (changed && emitDataChange !== false) {
-      this.emit('dataChange', {channels: {[channelId]: true}, beginTime, endTime});
+      let beginPage = _.max(newPages, 'beginTime');
+      let endPage   = _.max(newPages, 'endTime');
+      let beginTime = beginPage && beginPage.beginTime;
+      let endTime   = endPage   && endPage  .endTime;
+      let channels = {};
+      newPages.forEach(page => channels[page.channelId] = true);
+
+      this.emit('dataChange', {channels, beginTime, endTime});
     }
   };
 
@@ -193,7 +208,7 @@ export default class DataCache extends EventEmitter {
    * @param{string[]} channelIds - the channelIds to fetch the latest data for
    */
   fetchLatestData(channelIds) {
-    if (!this.dataSource.query) {
+    if (!this.dataSource || !this.dataSource.query) {
       return;
     }
 
@@ -298,7 +313,7 @@ export default class DataCache extends EventEmitter {
 
   /**
    * Marks data in the given range as most recently used, and begins fetching any data missing
-   * from the range.  Also updates the subscription if dataSource.subscribe is present.
+   * from the range.
    * May eject old pages if the cache is or becomes full.
    *
    * @param{string[]} channelIds - the channel ids to mark most recently used
@@ -340,30 +355,5 @@ export default class DataCache extends EventEmitter {
     }
 
     this.removeExcessPendingPages();
-
-    // update the subscription if the dataSource supports it
-    if (this.dataSource && this.dataSource.subscribe) {
-      let {onData} = this;
-      this.dataSource.subscribe(SUB_SYM, {channelIds, beginTime, endTime}, {onData});
-		}
   }
-
-  /**
-   * Callback for dataSource.subscribe.
-   * @param{CachePage[]} pages - pages containing new data.  They don't have to
-   * line up with existing pages in DataCache.
-   */
-  onData = (...pages) => {
-    // merge in the data
-    pages.forEach(page => this.replaceData(page, {emitDataChange: false}));
-
-    // emit one dataChange event for the whole set of pages
-    let beginPage = _.max(pages, 'beginTime');
-    let endPage   = _.max(pages, 'endTime');
-    let beginTime = beginPage && beginPage.beginTime;
-    let endTime   = endPage   && endPage  .endTime;
-    let channels = {};
-    pages.forEach(page => channels[page.channelId] = true);
-    this.emit('dataChange', {channels, beginTime, endTime});
-  };
 }
