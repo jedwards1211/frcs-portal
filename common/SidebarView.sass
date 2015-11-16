@@ -45,12 +45,24 @@ $sidebar-toggle-btn-height: 50px
       right: 0
       bottom: 0
 
-  &.mf-sidebar-left
-    > .content
-      @include transition(margin-left ease-out $transition-speed)
-    > .mf-sidebar,
-      @include transition(left ease-out $transition-speed)
+  &:not(.laid-out)
+    > *
+      visibility: hidden
 
+  &.laid-out
+    &.mf-sidebar-left
+      > .content
+        @include transition(margin-left ease-out $transition-speed)
+      > .mf-sidebar
+        @include transition(left ease-out $transition-speed)
+
+    &.mf-sidebar-right
+      > .content
+        @include transition(margin-right ease-out $transition-speed)
+      > .mf-sidebar-toggle-btn
+        @include transition(right ease-out $transition-speed)
+
+  &.mf-sidebar-left
     > .content
       right: 0
 
@@ -61,11 +73,6 @@ $sidebar-toggle-btn-height: 50px
       border-bottom-left-radius: 0
 
   &.mf-sidebar-right
-    > .content
-      @include transition(margin-right ease-out $transition-speed)
-    > .mf-sidebar-toggle-btn
-      @include transition(right ease-out $transition-speed)
-
     > .content
       left: 0
 

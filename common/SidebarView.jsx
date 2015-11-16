@@ -42,23 +42,40 @@ export default class SidebarView extends Component {
       });
     }
   }, 30)
+  componentWillMount() {
+    this.setState({
+      mounted: false,
+      laidOut: false,
+    });
+  }
   componentDidMount() {
     this.resize();
     window.addEventListener('resize', this.resize);
   }
   componentWillUnmount() {
-    window.removeEventListener('resize', this.resize); 
+    window.removeEventListener('resize', this.resize);
+  }
+  componentDidUpdate() {
+    let {mounted, laidOut} = this.state;
+    if (!laidOut) {
+      if (!mounted) {
+        setTimeout(() => this.setState({mounted: true}), 0);
+      }
+      else {
+        setTimeout(() => this.setState({laidOut: true}), 0);
+      }
+    }
   }
   render() {
     let {className, sidebar, sidebarOpen, sidebarSide, sidebarWidth, 
         content, ...props} = this.props;
-    let {rootWidth = 0, sidebarToggleBtnWidth = 0} = this.state;
+    let {mounted, laidOut, rootWidth = 0, sidebarToggleBtnWidth = 0} = this.state;
 
     sidebarWidth = Math.min(sidebarWidth, rootWidth - sidebarToggleBtnWidth);
 
     let contentPosition = rootWidth > sidebarWidth * 2 && sidebarOpen ? sidebarWidth : 0;
 
-    className = classNames(className, 'mf-sidebar-view', `mf-sidebar-${sidebarSide.name}`);
+    className = classNames(className, 'mf-sidebar-view', `mf-sidebar-${sidebarSide.name}`, {'laid-out': laidOut});
 
     const sidebarStyle = {
       width: sidebarWidth,
@@ -80,7 +97,7 @@ export default class SidebarView extends Component {
     };
 
     return <div ref="root" className={className} {...props}>
-      <div className="content" style={contentStyle}>{content}</div>
+      {mounted && <div className="content" style={contentStyle}>{content}</div>}
       <div ref="sidebar" className="mf-sidebar" style={sidebarStyle}>
         <div className="mf-sidebar-content">
           {sidebar}
