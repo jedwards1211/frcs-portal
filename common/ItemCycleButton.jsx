@@ -10,7 +10,7 @@ export default class ItemCycleButton extends Component {
     placeholder:        PropTypes.any,
     noItemsPlaceholder: PropTypes.any,
     render:             PropTypes.func,
-    onSelect:           PropTypes.func,
+    onChange:           PropTypes.func,
     disabled:           PropTypes.bool,
   }
   static defaultProps = {
@@ -19,10 +19,10 @@ export default class ItemCycleButton extends Component {
     noItemsPlaceholder: 'No Items Available',
   }
   onClick = () => {
-    let {items, selectedItem, onSelect} = this.props;
-    if (items && onSelect) {
+    let {items, selectedItem, onChange} = this.props;
+    if (items && onChange) {
       let index = items.indexOf(selectedItem);
-      onSelect(items[(index + 1) % items.length]);
+      onChange(items[(index + 1) % items.length]);
     }
   }
   render() {
