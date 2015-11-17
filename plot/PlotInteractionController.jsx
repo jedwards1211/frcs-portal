@@ -30,6 +30,7 @@ export default class PlotInteractionController extends React.Component {
     if (e.button === 0) {
       let {xConversion, yConversion, onMoveStart} = this.props;
       e.preventDefault();
+      this.target = e.target;
 
       let rect = e.target.getBoundingClientRect();
       if (xConversion) this.startX = xConversion.invert(e.clientX - rect.left);
@@ -46,7 +47,7 @@ export default class PlotInteractionController extends React.Component {
   onMouseMove = (e) => {
     e.preventDefault();
 
-    let rect = e.target.getBoundingClientRect();
+    let rect = this.target.getBoundingClientRect();
 
     let newXConversion, newYConversion;
 
@@ -67,6 +68,7 @@ export default class PlotInteractionController extends React.Component {
       document.removeEventListener('mousemove', this.onMouseMove);
       document.removeEventListener('mouseup'  , this.onMouseUp, true);
 
+      this.target = undefined;
       if (this.props.onMoveEnd) this.props.onMoveEnd();
     }
   }
