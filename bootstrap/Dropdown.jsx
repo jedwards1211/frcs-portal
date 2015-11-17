@@ -52,7 +52,13 @@ class Dropdown extends Component {
   show() {
     this.setState({open: true});
   }
+  open() {
+    this.setState({open: true});
+  }
   hide() {
+    this.setState({open: false});
+  }
+  close() {
     this.setState({open: false});
   }
   onDropdownToggleClick = () => {
