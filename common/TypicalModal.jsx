@@ -1,5 +1,8 @@
 import React, {PropTypes} from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
+
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 
 import Modal from '../bootstrap/Modal';
 import CloseButton from '../bootstrap/CloseButton';
@@ -21,12 +24,38 @@ export default class TypicalModal extends React.Component {
     onCancel:               PropTypes.func,
     saving:                 PropTypes.bool,
     error:                  PropTypes.instanceOf(Error),
+    errors:                 PropTypes.objectOf(PropTypes.any),
+  }
+  static defaultProps = {
+    errors: {},
+  }
+  constructor(props) {
+    super(props);
+    this.lastErrors = props.errors;
+  }
+  componentWillReceiveProps(nextProps) {
+    if (this.props.errors !== nextProps.errors) {
+      this.lastErrors = this.props.errors;
+    }
   }
   render() {
     let {title, header, beforeButtons, afterButtons, OKdisabled, onOK, 
-        onCancel, saving, error, className, children} = this.props;
+        onCancel, saving, error, errors, className, children} = this.props;
 
     if (error) this.lastError = error;
+
+    // let errorAlerts = _.uniq(_.keys(this.lastErrors).concat(_.keys(errors))).map(key => {
+    //   let lastError = this.lastErrors[key];
+    //   let error     = errors[key];
+    //   let message   = (lastError && lastError.toString()) || (error && error.toString());
+    //   return <Collapse key={key} component="div" className="error-collapse" open={!!error}>
+    //     <Alert.Danger>{message}</Alert.Danger>
+    //   </Collapse>;
+    // });
+
+    let errorAlerts = <CollapseTransitionGroup component="div" collapseProps={{className: 'error-collapse'}}>
+      {_.map(errors, (error, key) => error && <Alert.Danger key={key}>{error && error.toString()}</Alert.Danger>)}
+    </CollapseTransitionGroup>;
 
     className = classNames(className, 'mf-typical-modal');
 
@@ -43,6 +72,7 @@ export default class TypicalModal extends React.Component {
         <Collapse component="div" className="error-collapse" open={!!error}>
           <Alert.Danger>{this.lastError && this.lastError.toString()}</Alert.Danger>
         </Collapse>
+        {errorAlerts}
         {beforeButtons}
         <Button onClick={onCancel}>Cancel</Button>
         <Button.Primary onClick={onOK} disabled={saving || OKdisabled}>
