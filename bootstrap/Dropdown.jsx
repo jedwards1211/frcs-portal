@@ -37,6 +37,8 @@ class Dropdown extends Component {
     closeOnInsideClick: React.PropTypes.bool,
     component:          React.PropTypes.any.isRequired,
     dropup:             React.PropTypes.any,
+    onOpened:           React.PropTypes.func,
+    onClosed:           React.PropTypes.func,
   }
   static defaultProps = {
     closeOnInsideClick: true,
@@ -70,12 +72,25 @@ class Dropdown extends Component {
       document.removeEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = false;
     }
+
+    if (this.justOpened && this.props.onOpened) {
+      this.props.onOpened();
+    }
+    if (this.justClosed && this.props.onClosed) {
+      this.props.onClosed();
+    }
   }
   componentWillUnmount() {
     if (this.isDocumentClickInstalled) {
       document.removeEventListener('click', this.onDocumentClick, true);
       this.isDocumentClickInstalled = false;
     }
+  }
+  componentWillUpdate(nextProps, nextState) {
+    let open = this.props.open !== undefined ? this.props.open : this.state.open;
+    let nextOpen = nextProps.open !== undefined ? nextProps.open : nextState.open;
+    this.justOpened = !open && nextOpen;
+    this.justClosed = open && !nextOpen;
   }
   onDocumentClick = (e) => {
     function isDescendant(el, ancestor) {
