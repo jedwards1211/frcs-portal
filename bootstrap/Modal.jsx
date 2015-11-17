@@ -4,11 +4,10 @@ import React, {PropTypes, Component} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
-import RobustTransitionGroup from '../transition/InterruptibleTransitionGroup';
+import ObservableTransitionGroup from '../transition/ObservableTransitionGroup';
 import * as nojquery from '../utils/nojquery';
 
 import addClass from '../wrappers/addClass';
-import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 
 import './Modal.sass';
 
@@ -26,10 +25,14 @@ export default class Modal extends Component {
   static propTypes = {
     dialogClassName: PropTypes.string,
   }
-  componentDidMount() {
+  componentWillMount() {
     if (++openModalCount === 1) {
       nojquery.addClass(document.body, 'modal-open');
     }
+    this.props.addTransitionListener(this);
+  }
+  componentDidEnter = () => {
+    this.props.onEntered && this.props.onEntered();
   }
   componentWillUnmount() {
     if (--openModalCount === 0) {
@@ -82,47 +85,6 @@ var ModalBody   = Modal.Body   = addClass('div', 'modal-body');
 var ModalFooter = Modal.Footer = addClass('div', 'modal-footer');
 var ModalTitle  = Modal.Title  = addClass('h4', 'modal-title');
 
-class TransitionGroupChild extends Component {
-  constructor(props)  {
-    super(props);
-    this.state = Object.assign({}, this.state, {
-      isIn: false,
-      isEntering: false,
-      isLeaving: false,
-      ref: 'root',
-    });
-  }
-  componentWillAppear(callback) {
-    this.componentWillEnter(callback);
-  }
-  componentWillEnter(callback) {
-    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
-    // we setTimeout so that the component can mount without inClassName first,
-    // and then add it a moment later.  Otherwise it may not transition
-    setTimeout(() => this.setState({
-      isIn: true,
-      isEntering: true,
-      isLeaving: false,
-    }),  0);
-  }
-  componentDidEnter() {
-    this.setState({
-      isEntering: false,
-    });
-  }
-  componentWillLeave(callback) {
-    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
-    this.setState({
-      isIn: false,
-      isEntering: false,
-      isLeaving: true,
-    });
-  }
-  render() {
-    return React.cloneElement(this.props.children, this.state);
-  }
-}
-
 class ModalTransitionGroup extends Component {
   render() {
     let className = classNames(this.props.className, 'modal-transition-group');
@@ -137,16 +99,11 @@ class ModalTransitionGroup extends Component {
       }
     }
 
-    return <RobustTransitionGroup component="div" {...this.props} ref="group" className={className} style={{
+    return <ObservableTransitionGroup component="div" {...this.props} ref="group" className={className} style={{
       pointerEvents: children.length ? 'initial' : 'none',
     }}>
-      {children.map(child => {
-        if (!child) return child;
-        return <TransitionGroupChild key={child.key}>
-          {child}
-        </TransitionGroupChild>;
-      })}
-    </RobustTransitionGroup>;
+      {children}
+    </ObservableTransitionGroup>;
   }
 }
 
