@@ -1,37 +1,27 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import InterruptibleTransitionGroup from './InterruptibleTransitionGroup';
 
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 
+import EventEmitter from 'events';
+
 export class ChildWrapper extends Component {
+  static childContextTypes = {
+    transitionEvents: PropTypes.instanceOf(EventEmitter).isRequired,
+  }
+  transitionEvents = new EventEmitter();
   constructor(props)  {
     super(props);
-    let {addTransitionListener, removeTransitionListener} = this;
-    this.transitionListeners = [];
     this.state = Object.assign({}, this.state, {
       isIn: false,
       isEntering: false,
       isLeaving: false,
       ref: 'root',
-      addTransitionListener,
-      removeTransitionListener,
     });
   }
-  addTransitionListener = listener => {
-    this.transitionListeners.push(listener);
-  }
-  removeTransitionListener = listener => {
-    let index = this.transitionListeners.indexOf(listener);
-    if (index >= 0) {
-      this.transitionListeners.splice(index, 1);
-    }
-  }
-  notifyTransitionListeners(methodName) {
-    this.transitionListeners.forEach(listener => {
-      let method = listener[methodName];
-      method && method();
-    });
+  getChildContext() {
+    return {transitionEvents: this.transitionEvents};
   }
   componentWillAppear(callback) {
     callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
@@ -43,13 +33,13 @@ export class ChildWrapper extends Component {
       isEntering: false,
       isLeaving: false,
     }),  0);
-    this.notifyTransitionListeners('componentWillAppear');
+    this.transitionEvents.emit('componentWillAppear');
   }
   componentDidAppear() {
     this.setState({
       isAppearing: false,
     });
-    this.notifyTransitionListeners('componentDidAppear');
+    this.transitionEvents.emit('componentDidAppear');
   }
   componentWillEnter(callback) {
     callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
@@ -61,13 +51,13 @@ export class ChildWrapper extends Component {
       isEntering: true,
       isLeaving: false,
     }),  0);
-    this.notifyTransitionListeners('componentWillEnter');
+    this.transitionEvents.emit('componentWillEnter');
   }
   componentDidEnter() {
     this.setState({
       isEntering: false,
     });
-    this.notifyTransitionListeners('componentDidEnter');
+    this.transitionEvents.emit('componentDidEnter');
   }
   componentWillLeave(callback) {
     callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
@@ -77,10 +67,13 @@ export class ChildWrapper extends Component {
       isEntering: false,
       isLeaving: true,
     });
-    this.notifyTransitionListeners('componentWillLeave');
+    this.transitionEvents.emit('componentWillLeave');
   }
   componentDidLeave() {
-    this.notifyTransitionListeners('componentDidLeave');
+    this.transitionEvents.emit('componentDidLeave');
+  }
+  componentDidUnmount() {
+    this.transitionEvents.removeAllListeners();
   }
   render() {
     return React.cloneElement(this.props.children, this.state);

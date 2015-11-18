@@ -22,6 +22,11 @@ import './Modal.sass';
 let openModalCount = 0;
 
 export default class Modal extends Component {
+  static contextTypes ={
+    transitionEvents: PropTypes.shape({
+      on: PropTypes.func.isRequired,
+    }),
+  }
   static propTypes = {
     dialogClassName: PropTypes.string,
   }
@@ -29,7 +34,8 @@ export default class Modal extends Component {
     if (++openModalCount === 1) {
       nojquery.addClass(document.body, 'modal-open');
     }
-    this.props.addTransitionListener(this);
+    let {transitionEvents} = this.context;
+    if (transitionEvents) transitionEvents.on('componentDidEnter', this.componentDidEnter);
   }
   componentDidEnter = () => {
     this.props.onEntered && this.props.onEntered();
