@@ -82,10 +82,12 @@ export default React.createClass({
     }
   },
   stopCollapsing() {
-    this.setState({
-      collapsing: false,
-      height: undefined,
-    });
+    if (this.isMounted()) {
+      this.setState({
+        collapsing: false,
+        height: undefined,
+      });
+    }
   },
   render() {
     var {component, className, children, keepChildrenMounted, ...props} = this.props;

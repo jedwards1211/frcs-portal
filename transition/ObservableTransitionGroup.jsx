@@ -71,8 +71,6 @@ export class ChildWrapper extends Component {
   }
   componentDidLeave() {
     this.transitionEvents.emit('componentDidLeave');
-  }
-  componentDidUnmount() {
     this.transitionEvents.removeAllListeners();
   }
   render() {
