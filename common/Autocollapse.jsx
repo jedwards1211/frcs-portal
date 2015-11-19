@@ -24,12 +24,24 @@ export default class Autocollapse extends Component {
       });
     }
   }
+  componentWillMount() {
+    this.mounted = true;
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   componentDidUpdate() {
     let hasChildren = anyChildren(this.props.children);
-    setTimeout(() => this.setState({open: hasChildren}), 0);
+    if (this.state.open !== hasChildren) {
+      setTimeout(() => {
+        if (this.mounted) {
+          this.setState({open: hasChildren}), 0
+        }
+      });
+    }
   }
   onTransitionEnd = () => {
-    if (!anyChildren(this.props.children)) {
+    if (!anyChildren(this.props.children) && this.state.children !== undefined) {
       this.setState({children: undefined});
     }
     this.props.onTransitionEnd && this.props.onTransitionEnd();
