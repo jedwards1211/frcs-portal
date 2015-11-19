@@ -11,6 +11,7 @@ export default React.createClass({
     component: React.PropTypes.any,
     open: React.PropTypes.bool,
     keepChildrenMounted: React.PropTypes.bool,
+    onTransitionEnd: React.PropTypes.func,
   },
   getDefaultProps() {
     return {
@@ -87,6 +88,7 @@ export default React.createClass({
         collapsing: false,
         height: undefined,
       });
+      this.props.onTransitionEnd && this.props.onTransitionEnd();
     }
   },
   render() {
