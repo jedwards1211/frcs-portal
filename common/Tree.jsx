@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import classNames from 'classnames';
 
-import Collapse from '../bootstrap/Collapse';
+import Autocollapse from './Autocollapse';
 import CollapseIcon from './CollapseIcon';
 import propAssign from '../utils/propAssign';
 
@@ -60,10 +60,10 @@ class TreeNode extends Component {
 
     return <div {...this.props} className={className}>
       {cell}
-      {hasChildren && <Collapse open={expanded}>
-        {React.Children.map(children, child => child && 
+      <Autocollapse>
+        {expanded && React.Children.map(children, child => child &&
           React.cloneElement(child, {depth: depth + 1}))}
-      </Collapse>}
+      </Autocollapse>
     </div>;
   }
 }
