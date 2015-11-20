@@ -1,8 +1,11 @@
 import React, {Component, PropTypes} from 'react';
+import {findDOMNode} from 'react-dom';
 import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import classNames from 'classnames';
+
+import smoothScroll from 'smoothscroll';
 
 import CollapseIcon from './CollapseIcon';
 import Autocollapse from './Autocollapse';
@@ -83,7 +86,7 @@ class Node extends Component {
       <Renderer model={model} depth={depth} dispatchEvent={this.dispatchEvent}/>
       <Autocollapse>
         {expanded && children.map(
-          (child, key) => child && <Node key={key} _key={key} model={child} depth={depth + 1}
+          (child, key) => child && <Node key={key} _key={key} ref={key} model={child} depth={depth + 1}
                                          dispatchEvent={this.dispatchEvent}/>).toArray()}
       </Autocollapse>
     </div>;
@@ -114,6 +117,15 @@ export default class FastTree extends Component {
     let {basePadding, indent, defaultRenderer} = this.props;
     return {basePadding, indent, defaultRenderer};
   }
+  scrollToPath(path, context) {
+    let target = this;
+    for (let i = 1; target && i < path.length; i += 2) {
+      target = target.refs[path[i]];
+    }
+    if (target) {
+      smoothScroll(findDOMNode(target), 500, function() {}, context);
+    }
+  }
   render() {
     let {className, model, dispatchEvent} = this.props;
 
@@ -121,8 +133,8 @@ export default class FastTree extends Component {
 
     className = classNames(className, 'mf-tree');
 
-    return <div {...this.props} className={className}>
-      {children && children.map((child, key) => child && <Node key={key} _key={key} model={child}
+    return <div {...this.props} ref="root" className={className}>
+      {children && children.map((child, key) => child && <Node key={key} _key={key} ref={key} model={child}
                                                          dispatchEvent={dispatchEvent}/>).toArray()}
     </div>;
   }

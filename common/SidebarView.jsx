@@ -104,10 +104,10 @@ export default class SidebarView extends Component {
     };
 
     return <div ref="root" className={className} {...props}>
-      {mounted && <div className="content" style={contentStyle}>{content}</div>}
+      {mounted && <div ref="content" className="content" style={contentStyle}>{content}</div>}
       <div ref="sidebar" className="mf-sidebar" style={sidebarStyle}>
-        <div className="mf-sidebar-content">
-          {sidebar}
+        <div ref="sidebarScroller" className="mf-sidebar-content">
+          {sidebar && React.cloneElement(sidebar, {ref: 'sidebarContent'})}
         </div>
         <button ref="sidebarToggleBtn" className="btn btn-default mf-sidebar-toggle-btn" 
           type="button" onClick={this.onSidebarToggleBtnClick}>
