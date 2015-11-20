@@ -100,7 +100,7 @@ export default class FastTree extends Component {
   }
   static defaultProps = {
     basePadding:      7,
-    indent:           15,
+    indent:           18,
     defaultRenderer:  Cell,
     className:        'mf-tree-default',
     dispatchEvent:    function() {},
