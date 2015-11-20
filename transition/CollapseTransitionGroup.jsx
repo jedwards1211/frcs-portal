@@ -5,8 +5,9 @@ import ObservableTransitionGroup from './ObservableTransitionGroup';
 
 class ChildWrapper extends Component {
   render() {
-    let {isIn, children} = this.props;
-    return <Collapse {...this.props} open={isIn}>{children}</Collapse>;
+    let {isIn, children, expandOnAppear, isAppearing} = this.props;
+    // use the key to prevent animation by remounting the element
+    return <Collapse key={isAppearing && !expandOnAppear ? 1 : 0} {...this.props} open={isIn}>{children}</Collapse>;
   }
 }
 
@@ -15,12 +16,17 @@ class ChildWrapper extends Component {
  */
 export default class CollapseTransitionGroup extends Component {
   static propTypes = {
-    collapseProps: PropTypes.object,
+    expandOnAppear: PropTypes.bool,
+    collapseProps:  PropTypes.object,
+  }
+  static defaultPropTypes = {
+    expandOnAppear: false,
+  }
+  wrapChild = (child) => {
+    let {collapseProps, expandOnAppear} = this.props;
+    return <ChildWrapper {...collapseProps} expandOnAppear={expandOnAppear} key={child.key}>{child}</ChildWrapper>;
   }
   render() {
-    let {children, collapseProps = {}} = this.props;
-    return <ObservableTransitionGroup {...this.props}>
-      {React.Children.map(children, (child, key) => child && <ChildWrapper {...collapseProps} key={key}>{child}</ChildWrapper>)}
-    </ObservableTransitionGroup>;
+    return <ObservableTransitionGroup {...this.props} childFactory={this.wrapChild}/>;
   }
 }

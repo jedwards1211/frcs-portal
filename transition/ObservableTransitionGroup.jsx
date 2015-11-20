@@ -15,6 +15,7 @@ export class ChildWrapper extends Component {
     super(props);
     this.state = Object.assign({}, this.state, {
       isIn: false,
+      isAppearing: false,
       isEntering: false,
       isLeaving: false,
       ref: 'root',
@@ -25,8 +26,6 @@ export class ChildWrapper extends Component {
   }
   componentWillAppear(callback) {
     callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
-    // we setTimeout so that the component can mount without inClassName first,
-    // and then add it a moment later.  Otherwise it may not transition
     setTimeout(() => this.setState({
       isIn: true,
       isAppearing: true,
@@ -79,16 +78,14 @@ export class ChildWrapper extends Component {
 }
 
 export default class ObservableTransitionGroup extends Component {
+  wrapChild = (child) => {
+    let {childFactory} = this.props;
+    if (childFactory) {
+      child = childFactory(child);
+    }
+    return <ChildWrapper key={child.key}>{child}</ChildWrapper>;
+  }
   render() {
-    let children = React.Children.toArray(this.props.children);
-
-    return <InterruptibleTransitionGroup {...this.props}>
-      {children.map(child => {
-        if (!child) return child;
-        return <ChildWrapper key={child.key}>
-          {child}
-        </ChildWrapper>;
-      })}
-    </InterruptibleTransitionGroup>;
+    return <InterruptibleTransitionGroup {...this.props} childFactory={this.wrapChild}/>;
   }
 }
