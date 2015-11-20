@@ -43,6 +43,7 @@ export default class SidebarView extends Component {
     }
   }, 30)
   componentWillMount() {
+    this.canSetState = true;
     this.setState({
       mounted: false,
       laidOut: false,
@@ -53,7 +54,13 @@ export default class SidebarView extends Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillUnmount() {
+    this.canSetState = false;
     window.removeEventListener('resize', this.resize);
+  }
+  setState(...args) {
+    if (this.canSetState) {
+      super.setState(...args);
+    }
   }
   componentDidUpdate() {
     let {mounted, laidOut} = this.state;
