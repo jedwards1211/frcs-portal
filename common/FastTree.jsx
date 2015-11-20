@@ -30,12 +30,15 @@ class Cell extends Component {
     let {model, depth, style, className} = this.props;
     let {basePadding, indent} = this.context;
 
-    let expanded = model.get('expanded'),
+    let selected = model.get('selected'),
+        expanded = model.get('expanded'),
         children = model.get('children');
+
+    className = classNames(className, 'mf-tree-node-cell', {selected, expanded});
 
     let hasChildren = children && !!children.size;
 
-    return <div {...this.props} className="mf-tree-node-cell"
+    return <div {...this.props} className={className}
       style={propAssign(style, {paddingLeft: basePadding + indent * depth})}>
       {hasChildren && <CollapseIcon open={expanded}/>} {model.get('value')}
     </div>;
@@ -60,12 +63,8 @@ class Node extends Component {
   static defaultContextTypes = {
     defaultRenderer:  Cell,
   }
-  dispatchEvent = (path, e) => {
-    if (arguments.length === 1) {
-      e = path;
-      path = [];
-    }
-    this.props.dispatchEvent(['children', this.props._key, ...path], e);
+  dispatchEvent = (e, path = []) => {
+    this.props.dispatchEvent(e, ['children', this.props._key, ...path]);
   }
   render() {
     let {className, depth, model} = this.props;
@@ -91,6 +90,7 @@ class Node extends Component {
   }
 }
 export default class FastTree extends Component {
+  shouldComponentUpdate = shouldPureComponentUpdate
   static propTypes = {
     basePadding:      PropTypes.number,
     indent:           PropTypes.number,
@@ -115,7 +115,7 @@ export default class FastTree extends Component {
     return {basePadding, indent, defaultRenderer};
   }
   render() {
-    let {className, model} = this.props;
+    let {className, model, dispatchEvent} = this.props;
 
     let children = model.get('children');
 
@@ -123,7 +123,7 @@ export default class FastTree extends Component {
 
     return <div {...this.props} className={className}>
       {children && children.map((child, key) => child && <Node key={key} _key={key} model={child}
-                                                         dispatchEvent={this.props.dispatchEvent}/>).toJS()}
+                                                         dispatchEvent={dispatchEvent}/>).toJS()}
     </div>;
   }
 }
