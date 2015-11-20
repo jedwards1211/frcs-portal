@@ -84,7 +84,7 @@ class Node extends Component {
       <Autocollapse>
         {expanded && children.map(
           (child, key) => child && <Node key={key} _key={key} model={child} depth={depth + 1}
-                                         dispatchEvent={this.dispatchEvent}/>).toJS()}
+                                         dispatchEvent={this.dispatchEvent}/>).toArray()}
       </Autocollapse>
     </div>;
   }
@@ -123,10 +123,21 @@ export default class FastTree extends Component {
 
     return <div {...this.props} className={className}>
       {children && children.map((child, key) => child && <Node key={key} _key={key} model={child}
-                                                         dispatchEvent={dispatchEvent}/>).toJS()}
+                                                         dispatchEvent={dispatchEvent}/>).toArray()}
     </div>;
   }
 }
 
 FastTree.Node = Node;
 FastTree.Cell = Cell;
+
+export function expandTreePath(model, path) {
+  return model.withMutations(model => {
+    if (model.get('children')) {
+      model.set('expanded', true);
+    }
+    if (path.length) {
+      model.update(path[0], child => expandTreePath(child, path.slice(1)));
+    }
+  });
+}
