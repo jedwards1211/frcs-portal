@@ -3,6 +3,14 @@
 
 $item-height: 35px
 
+$selected-bg: #fb0
+$selected-color: black
+$selected-border: #fa0
+
+$selected-hover-bg: #fc0
+$selected-hover-border: #fb0
+$selected-hover-color: black
+
 .mf-tree-default
   @extend .noselect
   position: relative
@@ -57,3 +65,15 @@ $item-height: 35px
     position: relative
     border-left-width: 0 !important
     border-right-width: 0 !important
+
+  .mf-tree-node.selected > .mf-tree-node-cell,
+  .mf-tree-node-cell.selected
+    z-index: 150
+    color: $selected-color
+    border-color: $selected-border
+    background-color: $selected-bg
+
+    &:hover
+      color: $selected-hover-color
+      border-color: $selected-hover-border
+      background-color: $selected-hover-bg
