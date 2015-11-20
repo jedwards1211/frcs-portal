@@ -54,7 +54,10 @@ export default class TypicalModal extends React.Component {
     // });
 
     let errorAlerts = <CollapseTransitionGroup component="div" collapseProps={{className: 'error-collapse'}}>
-      {_.map(errors, (error, key) => error && <Alert.Danger key={key}>{error && error.toString()}</Alert.Danger>)}
+      {_.map(errors, (error, key) => {
+        if (React.isValidElement(error)) return error;
+        else if (error) return <Alert.Danger key={key}>{error && error.toString()}</Alert.Danger>;
+      })}
     </CollapseTransitionGroup>;
 
     className = classNames(className, 'mf-typical-modal');
