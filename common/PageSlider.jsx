@@ -1,9 +1,6 @@
-'use strict';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import shouldPureComponentUpdate from 'react-pure-render/function';
-import {addEventListener, removeEventListener} from './prefixedEvent';
 import _ from 'lodash';
 
 require('./PageSlider.sass');
@@ -64,7 +61,7 @@ export default React.createClass({
     var {activeIndex, transitionDuration, restrictMaxHeight, className, style} = this.props;
     var {height} = this.state;
 
-    var transform = 'translateX(' + (-this.props.activeIndex * 100) + '%)';
+    var transform = 'translateX(' + (-activeIndex * 100) + '%)';
 
     var transition = 'all ease-out ' + (transitionDuration / 1000) + 's';
 
