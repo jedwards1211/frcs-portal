@@ -1,0 +1,66 @@
+.mf-calibration-num-points-step,
+.mf-calibration-point-step,
+.mf-calibration-config-step
+  text-align: center
+
+.mf-calibration-num-points-step
+  margin-top: 20px
+  margin-bottom: 20px
+
+.mf-calibration-num-points-step,
+.mf-calibration-point-step
+  input
+    display: inline-block
+    text-align: right
+    width: 125px
+
+.mf-calibration-point-step
+  > .table
+    display: table
+    text-align: center
+    width: auto
+    max-width: auto
+    margin-left: auto
+    margin-right: auto
+
+    > .input
+      margin-bottom: 10px
+
+    > .input,
+    > .output
+      display: inline-block
+      margin-left: 7px
+      margin-right: 7px
+      max-width: 200px
+      > .header
+        text-align: left
+        display: block
+        font-weight: bold
+      > .value
+        display: inline-block
+
+.mf-calibration-config-step
+  > table
+    margin-left: auto
+    margin-right: auto
+    margin-bottom: 20px
+
+    tr.header
+      text-align: center
+      border-bottom: 2px solid #eee
+      > td
+        font-weight: bold
+    tr.values
+      border-bottom: 1px solid #eee
+      > td.inputValue,
+      > td.outputValue
+        text-align: right
+        max-width: 150px
+      > td.inputUnits,
+      > td.outputUnits
+        text-align: left
+        padding-left: 5px
+    tr
+      height: 30px
+      > td.outputValue
+        padding-left: 15px
