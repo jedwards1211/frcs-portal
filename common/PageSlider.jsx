@@ -71,8 +71,8 @@ export default React.createClass({
       });
     }
 
-    if (className) className += ' PageSlider';
-    else className = 'PageSlider;'
+    if (className) className += ' mf-page-slider';
+    else className = 'mf-page-slider';
 
     return (
       <div ref="pageSlider" {...this.props} className={className} style={style}>

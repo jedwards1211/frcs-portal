@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {
   NUM_POINTS_CHANGE,
   OUTPUT_VALUE_CHANGE,
+  stringOrNumber,
 } from './CalibrationSteps';
 
 import {
@@ -20,13 +21,10 @@ export default class CalibrationWizardController extends Component {
   static propTypes = {
     skipNumPoints: PropTypes.bool,
     calibration: PropTypes.shape({
-      numPoints: PropTypes.number,
+      numPoints: stringOrNumber,
       points: PropTypes.arrayOf(PropTypes.shape({
         x: PropTypes.number,
-        y: PropTypes.oneOfType([
-          PropTypes.number,
-          PropTypes.string,
-        ]),
+        y: stringOrNumber,
       }).isRequired).isRequired,
     }).isRequired,
     stepNumber: PropTypes.number.isRequired,
@@ -36,7 +34,7 @@ export default class CalibrationWizardController extends Component {
     outputUnits: PropTypes.string,
     outputPrecision: PropTypes.number,
     dispatch: React.PropTypes.func,
-    children: React.PropTypes.any.isRequired,
+    component: React.PropTypes.any.isRequired,
   }
   static defaultProps = {
     dispatch: e => console.log(e),
@@ -85,7 +83,7 @@ export default class CalibrationWizardController extends Component {
     }
     else {
       let pointIndex = stepNumber - 1;
-      let calibration = _.cloneDeep(calibration);
+      calibration = _.cloneDeep(calibration);
       calibration.points[pointIndex].x = inputValue;
       dispatch({
         type: REQUEST_PROP_CHANGE,
@@ -124,7 +122,7 @@ export default class CalibrationWizardController extends Component {
   }
   onApply() {
     let {calibration, dispatch} = this.props;
-    calibration = _.clone(calibration);
+    calibration = _.cloneDeep(calibration);
     let goodPoints = [];
     for (let point of calibration.points) {
       let x = parseFloat(point.x);
@@ -144,6 +142,7 @@ export default class CalibrationWizardController extends Component {
     });
   }
   render() {
-    return React.cloneElement(this.props.children, {...this.props, dispatch: this.dispatch});
+    let Component = this.props.component;
+    return <Component {...this.props} dispatch={this.dispatch}/>;
   }
 }

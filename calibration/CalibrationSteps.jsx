@@ -78,7 +78,7 @@ function invalidNumPointsMessage(numPoints, maxNumPoints) {
   }
 }
 
-const stringOrNumber = PropTypes.oneOfType([
+export const stringOrNumber = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.number
 ]);
@@ -96,7 +96,7 @@ export class NumPoints extends Component {
   static defaultProps = {
     dispatch: function() {},
   }
-  onNumPointsChange(event) {
+  onNumPointsChange = event => {
     this.props.dispatch({
       type: NUM_POINTS_CHANGE,
       payload: event.target.value
@@ -135,10 +135,9 @@ export const OUTPUT_VALUE_CHANGE = 'OUTPUT_VALUE_CHANGE';
 
 export class Point extends Component {
   static propTypes = {
-    stepNumber: PropTypes.number.isRequired,
     pointIndex: PropTypes.number.isRequired,
     calibration: PropTypes.shape({
-      numPoints: PropTypes.number,
+      numPoints: stringOrNumber,
       points: PropTypes.arrayOf(PropTypes.shape({
         y: stringOrNumber,
       }).isRequired).isRequired,
@@ -152,7 +151,7 @@ export class Point extends Component {
   static defaultProps = {
     dispatch: function() {},
   }
-  onOutputValueChange(event) {
+  onOutputValueChange = event => {
     let {dispatch, pointIndex} = this.props;
     dispatch({
       type: OUTPUT_VALUE_CHANGE,
@@ -169,7 +168,7 @@ export class Point extends Component {
     }
   }
   render() {
-    let {stepNumber, pointIndex, calibration: {points, numPoints}, inputValue, inputUnits, outputUnits} = this.props;
+    let {pointIndex, calibration: {points, numPoints}, inputValue, inputUnits, outputUnits} = this.props;
 
     let inputPrecision = computeInputPrecision(this.props);
 
@@ -185,7 +184,7 @@ export class Point extends Component {
     let hasError = !isValidOutputValue(outputValue);
 
     return <div className="mf-calibration-point-step">
-      <h3 key="header">Step {stepNumber}</h3>
+      <h3 key="header">Step {pointIndex + 1}</h3>
       <p key="instructions">Go to a known {stateType} state, and enter the actual value.</p>
       <div key="table" className="table">
         <div key="input" className="input">
@@ -213,7 +212,6 @@ export class Point extends Component {
 
 export class Confirm extends Component {
   static propTypes = {
-    stepNumber: PropTypes.number.isRequired,
     calibration: PropTypes.shape({
       points: PropTypes.arrayOf(PropTypes.shape({
         x: PropTypes.number,
@@ -226,7 +224,7 @@ export class Confirm extends Component {
     outputPrecision: PropTypes.number
   }
   render() {
-    let {stepNumber, calibration: {points}, inputUnits, outputUnits} = this.props;
+    let {calibration: {points}, inputUnits, outputUnits} = this.props;
 
     let inputPrecision = computeInputPrecision(this.props);
     let outputPrecision = computeOutputPrecision(this.props);
@@ -243,7 +241,7 @@ export class Confirm extends Component {
     }));
 
     return <div className="mf-calibration-confirm-step">
-      <h3 key="header">Step {stepNumber}</h3>
+      <h3 key="header">Step {points.length + 1}</h3>
       <p key="instructions">Confirm the calibration:</p>
       <table key="table">
         <tbody>
