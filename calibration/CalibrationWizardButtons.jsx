@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import classNames from 'classnames';
 
 import Button from '../bootstrap/Button';
 
@@ -7,6 +8,7 @@ import {isValidNumPoints, isValidOutputValue, stringOrNumber} from './Calibratio
 export const BACK = 'BACK';
 export const NEXT = 'NEXT';
 export const APPLY = 'APPLY';
+export const CANCEL = 'CANCEL';
 
 /**
  * The Back, Next, and Apply buttons for a CalibrationWizard, separated out because
@@ -26,10 +28,15 @@ export default class CalibrationWizardButtons extends Component {
   static defaultProps = {
     dispatch: function() {},
   }
+  focusApply() {
+    if (this.refs.apply) {
+      this.refs.apply.focus();
+    }
+  }
   render() {
-    let {stepNumber, calibration, maxNumPoints, backDisabledStepNumber, dispatch} = this.props;
+    let {className, stepNumber, calibration, maxNumPoints, backDisabledStepNumber, dispatch} = this.props;
 
-    var notEnoughPoints = !calibration.numPoints;
+    var notEnoughPoints = !Number(calibration.numPoints);
 
     var disableNext;
     if (stepNumber === 0) {
@@ -40,6 +47,9 @@ export default class CalibrationWizardButtons extends Component {
     }
 
     var buttons = [
+      <Button key="cancel" onClick={() => dispatch({type: CANCEL})}>
+        Cancel
+      </Button>,
       <Button key="back" onClick={() => dispatch({type: BACK})}
               disabled={stepNumber <= backDisabledStepNumber}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
@@ -54,12 +64,15 @@ export default class CalibrationWizardButtons extends Component {
     }
     else {
       buttons.push(
-        <Button.Primary key="apply" onClick={() => dispatch({type: APPLY})}>Apply</Button.Primary>
+        <button type="button" className="btn btn-primary" ref="apply" key="apply"
+                onClick={() => dispatch({type: APPLY})}>
+          Apply
+        </button>
       );
     }
 
-    return (
-      <span {...this.props}>{buttons}</span>
-    );
+    className = classNames(className, 'mf-calibration-wizard-buttons');
+
+    return <span {...this.props} className={className}>{buttons}</span>;
   }
 }

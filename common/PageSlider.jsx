@@ -16,6 +16,7 @@ export default React.createClass({
     transitionDuration:     React.PropTypes.number,
     restrictMaxHeight:      React.PropTypes.bool,
     useAbsolutePositioning: React.PropTypes.bool,
+    onTransitionEnd:        React.PropTypes.func,
   },
   getDefaultProps() {
     return {
@@ -38,11 +39,17 @@ export default React.createClass({
   componentDidMount() {
     this.componentDidUpdate();
   },
+  componentWillUpdate(nextProps, nextState) {
+    this.wasTransitioning = this.state.transitioning;
+  },
   componentDidUpdate() {
     if (this.isMounted()) {
       var activeElement = ReactDOM.findDOMNode(this.refs['child-' + this.props.activeIndex]);
       if (activeElement && this.state.height !== activeElement.scrollHeight) {
         this.setState({height: activeElement.scrollHeight});
+      }
+      if (this.wasTransitioning && !this.state.transitioning && this.props.onTransitionEnd) {
+        this.props.onTransitionEnd();
       }
     }
   },

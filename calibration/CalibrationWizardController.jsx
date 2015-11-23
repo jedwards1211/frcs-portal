@@ -11,6 +11,7 @@ import {
   BACK,
   NEXT,
   APPLY,
+  CANCEL,
 } from './CalibrationWizardButtons';
 
 export const CANCEL_CALIBRATION = 'CANCEL_CALIBRATION';
@@ -59,6 +60,9 @@ export default class CalibrationWizardController extends Component {
           payload: {calibration},
         });
 
+      case CANCEL:
+        return dispatch({type: CANCEL_CALIBRATION});
+
       case BACK:
         return this.onBack();
 
@@ -98,6 +102,7 @@ export default class CalibrationWizardController extends Component {
     let {stepNumber, calibration, inputValue, dispatch} = this.props;
     calibration = _.cloneDeep(calibration);
     if (stepNumber === 0) {
+      calibration.numPoints = parseInt(calibration.numPoints);
       let oldNumPoints = calibration.points.length;
       calibration.points.length = calibration.numPoints;
       for (let k = oldNumPoints; k < calibration.numPoints; k++) {
@@ -119,6 +124,9 @@ export default class CalibrationWizardController extends Component {
         calibration,
       },
     });
+  }
+  getComponentRef() {
+    return this.refs.component;
   }
   onApply() {
     let {calibration, dispatch} = this.props;
@@ -143,6 +151,6 @@ export default class CalibrationWizardController extends Component {
   }
   render() {
     let Component = this.props.component;
-    return <Component {...this.props} dispatch={this.dispatch}/>;
+    return <Component {...this.props} ref="component" dispatch={this.dispatch}/>;
   }
 }

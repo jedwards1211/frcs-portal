@@ -108,6 +108,9 @@ export class NumPoints extends Component {
       dispatch({type: NEXT});
     }
   }
+  focusInput() {
+    this.refs.numPoints.focus();
+  }
   render() {
     let {calibration: {numPoints}, maxNumPoints} = this.props;
 
@@ -167,6 +170,9 @@ export class Point extends Component {
       dispatch({type: NEXT});
     }
   }
+  focusInput() {
+    this.refs.outputValue.focus();
+  }
   render() {
     let {pointIndex, calibration: {points, numPoints}, inputValue, inputUnits, outputUnits} = this.props;
 
@@ -197,7 +203,7 @@ export class Point extends Component {
           <div key="header" className="header control-label">Actual Value</div>
           <div key="value" className="value">
             <input type="text" ref="outputValue" className="form-control" inputMode="number" value={outputValue}
-              onChange={this.onOutputValueChange} /> {outputUnits}
+              onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}/> {outputUnits}
           </div>
         </div>
       </div>
