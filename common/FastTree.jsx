@@ -13,6 +13,10 @@ import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
 
+import {forEachNode, expandTreePath} from './FastTreeHelpers';
+
+export {forEachNode, expandTreePath};
+
 const nodePropType = ImmutablePropTypes.shape({
   renderer: PropTypes.any,
   expanded: PropTypes.bool,
@@ -142,14 +146,3 @@ export default class FastTree extends Component {
 
 FastTree.Node = Node;
 FastTree.Cell = Cell;
-
-export function expandTreePath(model, path) {
-  return model.withMutations(model => {
-    if (model.get('children')) {
-      model.set('expanded', true);
-    }
-    if (path.length) {
-      model.update(path[0], child => expandTreePath(child, path.slice(1)));
-    }
-  });
-}
