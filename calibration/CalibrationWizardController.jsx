@@ -38,7 +38,9 @@ export default class CalibrationWizardController extends Component {
     component: React.PropTypes.any.isRequired,
   }
   static defaultProps = {
+    /* eslint-disable no-console */
     dispatch: e => console.log(e),
+    /* eslint-enable no-console */
   }
   dispatch = e => {
     let {dispatch, calibration} = this.props;
