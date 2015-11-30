@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import shouldPureComponentUpdate from 'react-pure-render/function';
+import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin';
 import _ from 'lodash';
 
 require('./PageSlider.sass');

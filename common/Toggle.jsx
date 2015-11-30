@@ -1,5 +1,5 @@
 import React from 'react';
-import shouldPureComponentUpdate from 'react-pure-render/function';
+import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin';
 import classNames from 'classnames';
 import _ from 'lodash';
 

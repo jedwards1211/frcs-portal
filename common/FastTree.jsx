@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {findDOMNode} from 'react-dom';
 import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import shouldPureComponentUpdate from 'react-pure-render/function';
+import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin';
 import classNames from 'classnames';
 
 import smoothScroll from 'smoothscroll';
