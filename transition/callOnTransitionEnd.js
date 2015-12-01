@@ -25,5 +25,5 @@ export default function callOnTransitionEnd(element, callback, timeout) {
     callback();
   };
   addEndEventListener(element, transitionEndListener);
-  if (timeout) timeoutPromise = setTimeout(transitionEndListener, timeout);
+  timeoutPromise = setTimeout(transitionEndListener, timeout);
 }  
