@@ -53,8 +53,13 @@ export default class Sandbox extends Component {
     return <Router history={history} requireContext={requireContext}>
       <Route component={(props) => <Shell {...props} requireContext={requireContext}/>}>
         {requireContext.keys().map(key => {
+          let sourceComponent = requireContext(key);
+          let component = sourceComponent;
+          if (React.isValidElement(sourceComponent)) {
+            component = props => React.cloneElement(sourceComponent, {...props, ...sourceComponent.props});
+          }
           return <Route key={key} path={key.substring(1)} 
-            component={requireContext(key)}/>;
+            component={component}/>;
         })}
         <Route path="/" component="div" />
         <Redirect from="/*" to="/" />
