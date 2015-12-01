@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import ReactDOM from 'react-dom';
+import {findDOMNode} from 'react-dom';
 import InterruptibleTransitionGroup from './InterruptibleTransitionGroup';
 
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
@@ -25,13 +25,13 @@ export class ChildWrapper extends Component {
     return {transitionEvents: this.transitionEvents};
   }
   componentWillAppear(callback) {
-    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
     setTimeout(() => this.setState({
-      isIn: true,
-      isAppearing: true,
-      isEntering: false,
-      isLeaving: false,
-    }),  0);
+        isIn: true,
+        isAppearing: true,
+        isEntering: false,
+        isLeaving: false,
+      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+    ),  0);
     this.transitionEvents.emit('componentWillAppear');
   }
   componentDidAppear() {
@@ -41,15 +41,15 @@ export class ChildWrapper extends Component {
     this.transitionEvents.emit('componentDidAppear');
   }
   componentWillEnter(callback) {
-    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
     // we setTimeout so that the component can mount without inClassName first,
     // and then add it a moment later.  Otherwise it may not transition
     setTimeout(() => this.setState({
-      isIn: true,
-      isAppearing: false,
-      isEntering: true,
-      isLeaving: false,
-    }),  0);
+        isIn: true,
+        isAppearing: false,
+        isEntering: true,
+        isLeaving: false,
+      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+    ),  0);
     this.transitionEvents.emit('componentWillEnter');
   }
   componentDidEnter() {
@@ -59,13 +59,13 @@ export class ChildWrapper extends Component {
     this.transitionEvents.emit('componentDidEnter');
   }
   componentWillLeave(callback) {
-    callOnTransitionEnd(ReactDOM.findDOMNode(this.refs.root), callback, this.props.transitionTimeout);
     this.setState({
-      isIn: false,
-      isAppearing: false,
-      isEntering: false,
-      isLeaving: true,
-    });
+        isIn: false,
+        isAppearing: false,
+        isEntering: false,
+        isLeaving: true,
+      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+    );
     this.transitionEvents.emit('componentWillLeave');
   }
   componentDidLeave() {
