@@ -30,7 +30,7 @@ export default class TypicalModal extends React.Component {
   static defaultProps = {
     errors: {},
   }
-  onOK() {
+  onOK = () => {
     let {saving, OKdisabled, onOK} = this.props;
     if (!saving && !OKdisabled && onOK) {
       onOK();
