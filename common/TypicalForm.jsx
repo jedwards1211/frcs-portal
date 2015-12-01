@@ -60,8 +60,8 @@ export default class TypicalForm extends Component {
     controlClass: PropTypes.string.isRequired,
   }
   static defaultProps = {
-    labelClass:   "col-md-4 control-label",
-    controlClass: "col-md-8",
+    labelClass:   "col-sm-4 control-label",
+    controlClass: "col-sm-8",
   }
   render() {
     let {labelClass, controlClass, className, children} = this.props;
