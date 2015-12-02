@@ -1,4 +1,5 @@
-import React, {Component, Children} from 'react';
+import React, {Component, Children, cloneElement} from 'react';
+import {findDOMNode} from 'react-dom';
 import Promise from 'bluebird';
 import classNames from 'classnames';
 
@@ -52,26 +53,29 @@ export default class Fader extends Component {
     };
 
     psetState({
-      height: this.refs.root.scrollHeight,
+      height: this._root.scrollHeight,
       curChild: nextChild,
       wrappedChildren: [
         <div key={prevChild.key} className="mf-fader-child fade in">{prevChild}</div>,
-        <div key={nextChild.key} className="mf-fader-child next-child fade">{nextChild}</div>,
+        <div key={nextChild.key} className="mf-fader-child next-child fade">
+          {cloneElement(nextChild, {ref: c => this._nextChildContent = findDOMNode(c)})}
+        </div>,
       ],
     })
     .then(() => {
       updateNextChild();
       return psetState({
-        height: this.refs.root.querySelector('.next-child > *').scrollHeight,
+        height: this._nextChildContent.scrollHeight,
         curChild: nextChild,
         wrappedChildren: [
           <div key={prevChild.key} className="mf-fader-child fade leaving">{prevChild}</div>,
-          <div key={nextChild.key} className="mf-fader-child fade in entering">{nextChild}</div>,
+          <div key={nextChild.key} className="mf-fader-child fade in entering" 
+               ref={c => this._nextChild = c}>{nextChild}</div>,
         ],
       });
     })
     .then(() => {
-      let timeout = Math.max(getTimeout(this.refs.root) || 0, getTimeout(this.refs.nextChild) || 0);
+      let timeout = Math.max(getTimeout(this._root) || 0, getTimeout(this._nextChild) || 0);
       return Promise.resolve().delay(timeout);
     })
     .then(() => {
@@ -93,7 +97,7 @@ export default class Fader extends Component {
 
     className = classNames(className, 'mf-fader', {transitioning: height !== undefined});
 
-    return <div {...this.props} ref="root" className={className} style={height !== undefined ? {height} : {}}>
+    return <div {...this.props} ref={c => this._root = c} className={className} style={height !== undefined ? {height} : {}}>
       {wrappedChildren}
     </div>;
   }
