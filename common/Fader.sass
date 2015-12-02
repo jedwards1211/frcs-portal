@@ -1,0 +1,18 @@
+@import ../sass/css3-mixins
+
+$fade-duration: 0.15s
+$collapse-duration: $fade-duration
+
+.mf-fader
+  @include transition(height ease $collapse-duration)
+
+  &.transitioning
+    position: relative
+    overflow: hidden
+
+    .mf-fader-child
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
