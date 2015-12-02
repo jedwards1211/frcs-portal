@@ -13,7 +13,7 @@ export default class Fader extends Component {
     let curChild = Children.toArray(props.children)[0];
     this.state = {
       curChild,
-      wrappedChildren: [<div className="mf-fader-child fade in" key={curChild.key}>{curChild}</div>],
+      wrappedChildren: [<div className="fade in" key={curChild.key}>{curChild}</div>],
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -33,12 +33,13 @@ export default class Fader extends Component {
     let nextChild = Children.toArray(props.children)[0];
 
     if (nextChild.key === prevChild.key) {
-      if (height === undefined && nextChild !== prevChild) {
+      if (nextChild !== prevChild) {
         this.setState({
           curChild: nextChild,
-          wrappedChildren: [
-            <div key={nextChild.key} className="mf-fader-child fade in">{nextChild}</div>,
-          ],
+          wrappedChildren: this.state.wrappedChildren.map(child => {
+            if (child.key !== nextChild.key) return child;
+            return <div {...child.props} key={nextChild.key}>{nextChild}</div>;
+          }),
         });
       }
       return;
@@ -52,30 +53,46 @@ export default class Fader extends Component {
       if (result.key === nextChild.key) nextChild = result;
     };
 
+    let heightTransitionEnd;
+
     psetState({
       height: this._root.scrollHeight,
       curChild: nextChild,
       wrappedChildren: [
-        <div key={prevChild.key} className="mf-fader-child fade in">{prevChild}</div>,
-        <div key={nextChild.key} className="mf-fader-child next-child fade">
+        <div key={prevChild.key} className="fade in">{prevChild}</div>,
+        <div key={nextChild.key} className="next-child fade">
           {cloneElement(nextChild, {ref: c => this._nextChildContent = findDOMNode(c)})}
         </div>,
       ],
     })
     .then(() => {
+      heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
       updateNextChild();
       return psetState({
         height: this._nextChildContent.scrollHeight,
         curChild: nextChild,
         wrappedChildren: [
-          <div key={prevChild.key} className="mf-fader-child fade leaving">{prevChild}</div>,
-          <div key={nextChild.key} className="mf-fader-child fade in entering" 
+          <div key={prevChild.key} className="fade leaving" 
+               ref={c => this._prevChild = c}>{prevChild}</div>,
+          <div key={nextChild.key} className="fade">{nextChild}</div>,
+        ],
+      });
+    })
+    .then(() => {
+      return Promise.resolve().delay(getTimeout(this._prevChild) || 0);
+    })
+    .then(() => {
+      updateNextChild();
+      return psetState({
+        curChild: nextChild,
+        wrappedChildren: [
+          <div key={nextChild.key} className="fade in entering" 
                ref={c => this._nextChild = c}>{nextChild}</div>,
         ],
       });
     })
     .then(() => {
-      let timeout = Math.max(getTimeout(this._root) || 0, getTimeout(this._nextChild) || 0);
+      let timeout = Math.max(heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0);
       return Promise.resolve().delay(timeout);
     })
     .then(() => {
@@ -83,7 +100,7 @@ export default class Fader extends Component {
       return psetState({
         height: undefined,
         wrappedChildren: [
-          <div key={nextChild.key} className="mf-fader-child fade">{nextChild}</div>,
+          <div key={nextChild.key} className="fade in">{nextChild}</div>,
         ],
       });
     })
