@@ -16,7 +16,7 @@ export default class Fader extends Component {
 
   constructor(props) {
     super(props);
-    let curChild = Children.toArray(props.children)[0];
+    let curChild = Children.only(props.children);
     this.state = {
       curChild,
       wrappedChildren: [<div className="fade in" key={curChild.key}>{curChild}</div>],
