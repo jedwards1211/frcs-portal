@@ -17,11 +17,11 @@ export function forEachNode(tree, iteratee) {
       }
     }
   }
-  helper(tree, []);
+  if (tree) helper(tree, []);
 }
 
 export function expandTreePath(model, path) {
-  return model.withMutations(model => {
+  return model && model.withMutations(model => {
     if (model.get('children')) {
       model.set('expanded', true);
     }
