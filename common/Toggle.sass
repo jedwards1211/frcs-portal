@@ -28,7 +28,7 @@
 
 .react-toggle--disabled
   opacity: 0.5
-  @include transition(opacity, 0.25s)
+  @include transition(opacity 0.25s ease)
   cursor: default
 
 .react-toggle-track
@@ -38,7 +38,7 @@
   padding: 0
   border-radius: 30px
   background-color: #4D4D4D
-  @include transition(all, 0.2, ease)
+  @include transition(all 0.2 ease)
 
 .react-toggle:hover:not(.react-toggle--disabled) .react-toggle-track
   background-color: #000000
@@ -59,7 +59,7 @@
   border-radius: 50%
   background-color: #FAFAFA
   @include box-sizing(border-box)
-  @include transition(all, 0.25s, ease)
+  @include transition(all 0.25s ease)
 
 .react-toggle--checked .react-toggle-thumb
   left: 27px
