@@ -4,9 +4,8 @@ $fade-duration: 0.15s
 $collapse-duration: $fade-duration
 
 .mf-fader
-  @include transition(height ease $collapse-duration)
-
   &.transitioning
+    @include transition(height ease $collapse-duration)
     position: relative
     overflow: hidden
 

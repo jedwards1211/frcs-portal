@@ -63,18 +63,34 @@ export default class Fader extends Component {
     let heightTransitionEnd;
 
     let sequence = [
-      callback => this.setState({
-        transitioning:    true,
-        height:           this._root.scrollHeight,
-        curChild:         nextChild,
-        wrappedChildren:  [
-          <div key={prevChild.key} className="fade in">{prevChild}</div>,
-          <div key={nextChild.key} className="next-child fade">
-            {cloneElement(nextChild, {ref: c => this._nextChildContent = findDOMNode(c)})}
-          </div>,
-        ],
-      }, callback),
       callback => {
+        this._root.offsetHeight; // force reflow
+        console.log("root: ");
+        console.log("  offsetHeight: " + this._root.offsetHeight);
+        console.log("  scrollHeight: " + this._root.scrollHeight);
+        this.setState({
+          height:           this._root.scrollHeight,
+          curChild:         nextChild,
+        }, callback);
+      },
+      callback => {
+        let nextChild = getNextChild();
+        this.setState({
+          transitioning:    true,
+          curChild:         nextChild,
+          wrappedChildren:  [
+            <div key={prevChild.key} className="fade in">{prevChild}</div>,
+            <div key={nextChild.key} className="next-child fade">
+              {cloneElement(nextChild, {ref: c => this._nextChildContent = findDOMNode(c)})}
+            </div>,
+          ],
+        }, callback);
+      },
+      callback => {
+        this._nextChildContent.offsetHeight; // force reflow
+        console.log("nextChild: ");
+        console.log("  offsetHeight: " + this._nextChildContent.offsetHeight);
+        console.log("  scrollHeight: " + this._nextChildContent.scrollHeight);
         heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
         let nextChild = getNextChild();
         this.setState({
@@ -104,6 +120,14 @@ export default class Fader extends Component {
         let nextChild = getNextChild();
         this.setState({
           transitioning:    false,
+          wrappedChildren:  [
+            <div key={nextChild.key} className="fade in">{nextChild}</div>,
+          ],
+        }, callback);
+      },
+      callback => {
+        let nextChild = getNextChild();
+        this.setState({
           height:           undefined,
           wrappedChildren:  [
             <div key={nextChild.key} className="fade in">{nextChild}</div>,
@@ -112,7 +136,7 @@ export default class Fader extends Component {
       },
     ];
 
-    sequence.reduceRight((cb, fn) => () => this._mounted && fn(cb), this.doTransition)();
+    sequence.reduceRight((cb, fn) => () => this._mounted && setTimeout(() => fn(cb), 0), this.doTransition)();
   }
 
   render() {
@@ -120,7 +144,7 @@ export default class Fader extends Component {
     let className = classNames(this.props.className, 'mf-fader', {transitioning});
 
     return <div {...this.props} ref={c => this._root = c} className={className} 
-            style={transitioning ? {height} : {}}>
+            style={height ? {height} : {}}>
       {wrappedChildren}
     </div>;
   }
