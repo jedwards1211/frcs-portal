@@ -65,9 +65,6 @@ export default class Fader extends Component {
     let sequence = [
       callback => {
         this._root.offsetHeight; // force reflow
-        console.log("root: ");
-        console.log("  offsetHeight: " + this._root.offsetHeight);
-        console.log("  scrollHeight: " + this._root.scrollHeight);
         this.setState({
           height:           this._root.scrollHeight,
           curChild:         nextChild,
@@ -88,9 +85,6 @@ export default class Fader extends Component {
       },
       callback => {
         this._nextChildContent.offsetHeight; // force reflow
-        console.log("nextChild: ");
-        console.log("  offsetHeight: " + this._nextChildContent.offsetHeight);
-        console.log("  scrollHeight: " + this._nextChildContent.scrollHeight);
         heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
         let nextChild = getNextChild();
         this.setState({

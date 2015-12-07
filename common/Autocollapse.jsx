@@ -35,9 +35,9 @@ export default class Autocollapse extends Component {
     if (this.state.open !== hasChildren) {
       setTimeout(() => {
         if (this.mounted) {
-          this.setState({open: hasChildren}), 0
+          this.setState({open: hasChildren});
         }
-      });
+      }, 0);
     }
   }
   onTransitionEnd = () => {

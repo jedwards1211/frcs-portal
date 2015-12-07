@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 
+import {getTimeout} from '../transition/callOnTransitionEnd';
+
 import './Collapse.sass';
 
 export default React.createClass({
@@ -17,91 +19,95 @@ export default React.createClass({
     return {
       component: 'div',
       keepChildrenMounted: true,
+      onTransitionEnd: function() {},
     };
   },
   getInitialState() {
     return {
       open: !!this.props.open,
       collapsing: false,
-      height: 0,
+      height: undefined,
     };
   },
   componentWillReceiveProps(nextProps) {
     if (nextProps.open && !this.props.open) {
-      this.doShow();
+      this.doTransition(true);
     }
     if (!nextProps.open && this.props.open) {
-      this.doHide(); 
+      this.doTransition(false);
     }
+  },
+  doTransition(nextOpen = this._open) {
+    let {state: {open, height}} = this;
+
+    this._open = nextOpen;
+    if (nextOpen === open || height !== undefined) return;
+
+    let sequence = [
+      callback => {
+        this._collapse.offsetHeight; // force reflow
+        this.setState({
+          height: open ? this._collapse.scrollHeight : 0,
+        }, callback);
+      },
+      callback => {
+        this.setState({
+          collapsing: true,
+          open: nextOpen,
+        }, callback);
+      },
+      callback => {
+        this._collapse.offsetHeight; // force reflow
+        this.setState({
+          height: nextOpen ? this._collapse.scrollHeight : 0,
+        }, callback);
+      },
+      callback => {
+        setTimeout(callback, getTimeout(this._collapse) || 0);
+      },
+      callback => {
+        this.setState({
+          collapsing: false,
+        }, callback);
+      },
+      callback => {
+        this.setState({
+          height: undefined,
+        }, callback);
+      },
+    ];
+
+    sequence.reduceRight((cb, fn) => () => { this.isMounted() && setTimeout(() => fn(cb), 0) }, () => {
+      this.props.onTransitionEnd();
+      this.doTransition();
+    })();
   },
   show() {
     if (this.props.open === undefined) {
-      this.doShow();
-    }
-  },
-  doShow() {
-    if (!this.state.open) {
-      this.setState({
-        open: true,
-        collapsing: true,
-        height: 0,
-      }, () => {
-        var content = ReactDOM.findDOMNode(this.refs.collapse);
-        this.setState({height: content.scrollHeight});
-        this.callOnTransitionEnd(
-          ReactDOM.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
-      });
+      this.doTransition(true);
     }
   },
   hide() {
     if (this.props.open === undefined) {
-      this.doHide();
-    }
-  },
-  doHide() {
-    if (this.state.open) {
-      var content = ReactDOM.findDOMNode(this.refs.collapse);
-      this.setState({
-        height: content.offsetHeight,
-      }, () => {
-        content.offsetHeight; // force reflow
-        this.setState({
-          open: false,
-          collapsing: true,
-        }, () => {
-          content.offsetHeight; // force reflow
-          this.setState({height: 0});
-          this.callOnTransitionEnd(
-            ReactDOM.findDOMNode(this.refs.collapse), this.stopCollapsing, 350);
-        });
-      });
+      this.doTransition(false);
     }
   },
   toggle() {
     if (this.props.open === undefined) {
-      this.state.open ? this.hide() : this.show();
-    }
-  },
-  stopCollapsing() {
-    if (this.isMounted()) {
-      this.setState({
-        collapsing: false,
-        height: undefined,
-      });
-      this.props.onTransitionEnd && this.props.onTransitionEnd();
+      this.doTransition(!this._open);
     }
   },
   render() {
     var {component, className, children, keepChildrenMounted, ...props} = this.props;
     var {open, collapsing, height} = this.state;
     props.className = classNames(className, {'collapse': !collapsing, 'in': open && !collapsing, collapsing: collapsing});
-    if (height) {
+    if (height !== undefined) {
       if (!props.style) props.style = {};
       props.style.height = height;
     }
-    props.ref = 'collapse';
+    props.ref = c => this._collapse = c;
     props['aria-expanded'] = open;
 
-    return React.createElement(component, props, open || collapsing || keepChildrenMounted ? children : undefined);
+    return React.createElement(component, props, open || height !== undefined || keepChildrenMounted ? children : undefined);
   },
 });
