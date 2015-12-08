@@ -17,10 +17,12 @@ export default class TypicalModal extends React.Component {
     title:                  PropTypes.node,
     header:                 PropTypes.node,
     beforeButtons:          PropTypes.node,
+    buttons:                PropTypes.node,
     afterButtons:           PropTypes.node,
     showCancel:             PropTypes.bool,
     // overrides the text of the OK button
     OKtext:                 PropTypes.string,
+    disabled:               PropTypes.bool,
     OKdisabled:             PropTypes.bool,
     onOK:                   PropTypes.func,
     onCancel:               PropTypes.func,
@@ -39,7 +41,7 @@ export default class TypicalModal extends React.Component {
     }
   }
   render() {
-    let {title, header, beforeButtons, afterButtons, OKdisabled, OKtext,
+    let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
         showCancel, onCancel, saving, error, errors, className, children} = this.props;
 
     if (error) {
@@ -55,9 +57,18 @@ export default class TypicalModal extends React.Component {
 
     className = classNames(className, 'mf-typical-modal');
 
+    if (!buttons) {
+      buttons = [<Button.Primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
+        {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
+      </Button.Primary>];
+      if (showCancel) {
+        buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>Cancel</Button>);
+      }
+    }
+
     return <Modal {...this.props} className={className}>
       <Modal.Header>
-        <CloseButton onClick={onCancel}/>
+        <CloseButton onClick={onCancel} disabled={disabled}/>
         {title && <Modal.Title>{title}</Modal.Title>}
         {header}
       </Modal.Header>
@@ -67,10 +78,7 @@ export default class TypicalModal extends React.Component {
       <Modal.Footer>
         {errorAlerts}
         {beforeButtons}
-        {showCancel && <Button onClick={onCancel}>Cancel</Button>}
-        <Button.Primary onClick={this.onOK} disabled={saving || OKdisabled}>
-          {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
-        </Button.Primary>
+        {buttons}
         {afterButtons}
       </Modal.Footer>
     </Modal>;
