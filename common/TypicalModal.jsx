@@ -26,7 +26,7 @@ export default class TypicalModal extends React.Component {
     onCancel:               PropTypes.func,
     saving:                 PropTypes.bool,
     error:                  PropTypes.instanceOf(Error),
-    errors:                 PropTypes.objectOf(PropTypes.node.isRequired),
+    errors:                 PropTypes.objectOf(PropTypes.node),
   }
   static defaultProps = {
     showCancel: true,
