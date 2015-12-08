@@ -1,3 +1,4 @@
+@import ../sass/css3-mixins
 @import ~sass-flex-mixin/flex
 
 .modal-transition-group
@@ -9,7 +10,8 @@
   bottom: 0
   pointer-events: none
 
-  &.absolute
+  &.absolute,
+  .modal-transition-group
     position: absolute
 
   .modal-backdrop
@@ -65,6 +67,25 @@
               @include flex(0 1 auto)
               // make body scrollable instead of entire modal
               overflow-y: auto
+
+  .modal .modal-transition-group .modal
+    .modal-dialog
+      margin-top: -1px
+
+    .modal-content
+      border-top-left-radius: 0
+      border-top-right-radius: 0
+
+    .modal-header
+      display: none
+
+    &.fade 
+      opacity: 1
+
+      .modal-dialog
+        @include transform(translateY(-110%))
+    &.in .modal-dialog
+      @include transform(translateY(0))
 
 .modal-body.alert
   margin: 0
