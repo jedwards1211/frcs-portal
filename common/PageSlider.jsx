@@ -55,10 +55,17 @@ export default React.createClass({
   },
   wrapChild(child, index) {
     if (!child) return child;
+    let {props: {activeIndex}, state: {transitioning}} = this;
+
     var style = child.props.style;
     if (this.props.useAbsolutePositioning) {
       style = _.assign({}, style, {left: (index * 100) + '%'});
     }
+
+    if (!transitioning && index !== activeIndex) {
+      style = _.assign({}, style, {visibility: 'hidden'});
+    }
+
     return <div key={index} ref={'child-' + index} style={style}>
       {child}
     </div>;
