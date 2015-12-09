@@ -36,7 +36,13 @@ export default React.createClass({
       this.timeout = setTimeout(() => this.setState({transitioning: false}), nextProps.transitionDuration);
     }
   },
+  componentWillMount() {
+    this._wrappers = [];
+    this._childRefs = [];
+  },
   componentDidMount() {
+    let child = this._childRefs[this.props.activeIndex];
+    if (child && child.componentDidAppear) child.componentDidAppear();
     this.componentDidUpdate();
   },
   componentWillUpdate(nextProps, nextState) {
@@ -44,12 +50,15 @@ export default React.createClass({
   },
   componentDidUpdate() {
     if (this.isMounted()) {
-      var activeElement = ReactDOM.findDOMNode(this.refs['child-' + this.props.activeIndex]);
+      let {activeIndex} = this.props;
+      var activeElement = ReactDOM.findDOMNode(this._wrappers[activeIndex]);
       if (activeElement && this.state.height !== activeElement.scrollHeight) {
         this.setState({height: activeElement.scrollHeight});
       }
-      if (this.wasTransitioning && !this.state.transitioning && this.props.onTransitionEnd) {
-        this.props.onTransitionEnd();
+      if (this.wasTransitioning && !this.state.transitioning) {
+        let child = this._childRefs[activeIndex];
+        if (child && child.componentDidEnter) child.componentDidEnter();
+        if (this.props.onTransitionEnd) this.props.onTransitionEnd();
       }
     }
   },
@@ -66,8 +75,8 @@ export default React.createClass({
       style = _.assign({}, style, {visibility: 'hidden'});
     }
 
-    return <div key={index} ref={'child-' + index} style={style}>
-      {child}
+    return <div key={index} ref={c => this._wrappers[index] = c} style={style}>
+      {React.cloneElement(child, {ref: c => this._childRefs[index] = c})}
     </div>;
   },
   shouldComponentUpdate: shouldPureComponentUpdate,
