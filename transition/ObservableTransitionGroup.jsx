@@ -18,7 +18,6 @@ export class ChildWrapper extends Component {
       isAppearing: false,
       isEntering: false,
       isLeaving: false,
-      ref: 'root',
     });
   }
   getChildContext() {
@@ -30,7 +29,7 @@ export class ChildWrapper extends Component {
         isAppearing: true,
         isEntering: false,
         isLeaving: false,
-      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+      }, () => callOnTransitionEnd(findDOMNode(this._root), callback)
     ),  0);
     this.transitionEvents.emit('componentWillAppear');
   }
@@ -48,7 +47,7 @@ export class ChildWrapper extends Component {
         isAppearing: false,
         isEntering: true,
         isLeaving: false,
-      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+      }, () => callOnTransitionEnd(findDOMNode(this._root), callback)
     ),  0);
     this.transitionEvents.emit('componentWillEnter');
   }
@@ -64,7 +63,7 @@ export class ChildWrapper extends Component {
         isAppearing: false,
         isEntering: false,
         isLeaving: true,
-      }, () => callOnTransitionEnd(findDOMNode(this.refs.root), callback)
+      }, () => callOnTransitionEnd(findDOMNode(this._root), callback)
     );
     this.transitionEvents.emit('componentWillLeave');
   }
@@ -73,7 +72,19 @@ export class ChildWrapper extends Component {
     this.transitionEvents.removeAllListeners();
   }
   render() {
-    return React.cloneElement(this.props.children, this.state);
+    let child = this.props.children;
+    let ref = child.ref;
+    if (ref) {
+      let origRef = ref;
+      ref = c => {
+        origRef(c);
+        this._root = c;
+      };
+    }
+    else {
+      ref = c => this._root = c;
+    }
+    return React.cloneElement(this.props.children, {...this.state, ref});
   }
 }
 
