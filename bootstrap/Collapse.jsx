@@ -39,7 +39,7 @@ export default React.createClass({
     }
   },
   doTransition(nextOpen = this._open) {
-    let {state: {open, height}} = this;
+    let {open} = this.state;
 
     this._open = nextOpen;
     if (nextOpen === open || this._transitioning) return;
