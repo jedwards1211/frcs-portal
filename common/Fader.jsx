@@ -1,17 +1,19 @@
-import React, {Component, PropTypes, Children, cloneElement} from 'react';
-import {findDOMNode} from 'react-dom';
+import React, {Component, PropTypes, Children} from 'react';
 import classNames from 'classnames';
 
+import setStateChain from '../utils/setStateChain';
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
 import './Fader.sass';
 
 export default class Fader extends Component {
   static propTypes = {
-    children: PropTypes.any,
+    children:         PropTypes.any,
+    onTransitionEnd:  PropTypes.func,
   }
   static defaultProps = {
-    children: <span/>,
+    onTransitionEnd() {},
+    children:         <span/>,
   }
 
   constructor(props) {
@@ -23,16 +25,25 @@ export default class Fader extends Component {
     };
   }
 
-  componentWillMount() {
-    this._mounted = true;
-  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.children !== this.props.children) {
       this.doTransition(nextProps);
     }
   }
+  componentWillMount() {
+    this._mounted = true;
+  }
+  componentDidMount() {
+    let child = Children.only(this.props.children);
+    if (child && child.componentDidAppear) {
+      child.componentDidAppear();
+    }
+  }
   componentWillUnmount() {
     this._mounted = false;
+  }
+  isMounted() {
+    return this._mounted;
   }
 
   doTransition = (props = this.props) => {
@@ -49,11 +60,12 @@ export default class Fader extends Component {
           }),
         });
       }
-      return;
+      return false;
     }
-    else if (height !== undefined) {
-      return;
+    else if (this._transitioning) {
+      return false;
     }
+    this._transitioning = true;
 
     const getNextChild = () => {
       let result = Children.only(this.props.children);
@@ -63,74 +75,77 @@ export default class Fader extends Component {
     let heightTransitionEnd;
 
     let sequence = [
-      callback => {
-        this._root.offsetHeight; // force reflow
-        this.setState({
-          height:           this._root.scrollHeight,
-          curChild:         nextChild,
-        }, callback);
-      },
-      callback => {
+      cb => ({height: this._root.scrollHeight, curChild: nextChild}),
+      cb => {
         let nextChild = getNextChild();
-        this.setState({
-          transitioning:    true,
-          curChild:         nextChild,
+        return {
+          transitioning: true,
+          curChild: nextChild,
           wrappedChildren:  [
             <div key={prevChild.key} className="fade in">{prevChild}</div>,
-            <div key={nextChild.key} className="next-child fade">
-              {cloneElement(nextChild, {ref: c => this._nextChildContent = findDOMNode(c)})}
+            <div key={nextChild.key} className="next-child fade" ref={c => this._nextChild = c}>
+              {nextChild}
             </div>,
           ],
-        }, callback);
+        };
       },
-      callback => {
-        this._nextChildContent.offsetHeight; // force reflow
-        heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
+      cb => {
         let nextChild = getNextChild();
-        this.setState({
-          height:           this._nextChildContent.scrollHeight,
+        heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
+        return {
+          height:           this._nextChild.scrollHeight,
           curChild:         nextChild,
           wrappedChildren:  [
             <div key={prevChild.key} className="fade leaving" 
                  ref={c => this._prevChild = c}>{prevChild}</div>,
             <div key={nextChild.key} className="fade">{nextChild}</div>,
           ],
-        }, callback);
+        };
       },
-      callback => setTimeout(callback, getTimeout(this._prevChild) || 0),
-      callback => {
+      cb => setTimeout(cb, getTimeout(this._prevChild) || 0),
+      cb => {
         let nextChild = getNextChild();
-        this.setState({
+        return {
           curChild:         nextChild,
           wrappedChildren:  [
             <div key={nextChild.key} className="fade in entering" 
                  ref={c => this._nextChild = c}>{nextChild}</div>,
           ],
-        }, callback);
+        };
       },
-      callback => setTimeout(callback, 
+      cb => setTimeout(cb, 
         Math.max(heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0)),
-      callback => {
+      cb => {
         let nextChild = getNextChild();
-        this.setState({
+        return {
           transitioning:    false,
           wrappedChildren:  [
             <div key={nextChild.key} className="fade in">{nextChild}</div>,
           ],
-        }, callback);
+        };
       },
-      callback => {
+      cb => {
         let nextChild = getNextChild();
-        this.setState({
+        return {
           height:           undefined,
           wrappedChildren:  [
             <div key={nextChild.key} className="fade in">{nextChild}</div>,
           ],
-        }, callback);
+        };
       },
     ];
 
-    sequence.reduceRight((cb, fn) => () => this._mounted && setTimeout(() => fn(cb), 0), this.doTransition)();
+    setStateChain(this, sequence, err => {
+      this._transitioning = false;
+      if (!this.doTransition()) {
+        let nextChild = getNextChild();
+        if (nextChild && nextChild.componentDidEnter) {
+          nextChild.componentDidEnter();
+        }
+        this.props.onTransitionEnd();
+      }
+    });
+    return true;
   }
 
   render() {

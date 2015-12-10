@@ -59,9 +59,10 @@ export default class PageSlider extends Component {
     if (child && child.componentDidAppear) child.componentDidAppear();
   }
   doTransition = (nextActiveIndex = this.props.activeIndex) => {
-    let {state: {activeIndex, transitioning}, props: {transitionHeight}} = this;
+    let {state: {activeIndex}, props: {transitionHeight}} = this;
 
-    if (nextActiveIndex === activeIndex || transitioning) return false;
+    if (nextActiveIndex === activeIndex || this._transitioning) return false;
+    this._transitioning = true;
 
     let sequence = _.compact([
       transitionHeight && (cb => ({height: this._viewport.scrollHeight})),
@@ -77,16 +78,16 @@ export default class PageSlider extends Component {
       cb => setTimeout(cb, Math.max(getTimeout(this._viewport) || 0, getTimeout(this._root) || 0)),
       cb => ({transitioning: false}),
       transitionHeight && (cb => ({height: undefined})),
-      cb => {
-        if (!this.doTransition()) {
-          let child = this._childRefs[nextActiveIndex];
-          if (child && child.componentDidEnter) child.componentDidEnter();
-          this.props.onTransitionEnd();
-        }
-      },
     ]);
 
-    setStateChain(this, ...sequence);
+    setStateChain(this, sequence, err => {
+      this._transitioning = false;
+      if (!this.doTransition()) {
+        let child = this._childRefs[nextActiveIndex];
+        if (child && child.componentDidEnter) child.componentDidEnter();
+        this.props.onTransitionEnd();
+      }
+    });
     return true;
   }
   wrapChild = (child, index) => {

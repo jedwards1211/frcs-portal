@@ -42,7 +42,8 @@ export default React.createClass({
     let {state: {open, height}} = this;
 
     this._open = nextOpen;
-    if (nextOpen === open || height !== undefined) return;
+    if (nextOpen === open || this._transitioning) return;
+    this._transitioning = true;
 
     let sequence = [
       callback => {
@@ -59,7 +60,8 @@ export default React.createClass({
       callback => ({height: undefined}),
     ];
 
-    setStateChain(this, ...sequence, () => {
+    setStateChain(this, sequence, (err) => {
+      this._transitioning = false;
       this.props.onTransitionEnd();
       this.doTransition();
     });
