@@ -73,11 +73,12 @@
       margin-top: -1px
       padding: 0 15px
 
-    .modal-content
+    .modal-content,
+    .modal-header
       border-top-left-radius: 0
       border-top-right-radius: 0
 
-    .modal-header
+    &:not(.show-header) .modal-header
       display: none
 
     &.fade 
@@ -85,6 +86,7 @@
 
       .modal-dialog
         @include transform(translateY(-110%))
+
     &.in .modal-dialog
       @include transform(translateY(0))
 
