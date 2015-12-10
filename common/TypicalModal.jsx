@@ -19,6 +19,7 @@ export default class TypicalModal extends React.Component {
     beforeButtons:          PropTypes.node,
     buttons:                PropTypes.node,
     afterButtons:           PropTypes.node,
+    showOK:                 PropTypes.bool,
     showCancel:             PropTypes.bool,
     // overrides the text of the OK button
     OKtext:                 PropTypes.string,
@@ -42,7 +43,7 @@ export default class TypicalModal extends React.Component {
   }
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
-        showCancel, onCancel, saving, error, errors, className, children} = this.props;
+        showOK, showCancel, onCancel, saving, error, errors, className, children} = this.props;
 
     if (error) {
       errors.__singleError = error;
@@ -58,11 +59,14 @@ export default class TypicalModal extends React.Component {
     className = classNames(className, 'mf-typical-modal');
 
     if (!buttons) {
-      buttons = [<Button.Primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
-        {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
-      </Button.Primary>];
+      buttons = [];
       if (showCancel) {
         buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>Cancel</Button>);
+      }
+      if (showOK) {
+        buttons.push(<Button.Primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
+          {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
+        </Button.Primary>);
       }
     }
 
