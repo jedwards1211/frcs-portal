@@ -77,7 +77,7 @@ export default React.createClass({
       },
     ];
 
-    sequence.reduceRight((cb, fn) => () => { this.isMounted() && setTimeout(() => fn(cb), 0) }, () => {
+    sequence.reduceRight((cb, fn) => () => setTimeout(() => this.isMounted && fn(cb), 0), () => {
       this.props.onTransitionEnd();
       this.doTransition();
     })();
