@@ -2,10 +2,13 @@
 
 .mf-page-slider
   overflow: hidden
-  @include transition(max-height ease 0.2s)
+
+  &.transitioning
+    @include transition(height ease 0.15s)
 
   > .viewport
     white-space: nowrap
+    @include transition(transform ease-out 0.15s)
 
     > *
       display: inline-block
