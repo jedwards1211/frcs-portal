@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
+import setStateChain from '../utils/setStateChain';
 
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
@@ -46,41 +47,22 @@ export default React.createClass({
     let sequence = [
       callback => {
         this._collapse.offsetHeight; // force reflow
-        this.setState({
-          height: open ? this._collapse.scrollHeight : 0,
-        }, callback);
+        return {height: open ? this._collapse.scrollHeight : 0};
       },
-      callback => {
-        this.setState({
-          collapsing: true,
-          open: nextOpen,
-        }, callback);
-      },
+      callback => ({collapsing: true, open: nextOpen}),
       callback => {
         this._collapse.offsetHeight; // force reflow
-        this.setState({
-          height: nextOpen ? this._collapse.scrollHeight : 0,
-        }, callback);
+        return {height: nextOpen ? this._collapse.scrollHeight : 0};
       },
-      callback => {
-        setTimeout(callback, getTimeout(this._collapse) || 0);
-      },
-      callback => {
-        this.setState({
-          collapsing: false,
-        }, callback);
-      },
-      callback => {
-        this.setState({
-          height: undefined,
-        }, callback);
-      },
+      callback => setTimeout(callback, getTimeout(this._collapse) || 0),
+      callback => ({collapsing: false}),
+      callback => ({height: undefined}),
     ];
 
-    sequence.reduceRight((cb, fn) => () => setTimeout(() => this.isMounted && fn(cb), 0), () => {
+    setStateChain(this, ...sequence, () => {
       this.props.onTransitionEnd();
       this.doTransition();
-    })();
+    });
   },
   show() {
     if (this.props.open === undefined) {
