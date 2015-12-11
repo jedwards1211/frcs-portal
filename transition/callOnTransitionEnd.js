@@ -1,7 +1,3 @@
-import ReactTransitionEvents from './ReactTransitionEvents';
-
-let {addEndEventListener, removeEndEventListener} = ReactTransitionEvents;
-
 function parseTime(time) {
   if (time && time.substr(-2, -1).toLowerCase() !== 'm') {
     return (parseFloat(time) * 1000) || 0;
@@ -18,21 +14,11 @@ export function getTimeout(element) {
 
 export default function callOnTransitionEnd(element, callback, timeout) {
   timeout = getTimeout(element) || timeout || 0;
-  let timeoutPromise;
-  let transitionEndListener;
+  let timeoutPromise = setTimeout(callback, timeout);
 
-  function cancel() {
-    removeEndEventListener(element, transitionEndListener);
-    clearTimeout(timeoutPromise);
-  }
-
-  transitionEndListener = () => {
-    cancel();
-    callback();
+  return {
+    cancel() {
+      clearTimeout(timeoutPromise);
+    }
   };
-
-  addEndEventListener(element, transitionEndListener);
-  timeoutPromise = setTimeout(transitionEndListener, timeout);
-
-  return {cancel};
 }  
