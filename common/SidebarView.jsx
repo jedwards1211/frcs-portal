@@ -19,7 +19,6 @@ export default class SidebarView extends Component {
     sidebarWidth:         PropTypes.number,
   }
   static defaultProps = {
-    sidebarOpen: true,
     sidebarSide: leftSide,
     sidebarWidth: 200,
     onOpenSidebarClick: function() {},
@@ -73,14 +72,18 @@ export default class SidebarView extends Component {
       }
     }
   }
+  isNarrow() {
+    let {props: {sidebarWidth}, state: {rootWidth = 0}} = this;
+    return rootWidth < sidebarWidth * 2;
+  }
   render() {
-    let {className, sidebar, sidebarOpen, sidebarSide, sidebarWidth, 
+    let {className, sidebar, sidebarOpen = !this.isNarrow(), sidebarSide, sidebarWidth, 
         content, ...props} = this.props;
     let {mounted, laidOut, rootWidth = 0, sidebarToggleBtnWidth = 0} = this.state;
 
     sidebarWidth = Math.min(sidebarWidth, rootWidth - sidebarToggleBtnWidth);
 
-    let contentPosition = rootWidth > sidebarWidth * 2 && sidebarOpen ? sidebarWidth : 0;
+    let contentPosition = !this.isNarrow() && sidebarOpen ? sidebarWidth : 0;
 
     className = classNames(className, 'mf-sidebar-view', `mf-sidebar-${sidebarSide.name}`, {'laid-out': laidOut});
 
