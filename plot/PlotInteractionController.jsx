@@ -3,6 +3,8 @@ import _ from 'lodash';
 
 import LinearConversion from './LinearConversion';
 
+const WHEEL_DELAY = 25;
+
 function copyTouch(touch, boundingClientRect) {
   return {
     id: touch.identifier,
@@ -15,6 +17,8 @@ export default class PlotInteractionController extends React.Component {
   constructor(props) {
     super(props);
     this.touches = [];
+    this._lastWheelAnim = 0;
+    this._wheelMotion = 0;
   }
 
   static propTypes = {
@@ -86,26 +90,45 @@ export default class PlotInteractionController extends React.Component {
       }
     }
 
+    const animate = () => {
+      this._lastWheelAnim = Date.now();
+
+      let rect = e.target.getBoundingClientRect();
+
+      let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
+
+      let zoom = Math.pow(0.998, this._wheelMotion);
+      this._wheelMotion = 0;
+      let newXConversion, newYConversion;
+
+      if (xConversion) {
+        newXConversion = new LinearConversion(xConversion);
+        newXConversion.zoom(xConversion.invert(e.clientX - rect.left), zoom);
+      }
+      if (yConversion) {
+        newYConversion = new LinearConversion(yConversion);
+        newYConversion.zoom(yConversion.invert(e.clientY - rect.top), zoom);
+      }
+      if (onMoveStart)  onMoveStart();
+      if (onMove)       onMove(newXConversion, newYConversion);
+      if (onMoveEnd)    onMoveEnd();
+    };
+
     e.preventDefault();
 
-    let rect = e.target.getBoundingClientRect();
+    this._wheelMotion += wheelDirection(e);
 
-    let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
+    const now = Date.now();
+    const delay = this._lastWheelAnim + WHEEL_DELAY - now;
 
-    let zoom = Math.pow(0.995, wheelDirection(e));
-    let newXConversion, newYConversion;
-
-    if (xConversion) {
-      newXConversion = new LinearConversion(xConversion);
-      newXConversion.zoom(xConversion.invert(e.clientX - rect.left), zoom);
+    if (delay <= 0) {
+      animate();
     }
-    if (yConversion) {
-      newYConversion = new LinearConversion(yConversion);
-      newYConversion.zoom(yConversion.invert(e.clientY - rect.top), zoom);
+    else {
+      setTimeout(() => {
+        if (this._mounted) animate();
+      }, delay);
     }
-    if (onMoveStart)  onMoveStart();
-    if (onMove)       onMove(newXConversion, newYConversion);
-    if (onMoveEnd)    onMoveEnd();
   }
   onTouchStart = (e) => {
     let alreadyMoving = Object.keys(this.touches).length;
