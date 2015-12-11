@@ -68,28 +68,6 @@
               // make body scrollable instead of entire modal
               overflow-y: auto
 
-  .modal .modal-transition-group .modal
-    .modal-dialog
-      margin-top: -1px
-      padding: 0 15px
-
-    .modal-content,
-    .modal-header
-      border-top-left-radius: 0
-      border-top-right-radius: 0
-
-    &:not(.show-header) .modal-header
-      display: none
-
-    &.fade 
-      opacity: 1
-
-      .modal-dialog
-        @include transform(translateY(-110%))
-
-    &.in .modal-dialog
-      @include transform(translateY(0))
-
 .modal-body.alert
   margin: 0
 
@@ -130,3 +108,34 @@ $modal-backdrop-opacity: 0.5
     &.modal-leave-active
       opacity: 0.01
       @include transform(translateY(0))
+
+// nested modals
+.modal-transition-group .modal .modal-transition-group .modal
+  .modal-dialog
+    margin-top: -1px
+
+  .modal-content,
+  .modal-header
+    border-top-left-radius: 0
+    border-top-right-radius: 0
+
+  &:not(.show-header) .modal-header
+    display: none
+
+  &.modal-enter
+    opacity: 1
+    .modal-dialog
+      @include transform(translateY(-110%))
+    &.modal-enter-active
+      .modal-dialog
+        @include transition(ease-out 0.3s)
+        @include transform(translateY(0))
+
+  &.modal-leave
+    .modal-dialog
+      @include transform(translateY(0))
+    &.modal-leave-active
+      .modal-dialog
+        opacity: 1
+        @include transition(ease-out 0.3s)
+        @include transform(translateY(-110%))

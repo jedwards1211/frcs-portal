@@ -57,7 +57,7 @@ export default class Modal extends Component {
     }
   }
   render() {
-    let {className, dialogClassName, isIn, children} = this.props;
+    let {className, dialogClassName, children} = this.props;
     className = classNames('modal mf-modal', className);
     dialogClassName = classNames('modal-dialog', dialogClassName);
     return <div ref="modal" {...this.props} className={className} role="dialog"
@@ -80,7 +80,7 @@ var ModalContent = Modal.Content = addClass('div', 'modal-content');
 
 class ModalBackdrop extends Component {
   render() {
-    let {isIn, className} = this.props;
+    let {className} = this.props;
     className = classNames('modal-backdrop', className);
     return <div ref="backdrop" {...this.props} className={className}/>;
   }
