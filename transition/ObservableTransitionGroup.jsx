@@ -73,18 +73,11 @@ export class ChildWrapper extends Component {
   }
   render() {
     let child = this.props.children;
-    let ref = child.ref;
-    if (ref) {
-      let origRef = ref;
-      ref = c => {
-        origRef(c);
-        this._root = c;
-      };
+    let ref = c => {
+      if (child.ref instanceof Function) child.ref(c);
+      this._root = c;
     }
-    else {
-      ref = c => this._root = c;
-    }
-    return React.cloneElement(this.props.children, {...this.state, ref});
+    return React.cloneElement(child, {...this.state, ref});
   }
 }
 

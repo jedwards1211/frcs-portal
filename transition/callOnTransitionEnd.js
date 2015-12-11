@@ -19,11 +19,20 @@ export function getTimeout(element) {
 export default function callOnTransitionEnd(element, callback, timeout) {
   timeout = getTimeout(element) || timeout || 0;
   let timeoutPromise;
-  let transitionEndListener = () => {
-    if (timeoutPromise) clearTimeout(timeoutPromise);
+  let transitionEndListener;
+
+  function cancel() {
     removeEndEventListener(element, transitionEndListener);
+    clearTimeout(timeoutPromise);
+  }
+
+  transitionEndListener = () => {
+    cancel();
     callback();
   };
+
   addEndEventListener(element, transitionEndListener);
   timeoutPromise = setTimeout(transitionEndListener, timeout);
+
+  return {cancel};
 }  

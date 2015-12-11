@@ -4,8 +4,8 @@ import React, {PropTypes, Component} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
-import ObservableTransitionGroup from '../transition/ObservableTransitionGroup';
-import * as nojquery from '../utils/nojquery';
+import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
+import CSSCore from 'fbjs/lib/CSSCore';
 
 import addClass from '../wrappers/addClass';
 
@@ -32,7 +32,7 @@ export default class Modal extends Component {
   }
   componentWillMount() {
     if (++openModalCount === 1) {
-      nojquery.addClass(document.body, 'modal-open');
+      CSSCore.addClass(document.body, 'modal-open');
     }
     let {transitionEvents} = this.context;
     if (transitionEvents) transitionEvents.on('componentDidEnter', this.componentDidEnter);
@@ -42,8 +42,10 @@ export default class Modal extends Component {
   }
   componentWillUnmount() {
     if (--openModalCount === 0) {
-      nojquery.removeClass(document.body, 'modal-open');
+      CSSCore.removeClass(document.body, 'modal-open');
     }
+    let {transitionEvents} = this.context;
+    if (transitionEvents) transitionEvents.removeListener('componentDidEnter', this.componentDidEnter);
   }
   onClick = (e) => {
     if (e.target === this.refs.modal) {
@@ -56,7 +58,7 @@ export default class Modal extends Component {
   }
   render() {
     let {className, dialogClassName, isIn, children} = this.props;
-    className = classNames('modal fade', className, {'in': isIn});
+    className = classNames('modal mf-modal', className);
     dialogClassName = classNames('modal-dialog', dialogClassName);
     return <div ref="modal" {...this.props} className={className} role="dialog"
       onClick={this.onClick}>
@@ -79,7 +81,7 @@ var ModalContent = Modal.Content = addClass('div', 'modal-content');
 class ModalBackdrop extends Component {
   render() {
     let {isIn, className} = this.props;
-    className = classNames('modal-backdrop fade', className, {'in': isIn});
+    className = classNames('modal-backdrop', className);
     return <div ref="backdrop" {...this.props} className={className}/>;
   }
 }
@@ -105,11 +107,11 @@ class ModalTransitionGroup extends Component {
       }
     }
 
-    return <ObservableTransitionGroup component="div" {...this.props} ref="group" className={className} style={{
-      pointerEvents: children.length ? 'initial' : 'none',
-    }}>
+    return <InterruptibleCSSTransitionGroup component="div" {...this.props}
+      transitionName="modal" className={className} 
+      style={{pointerEvents: children.length ? 'initial' : 'none'}}>
       {children}
-    </ObservableTransitionGroup>;
+    </InterruptibleCSSTransitionGroup>;
   }
 }
 

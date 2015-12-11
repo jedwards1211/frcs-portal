@@ -10,25 +10,37 @@
  *                                 this will call component.setState(<object>, <next callback>).
  */
 export default function setStateChain(component, callbacks, finalCallback = function() {}) {
+  let canceled = false;
+  
   callbacks.reduceRight(
-    (cb, fn) => () => setTimeout(
-      (err) => {
-        if (err) {
+    (cb, fn, index) => () => {
+      function perform() {
+        try {
+          let nextState = fn(cb);
+          if (typeof nextState === 'object') {
+            component.setState(nextState, cb);
+          }
+        } catch (err) {
+          console.error(err.stack);
           cb(err);
         }
-        if (component.isMounted()) {
-          try {
-            let nextState = fn(cb);
-            if (typeof nextState === 'object') {
-              component.setState(nextState, cb);
-            }
-          } catch (err) {
-            console.error(err.stack);
-            cb(err);
-          }
-        }
-      }, 0
-    ), 
-    finalCallback
-  )();
+      }
+
+      if (index === 0) {
+        perform();
+      } 
+      else {
+        setTimeout((err) => {
+          if (canceled) return;
+          if (err) return cb(err);
+          if (component.isMounted()) perform();
+        }, 0);
+      }
+    }, finalCallback)();
+
+  return {
+    cancel() {
+      canceled = true;
+    }
+  };
 }

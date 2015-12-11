@@ -92,3 +92,41 @@
 
 .modal-body.alert
   margin: 0
+
+.mf-modal
+  .modal-dialog
+    @include transition(none)
+    @include transform(translateY(0))
+
+.modal-enter
+  opacity: 0.01
+  @include transform(translateY(-25%))
+  &.modal-enter-active
+    opacity: 1
+    @include transform(translateY(0))
+    @include transition(ease-out 0.3s)
+
+.modal-leave
+  opacity: 1
+  @include transform(translateY(0))
+  &.modal-leave-active
+    opacity: 0.01
+    @include transform(translateY(-25%))
+    @include transition(ease-out 0.3s)
+
+$modal-backdrop-opacity: 0.5
+
+.modal-backdrop
+  opacity: $modal-backdrop-opacity
+  
+  &.modal-enter
+    opacity: 0.01
+    @include transform(translateY(0))
+    &.modal-enter-active
+      opacity: $modal-backdrop-opacity
+
+  &.modal-leave
+    opacity: $modal-backdrop-opacity
+    &.modal-leave-active
+      opacity: 0.01
+      @include transform(translateY(0))
