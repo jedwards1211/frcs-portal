@@ -1,3 +1,5 @@
+import {TICK} from './animConstants';
+
 function parseTime(time) {
   if (time && time.substr(-2, -1).toLowerCase() !== 'm') {
     return (parseFloat(time) * 1000) || 0;
@@ -13,7 +15,7 @@ export function getTimeout(element) {
 }
 
 export default function callOnTransitionEnd(element, callback, timeout) {
-  timeout = getTimeout(element) || timeout || 0;
+  timeout = getTimeout(element) || timeout || TICK;
   let timeoutPromise = setTimeout(callback, timeout);
 
   return {

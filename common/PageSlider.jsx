@@ -8,6 +8,8 @@ import propAssign from '../utils/propAssign';
 import setStateChain from '../utils/setStateChain';
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
+import {TICK} from '../transition/animConstants';
+
 import './PageSlider.sass';
 
 /**
@@ -75,7 +77,7 @@ export default class PageSlider extends Component {
         }
         return nextState;
       },
-      cb => setTimeout(cb, Math.max(getTimeout(this._viewport) || 0, getTimeout(this._root) || 0)),
+      cb => setTimeout(cb, Math.max(TICK, getTimeout(this._viewport) || 0, getTimeout(this._root) || 0)),
       cb => ({transitioning: false}),
       transitionHeight && (cb => ({height: undefined})),
     ]);

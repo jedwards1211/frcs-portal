@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import setStateChain from '../utils/setStateChain';
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
+import {TICK} from '../transition/animConstants';
+
 import './Fader.sass';
 
 export default class Fader extends Component {
@@ -91,7 +93,7 @@ export default class Fader extends Component {
       },
       cb => {
         let nextChild = getNextChild();
-        heightTransitionEnd = Date.now() + getTimeout(this._root) || 0;
+        heightTransitionEnd = Date.now() + Math.max(TICK, getTimeout(this._root) || 0);
         return {
           height:           this._nextChild.scrollHeight,
           curChild:         nextChild,
@@ -102,7 +104,7 @@ export default class Fader extends Component {
           ],
         };
       },
-      cb => setTimeout(cb, getTimeout(this._prevChild) || 0),
+      cb => setTimeout(cb, Math.max(TICK, getTimeout(this._prevChild) || 0)),
       cb => {
         let nextChild = getNextChild();
         return {
@@ -114,7 +116,7 @@ export default class Fader extends Component {
         };
       },
       cb => setTimeout(cb, 
-        Math.max(heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0)),
+        Math.max(TICK, heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0)),
       cb => {
         let nextChild = getNextChild();
         return {

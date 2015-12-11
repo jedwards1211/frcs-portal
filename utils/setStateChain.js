@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+import {TICK} from '../transition/animConstants';
+
 /**
  * Calls zero or more callbacks in sequence.  If a callback returns an object, the component's
  * state is updated with that object (for the sake of shortening transition sequence code).
@@ -34,7 +36,7 @@ export default function setStateChain(component, callbacks, finalCallback = func
           if (canceled) return;
           if (err) return cb(err);
           if (component.isMounted()) perform();
-        }, 0);
+        }, TICK);
       }
     }, finalCallback)();
 

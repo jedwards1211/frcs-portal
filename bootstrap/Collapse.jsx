@@ -6,6 +6,8 @@ import setStateChain from '../utils/setStateChain';
 
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
+import {TICK} from '../transition/animConstants';
+
 import './Collapse.sass';
 
 export default React.createClass({
@@ -55,7 +57,7 @@ export default React.createClass({
         this._collapse.offsetHeight; // force reflow
         return {height: nextOpen ? this._collapse.scrollHeight : 0};
       },
-      callback => setTimeout(callback, getTimeout(this._collapse) || 0),
+      callback => setTimeout(callback, Math.max(TICK, getTimeout(this._collapse) || 0)),
       callback => ({collapsing: false}),
       callback => ({height: undefined}),
     ];

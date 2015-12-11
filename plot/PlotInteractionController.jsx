@@ -72,15 +72,27 @@ export default class PlotInteractionController extends React.Component {
       if (this.props.onMoveEnd) this.props.onMoveEnd();
     }
   }
+
   onWheel = (e) => {
+    function wheelDirection(e) {
+      if (e.hasOwnProperty('deltaY')) {
+        return -e.deltaY;
+      }
+      else if (e.detail) {
+        return e.detail < 0 ? 1 : -1;
+      }
+      else {
+        return 0;
+      }
+    }
+
     e.preventDefault();
 
     let rect = e.target.getBoundingClientRect();
 
     let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
-    let wheelDirection = (e.detail < 0 || e.deltaY < 0) ? 1 : -1;
 
-    let zoom = Math.pow(0.9, wheelDirection);
+    let zoom = Math.pow(0.995, wheelDirection(e));
     let newXConversion, newYConversion;
 
     if (xConversion) {

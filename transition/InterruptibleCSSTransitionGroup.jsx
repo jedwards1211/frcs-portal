@@ -6,7 +6,7 @@ import CSSCore from 'fbjs/lib/CSSCore';
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 import setStateChain from '../utils/setStateChain';
 
-const TICK = 17;
+import {TICK} from './animConstants';
 
 class ChildWrapper extends Component {
   static propTypes = {
