@@ -6,6 +6,8 @@ import CSSCore from 'fbjs/lib/CSSCore';
 import callOnTransitionEnd from '../transition/callOnTransitionEnd';
 import setStateChain from '../utils/setStateChain';
 
+const TICK = 17;
+
 class ChildWrapper extends Component {
   static propTypes = {
     name: PropTypes.oneOfType([
@@ -41,7 +43,7 @@ class ChildWrapper extends Component {
     const sequence = [
       cb => {
         CSSCore.addClass(this._root, className);
-        setTimeout(cb, 0);
+        setTimeout(cb, TICK);
       },
       cb => {
         CSSCore.addClass(this._root, activeClassName);
