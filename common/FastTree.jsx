@@ -121,13 +121,13 @@ export default class FastTree extends Component {
     let {basePadding, indent, defaultRenderer} = this.props;
     return {basePadding, indent, defaultRenderer};
   }
-  scrollToPath(path, context) {
+  scrollToPath(path) {
     let target = this;
     for (let i = 1; target && i < path.length; i += 2) {
       target = target.refs[path[i]];
     }
     if (target) {
-      smoothScroll(findDOMNode(target), 500, function() {}, context);
+      smoothScroll.auto(findDOMNode(target), 500);
     }
   }
   render() {
