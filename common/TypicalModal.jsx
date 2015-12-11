@@ -32,6 +32,7 @@ export default class TypicalModal extends React.Component {
     errors:                 PropTypes.objectOf(PropTypes.node),
   }
   static defaultProps = {
+    showOK:     true,
     showCancel: true,
     errors: {},
   }
