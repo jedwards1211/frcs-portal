@@ -127,9 +127,6 @@ export default class CalibrationWizardController extends Component {
       },
     });
   }
-  getComponentRef() {
-    return this.refs.component;
-  }
   onApply() {
     let {calibration, dispatch} = this.props;
     calibration = _.cloneDeep(calibration);
@@ -151,8 +148,17 @@ export default class CalibrationWizardController extends Component {
       payload: calibration,
     });
   }
+  componentDidAppear() {
+    if (this._component.componentDidAppear) this._component.componentDidAppear();
+  }
+  componentDidEnter() {
+    if (this._component.componentDidEnter) this._component.componentDidEnter();
+  }
+  componentDidLeave() {
+    if (this._component.componentDidLeave) this._component.componentDidLeave();
+  }
   render() {
     let Component = this.props.component;
-    return <Component {...this.props} ref="component" dispatch={this.dispatch}/>;
+    return <Component {...this.props} ref={c => this._component = c} dispatch={this.dispatch}/>;
   }
 }

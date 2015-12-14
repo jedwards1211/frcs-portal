@@ -24,19 +24,21 @@ export default class CalibrationWizard extends Component {
     outputPrecision: PropTypes.number,
     dispatch: PropTypes.func,
   }
+  _pointSteps = [];
   updateFocus = () => {
-    let {isFocused, stepNumber, calibration: {points}} = this.props;
-    if (isFocused) {
-      if (stepNumber === 0) {
-        this.refs.numPointsStep.focusInput();
-      }
-      else if (stepNumber - 1 < points.length) {
-        this.refs['pointStep-' + (stepNumber - 1)].focusInput();
-      }
-      else {
-        this.refs.buttons.focusApply();
-      }
+    let {stepNumber, calibration: {points}} = this.props;
+    if (stepNumber === points.length + 1) {
+      this._buttons.focusApply();
     }
+  }
+  componentDidAppear() {
+    this._pageSlider.componentDidAppear();
+  }
+  componentDidEnter() {
+    this._pageSlider.componentDidEnter();
+  }
+  componentDidLeave() {
+    this._pageSlider.componentDidLeave();
   }
   render() {
     let {className, stepNumber, calibration: {points}} = this.props;
@@ -44,15 +46,15 @@ export default class CalibrationWizard extends Component {
     className = classNames(className, 'mf-calibration-wizard');
 
     return <div className={className}>
-      <PageSlider activeIndex={stepNumber} onTransitionEnd={this.updateFocus}>
-        <CalibrationSteps.NumPoints ref="numPointsStep" {...this.props}/>
+      <PageSlider activeIndex={stepNumber} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
+        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
         {_.range(points.length).map(pointIndex => (
-          <CalibrationSteps.Point {...this.props} ref={"pointStep-" + pointIndex}
+          <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
                                                   key={pointIndex} pointIndex={pointIndex}/>
         ))}
         {<CalibrationSteps.Confirm {...this.props}/>}
       </PageSlider>
-      <CalibrationWizardButtons {...this.props} ref="buttons"/>
+      <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c}/>
     </div>;
   }
 }

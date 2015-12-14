@@ -108,8 +108,11 @@ export class NumPoints extends Component {
       dispatch({type: NEXT});
     }
   }
-  focusInput() {
-    this.refs.numPoints.focus();
+  componentDidAppear() {
+    this.componentDidEnter();
+  }
+  componentDidEnter() {
+    this._numPoints.focus();
   }
   render() {
     let {calibration: {numPoints}, maxNumPoints} = this.props;
@@ -120,7 +123,7 @@ export class NumPoints extends Component {
       <p key="instructions">Enter the number of calibration points you would like to enter:</p>
       <p key="number" className={classNames('form-group', {'has-error': !!invalidMessage})}>
         <label className="control-label">Number of points:&nbsp;</label>
-        <input type="text" ref="numPoints" className="form-control" inputMode="number"
+        <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
                value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}/>
       </p>
       <Autocollapse component="div">
@@ -170,8 +173,11 @@ export class Point extends Component {
       dispatch({type: NEXT});
     }
   }
-  focusInput() {
-    this.refs.outputValue.focus();
+  componentDidAppear() {
+    this.componentDidEnter();
+  }
+  componentDidEnter() {
+    this._outputValue.focus();
   }
   render() {
     let {pointIndex, calibration: {points, numPoints}, inputValue, inputUnits, outputUnits} = this.props;
@@ -202,8 +208,8 @@ export class Point extends Component {
         <div key="output" className={classNames("output", "form-group", {'has-error': hasError})}>
           <div key="header" className="header control-label">Actual Value</div>
           <div key="value" className="value">
-            <input type="text" ref="outputValue" className="form-control" inputMode="number" value={outputValue}
-              onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}/> {outputUnits}
+            <input type="text" ref={c => this._outputValue = c} className="form-control" inputMode="number" 
+              value={outputValue} onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}/> {outputUnits}
           </div>
         </div>
       </div>
