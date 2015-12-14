@@ -45,10 +45,10 @@ export default class PageSlider extends Component {
       this.doTransition(nextProps.activeIndex);
     }
   }
+  _wrappers = [];
+  _childRefs = [];
   componentWillMount() {
     this._mounted = true;
-    this._wrappers = [];
-    this._childRefs = [];
   }
   componentWillUnmount() {
     this._mounted = false;
@@ -57,14 +57,30 @@ export default class PageSlider extends Component {
     return this._mounted;
   }
   componentDidMount() {
-    let child = this._childRefs[this.props.activeIndex];
+    this.componentDidAppear();
+  }
+  componentDidAppear() {
+    let {activeIndex} = this.state;
+    let child = this._childRefs[activeIndex];
     if (child && child.componentDidAppear) child.componentDidAppear();
+  }
+  componentDidEnter() {
+    let {activeIndex} = this.state;
+    let child = this._childRefs[activeIndex];
+    if (child && child.componentDidEnter) child.componentDidEnter();
+  }
+  componentDidLeave() {
+    let {activeIndex} = this.state;
+    let child = this._childRefs[activeIndex];
+    if (child && child.componentDidLeave) child.componentDidLeave();
   }
   doTransition = (nextActiveIndex = this.props.activeIndex) => {
     let {state: {activeIndex}, props: {transitionHeight}} = this;
 
     if (nextActiveIndex === activeIndex || this._transitioning) return false;
     this._transitioning = true;
+
+    const leavingChild = this._childRefs[activeIndex];
 
     let sequence = _.compact([
       transitionHeight && (cb => ({height: this._viewport.scrollHeight})),
@@ -85,6 +101,7 @@ export default class PageSlider extends Component {
     setStateChain(this, sequence, err => {
       this._transitioning = false;
       if (!this.doTransition()) {
+        if (leavingChild && leavingChild.componentDidLeave) leavingChild.componentDidLeave();
         let child = this._childRefs[nextActiveIndex];
         if (child && child.componentDidEnter) child.componentDidEnter();
         this.props.onTransitionEnd();
@@ -96,20 +113,26 @@ export default class PageSlider extends Component {
     if (!child) return child;
     let {state: {transitioning, activeIndex}, props: {transitionHeight}} = this;
 
-    var style = child.props.style;
+    let style = {};
     if (this.props.useAbsolutePositioning) {
-      style = propAssign(style, {left: (index * 100) + '%'});
+      style.left = (index * 100) + '%';
     }
 
     if (!transitioning && index !== activeIndex) {
-      style = propAssign(style, {visibility: 'hidden'});
+      style.visibility = 'hidden';
       if (transitionHeight) {
         style.height = 0;
       }
     }
 
+    const origRef = child.ref;
+    const ref = c => {
+      if (origRef instanceof Function) origRef(c);
+      this._childRefs[index] = c;
+    };
+
     return <div key={index} ref={c => this._wrappers[index] = c} style={style}>
-      {React.cloneElement(child, {ref: c => this._childRefs[index] = c})}
+      {React.cloneElement(child, {ref})}
     </div>;
   }
   render() {
