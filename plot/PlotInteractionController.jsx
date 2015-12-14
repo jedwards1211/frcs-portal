@@ -97,7 +97,7 @@ export default class PlotInteractionController extends React.Component {
 
       let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
 
-      let zoom = Math.pow(0.998, this._wheelMotion);
+      let zoom = Math.pow(0.999, this._wheelMotion);
       this._wheelMotion = 0;
       let newXConversion, newYConversion;
 
