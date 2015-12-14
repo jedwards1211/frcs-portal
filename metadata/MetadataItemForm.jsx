@@ -96,37 +96,35 @@ export default React.createClass({
     let metadataItem = this.props.metadataItem;
     let disabled = this.props.disabled;
 
-    if ('min' in metadataItem && 'max' in metadataItem) {
-      return [
-        <h3 key="display-range" className="display-range">Display Range</h3>,
-        <div key="range" className="range" style={{margin: 0, padding: 0}}>
-          <div key="min" className={classNames('min', 'form-group', {'has-error': !numberRegExp.test(metadataItem.min)})}>
-            <span key="from" className="from">
-              <h4 className="control-label">From</h4>
-            </span>
-            <span key="value" className="value">
-              <input name="range-min" type="text" inputMode="number" className="form-control" value={metadataItem.min}
-                disabled={disabled} onChange={this.onRangeMinChange} />
-            </span>
-            <span key="units" className="units">
-              {metadataItem.units}
-            </span>
-          </div>
-          <div key="max" className={classNames('max', 'form-group', {'has-error': !numberRegExp.test(metadataItem.max)})}>
-            <span key="to" className="to">
-              <h4 className="control-label">To</h4>
-            </span>
-            <span key="value" className="value">
-              <input name="range-max" type="text" inputMode="number" className="form-control" value={metadataItem.max}
-                disabled={disabled} onChange={this.onRangeMaxChange} />
-            </span>
-            <span key="units" className="units">
-              {metadataItem.units}
-            </span>
-          </div>
+    return [
+      <h3 key="display-range" className="display-range">Display Range</h3>,
+      <div key="range" className="range" style={{margin: 0, padding: 0}}>
+        <div key="min" className={classNames('min', 'form-group', {'has-error': !numberRegExp.test(metadataItem.min)})}>
+          <span key="from" className="from">
+            <h4 className="control-label">From</h4>
+          </span>
+          <span key="value" className="value">
+            <input name="range-min" type="text" inputMode="number" className="form-control" value={metadataItem.min}
+              disabled={disabled} onChange={this.onRangeMinChange} />
+          </span>
+          <span key="units" className="units">
+            {metadataItem.units}
+          </span>
         </div>
-      ];
-    }
+        <div key="max" className={classNames('max', 'form-group', {'has-error': !numberRegExp.test(metadataItem.max)})}>
+          <span key="to" className="to">
+            <h4 className="control-label">To</h4>
+          </span>
+          <span key="value" className="value">
+            <input name="range-max" type="text" inputMode="number" className="form-control" value={metadataItem.max}
+              disabled={disabled} onChange={this.onRangeMaxChange} />
+          </span>
+          <span key="units" className="units">
+            {metadataItem.units}
+          </span>
+        </div>
+      </div>
+    ];
   },
   renderAlarms() {
     let metadataItem = this.props.metadataItem;
