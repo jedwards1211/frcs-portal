@@ -29,7 +29,7 @@ export default class SidebarView extends Component {
     this.state = {rootWidth: 0};
   }
   onSidebarToggleBtnClick = () => {
-    let {sidebarOpen, onOpenSidebarClick, onCloseSidebarClick} = this.props;
+    let {sidebarOpen = !this.isNarrow(), onOpenSidebarClick, onCloseSidebarClick} = this.props;
     sidebarOpen ? onCloseSidebarClick() : onOpenSidebarClick();
     callOnTransitionEnd(this.refs.sidebar, fireFakeResizeEvent, 1000);
   }
