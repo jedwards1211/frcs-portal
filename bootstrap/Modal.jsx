@@ -22,13 +22,14 @@ import './Modal.sass';
 let openModalCount = 0;
 
 export default class Modal extends Component {
-  static contextTypes ={
+  static contextTypes = {
     transitionEvents: PropTypes.shape({
       on: PropTypes.func.isRequired,
     }),
   }
   static propTypes = {
     dialogClassName: PropTypes.string,
+    onOutsideClick:  PropTypes.func,
   }
   componentWillMount() {
     if (++openModalCount === 1) {
@@ -97,15 +98,6 @@ class ModalTransitionGroup extends Component {
   render() {
     let className = classNames(this.props.className, 'modal-transition-group');
     let children = React.Children.toArray(this.props.children);
-
-    for (let i = 1; i < children.length; i++) {
-      if (children[i - 1].props.onClick) {
-        // this is a hack that lets us use onClick listeners on the backdrop
-        // when in reality the transparent part of Modal gets in the way
-        children[i] = React.cloneElement(children[i], 
-          {onOutsideClick: children[i - 1].props.onClick});
-      }
-    }
 
     return <InterruptibleCSSTransitionGroup component="div" {...this.props}
       transitionName="modal" className={className} 
