@@ -6,7 +6,7 @@ import { integerRegExp, numberOrBlankRegExp } from '../utils/validationRegExps';
 import Alert from '../bootstrap/Alert';
 import Autocollapse from '../common/Autocollapse';
 
-import {NEXT} from './CalibrationWizardButtons';
+import {NEXT, SET_NUM_POINTS, SET_OUTPUT_VALUE} from './calibrationActions';
 
 import './CalibrationSteps.sass';
 
@@ -83,27 +83,19 @@ export const stringOrNumber = PropTypes.oneOfType([
   PropTypes.number
 ]);
 
-export const NUM_POINTS_CHANGE = 'NUM_POINTS_CHANGE';
-
 export class NumPoints extends Component {
-  static propTypes = {
-    calibration: PropTypes.shape({
-      numPoints: stringOrNumber,
-    }).isRequired,
-    maxNumPoints: PropTypes.number.isRequired,
-    dispatch: PropTypes.func
-  }
   static defaultProps = {
     dispatch: function() {},
   }
   onNumPointsChange = event => {
     this.props.dispatch({
-      type: NUM_POINTS_CHANGE,
+      type: SET_NUM_POINTS,
       payload: event.target.value
     });
   }
   onKeyDown = e => {
-    let {calibration: {numPoints}, maxNumPoints, dispatch} = this.props;
+    const {calibration, maxNumPoints, dispatch} = this.props;
+    const numPoints = calibration.get('numPoints');
     if (isValidNumPoints(numPoints, maxNumPoints) && e.key === 'Enter') {
       dispatch({type: NEXT});
     }
@@ -115,7 +107,8 @@ export class NumPoints extends Component {
     this._numPoints.focus();
   }
   render() {
-    let {calibration: {numPoints}, maxNumPoints} = this.props;
+    const {calibration, maxNumPoints} = this.props;
+    const numPoints = calibration.get('numPoints');
 
     let invalidMessage = invalidNumPointsMessage(numPoints, maxNumPoints);
 
@@ -137,30 +130,14 @@ export function isValidOutputValue(outputValue) {
   return outputValue === undefined || numberOrBlankRegExp.test(outputValue);
 }
 
-export const OUTPUT_VALUE_CHANGE = 'OUTPUT_VALUE_CHANGE';
-
 export class Point extends Component {
-  static propTypes = {
-    pointIndex: PropTypes.number.isRequired,
-    calibration: PropTypes.shape({
-      numPoints: stringOrNumber,
-      points: PropTypes.arrayOf(PropTypes.shape({
-        y: stringOrNumber,
-      }).isRequired).isRequired,
-    }).isRequired,
-    inputValue: PropTypes.number,
-    inputUnits: PropTypes.string,
-    inputPrecision: PropTypes.number,
-    outputUnits: PropTypes.string,
-    dispatch: PropTypes.func,
-  }
   static defaultProps = {
     dispatch: function() {},
   }
   onOutputValueChange = event => {
     let {dispatch, pointIndex} = this.props;
     dispatch({
-      type: OUTPUT_VALUE_CHANGE,
+      type: SET_OUTPUT_VALUE,
       payload: event.target.value,
       meta: {
         pointIndex,
@@ -168,8 +145,8 @@ export class Point extends Component {
     });
   }
   onKeyDown = e => {
-    let {calibration: {points}, pointIndex, dispatch} = this.props;
-    if (isValidOutputValue(points[pointIndex].y) && e.key === 'Enter') {
+    const {calibration, pointIndex, dispatch} = this.props;
+    if (isValidOutputValue(calibration.getIn(['points', pointIndex, 'y'])) && e.key === 'Enter') {
       dispatch({type: NEXT});
     }
   }
@@ -180,7 +157,9 @@ export class Point extends Component {
     this._outputValue.focus();
   }
   render() {
-    let {pointIndex, calibration: {points, numPoints}, inputValue, inputUnits, outputUnits} = this.props;
+    const {pointIndex, calibration, inputValue, inputUnits, outputUnits} = this.props;
+    const numPoints = calibration.get('numPoints');
+    const outputValue = calibration.getIn(['points', pointIndex, 'y']);
 
     let inputPrecision = computeInputPrecision(this.props);
 
@@ -190,8 +169,6 @@ export class Point extends Component {
     if (_.isNumber(inputValue)) {
       fixedInputValue = inputValue.toFixed(inputPrecision);
     }
-
-    let outputValue = points[pointIndex].y;
 
     let hasError = !isValidOutputValue(outputValue);
 
@@ -223,27 +200,16 @@ export class Point extends Component {
 }
 
 export class Confirm extends Component {
-  static propTypes = {
-    calibration: PropTypes.shape({
-      points: PropTypes.arrayOf(PropTypes.shape({
-        x: PropTypes.number,
-        y: stringOrNumber,
-      }).isRequired).isRequired,
-    }).isRequired,
-    inputUnits: PropTypes.string,
-    outputUnits: PropTypes.string,
-    inputPrecision: PropTypes.number,
-    outputPrecision: PropTypes.number
-  }
   render() {
-    let {calibration: {points}, inputUnits, outputUnits} = this.props;
+    const {calibration, inputUnits, outputUnits} = this.props;
+    const points = calibration.get('points');
 
     let inputPrecision = computeInputPrecision(this.props);
     let outputPrecision = computeOutputPrecision(this.props);
 
-    let rows = points && _.compact(points.map((point, index) => {
-      let x = Number(point.x);
-      let y = Number(point.y);
+    let rows = points && _.compact(points.toArray().map((point, index) => {
+      const x = Number(point.get('x'));
+      const y = Number(point.get('y'));
       if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) {
         return <tr key={index} className="values">
           <td key="input" className="inputValue">{x.toFixed(inputPrecision)}</td>
@@ -253,7 +219,7 @@ export class Confirm extends Component {
     }));
 
     return <div className="mf-calibration-confirm-step">
-      <h3 key="header">Step {points.length + 1}</h3>
+      <h3 key="header">Step {points.size + 1}</h3>
       <p key="instructions">Confirm the calibration:</p>
       <table key="table">
         <tbody>

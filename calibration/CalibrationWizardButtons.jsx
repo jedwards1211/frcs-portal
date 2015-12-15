@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
 
 import Button from '../bootstrap/Button';
 
 import {isValidNumPoints, isValidOutputValue, stringOrNumber} from './CalibrationSteps';
 
-export const BACK = 'BACK';
-export const NEXT = 'NEXT';
-export const APPLY = 'APPLY';
-export const CANCEL = 'CANCEL';
+
+import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions';
 
 /**
  * The Back, Next, and Apply buttons for a CalibrationWizard, separated out because
@@ -19,8 +18,12 @@ export default class CalibrationWizardButtons extends Component {
   static propTypes = {
     stepNumber: PropTypes.number.isRequired,
     maxNumPoints: PropTypes.number.isRequired,
-    calibration: PropTypes.shape({
+    calibration: ImmutablePropTypes.shape({
       numPoints: stringOrNumber,
+      points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
+        x: stringOrNumber,
+        y: stringOrNumber,
+      })),
     }).isRequired,
     backDisabledStepNumber: PropTypes.number,
     dispatch: PropTypes.func,
@@ -35,15 +38,16 @@ export default class CalibrationWizardButtons extends Component {
   }
   render() {
     let {className, stepNumber, calibration, maxNumPoints, backDisabledStepNumber, dispatch} = this.props;
+    const numPoints = calibration.get('numPoints');
 
-    var notEnoughPoints = !Number(calibration.numPoints);
+    var notEnoughPoints = !Number(numPoints);
 
     var disableNext;
     if (stepNumber === 0) {
-      disableNext = !isValidNumPoints(calibration.numPoints, maxNumPoints);
+      disableNext = !isValidNumPoints(numPoints, maxNumPoints);
     }
-    else if (stepNumber <= calibration.numPoints) {
-      disableNext = !isValidOutputValue(calibration.points[stepNumber - 1].y);
+    else if (stepNumber <= numPoints) {
+      disableNext = !isValidOutputValue(calibration.getIn(['points', stepNumber - 1, 'y']));
     }
 
     var buttons = [
@@ -55,7 +59,7 @@ export default class CalibrationWizardButtons extends Component {
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
     ];
-    if (stepNumber <= calibration.numPoints || notEnoughPoints) {
+    if (stepNumber <= numPoints || notEnoughPoints) {
       buttons.push(
         <Button.Primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
           <i className="glyphicon glyphicon-chevron-right" /> Next

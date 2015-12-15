@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -13,9 +14,12 @@ export default class CalibrationWizard extends Component {
   static propTypes = {
     isFocused: PropTypes.bool,
     stepNumber: PropTypes.number.isRequired,
-    calibration: PropTypes.shape({
+    calibration: ImmutablePropTypes.shape({
       numPoints: CalibrationSteps.stringOrNumber,
-      points: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
+      points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
+        x: CalibrationSteps.stringOrNumber,
+        y: CalibrationSteps.stringOrNumber,
+      })).isRequired,
     }),
     inputValue: PropTypes.number,
     inputUnits: PropTypes.string,
@@ -26,8 +30,8 @@ export default class CalibrationWizard extends Component {
   }
   _pointSteps = [];
   updateFocus = () => {
-    let {stepNumber, calibration: {points}} = this.props;
-    if (stepNumber === points.length + 1) {
+    let {stepNumber, calibration} = this.props;
+    if (stepNumber === calibration.get('points').size + 1) {
       this._buttons.focusApply();
     }
   }
@@ -41,14 +45,15 @@ export default class CalibrationWizard extends Component {
     this._pageSlider.componentDidLeave();
   }
   render() {
-    let {className, stepNumber, calibration: {points}} = this.props;
+    let {className, stepNumber, calibration} = this.props;
+    const points = calibration.get('points');
 
     className = classNames(className, 'mf-calibration-wizard');
 
     return <div className={className}>
       <PageSlider activeIndex={stepNumber} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
         <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
-        {_.range(points.length).map(pointIndex => (
+        {_.range(points.size).map(pointIndex => (
           <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
                                                   key={pointIndex} pointIndex={pointIndex}/>
         ))}
