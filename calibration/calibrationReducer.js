@@ -24,7 +24,7 @@ function backReducer(state, action) {
   }
   else {
     let calibration = state.get('calibration');
-    const inputValue = state.get('inputValue');
+    const inputValue = state.getIn(['calibrationState', 'input', 'value']);
     return state.merge({
       stepNumber: stepNumber - 1,
       calibration: calibration.setIn(['points', stepNumber - 1, 'x'], inputValue),
@@ -47,7 +47,7 @@ function nextReducer(state, action) {
     }));
   }
   else {
-    const inputValue = state.get('inputValue');
+    const inputValue = state.getIn(['calibrationState', 'input', 'value']);
     state = state.setIn(['calibration', 'points', stepNumber - 1, 'x'], inputValue);
   }
   return state.set('stepNumber', stepNumber + 1);

@@ -157,9 +157,12 @@ export class Point extends Component {
     this._outputValue.focus();
   }
   render() {
-    const {pointIndex, calibration, inputValue, inputUnits, outputUnits} = this.props;
+    const {pointIndex, calibration, calibrationState} = this.props;
     const numPoints = calibration.get('numPoints');
+    const inputValue = calibrationState.getIn(['input', 'value']);
+    const inputUnits = calibrationState.getIn(['input', 'units']);
     const outputValue = calibration.getIn(['points', pointIndex, 'y']);
+    const outputUnits = calibrationState.getIn(['output', 'units']);
 
     let inputPrecision = computeInputPrecision(this.props);
 
@@ -201,8 +204,10 @@ export class Point extends Component {
 
 export class Confirm extends Component {
   render() {
-    const {calibration, inputUnits, outputUnits} = this.props;
+    const {calibration, calibrationState} = this.props;
     const points = calibration.get('points');
+    const inputUnits = calibrationState.getIn(['input', 'units']);
+    const outputUnits = calibrationState.getIn(['output', 'units']);
 
     let inputPrecision = computeInputPrecision(this.props);
     let outputPrecision = computeOutputPrecision(this.props);

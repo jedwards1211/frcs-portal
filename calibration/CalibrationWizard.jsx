@@ -10,6 +10,11 @@ import CalibrationWizardButtons from './CalibrationWizardButtons';
 
 import './CalibrationWizard.sass';
 
+const valueAndUnit = ImmutablePropTypes.shape({
+  value: PropTypes.number,
+  units: PropTypes.string,
+});
+
 export default class CalibrationWizard extends Component {
   static propTypes = {
     isFocused: PropTypes.bool,
@@ -21,10 +26,11 @@ export default class CalibrationWizard extends Component {
         y: CalibrationSteps.stringOrNumber,
       })).isRequired,
     }),
-    inputValue: PropTypes.number,
-    inputUnits: PropTypes.string,
+    calibrationState: ImmutablePropTypes.shape({
+      input: valueAndUnit,
+      output: valueAndUnit,
+    }).isRequired,
     inputPrecision: PropTypes.number,
-    outputUnits: PropTypes.string,
     outputPrecision: PropTypes.number,
     dispatch: PropTypes.func,
   }
