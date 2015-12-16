@@ -213,8 +213,8 @@ export class Confirm extends Component {
     let outputPrecision = computeOutputPrecision(this.props);
 
     let rows = points && _.compact(points.toArray().map((point, index) => {
-      const x = Number(point.get('x'));
-      const y = Number(point.get('y'));
+      const x = parseFloat(point.get('x'));
+      const y = parseFloat(point.get('y'));
       if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) {
         return <tr key={index} className="values">
           <td key="input" className="inputValue">{x.toFixed(inputPrecision)}</td>

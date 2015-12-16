@@ -39,11 +39,11 @@ function nextReducer(state, action) {
     state = state.update('calibration', calibration => calibration.withMutations(calibration => {
       calibration.update('numPoints', parseInt);
       let numPoints = calibration.get('numPoints');
-      calibration.update('points', points => points.concat(
+      calibration.update('points', points => points.slice(0, numPoints).concat(
           Immutable.Repeat(Immutable.fromJS({
             x: undefined, 
             y: undefined
-          }), numPoints - points.size).toList().slice(0, numPoints)));
+          }), numPoints - points.size)));
     }));
   }
   else {
@@ -58,9 +58,12 @@ function isValidNumber(num) {
 }
 
 function applyReducer(state, action) {
-  return state.updateIn(['calibration', 'points'], points => {
-    return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
-      .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')));
+  return state.update('calibration', calibration => {
+    calibration = calibration.update('points', points => {
+      return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
+        .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')))
+    });
+    return calibration.set('numPoints', calibration.get('points').size);
   });
 }
 

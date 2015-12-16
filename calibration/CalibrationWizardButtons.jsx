@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 import Button from '../bootstrap/Button';
 
@@ -39,6 +40,7 @@ export default class CalibrationWizardButtons extends Component {
   render() {
     let {className, stepNumber, calibration, maxNumPoints, backDisabledStepNumber, dispatch} = this.props;
     const numPoints = calibration.get('numPoints');
+    const points    = calibration.get('points');
 
     var notEnoughPoints = !Number(numPoints);
 
@@ -67,9 +69,15 @@ export default class CalibrationWizardButtons extends Component {
       );
     }
     else {
+      let validCount = 0;
+      points.forEach(point => {
+        const x = parseFloat(point.get('x'));
+        const y = parseFloat(point.get('y'));
+        if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) validCount++;
+      });
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-                onClick={() => dispatch({type: APPLY})}>
+                onClick={() => dispatch({type: APPLY})} disabled={validCount < 2}>
           Apply
         </button>
       );
