@@ -36,10 +36,10 @@ export default class CalibrationWizard extends Component {
   }
   _pointSteps = [];
   updateFocus = () => {
-    let {stepNumber, calibration} = this.props;
-    if (stepNumber === calibration.get('points').size + 1) {
-      this._buttons.focusApply();
-    }
+    // let {stepNumber, calibration} = this.props;
+    // if (stepNumber === calibration.get('points').size + 1) {
+    //   this._buttons.focusApply();
+    // }
   }
   componentDidAppear() {
     this._pageSlider.componentDidAppear();
@@ -57,12 +57,14 @@ export default class CalibrationWizard extends Component {
     className = classNames(className, 'mf-calibration-wizard');
 
     return <div className={className}>
-      <PageSlider activeIndex={stepNumber} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
-        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
-        {_.range(points.size).map(pointIndex => (
-          <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
-                                                  key={pointIndex} pointIndex={pointIndex}/>
-        ))}
+      <PageSlider activeIndex={stepNumber === points.size + 1 ? 1 : 0}>
+        <PageSlider activeIndex={Math.min(stepNumber, points.size)} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
+          <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
+          {_.range(points.size).map(pointIndex => (
+            <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
+                                                    key={pointIndex} pointIndex={pointIndex}/>
+          ))}
+        </PageSlider>
         {<CalibrationSteps.Confirm {...this.props}/>}
       </PageSlider>
       <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c}/>

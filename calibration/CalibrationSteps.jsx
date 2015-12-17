@@ -5,8 +5,10 @@ import { integerRegExp, numberOrBlankRegExp } from '../utils/validationRegExps';
 
 import Alert from '../bootstrap/Alert';
 import Autocollapse from '../common/Autocollapse';
+import Button from '../bootstrap/Button';
 
-import {NEXT, SET_NUM_POINTS, SET_OUTPUT_VALUE} from './calibrationActions';
+import {NEXT, SET_NUM_POINTS, setInputValue, setOutputValue, 
+        addPoint, deletePoint} from './calibrationActions';
 
 import './CalibrationSteps.sass';
 
@@ -39,23 +41,6 @@ function computeInputPrecision(props) {
     }
   }
   return inputPrecision;
-}
-
-function computeOutputPrecision(props) {
-  let outputPrecision = props.outputPrecision;
-  if (!_.isNumber(outputPrecision)) {
-    // set this for Math.max
-    outputPrecision = null;
-    for (let point of props.calibration.points) {
-      if (_.isNumber(point.y)) {
-        outputPrecision = Math.max(outputPrecision, autoPrecision(point.y));
-      }
-    }
-    if (!_.isNumber(outputPrecision)) {
-      outputPrecision = 3;
-    }
-  }
-  return outputPrecision;
 }
 
 export function isValidNumPoints(numPoints, maxNumPoints) {
@@ -136,13 +121,7 @@ export class Point extends Component {
   }
   onOutputValueChange = event => {
     let {dispatch, pointIndex} = this.props;
-    dispatch({
-      type: SET_OUTPUT_VALUE,
-      payload: event.target.value,
-      meta: {
-        pointIndex,
-      },
-    });
+    dispatch(setOutputValue(pointIndex, event.target.value));
   }
   onKeyDown = e => {
     const {calibration, pointIndex, dispatch} = this.props;
@@ -204,28 +183,45 @@ export class Point extends Component {
 
 export class Confirm extends Component {
   render() {
-    const {calibration, calibrationState} = this.props;
+    const {calibration, calibrationState, dispatch} = this.props;
     const points = calibration.get('points');
     const inputUnits = calibrationState.getIn(['input', 'units']);
     const outputUnits = calibrationState.getIn(['output', 'units']);
 
-    let inputPrecision = computeInputPrecision(this.props);
-    let outputPrecision = computeOutputPrecision(this.props);
-
     let rows = points && _.compact(points.toArray().map((point, index) => {
-      const x = parseFloat(point.get('x'));
-      const y = parseFloat(point.get('y'));
-      if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) {
-        return <tr key={index} className="values">
-          <td key="input" className="inputValue">{x.toFixed(inputPrecision)}</td>
-          <td key="output" className="outputValue">{y.toFixed(outputPrecision)}</td>
-        </tr>;
-      }
-    }));
+      const x = point.get('x');
+      const y = point.get('y');
+      const inputClass  = classNames('inputValue',  {'has-error': !isValidOutputValue(x)});
+      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValue(y)});
+      return <tr key={index} className="values">
+        <td className={inputClass}>
+          <input type="text" className="form-control" value={x}
+            onChange={e => dispatch(setInputValue(index, e.target.value))}/>
+        </td>
+        <td className={outputClass}>
+          <input type="text" className="form-control" value={y}
+            onChange={e => dispatch(setOutputValue(index, e.target.value))}/>
+        </td>
+        <td className="delete">
+          <Button onClick={e => dispatch(deletePoint(index))}>
+            <i className="glyphicon glyphicon-trash"/>
+          </Button>
+        </td>
+      </tr>;
+    })).concat(<tr key={points.size} className="values">
+      <td className="inputValue">
+        <input type="text" className="form-control" value=""
+          onChange={e => dispatch(addPoint({x: e.target.value}))}/>
+      </td>
+      <td className="outputValue">
+        <input type="text" className="form-control" value=""
+          onChange={e => dispatch(addPoint({y: e.target.value}))}/>
+      </td>
+    </tr>);
 
     return <div className="mf-calibration-confirm-step">
       <h3 key="header">Step {points.size + 1}</h3>
-      <p key="instructions">Confirm the calibration:</p>
+      <p key="instructions">Confirm or edit the calibration:</p>
       <table key="table">
         <tbody>
           <tr key="header" className="header">

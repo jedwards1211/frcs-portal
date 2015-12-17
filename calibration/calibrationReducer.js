@@ -3,7 +3,10 @@ import _ from 'lodash';
 
 import {
   SET_NUM_POINTS,
+  SET_INPUT_VALUE,
   SET_OUTPUT_VALUE,
+  DELETE_POINT,
+  ADD_POINT,
   BACK,
   NEXT,
   APPLY,
@@ -67,12 +70,27 @@ function applyReducer(state, action) {
   });
 }
 
+function addPointReducer(state, action) {
+  return state.updateIn(['calibration', 'points'], points => points.push(Immutable.fromJS(action.payload)))
+              .updateIn(['calibration', 'numPoints'], numPoints => numPoints + 1)
+              .update('stepNumber', stepNumber => stepNumber + 1);
+}
+
+function deletePointReducer(state, action) {
+  return state.updateIn(['calibration', 'points'], points => points.splice(action.meta.pointIndex, 1))
+              .updateIn(['calibration', 'numPoints'], numPoints => numPoints - 1)
+              .update('stepNumber', stepNumber => stepNumber - 1);
+}
+
 export default function calibrationReducer(state, action) {
   let {type, meta, payload} = action;
 
   switch (type) {
-    case SET_NUM_POINTS:   return state.setIn(['calibration', 'numPoints'], payload);
-    case SET_OUTPUT_VALUE: return state.setIn(['calibration', 'points', meta.pointIndex, 'y'], payload);
+    case SET_NUM_POINTS:      return state.setIn(['calibration', 'numPoints'], payload);
+    case SET_INPUT_VALUE:     return state.setIn(['calibration', 'points', meta.pointIndex, 'x'], payload);
+    case SET_OUTPUT_VALUE:    return state.setIn(['calibration', 'points', meta.pointIndex, 'y'], payload);
+    case ADD_POINT:           return addPointReducer(state, action);
+    case DELETE_POINT:        return deletePointReducer(state, action);
     case BACK:                return backReducer(state, action);
     case NEXT:                return nextReducer(state, action);
     case APPLY:               return applyReducer(state, action);
