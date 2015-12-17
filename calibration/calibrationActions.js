@@ -2,6 +2,7 @@ export const SET_NUM_POINTS = 'SET_NUM_POINTS';
 export const SET_INPUT_VALUE = 'SET_INPUT_VALUE';
 export const SET_OUTPUT_VALUE = 'SET_OUTPUT_VALUE';
 export const DELETE_POINT = 'DELETE_POINT';
+export const GO_TO_EDIT_MANUALLY = 'GO_TO_EDIT_MANUALLY';
 export const ADD_POINT = 'ADD_POINT';
 export const BACK = 'BACK';
 export const NEXT = 'NEXT';

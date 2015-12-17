@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import Button from '../bootstrap/Button';
 
-import {isValidNumPoints, isValidOutputValue, stringOrNumber} from './CalibrationSteps';
+import {isValidNumPoints, isValidOutputValue, stringOrNumber} from './calibrationValidation';
 
 
 import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions';
@@ -17,7 +17,10 @@ import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions';
  */
 export default class CalibrationWizardButtons extends Component {
   static propTypes = {
-    stepNumber: PropTypes.number.isRequired,
+    stepNumber: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.oneOf(['numPoints', 'confirm']),
+    ]),
     maxNumPoints: PropTypes.number.isRequired,
     calibration: ImmutablePropTypes.shape({
       numPoints: stringOrNumber,
@@ -26,7 +29,6 @@ export default class CalibrationWizardButtons extends Component {
         y: stringOrNumber,
       })),
     }).isRequired,
-    backDisabledStepNumber: PropTypes.number,
     dispatch: PropTypes.func,
   }
   static defaultProps = {
@@ -38,37 +40,27 @@ export default class CalibrationWizardButtons extends Component {
     }
   }
   render() {
-    let {className, stepNumber, calibration, maxNumPoints, backDisabledStepNumber, dispatch} = this.props;
-    const numPoints = calibration.get('numPoints');
+    let {className, stepNumber, calibration, maxNumPoints, dispatch} = this.props;
     const points    = calibration.get('points');
 
-    var notEnoughPoints = !Number(numPoints);
-
-    var disableNext;
-    if (stepNumber === 0) {
+    let disableNext;
+    if (stepNumber === 'numPoints') {
+      const numPoints = calibration.get('numPoints');
       disableNext = !isValidNumPoints(numPoints, maxNumPoints);
     }
-    else if (stepNumber <= numPoints) {
-      disableNext = !isValidOutputValue(calibration.getIn(['points', stepNumber - 1, 'y']));
+    else if (stepNumber !== 'confirm') {
+      disableNext = !isValidOutputValue(calibration.getIn(['points', stepNumber, 'y']));
     }
 
-    var buttons = [
+    let buttons = [
       <Button key="cancel" onClick={() => dispatch({type: CANCEL})}>
         Cancel
       </Button>,
-      <Button key="back" onClick={() => dispatch({type: BACK})}
-              disabled={stepNumber <= backDisabledStepNumber}>
+      <Button key="back" onClick={() => dispatch({type: BACK})}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
     ];
-    if (stepNumber <= numPoints || notEnoughPoints) {
-      buttons.push(
-        <Button.Primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
-          <i className="glyphicon glyphicon-chevron-right" /> Next
-        </Button.Primary>
-      );
-    }
-    else {
+    if (stepNumber === 'confirm') {
       let validCount = 0;
       points.forEach(point => {
         const x = parseFloat(point.get('x'));
@@ -80,6 +72,13 @@ export default class CalibrationWizardButtons extends Component {
                 onClick={() => dispatch({type: APPLY})} disabled={validCount < 2}>
           Apply
         </button>
+      );
+    }
+    else {
+      buttons.push(
+        <Button.Primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
+          <i className="glyphicon glyphicon-chevron-right" /> Next
+        </Button.Primary>
       );
     }
 

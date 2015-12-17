@@ -18,7 +18,10 @@ const valueAndUnit = ImmutablePropTypes.shape({
 export default class CalibrationWizard extends Component {
   static propTypes = {
     isFocused: PropTypes.bool,
-    stepNumber: PropTypes.number.isRequired,
+    stepNumber: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.oneOf(['numPoints', 'confirm']),
+    ]),
     calibration: ImmutablePropTypes.shape({
       numPoints: CalibrationSteps.stringOrNumber,
       points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
@@ -56,16 +59,31 @@ export default class CalibrationWizard extends Component {
 
     className = classNames(className, 'mf-calibration-wizard');
 
+    let majorActiveIndex, minorActiveIndex;
+    switch (stepNumber) {
+      case 'numPoints':
+        majorActiveIndex = minorActiveIndex = 0;
+        break;
+      case 'confirm':
+        majorActiveIndex = 2;
+        minorActiveIndex = points.size - 1;
+        break;
+      default:
+        majorActiveIndex = 1;
+        minorActiveIndex = stepNumber;
+        break;
+    }
+
     return <div className={className}>
-      <PageSlider activeIndex={stepNumber === points.size + 1 ? 1 : 0}>
-        <PageSlider activeIndex={Math.min(stepNumber, points.size)} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
-          <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
+      <PageSlider activeIndex={majorActiveIndex}>
+        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
+        <PageSlider activeIndex={minorActiveIndex} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
           {_.range(points.size).map(pointIndex => (
             <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
                                                     key={pointIndex} pointIndex={pointIndex}/>
           ))}
         </PageSlider>
-        {<CalibrationSteps.Confirm {...this.props}/>}
+        <CalibrationSteps.Confirm {...this.props}/>
       </PageSlider>
       <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c}/>
     </div>;
