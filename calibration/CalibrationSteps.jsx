@@ -1,16 +1,14 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { integerRegExp } from '../utils/validationRegExps';
 
 import Alert from '../bootstrap/Alert';
 import Autocollapse from '../common/Autocollapse';
-import Button from '../bootstrap/Button';
 
-import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue, 
-        addPoint, deletePoint} from './calibrationActions';
+import {NEXT, SET_NUM_POINTS, setOutputValue} from './calibrationActions';
 
-import {isValidNumPoints, isValidInputValue, isValidOutputValue} from './calibrationValidation';
+import {isValidNumPoints, isValidOutputValue} from './calibrationValidation';
 
 import './CalibrationSteps.sass';
 
@@ -102,7 +100,7 @@ export class NumPoints extends Component {
     this._numPoints.focus();
   }
   render() {
-    const {calibration, maxNumPoints, dispatch} = this.props;
+    const {calibration, maxNumPoints} = this.props;
     const numPoints = calibration.get('numPoints');
 
     let invalidMessage = invalidNumPointsMessage(numPoints, maxNumPoints);
@@ -187,29 +185,13 @@ export class Point extends Component {
   }
 }
 
-function isEmpty(value) {
-  return value === '' || value === undefined || value === null || isNaN(value);
-}
-
 export class Confirm extends Component {
   _inputTextfields  = [];
   _outputTextfields = [];
   componentWillMount() { this._mounted = true; }
   componentWillUnmount() { this._mounted = false; }
-  onBlur = pointIndex => {
-    setTimeout(() => {
-      if (!this._mounted) return;
-      const {calibration, dispatch} = this.props;
-      const point = calibration.getIn(['points', pointIndex]);
-      if (document.activeElement !== this._inputTextfields [pointIndex] &&
-          document.activeElement !== this._outputTextfields[pointIndex] &&
-          isEmpty(point.get('x'), point.get('y'))) {
-        dispatch(deletePoint(pointIndex));
-      }
-    }, 17);
-  }
   render() {
-    const {calibration, calibrationState, dispatch} = this.props;
+    const {calibration, calibrationState} = this.props;
     const points = calibration.get('points');
     const inputUnits = calibrationState.getIn(['input', 'units']);
     const outputUnits = calibrationState.getIn(['output', 'units']);
