@@ -76,11 +76,9 @@ function isValidNumber(num) {
 }
 
 function applyReducer(state, action) {
-  return state.update('calibration', calibration => {
-    calibration = calibration.update('points', points => {
-      return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
-        .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')))
-    });
+  return state.updateIn(['calibration', 'points'], points => {
+    return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
+                 .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')));
   });
 }
 

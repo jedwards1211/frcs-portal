@@ -45,6 +45,23 @@ function computeInputPrecision(props) {
   return inputPrecision;
 }
 
+function computeOutputPrecision(props) {
+  let outputPrecision = props.outputPrecision;
+  if (!_.isNumber(outputPrecision)) {
+    // set this for Math.max
+    outputPrecision = null;
+    for (let point of props.calibration.points) {
+      if (_.isNumber(point.y)) {
+        outputPrecision = Math.max(outputPrecision, autoPrecision(point.y));
+      }
+    }
+    if (!_.isNumber(outputPrecision)) {
+      outputPrecision = 3;
+    }
+  }
+  return outputPrecision;
+}
+
 
 function invalidNumPointsMessage(numPoints, maxNumPoints) {
   if (!integerRegExp.test(numPoints)) {
@@ -100,7 +117,6 @@ export class NumPoints extends Component {
       <Autocollapse component="div">
         {invalidMessage && <Alert.Danger>{invalidMessage}</Alert.Danger>}
       </Autocollapse>
-      <p>or <Button onClick={() => dispatch({type: GO_TO_EDIT_MANUALLY})}>Edit Manually</Button></p>
     </div>;
   }
 }
@@ -198,36 +214,19 @@ export class Confirm extends Component {
     const inputUnits = calibrationState.getIn(['input', 'units']);
     const outputUnits = calibrationState.getIn(['output', 'units']);
 
+    let inputPrecision = computeInputPrecision(this.props);
+    let outputPrecision = computeOutputPrecision(this.props);
+
     let rows = points && _.compact(points.toArray().map((point, index) => {
-      const x = point.get('x');
-      const y = point.get('y');
-      const inputClass  = classNames('inputValue',  {'has-error': !isValidOutputValue(x)});
-      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValue(y)});
-      return <tr key={index} className="values">
-        <td className={inputClass}>
-          <input type="text" className="form-control" value={x} ref={c => this._inputTextfields[index] = c}
-            onChange={e => dispatch(setInputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}/>
-        </td>
-        <td className={outputClass}>
-          <input type="text" className="form-control" value={y} ref={c => this._outputTextfields[index] = c}
-            onChange={e => dispatch(setOutputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}/>
-        </td>
-        <td className="delete">
-          <Button onClick={e => dispatch(deletePoint(index))}>
-            <i className="glyphicon glyphicon-trash"/>
-          </Button>
-        </td>
-      </tr>;
-    })).concat(<tr key={points.size} className="values">
-      <td className="inputValue">
-        <input type="text" className="form-control" value=""
-          onChange={e => dispatch(addPoint({x: e.target.value}))}/>
-      </td>
-      <td className="outputValue">
-        <input type="text" className="form-control" value=""
-          onChange={e => dispatch(addPoint({y: e.target.value}))}/>
-      </td>
-    </tr>);
+      const x = parseFloat(point.get('x'));
+      const y = parseFloat(point.get('y'));
+      if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) {
+        return <tr key={index} className="values">
+          <td key="input" className="inputValue">{x.toFixed(inputPrecision)}</td>
+          <td key="output" className="outputValue">{y.toFixed(outputPrecision)}</td>
+        </tr>;
+      }
+    }));
 
     return <div className="mf-calibration-confirm-step">
       <h3 key="header">Confirm Calibration</h3>
