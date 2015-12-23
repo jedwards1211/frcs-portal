@@ -23,6 +23,7 @@ export default class TypicalModal extends React.Component {
     showCancel:             PropTypes.bool,
     // overrides the text of the OK button
     OKtext:                 PropTypes.string,
+    cancelText:             PropTypes.string,
     disabled:               PropTypes.bool,
     OKdisabled:             PropTypes.bool,
     onOK:                   PropTypes.func,
@@ -45,7 +46,7 @@ export default class TypicalModal extends React.Component {
   }
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
-        showOK, showCancel, onCancel, onOutsideClick = onCancel, saving, error, errors, 
+        showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, saving, error, errors, 
         className, children} = this.props;
 
     if (error) {
@@ -64,7 +65,7 @@ export default class TypicalModal extends React.Component {
     if (!buttons) {
       buttons = [];
       if (showCancel) {
-        buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>Cancel</Button>);
+        buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>{cancelText || 'Cancel'}</Button>);
       }
       if (showOK) {
         buttons.push(<Button.Primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
