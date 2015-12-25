@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * precisebs.js - precise bullshit (I mean, precise binary search)
  *
@@ -21,7 +23,10 @@ const DEFAULT_COMPARATOR = (a, b) => a - b;
  *      the first argument is less than the second; &gt; 0 if the first
  *      argument is greater; and 0 otherwise. (defaults to <code>a - b</code>)
  */
-export function binarySearch(array, find, low = 0, high = array.length, comparator = DEFAULT_COMPARATOR) {
+exports.binarySearch = function binarySearch(array, find, low, high, comparator) {
+  if(low === undefined) low = 0;
+  if(high === undefined) high = array.length;
+  if(comparator === undefined) comparator = DEFAULT_COMPARATOR;
   var i, comparison;
   while (low <= high) {
     i = Math.floor((low + high) / 2);
@@ -31,7 +36,7 @@ export function binarySearch(array, find, low = 0, high = array.length, comparat
     return i;
   }
   return low;
-}
+};
 
 /**
  * Finds the index of the greatest element less than a given element in an array 
@@ -48,7 +53,8 @@ export function binarySearch(array, find, low = 0, high = array.length, comparat
  *      the first argument is less than the second; &gt; 0 if the first
  *      argument is greater; and 0 otherwise. (defaults to <code>a - b</code>)
  */
-export function lowerIndex(array, find, low, high, comparator = DEFAULT_COMPARATOR) {
+exports.lowerIndex = function lowerIndex(array, find, low, high, comparator) {
+  if(comparator === undefined) comparator = DEFAULT_COMPARATOR;
   var i = binarySearch(array, find, low, high, comparator);
   return i === array.length || comparator(array[i], find) >= 0 ? i - 1 : i;
 }
@@ -68,7 +74,8 @@ export function lowerIndex(array, find, low, high, comparator = DEFAULT_COMPARAT
  *      the first argument is less than the second; &gt; 0 if the first
  *      argument is greater; and 0 otherwise. (defaults to <code>a - b</code>)
  */
-export function floorIndex(array, find, low, high, comparator = DEFAULT_COMPARATOR) {
+exports.floorIndex = function floorIndex(array, find, low, high, comparator) {
+  if(comparator === undefined) comparator = DEFAULT_COMPARATOR;
   var i = binarySearch(array, find, low, high, comparator);
   return i === array.length || comparator(array[i], find) > 0 ? i - 1 : i;
 }
@@ -88,7 +95,8 @@ export function floorIndex(array, find, low, high, comparator = DEFAULT_COMPARAT
  *      the first argument is less than the second; &gt; 0 if the first
  *      argument is greater; and 0 otherwise. (defaults to <code>a - b</code>)
  */
-export function ceilingIndex(array, find, low, high, comparator = DEFAULT_COMPARATOR) {
+exports.ceilingIndex = function ceilingIndex(array, find, low, high, comparator) {
+  if(comparator === undefined) comparator = DEFAULT_COMPARATOR;
   var i = binarySearch(array, find, low, high, comparator);
   return i < array.length && comparator(array[i], find) < 0 ? i + 1 : i;
 }
@@ -108,7 +116,8 @@ export function ceilingIndex(array, find, low, high, comparator = DEFAULT_COMPAR
  *      the first argument is less than the second; &gt; 0 if the first
  *      argument is greater; and 0 otherwise. (defaults to <code>a - b</code>)
  */
-export function higherIndex(array, find, low, high, comparator = DEFAULT_COMPARATOR) {
+exports.higherIndex = function higherIndex(array, find, low, high, comparator) {
+  if(comparator === undefined) comparator = DEFAULT_COMPARATOR;
   var i = binarySearch(array, find, low, high, comparator);
    return i < array.length && comparator(array[i], find) <= 0 ? i + 1 : i;
 }
