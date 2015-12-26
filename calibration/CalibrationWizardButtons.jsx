@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classNames from 'classnames';
-import _ from 'lodash';
 
 import Button from '../bootstrap/Button';
 
-import {isValidNumPoints, isValidOutputValue, stringOrNumber} from './calibrationValidation';
+import {stringOrNumber} from './calibrationValidation';
+import * as CalibrationSteps from './CalibrationSteps';
 
 
 import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions';
@@ -21,7 +21,6 @@ export default class CalibrationWizardButtons extends Component {
       PropTypes.number,
       PropTypes.oneOf(['numPoints', 'confirm']),
     ]),
-    maxNumPoints: PropTypes.number.isRequired,
     calibration: ImmutablePropTypes.shape({
       numPoints: stringOrNumber,
       points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
@@ -40,16 +39,16 @@ export default class CalibrationWizardButtons extends Component {
     }
   }
   render() {
-    let {className, stepNumber, calibration, maxNumPoints, dispatch} = this.props;
-    const points    = calibration.get('points');
+    let {className, stepNumber, dispatch} = this.props;
 
     let disableNext;
     if (stepNumber === 'numPoints') {
-      const numPoints = calibration.get('numPoints');
-      disableNext = !isValidNumPoints(numPoints, maxNumPoints);
+      const validation = CalibrationSteps.NumPoints.validate(this.props);
+      disableNext = !validation.valid;
     }
     else if (stepNumber !== 'confirm') {
-      disableNext = !isValidOutputValue(calibration.getIn(['points', stepNumber, 'y']));
+      const validation = CalibrationSteps.Point.validate(this.props);
+      disableNext = !validation.valid;
     }
 
     let buttons = [
@@ -61,15 +60,10 @@ export default class CalibrationWizardButtons extends Component {
       </Button>
     ];
     if (stepNumber === 'confirm') {
-      let validCount = 0;
-      points.forEach(point => {
-        const x = parseFloat(point.get('x'));
-        const y = parseFloat(point.get('y'));
-        if (_.isNumber(x) && !isNaN(x) && _.isNumber(y) && !isNaN(y)) validCount++;
-      });
+      const validation = CalibrationSteps.Confirm.validate(this.props);
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-                onClick={() => dispatch({type: APPLY})} disabled={validCount < 2}>
+                onClick={() => dispatch({type: APPLY})} disabled={!validation.valid}>
           Apply
         </button>
       );

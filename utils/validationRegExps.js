@@ -9,3 +9,7 @@ export const integerOrBlankRegExp = /^\s*([-+]?\d+)?\s*$/;
 
 export const unsignedIntegerRegExp = /^\s*\d+\s*$/;
 export const unsignedIntegerOrBlankRegExp = /^\s*\d*\s*$/;
+
+export function isEmptyValue(value) {
+  return value === '' || value === undefined || value === null;
+}

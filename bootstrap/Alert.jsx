@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import addClass from '../wrappers/addClass';
 
 var Alert = (props) => (<div {...props} role="alert">
@@ -13,3 +13,14 @@ Alert.Danger = addClass(Alert, 'alert alert-danger');
 Alert.Link = addClass('a', 'alert-link');
 
 export default Alert;
+
+export class AutoAlert extends Component {
+  render() {
+    const {info, success, warning, danger, error} = this.props;
+    if (error)    return <Alert.Danger>{error}</Alert.Danger>;
+    if (danger)   return <Alert.Danger>{danger}</Alert.Danger>;
+    if (warning)  return <Alert.Warning>{warning}</Alert.Warning>;
+    if (info)     return <Alert.Info>{info}</Alert.Info>;
+    if (success)  return <Alert.Success>{success}</Alert.Success>;
+  }
+}

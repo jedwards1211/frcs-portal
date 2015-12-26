@@ -1,19 +1,18 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { integerRegExp } from '../utils/validationRegExps';
 
-import Alert from '../bootstrap/Alert';
-import Autocollapse from '../common/Autocollapse';
 import Button from '../bootstrap/Button';
 
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
+import AutoAlertGroup from '../common/AutoAlertGroup';
+import validationClassNames from '../common/validationClassNames';
 
 import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue, 
         addPoint, deletePoint} from './calibrationActions';
 
 import {isValidNumPoints, isValidInputValue, isValidOutputValue, 
   isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation';
+import {isEmptyValue} from '../utils/validationRegExps';
 
 import './CalibrationSteps.sass';
 
@@ -48,22 +47,6 @@ function computeInputPrecision(props) {
   return inputPrecision;
 }
 
-
-function invalidNumPointsMessage(numPoints, maxNumPoints) {
-  if (!integerRegExp.test(numPoints)) {
-    return 'Please enter a valid number before continuing.';
-  }
-
-  let value = parseInt(numPoints);
-  if (value < 2) {
-    return 'Number of points must be >= 2.';
-  }
-  if (value > maxNumPoints) {
-    return 'Number of points must be <= ' + maxNumPoints;
-  }
-}
-
-
 export class NumPoints extends Component {
   static defaultProps = {
     dispatch: function() {},
@@ -75,10 +58,8 @@ export class NumPoints extends Component {
     });
   }
   onKeyDown = e => {
-    const {calibration, maxNumPoints, dispatch} = this.props;
-    const numPoints = calibration.get('numPoints');
-    if (isValidNumPoints(numPoints, maxNumPoints) && e.key === 'Enter') {
-      dispatch({type: NEXT});
+    if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
+      this.props.dispatch({type: NEXT});
     }
   }
   componentDidAppear() {
@@ -87,22 +68,39 @@ export class NumPoints extends Component {
   componentDidEnter() {
     this._numPoints.focus();
   }
-  render() {
-    const {calibration, maxNumPoints, dispatch} = this.props;
+  static validate(props) {
+    const {calibration, maxNumPoints} = props;
     const numPoints = calibration.get('numPoints');
 
-    let invalidMessage = invalidNumPointsMessage(numPoints, maxNumPoints);
+    if (isEmptyValue(numPoints)) {
+      return {numPoints: {warning: 'Please enter a number to continue'}, valid: false};
+    }
+    if (!isValidNumPoints(numPoints)) {
+      return {numPoints: {error: `'${numPoints}' is not a valid number`}, valid: false};
+    }
+    const value = parseInt(numPoints);
+    if (value < 2) {
+      return {numPoints: {error: 'Number of points must be >= 2.'}, valid: false};
+    }
+    if (value > maxNumPoints) {
+      return {numPoints: {error: 'Number of points must be <= ' + maxNumPoints}, valid: false};
+    }
+    return {valid: true};
+  }
+  render() {
+    const {calibration, dispatch} = this.props;
+    const numPoints = calibration.get('numPoints');
+
+    const validation = NumPoints.validate(this.props);
 
     return <div className="mf-calibration-num-points-step">
       <p key="instructions">Enter the number of calibration points you would like to enter:</p>
-      <p key="number" className={classNames('form-group', {'has-error': !!invalidMessage})}>
+      <p key="number" className={classNames('form-group', validationClassNames(validation.numPoints))}>
         <label className="control-label">Number of points:&nbsp;</label>
         <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
                value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}/>
       </p>
-      <Autocollapse component="div">
-        {invalidMessage && <Alert.Danger>{invalidMessage}</Alert.Danger>}
-      </Autocollapse>
+      <AutoAlertGroup alerts={validation}/>
       <p>or <Button onClick={() => dispatch({type: GO_TO_EDIT_MANUALLY})}>Edit Manually</Button></p>
     </div>;
   }
@@ -117,9 +115,8 @@ export class Point extends Component {
     dispatch(setOutputValue(pointIndex, event.target.value));
   }
   onKeyDown = e => {
-    const {calibration, pointIndex, dispatch} = this.props;
-    if (isValidOutputValue(calibration.getIn(['points', pointIndex, 'y'])) && e.key === 'Enter') {
-      dispatch({type: NEXT});
+    if (e.key === 'Enter' && Point.validate(this.props).valid) {
+      this.props.dispatch({type: NEXT});
     }
   }
   componentDidAppear() {
@@ -127,6 +124,15 @@ export class Point extends Component {
   }
   componentDidEnter() {
     this._outputValue.focus();
+  }
+  static validate(props) {
+    const {pointIndex, calibration} = props;
+    const outputValue = calibration.getIn(['points', pointIndex, 'y']);
+
+    if (!isValidOutputValueOrBlank(outputValue)) {
+      return {outputValue: {error: `'${outputValue}' is not a valid number`}, valid: false};
+    }
+    return {valid: true};
   }
   render() {
     const {pointIndex, calibration, calibrationState} = this.props;
@@ -136,6 +142,8 @@ export class Point extends Component {
     const outputValue = calibration.getIn(['points', pointIndex, 'y']);
     const outputUnits = calibrationState.getIn(['output', 'units']);
 
+    const validation = Point.validate(this.props);
+
     let inputPrecision = computeInputPrecision(this.props);
 
     let stateType = pointIndex === 0 ? 'low' : pointIndex === points.size - 1 ? 'high' : undefined;
@@ -144,8 +152,6 @@ export class Point extends Component {
     if (_.isNumber(inputValue)) {
       fixedInputValue = inputValue.toFixed(inputPrecision);
     }
-
-    let hasError = !isValidOutputValue(outputValue);
 
     return <div className="mf-calibration-point-step">
       <h3 key="header">Step {pointIndex + 1}</h3>
@@ -157,7 +163,7 @@ export class Point extends Component {
             <input type="text" className="form-control" value={fixedInputValue} readOnly /> {inputUnits}
           </div>
         </div>
-        <div key="output" className={classNames("output", "form-group", {'has-error': hasError})}>
+        <div key="output" className={classNames("output", "form-group", validationClassNames(validation.outputValue))}>
           <div key="header" className="header control-label">Actual Value</div>
           <div key="value" className="value">
             <input type="text" ref={c => this._outputValue = c} className="form-control" inputMode="number" 
@@ -165,11 +171,7 @@ export class Point extends Component {
           </div>
         </div>
       </div>
-      <Autocollapse component="div">
-        {hasError && <Alert.Danger>
-          Please enter a valid number before continuing.
-        </Alert.Danger>}
-      </Autocollapse>
+      <AutoAlertGroup alerts={validation}/>
     </div>;
   }
 }
@@ -199,12 +201,22 @@ export class Confirm extends Component {
     const {calibration} = props;
     const points = calibration.get('points');
 
-    if (points && points.find(point => {
+    let invalidValue;
+    points && points.forEach(point => {
       const x = point.get('x');
       const y = point.get('y');
-      return !isValidInputValueOrBlank(x) || !isValidOutputValueOrBlank(y);
-    })) {
-      return {points: 'Please fix the invalid values in the table'};
+      if (!isValidInputValueOrBlank(x)) {
+        invalidValue = x;
+        return false;
+      }
+      if (!isValidOutputValueOrBlank(y)) {
+        invalidValue = y;
+        return false;
+      }
+    });
+
+    if (invalidValue !== undefined) {
+      return {points: {error: `'${invalidValue}' is not a valid number`}, valid: false};
     }
 
     const validCount = points.count(point => {
@@ -214,8 +226,10 @@ export class Confirm extends Component {
     });
 
     if (validCount < 2) {
-      return {points: 'Please enter values for at least two points'};
+      return {points: {error: 'Please enter values for at least two points'}, valid: false};
     }
+
+    return {valid: true};
   }
   render() {
     const {calibration, calibrationState, dispatch} = this.props;
@@ -228,8 +242,8 @@ export class Confirm extends Component {
     let rows = points && _.compact(points.toArray().map((point, index) => {
       const x = point.get('x');
       const y = point.get('y');
-      const inputClass  = classNames('inputValue',  {'has-error': !isValidInputValue (x)});
-      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValue(y)});
+      const inputClass  = classNames('inputValue',  {'has-error': !isValidInputValueOrBlank(x)});
+      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValueOrBlank(y)});
       return <tr key={index} className="values">
         <td className={inputClass}>
           <input type="text" className="form-control" value={x} ref={c => this._inputTextfields[index] = c}
@@ -240,7 +254,7 @@ export class Confirm extends Component {
             onChange={e => dispatch(setOutputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}/>
         </td>
         <td className="delete">
-          <Button onClick={e => dispatch(deletePoint(index))}>
+          <Button onClick={e => dispatch(deletePoint(index))} tabIndex={-1}>
             <i className="glyphicon glyphicon-trash"/>
           </Button>
         </td>
@@ -268,12 +282,7 @@ export class Confirm extends Component {
           {rows}
         </tbody>
       </table>
-      <CollapseTransitionGroup component="div">
-        {validation && Object.keys(validation).map(key => {
-          const error = validation[key];
-          return <Alert.Danger key={key}>{error}</Alert.Danger>;
-        })}
-      </CollapseTransitionGroup>
+      <AutoAlertGroup alerts={validation}/>
     </div>;
   }
 }

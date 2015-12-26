@@ -3,9 +3,7 @@ import {PropTypes} from 'react';
 import _ from 'lodash';
 
 export function isValidNumPoints(numPoints, maxNumPoints) {
-  let parsed = parseInt(numPoints);
-  return integerRegExp.test(numPoints) &&
-    parsed >= 2 && parsed <= maxNumPoints;
+  return (_.isNumber(numPoints) && !isNaN(numPoints)) || integerRegExp.test(numPoints);
 }
 
 export function isValidInputValue(inputValue) {

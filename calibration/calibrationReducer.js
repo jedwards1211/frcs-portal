@@ -13,7 +13,7 @@ import {
   APPLY,
 } from './calibrationActions';
 
-import {isValidInputValue, isValidOutputValue} from './calibrationValidation';
+import {isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation';
 
 function backReducer(state, action) {
   const stepNumber = state.get('stepNumber');
@@ -23,6 +23,9 @@ function backReducer(state, action) {
     return state;
   }
   else if (stepNumber === 'confirm') {
+    if (points.size === 0) {
+      return state.set('stepNumber', 'numPoints');
+    }
     return state.set('stepNumber', points.size - 1);
   }
   else if (stepNumber === 0) {
@@ -40,9 +43,18 @@ function backReducer(state, action) {
 
 function goToEditManuallyReducer(state, action) {
   return state.update('calibration', calibration => calibration.withMutations(calibration => {
-    calibration.update('points', points => points.filter(point => {
-      return isValidInputValue(point.get('x')) && isValidOutputValue(point.get('y')); 
-    }));
+    calibration.update('points', points => {
+      points = points.filter(point => {
+        return isValidInputValueOrBlank(point.get('x')) && isValidOutputValueOrBlank(point.get('y')); 
+      });
+      if (points.size < 2) {
+        return points.concat(Immutable.Repeat(Immutable.fromJS({
+          x: undefined,
+          y: undefined,
+        }), 2 - points.size));
+      }
+      return points;
+    });
     calibration.set('numPoints', calibration.get('points').size);
   })).set('stepNumber', 'confirm');
 }
@@ -76,12 +88,10 @@ function isValidNumber(num) {
 }
 
 function applyReducer(state, action) {
-  return state.update('calibration', calibration => {
-    calibration = calibration.update('points', points => {
-      return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
-        .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')))
-    });
-  });
+  return state.update('calibration', calibration => calibration.update('points', points => {
+    return points.map(point => point.update('x', parseFloat).update('y', parseFloat))
+      .filter(point => isValidNumber(point.get('x')) && isValidNumber(point.get('y')))
+  }));
 }
 
 function addPointReducer(state, action) {
