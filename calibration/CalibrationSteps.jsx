@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { integerRegExp } from '../utils/validationRegExps';
@@ -7,10 +7,13 @@ import Alert from '../bootstrap/Alert';
 import Autocollapse from '../common/Autocollapse';
 import Button from '../bootstrap/Button';
 
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
+
 import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue, 
         addPoint, deletePoint} from './calibrationActions';
 
-import {isValidNumPoints, isValidInputValue, isValidOutputValue} from './calibrationValidation';
+import {isValidNumPoints, isValidInputValue, isValidOutputValue, 
+  isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation';
 
 import './CalibrationSteps.sass';
 
@@ -192,16 +195,40 @@ export class Confirm extends Component {
       }
     }, 17);
   }
+  static validate(props) {
+    const {calibration} = props;
+    const points = calibration.get('points');
+
+    if (points && points.find(point => {
+      const x = point.get('x');
+      const y = point.get('y');
+      return !isValidInputValueOrBlank(x) || !isValidOutputValueOrBlank(y);
+    })) {
+      return {points: 'Please fix the invalid values in the table'};
+    }
+
+    const validCount = points.count(point => {
+      const x = point.get('x');
+      const y = point.get('y');
+      return isValidInputValue(x) && isValidOutputValue(y);
+    });
+
+    if (validCount < 2) {
+      return {points: 'Please enter values for at least two points'};
+    }
+  }
   render() {
     const {calibration, calibrationState, dispatch} = this.props;
     const points = calibration.get('points');
     const inputUnits = calibrationState.getIn(['input', 'units']);
     const outputUnits = calibrationState.getIn(['output', 'units']);
 
+    const validation = Confirm.validate(this.props);
+
     let rows = points && _.compact(points.toArray().map((point, index) => {
       const x = point.get('x');
       const y = point.get('y');
-      const inputClass  = classNames('inputValue',  {'has-error': !isValidOutputValue(x)});
+      const inputClass  = classNames('inputValue',  {'has-error': !isValidInputValue (x)});
       const outputClass = classNames('outputValue', {'has-error': !isValidOutputValue(y)});
       return <tr key={index} className="values">
         <td className={inputClass}>
@@ -241,6 +268,12 @@ export class Confirm extends Component {
           {rows}
         </tbody>
       </table>
+      <CollapseTransitionGroup component="div">
+        {validation && Object.keys(validation).map(key => {
+          const error = validation[key];
+          return <Alert.Danger key={key}>{error}</Alert.Danger>;
+        })}
+      </CollapseTransitionGroup>
     </div>;
   }
 }
