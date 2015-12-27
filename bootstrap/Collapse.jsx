@@ -43,9 +43,15 @@ export default React.createClass({
   doTransition(nextOpen = this._open) {
     let {open} = this.state;
 
+    if (this._open === nextOpen) {
+      return;
+    }
     this._open = nextOpen;
-    if (nextOpen === open || this._transitioning) return;
     this._transitioning = true;
+
+    if (this._currentTransition) {
+      this._currentTransition.cancel();
+    }
 
     let sequence = [
       callback => {
@@ -62,10 +68,9 @@ export default React.createClass({
       callback => ({height: undefined}),
     ];
 
-    setStateChain(this, sequence, (err) => {
+    this._currentTransition = setStateChain(this, sequence, (err) => {
       this._transitioning = false;
       this.props.onTransitionEnd();
-      this.doTransition();
     });
   },
   show() {
