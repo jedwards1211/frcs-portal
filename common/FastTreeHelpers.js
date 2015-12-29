@@ -1,3 +1,5 @@
+import Immutable from 'immutable';
+
 export function forEachNode(tree, iteratee) {
   function helper(root, path) {
     if (iteratee(root, path) === false) return false;
@@ -18,6 +20,21 @@ export function forEachNode(tree, iteratee) {
     }
   }
   if (tree) helper(tree, []);
+}
+
+export function updateEachNode(tree, iteratee) {
+  function helper(tree, path) {
+    return tree && tree.withMutations(tree => {
+      const nextTree = iteratee(tree, path);
+      if (nextTree instanceof Immutable.Iterable) {
+        return nextTree.update('children', children => children && children.map(
+          (child, key) => helper(child, [...path, 'children', key])));
+      }
+      return nextTree;
+    });
+  }
+
+  return helper(tree, []);
 }
 
 export function expandTreePath(model, path) {
