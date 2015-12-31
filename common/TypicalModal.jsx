@@ -29,6 +29,7 @@ export default class TypicalModal extends React.Component {
     onOK:                   PropTypes.func,
     onCancel:               PropTypes.func,
     onOutsideClick:         PropTypes.func,
+    onCloseButtonClick:     PropTypes.func,
     saving:                 PropTypes.bool,
     error:                  PropTypes.instanceOf(Error),
     errors:                 PropTypes.objectOf(PropTypes.node),
@@ -46,8 +47,8 @@ export default class TypicalModal extends React.Component {
   }
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
-        showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, saving, error, errors, 
-        className, children} = this.props;
+        showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel, 
+        saving, error, errors, className, children} = this.props;
 
     if (error) {
       errors.__singleError = error;
@@ -76,7 +77,7 @@ export default class TypicalModal extends React.Component {
 
     return <Modal {...this.props} className={className} onOutsideClick={onOutsideClick}>
       <Modal.Header>
-        <CloseButton onClick={onCancel} disabled={disabled}/>
+        <CloseButton onClick={onCloseButtonClick} disabled={disabled}/>
         {title && <Modal.Title>{title}</Modal.Title>}
         {header}
       </Modal.Header>
