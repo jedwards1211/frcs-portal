@@ -38,7 +38,7 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
     > .min,
     > .max
       margin-top: 5px
-      display: inline-block
+      display: block
 
     .value
       display: inline-block
@@ -52,7 +52,7 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
       text-align: right
       padding-right: 5px
       display: inline-block
-      width: 50px
+      width: calc((100% - #{$input-width}) / 2)
 
     .units
       display: inline-block
@@ -72,15 +72,6 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
       .to
         width: calc((100% - #{$input-width}) / 2)
 
-    @media (min-width: #{$md-width})
-      > .min,
-      > .max
-        width: 50%
-
-      .from,
-      .to,
-      .units
-        width: calc((100% - #{$input-width}) / 2)
 
   > .AlarmRow
     margin-top: 5px
@@ -125,43 +116,49 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
           > .react-toggle-track
             background-color: #1d4b88
 
-    @media (max-width: #{$sm-width-m1})
-      > .alarm-name
-        width: $label-width
-      > .alarm-enabled
-        width: auto
+  @media (max-width: #{$sm-width-m1})
+    > .AlarmRow > .alarm-name
+      width: $label-width
+    > .AlarmRow > .alarm-enabled
+      width: auto
 
-    @media (max-width: #{$xs-width-m1})
+  @media (max-width: #{$xs-width-m1})
+    .AlarmRow,
+    .min,
+    .max
       margin-top: 15px
       position: relative
       width: 100%
       height: $xs-alarm-row-height
 
-      > .alarm-name
-        position: absolute
-        text-align: left
-        height: $xs-label-height
-        line-height: $xs-label-height
-        top: 0
-        left: 0
+    .AlarmRow > .alarm-name,
+    .from > .control-label,
+    .to > .control-label
+      position: absolute
+      text-align: left
+      height: $xs-label-height
+      top: 0
+      left: 0
 
-        > h4
-          margin: 0
-          line-height: $xs-label-height
-
-      > .alarm-enabled
-        position: absolute
-        padding-left: 0
-        top: 0
-        right: 0
-        height: 30px
+      > h4
+        margin: 0
         line-height: $xs-label-height
 
-      > .alarm-setpoint
-        position: absolute
-        margin-top: $xs-label-height
-        height: $xs-input-height
-        top: 0
-        bottom: 0
-        left: 0
-        width: 100%
+    .AlarmRow > .alarm-enabled,
+    .units
+      position: absolute
+      padding-left: 0
+      top: 0
+      right: 0
+      height: 30px
+      line-height: $xs-label-height
+
+    .AlarmRow > .alarm-setpoint,
+    .value > input
+      position: absolute
+      margin-top: $xs-label-height
+      height: $xs-input-height
+      top: 0
+      bottom: 0
+      left: 0
+      width: 100%
