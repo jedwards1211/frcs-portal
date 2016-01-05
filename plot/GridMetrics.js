@@ -166,15 +166,15 @@ export class DateMetrics extends TimeMetrics {
   constructor(conversion, startPx, endPx, options = {}) {
     super(conversion, startPx, endPx, options);
 
-    this.establishingTickSize = options.establishingTickSize || this.majorTickSize * 3 / 2;
+    this.dayTickSize = options.dayTickSize || this.majorTickSize * 3 / 2;
 
-    this.establishingTickColor = options.establishingTickColor || '#222';
-    this.establishingGridlineColor = options.establishingGridlineColor || '#333';
-    this.establishingLabelColor = options.establishingLabelColor || '#111';
+    this.dayTickColor = options.dayTickColor || '#222';
+    this.dayGridlineColor = options.dayGridlineColor || '#333';
+    this.dayLabelColor = options.dayLabelColor || '#111';
 
-    this.establishingFont = options.establishingFont || 'bold 10px sans-serif';
+    this.dayFont = options.dayFont || 'bold 10px sans-serif';
 
-    this.maxTickSize    = this.establishingTickSize;
+    this.maxTickSize    = this.dayTickSize;
 
     this.majorTickColor = options.majorTickColor || '#aaa';
 
@@ -209,41 +209,47 @@ export class DateMetrics extends TimeMetrics {
   }
 
   getTickSize(time) {
-    if (time === this.establishingTime) {
-      return this.establishingTickSize;
+    if (isDayStart(new Date(time))) {
+      return this.dayTickSize;
     }
     return super.getTickSize(time);
   }
 
   getTickColor(time) {
-    if (time === this.establishingTime) {
-      return this.establishingTickColor;
+    if (isDayStart(new Date(time))) {
+      return this.dayTickColor;
     }
     return super.getTickColor(time);
   }
 
   getGridlineColor(time) {
-    if (time === this.establishingTime) {
-      return this.establishingGridlineColor;
+    if (isDayStart(new Date(time))) {
+      return this.dayGridlineColor;
     }
     return super.getGridlineColor(time);
   }
 
   getLabelColor(time) {
-    if (time === this.establishingTime) {
-      return this.establishingLabelColor;
+    if (isDayStart(new Date(time))) {
+      return this.dayLabelColor;
     }
     return super.getLabelColor(time);
   }
 
   getFont(time) {
-    if (time === this.establishingTime) {
-      return this.establishingFont;
+    if (isDayStart(new Date(time))) {
+      return this.dayFont;
     }
     return super.getFont(time);
   }
 
   getPriorityLabelValues() {
-    return [this.establishingTime];
+    let result = [this.establishingTime];
+    if (this.firstDay !== null && this.firstDay !== undefined) {
+      for (let time = this.firstDay; time <= this.endValue; time += 86400000) {
+        result.push(time);
+      }
+    }
+    return result;
   }
 }
