@@ -15,7 +15,7 @@ export function errorMessage(err) {
 export default class ErrorAlert extends Component {
   static propTypes = {
     error: PropTypes.oneOfType([
-      PropTypes.instanceof(Error),
+      PropTypes.instanceOf(Error),
       PropTypes.string,
       PropTypes.node,
     ]).isRequired,
