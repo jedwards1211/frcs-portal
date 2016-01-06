@@ -39,7 +39,6 @@ export default class PopoverController extends Component {
     if (hovered || toggled) {
       childProps.className = classNames(child.props.className, 'mf-has-auto-popover');
       childProps.children = Children.toArray(child.props.children);
-      console.log(childProps.children);
       childProps.children.push(React.cloneElement(popover, {key: children.length}));
     }
 

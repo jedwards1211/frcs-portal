@@ -16,7 +16,7 @@ export default class Popover extends Component {
 
     return <div {...this.props} className={className}>
       <div className="arrow"/>
-      <h3 className="popover-title">{title}</h3>
+      {title && <h3 className="popover-title">{title}</h3>}
       <div className="popover-content">
         {children}
       </div>
