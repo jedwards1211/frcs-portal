@@ -37,7 +37,8 @@ let AlarmRow = React.createClass({
     alarm: React.PropTypes.object.isRequired,
     disabled: React.PropTypes.bool,
     onSetpointChange: React.PropTypes.func,
-    onEnabledChange: React.PropTypes.func
+    onEnabledChange: React.PropTypes.func,
+    beforeAlarms: React.PropTypes.node
   },
   onSetpointChange(event) {
     this.props.onSetpointChange && this.props.onSetpointChange(event.target.value);
@@ -127,13 +128,14 @@ export default React.createClass({
     ];
   },
   renderAlarms() {
-    let metadataItem = this.props.metadataItem;
-    let disabled = this.props.disabled;
-    let onAlarmSetpointChange = this.props.onAlarmSetpointChange;
-    let onAlarmEnabledChange = this.props.onAlarmEnabledChange;
+    let {metadataItem, disabled, onAlarmSetpointChange, onAlarmEnabledChange,
+        beforeAlarmRows} = this.props;
 
     if (metadataItem.alarms) {
       let result = [];
+      if (beforeAlarmRows) {
+        result = result.concat(beforeAlarmRows);
+      }
 
       for (let type of alarmOrder) {
         let alarm = _.find(metadataItem.alarms, type);

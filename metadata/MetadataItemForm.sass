@@ -73,7 +73,7 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
         width: calc((100% - #{$input-width}) / 2)
 
 
-  > .AlarmRow
+  .AlarmRow
     margin-top: 5px
 
     > .alarm-name,
@@ -117,9 +117,9 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
             background-color: #1d4b88
 
   @media (max-width: #{$sm-width-m1})
-    > .AlarmRow > .alarm-name
+    .AlarmRow > .alarm-name
       width: $label-width
-    > .AlarmRow > .alarm-enabled
+    .AlarmRow > .alarm-enabled
       width: auto
 
   @media (max-width: #{$xs-width-m1})
