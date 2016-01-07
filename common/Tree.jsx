@@ -30,7 +30,7 @@ class TreeNode extends Component {
   static propTypes = {
     depth:      PropTypes.number,
     expanded:   PropTypes.bool,
-    cell:       PropTypes.node.isRequired,
+    cell:       PropTypes.node,
   }
   static defaultProps = {
     depth: 0,
@@ -40,30 +40,38 @@ class TreeNode extends Component {
     let {className, depth, expanded, cell, children} = this.props;
     let {basePadding, indent} = this.context;
 
-    let hasChildren = !!React.Children.count(children);
+    let childArray = React.Children.toArray(children);
+    if (!cell) cell = childArray.find(child => child.type === TreeCell);
+    let childNodes = childArray.filter(child => child.type === TreeNode);
+    let otherChildren = childArray.filter(child => child.type !== TreeNode && child.type !== TreeCell);
+    let hasChildren = !!childNodes.length;
 
     className = classNames(className, "mf-tree-node", {
       'mf-tree-node-branch': hasChildren,
     });
 
-    if (!React.isValidElement(cell)) {
-      cell = <TreeCell>{cell}</TreeCell>;
+    let paddingLeft = basePadding + depth * indent;
+
+    if (cell || cell === 0) {
+      if (!React.isValidElement(cell)) {
+        cell = <TreeCell>{cell}</TreeCell>;
+      }
+      cell = React.cloneElement(cell, {
+        className: classNames(cell.props.className, 'mf-tree-node-cell'),
+        hasChildren,
+        expanded,
+        style: propAssign(cell.props.style, {paddingLeft}),
+      });
     }
-    cell = React.cloneElement(cell, {
-      className: classNames(cell.props.className, 'mf-tree-node-cell'),
-      hasChildren,
-      expanded,
-      style: propAssign(cell.props.style, {
-        paddingLeft: basePadding + depth * indent,
-      }),
-    });
 
     return <div {...this.props} className={className}>
       {cell}
       <Autocollapse>
-        {expanded && React.Children.map(children, child => child &&
-          React.cloneElement(child, {depth: depth + 1}))}
+        {expanded && childNodes.map(child => React.cloneElement(child, {depth: depth + 1}))}
       </Autocollapse>
+      {!!otherChildren.length && <div style={{paddingLeft}}>
+        {otherChildren}
+      </div>}
     </div>;
   }
 }
