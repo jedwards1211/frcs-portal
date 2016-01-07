@@ -133,8 +133,12 @@ export default React.createClass({
 
     if (metadataItem.alarms) {
       let result = [];
-      if (beforeAlarmRows) {
-        result = result.concat(beforeAlarmRows);
+      if (beforeAlarmRows instanceof Array) {
+        result = result.concat(beforeAlarmRows.map(
+          (elem, index) => React.cloneElement(elem, {key: index})));
+      }
+      else if (beforeAlarmRows) {
+        result = result.concat(React.cloneElement(beforeAlarmRows, {key: 'beforeAlarmRows'}));
       }
 
       for (let type of alarmOrder) {
