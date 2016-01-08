@@ -45,8 +45,11 @@ class Group extends Component {
       {label}
       <div className={controlClass}>
         {Children.map(children, child => {
-          let className = classNames(child.props.className, 'form-control');
-          return cloneElement(child, {className});
+          if (React.isValidElement(child)) {
+            let className = classNames(child.props.className, 'form-control');
+            return cloneElement(child, {className});
+          }
+          return child;
         })}
         {validationMessages}
       </div>

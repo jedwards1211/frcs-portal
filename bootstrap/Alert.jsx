@@ -10,6 +10,7 @@ Alert.Info = addClass(Alert, 'alert alert-info');
 Alert.Success = addClass(Alert, 'alert alert-success');
 Alert.Warning = addClass(Alert, 'alert alert-warning');
 Alert.Danger = addClass(Alert, 'alert alert-danger');
+Alert.Error = Alert.Danger;
 Alert.Link = addClass('a', 'alert-link');
 
 export class AutoAlert extends Component {
