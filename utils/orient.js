@@ -80,6 +80,7 @@ export function Axis(props) {
 
 export var xAxis = new Axis({
   name: 'x',
+  capitalName: 'X',
   clientName: 'clientX',
   pageName: 'pageX',
   screenName: 'screenX',
@@ -112,6 +113,7 @@ export var xAxis = new Axis({
 });
 export var yAxis = new Axis({
   name: 'y',
+  capitalName: 'Y',
   clientName: 'clientY',
   pageName: 'pageY',
   screenName: 'screenY',
