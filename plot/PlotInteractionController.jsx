@@ -24,6 +24,10 @@ export default class PlotInteractionController extends React.Component {
   static propTypes = {
     xConversion: React.PropTypes.instanceOf(LinearConversion),
     yConversion: React.PropTypes.instanceOf(LinearConversion),
+    minXRange:   React.PropTypes.number,
+    maxXRange:   React.PropTypes.number,
+    minYRange:   React.PropTypes.number,
+    maxYRange:   React.PropTypes.number,
     onMoveStart: React.PropTypes.func,
     onMove:      React.PropTypes.func,
     onMoveEnd:   React.PropTypes.func,
@@ -95,7 +99,8 @@ export default class PlotInteractionController extends React.Component {
 
       let rect = e.target.getBoundingClientRect();
 
-      let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd} = this.props;
+      let {xConversion, yConversion, onMove, onMoveStart, onMoveEnd,
+        minXRange, maxXRange, minYRange, maxYRange} = this.props;
 
       let zoom = Math.pow(0.999, this._wheelMotion);
       this._wheelMotion = 0;
@@ -103,11 +108,15 @@ export default class PlotInteractionController extends React.Component {
 
       if (xConversion) {
         newXConversion = new LinearConversion(xConversion);
-        newXConversion.zoom(xConversion.invert(e.clientX - rect.left), zoom);
+        let anchorX = e.clientX - rect.left;
+        newXConversion.zoom(xConversion.invert(anchorX), zoom)
+                      .clampDomain(0, rect.width, anchorX, minXRange, maxXRange);
       }
       if (yConversion) {
         newYConversion = new LinearConversion(yConversion);
-        newYConversion.zoom(yConversion.invert(e.clientY - rect.top), zoom);
+        let anchorY = e.clientY - rect.top;
+        newYConversion.zoom(yConversion.invert(anchorY), zoom)
+                      .clampDomain(0, rect.height, anchorY, minYRange, maxYRange);
       }
       if (onMoveStart)  onMoveStart();
       if (onMove)       onMove(newXConversion, newYConversion);
@@ -151,7 +160,8 @@ export default class PlotInteractionController extends React.Component {
   }
   onTouchMove = (e) => {
     e.preventDefault();
-    let {onMove, xConversion, yConversion} = this.props;
+    let {onMove, xConversion, yConversion,
+      minXRange, maxXRange, minYRange, maxYRange} = this.props;
 
     let rect = e.target.getBoundingClientRect();
 
@@ -186,7 +196,8 @@ export default class PlotInteractionController extends React.Component {
               x1 = t1.startX;
               x2 = t2.startX;
             }
-            newXConversion = new LinearConversion(x1, t1.elementX, x2, t2.elementX);
+            newXConversion = new LinearConversion(x1, t1.elementX, x2, t2.elementX)
+              .clampDomain(0, rect.width, (t1.elementX + t2.elementX) * 0.5, minXRange, maxXRange);
           }
         }
         if (yConversion) {
@@ -207,7 +218,8 @@ export default class PlotInteractionController extends React.Component {
               y1 = t1.startY;
               y2 = t2.startY;
             }
-            newYConversion = new LinearConversion(y1, t1.elementY, y2, t2.elementY);
+            newYConversion = new LinearConversion(y1, t1.elementY, y2, t2.elementY)
+              .clampDomain(0, rect.height, (t1.elementY + t2.elementY) * 0.5, minYRange, maxYRange);
           }
         }
       }
