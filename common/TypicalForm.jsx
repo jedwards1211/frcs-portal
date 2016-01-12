@@ -11,6 +11,7 @@ class Group extends Component {
     error:        PropTypes.any,
     warning:      PropTypes.any,
     success:      PropTypes.any,
+    noFormControlClass: PropTypes.any,
   }
   render() {
     let {labelClass, controlClass, className, label, children} = this.props;
@@ -44,7 +45,8 @@ class Group extends Component {
     return <div {...this.props} className={className}>
       {label}
       <div className={controlClass}>
-        {Children.map(children, child => {
+        {'noFormControlClass' in this.props ? children :
+        Children.map(children, child => {
           if (React.isValidElement(child)) {
             let className = classNames(child.props.className, 'form-control');
             return cloneElement(child, {className});

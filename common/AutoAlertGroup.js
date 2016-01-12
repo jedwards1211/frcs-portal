@@ -6,13 +6,15 @@ import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 export default class AutoAlertGroup extends Component {
   render() {
     const {alerts} = this.props;
+    const children = [];
+    for (var key in alerts) {
+      let v = alerts[key];
+      if (v && (v.type || v.alarm || v.error || v.danger || v.warning || v.info || v.success)) {
+        children.push(<AutoAlert key={key} {...v}/>);
+      }
+    }
     return <CollapseTransitionGroup component="div">
-      {alerts && Object.keys(alerts).map(key => {
-        const v = alerts[key];
-        if (v && (v.error || v.danger || v.warning || v.info || v.success)) {
-          return <AutoAlert key={key} {...v}/>;
-        }
-      })}
+      {children}
     </CollapseTransitionGroup>;
   }
 }

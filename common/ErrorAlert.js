@@ -1,19 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
+import {errorMessage} from '../utils/errorUtils';
 import Alert from '../bootstrap/Alert';
-
-export function errorMessage(err) {
-  if (err === null || err === undefined) {
-    return '';
-  }
-  if (err instanceof Error) {
-    return err.message || err.toString();
-  }
-  if (typeof err !== 'string' || !err) {
-    return 'an unknown error has occurred';
-  }
-  return err;
-}
 
 export default class ErrorAlert extends Component {
   static propTypes = {

@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import addClass from '../wrappers/addClass';
 
+import {errorMessage} from '../utils/errorUtils';
+
 var Alert = (props) => (<div {...props} role="alert">
   {props.children}
 </div>);
@@ -25,10 +27,10 @@ export class AutoAlert extends Component {
   }
   render() {
     const {type, info, success, warning, danger, error, alarm, children} = this.props;
-    if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{alarm || children}</Alert.Danger>;
-    if (error   || type === 'error'  ) return <Alert.Danger {...this.props}>{error || children}</Alert.Danger>;
-    if (danger  || type === 'danger' ) return <Alert.Danger {...this.props}>{danger || children}</Alert.Danger>;
-    if (warning || type === 'warning') return <Alert.Warning {...this.props}>{warning || children}</Alert.Warning>;
+    if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{alarm ? errorMessage(alarm) : children}</Alert.Danger>;
+    if (error   || type === 'error'  ) return <Alert.Danger {...this.props}>{error ? errorMessage(error) : children}</Alert.Danger>;
+    if (danger  || type === 'danger' ) return <Alert.Danger {...this.props}>{danger ? errorMessage(danger) : children}</Alert.Danger>;
+    if (warning || type === 'warning') return <Alert.Warning {...this.props}>{warning ? errorMessage(warning) : children}</Alert.Warning>;
     if (info    || type === 'info'   ) return <Alert.Info {...this.props}>{info || children}</Alert.Info>;
     if (success || type === 'success') return <Alert.Success {...this.props}>{success || children}</Alert.Success>;
   }
