@@ -21,7 +21,7 @@ export default React.createClass({
   getDefaultProps() {
     return {
       component: 'div',
-      keepChildrenMounted: true,
+      keepChildrenMounted: false,
       onTransitionEnd: function() {},
     };
   },

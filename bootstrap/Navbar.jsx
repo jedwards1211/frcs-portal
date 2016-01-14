@@ -70,7 +70,7 @@ export default class Navbar extends React.Component {
           {headerContent}
         </div>
 
-        <Collapse component="div" ref="collapse" open={expanded} className="navbar-collapse">
+        <Collapse component="div" ref="collapse" keepChildrenMounted={true} open={expanded} className="navbar-collapse">
           {children}
         </Collapse>
       </div>
