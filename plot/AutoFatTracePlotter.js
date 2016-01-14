@@ -129,6 +129,9 @@ export default class AutoFatTracePlotter {
    * @param {valueConversion} conversion for value axis (see notes at top)
    */
   addPoint( domain , value ) {
+    // coerce null, undefined, or other non-number types to NaN
+    if (isNaN(value) || value === null) value = NaN;
+
     var columnX = this.domainConversion.convert( this.column.start[0] );
     var viewX = this.domainConversion.convert( domain );
     
