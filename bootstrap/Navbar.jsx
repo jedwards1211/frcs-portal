@@ -2,8 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
 import {Link, History} from 'react-router';
+import _ from 'lodash';
 
 import addClass from '../wrappers/addClass';
+
+import {element} from '../utils/domTraversal';
 
 import './Navbar.sass';
 
@@ -23,7 +26,7 @@ export default class Navbar extends React.Component {
   static propTypes = {
     headerContent: React.PropTypes.any,
     navbarToggle:  React.PropTypes.node,
-    expanded:  React.PropTypes.bool,
+    expanded:      React.PropTypes.bool,
     onCollapse:    React.PropTypes.func,
     onExpand:      React.PropTypes.func,
   }
@@ -38,18 +41,19 @@ export default class Navbar extends React.Component {
   componentWillUnmount() {
     document.removeEventListener('click', this.onDocumentClick, true);
   }
-  onDocumentClick = (e) => {
-    function isDescendant(el, ancestor) {
-      while (el && el !== document.body.parentElement) {
-        if (el === ancestor) {
-          return true;
-        }
-        el = el.parentElement;
-      }
-      return false;
+  componentWillReceiveProps(nextProps) {
+    let oldLocation = this.props.location;
+    let newLocation = nextProps.location;
+    if (this.props.expanded && oldLocation && newLocation &&
+        (oldLocation.pathname !== newLocation.pathname ||
+          !_.isEqual(oldLocation.query, newLocation.query))) {
+      setTimeout(() => this.props.onCollapse(), 0);
     }
-
-    if (!isDescendant(e.target, this.refs.navbar)) {
+  }
+  onDocumentClick = (e) => {
+    if (this.props.expanded && 
+        (!element(e.target).isDescendantOf(this.refs.navbar) ||
+        element(e.target).isDescendantOf(ancestor => !!ancestor.href))) {
       this.props.onCollapse();
     }
   }
