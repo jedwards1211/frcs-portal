@@ -3,6 +3,7 @@ import React from 'react';
 import {Layer} from './Canvas';
 
 import AutoFatTracePlotter from './AutoFatTracePlotter';
+import StepTracePlotter from './StepTracePlotter';
 import CanvasTraceRenderer from './CanvasTraceRenderer';
 
 import {Axis, xAxis, yAxis} from '../utils/orient';
@@ -31,7 +32,7 @@ export default class Trace extends Layer {
   }
   static defaultProps = {
     lineColor:        '#00f',
-    plotter:          (...args) => new AutoFatTracePlotter(...args),
+    plotter:          (...args) => new StepTracePlotter(new AutoFatTracePlotter(...args)),
     renderer:         ctx => new CanvasTraceRenderer(ctx),
     domainAxis:       xAxis,
   }

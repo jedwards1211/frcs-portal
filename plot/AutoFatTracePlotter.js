@@ -1,3 +1,5 @@
+import TracePlotter from './TracePlotter';
+
 // accumulates info about a group of points that are squashed together in a single
 // column (or row) of pixels, so that (basically) a single line or fill polygon can
 // be drawn to approximate those points
@@ -94,8 +96,9 @@ class Column {
  *     drawFill(array): draws a fill bounded by alternating x/y 
  *                         coordinates in the given flat array
  */
-export default class AutoFatTracePlotter {
+export default class AutoFatTracePlotter extends TracePlotter {
   constructor(domainConversion, valueConversion, traceRenderer) {
+    super();
     this.domainConversion = domainConversion;
     this.valueConversion = valueConversion;
     this.traceRenderer = traceRenderer;
