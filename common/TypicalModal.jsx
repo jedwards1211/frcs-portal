@@ -31,8 +31,8 @@ export default class TypicalModal extends React.Component {
     onOutsideClick:         PropTypes.func,
     onCloseButtonClick:     PropTypes.func,
     saving:                 PropTypes.bool,
-    error:                  PropTypes.instanceOf(Error),
-    errors:                 PropTypes.objectOf(PropTypes.node),
+    error:                  PropTypes.any,
+    errors:                 PropTypes.object,
   }
   static defaultProps = {
     showOK:     true,
