@@ -6,7 +6,9 @@ import LinearConversion from '../../LinearConversion';
 import approxMatchers from '../../../utils/approxMatchers';
 
 describe('LinearConversion', () => {
-  beforeEach(() => jasmine.addMatchers(approxMatchers));
+  beforeEach(function() {
+    this.addMatchers(approxMatchers);
+  });
 
   describe('set', () => {
     describe('x1, y1, x2, y2 case', () => {
