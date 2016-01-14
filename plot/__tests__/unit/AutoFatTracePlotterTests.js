@@ -11,6 +11,16 @@ class TestTraceRenderer extends TraceRenderer {
   clear() { this.lines = []; this.fills = [] }
 }
 
+function removeRedundantPoints(points) {
+  let result = [];
+  for (let i = 0; i < points.length; i += 2) {
+    if (points[i] !== result[result.length - 2] || points[i + 1] !== result[result.length - 1]) {
+      result.push(points[i], points[i + 1]);
+    }
+  }
+  return result;
+}
+
 describe('AutoFatTracePlotter', () => {
   it('draws a horizontal line from valid to NA', () => {
     let domainConversion = new LinearConversion(0, 0, 10000, 1000);
@@ -25,7 +35,7 @@ describe('AutoFatTracePlotter', () => {
     plotter.addPoint(4000, NaN);
     plotter.flush();
 
-    expect(traceRenderer.lines).toEqual([
+    expect(traceRenderer.lines.map(removeRedundantPoints)).toEqual([
       [100, 50, 200, 50],
       [300, 50, 400, 50],
     ]);

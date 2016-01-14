@@ -5,14 +5,17 @@ class Column {
   // monotonic (only increasing or decreasing from left to right)
   monotonic = true
 
-  // number of points
-  count = 0
-
-  // the most initial point in the current column
+  // the first point in the current column
   start = [NaN, NaN]
 
-  // the most final point in the current column
+  // the last point in the current column
   end = [NaN, NaN]
+
+  // the first valid point in the current column
+  validStart = [NaN, NaN]
+
+  // the last valid point in the current column
+  validEnd = [NaN, NaN]
 
   // the point with minimum value in the current column
   min = [NaN, NaN]
@@ -22,24 +25,15 @@ class Column {
 
   clear() {
     this.monotonic = true;
-    this.count = 0;
     this.start[0] = this.start[1] = NaN;
     this.end[0] = this.end[1] = NaN;
+    this.validStart[0] = this.validStart[1] = NaN;
+    this.validEnd[0] = this.validEnd[1] = NaN;
     this.min[0] = this.min[1] = NaN;
     this.max[0] = this.max[1] = NaN;
   }
 
-  definedStart() {
-    return this.min[0] < this.max[0] ? this.min : this.max;
-  }
-
-  definedEnd() {
-    return this.min[0] > this.max[0] ? this.min : this.max;
-  }
-
   addPoint(domain, value, viewDomain, viewValue) {
-    this.count++;
-
     if (isNaN(this.start[0])) {
       this.start[0] = domain;
       this.start[1] = value;
@@ -48,7 +42,15 @@ class Column {
     this.end[1] = value;
 
     if (!isNaN(value)) {
-      if ((value >= this.max[1]) !== (this.max[1] >= this.min[1])) {
+      if (isNaN(this.validStart[0])) {
+        this.validStart[0] = domain;
+        this.validStart[1] = value;
+      }
+      this.validEnd[0] = domain;
+      this.validEnd[1] = value;
+
+      if ((value > this.max[1] && this.max[1] < this.min[1]) ||
+          (value < this.max[1] && this.max[1] > this.min[1])) {
         this.monotonic = false;
       }
 
@@ -152,62 +154,86 @@ export default class AutoFatTracePlotter {
   {
     let {prevColumn, column} = this;
 
-    console.log('advanceColumn')  ;
-    console.log(prevColumn);
-    console.log(column);
+    let nonadjacent = Math.round(this.domainConversion.convert(column.start[0])) >
+      Math.round(this.domainConversion.convert(prevColumn.start[0])) + 1;
 
-    function plot(dest, point) {
-      if (!isNaN(point[1]) && point[0] !== dest[dest.length - 2]) {
-        dest.push(point[0], point[1]);
-      }
-    }
+    let push = Array.prototype.push;
 
     if (isNaN(prevColumn.end[1]) || isNaN(column.start[1])) {
       if (!isNaN(prevColumn.end[1])) {
-        if (prevColumn.monotonic) {
-          plot(this.linePoints, [column.start[0], prevColumn.end[1]]);
+        if (!prevColumn.monotonic) {
+          push.apply(this.fillMinPoints, prevColumn.end);
+          push.apply(this.fillMaxPoints, prevColumn.end);
+          push.apply(this.linePoints, prevColumn.end);
         }
-        else {
-          plot(this.fillMinPoints, [column.start[0], prevColumn.min[1]]);
-          plot(this.fillMaxPoints, [column.start[0], prevColumn.max[1]]);
-        }
+        this.linePoints.push(column.start[0], prevColumn.end[1]);
       }
       this._flushLine();
       this._flushFill();
-      if (column.monotonic) {
-        plot(this.linePoints, column.definedStart());
-        if (column.count > 1) plot(this.linePoints, column.definedEnd());
-      }
-      else {
-        plot(this.fillMinPoints, column.min);
-        plot(this.fillMaxPoints, column.max);
+      if (!isNaN(column.min[0])) {
+        if (column.monotonic) {
+          push.apply(this.linePoints, column.validStart);
+          push.apply(this.linePoints, column.validEnd);
+        }
+        else { // !column.monotonic
+          push.apply(this.fillMinPoints, column.validStart);
+          push.apply(this.fillMaxPoints, column.validEnd);
+          push.apply(this.fillMinPoints, column.min);
+          push.apply(this.fillMaxPoints, column.max);
+        }
       }
     }
-    else {
+    else { // !isNaN(prevColumn.end[1]) && !isNaN(column.start[1])
       if (prevColumn.monotonic) {
         if (column.monotonic) {
-          plot(this.linePoints, column.definedStart());
-          plot(this.linePoints, column.definedEnd());
+          push.apply(this.linePoints, column.start);
+          push.apply(this.linePoints, column.end);
         }
-        else {
-          this._flushLine();
-          plot(this.fillMinPoints, prevColumn.definedEnd());
-          plot(this.fillMaxPoints, prevColumn.definedEnd());
-          plot(this.fillMinPoints, column.min);
-          plot(this.fillMaxPoints, column.max);
+        else { // !column.monotonic
+          if (nonadjacent) {
+            push.apply(this.linePoints, column.start);
+            this._flushLine();
+            push.apply(this.fillMinPoints, column.start);
+            push.apply(this.fillMaxPoints, column.start);
+          }
+          else { // adjacent
+            this._flushLine();
+            push.apply(this.fillMinPoints, prevColumn.end);
+            push.apply(this.fillMaxPoints, prevColumn.end);
+          }
+          push.apply(this.fillMinPoints, column.min);
+          push.apply(this.fillMaxPoints, column.max);
         }
       }
-      else {
+      else { // !prevColumn.monotonic
         if (column.monotonic) {
-          plot(this.fillMinPoints, column.definedStart());
-          plot(this.fillMaxPoints, column.definedStart());
-          this._flushFill();
-          plot(this.linePoints, column.definedStart());
-          plot(this.linePoints, column.definedEnd());
+          if (nonadjacent) {
+            push.apply(this.fillMinPoints, prevColumn.end);
+            push.apply(this.fillMaxPoints, prevColumn.end);
+            this._flushFill();
+            push.apply(this.linePoints, prevColumn.end);
+          }
+          else { // adjacent
+            push.apply(this.fillMinPoints, column.start);
+            push.apply(this.fillMaxPoints, column.start);
+            this._flushFill();
+          }
+          push.apply(this.linePoints, column.start);
+          push.apply(this.linePoints, column.end);
         }
-        else {
-          plot(this.fillMinPoints, column.min);
-          plot(this.fillMaxPoints, column.max);
+        else { // !column.monotonic
+          if (nonadjacent) {
+            push.apply(this.fillMinPoints, prevColumn.end);
+            push.apply(this.fillMaxPoints, prevColumn.end);
+            this._flushFill();
+            push.apply(this.linePoints, prevColumn.end);
+            push.apply(this.linePoints, column.start);
+            this._flushLine();
+            push.apply(this.fillMinPoints, column.start);
+            push.apply(this.fillMaxPoints, column.start);
+          }
+          push.apply(this.fillMinPoints, column.min);
+          push.apply(this.fillMaxPoints, column.max);
         }
       }
     }
