@@ -15,22 +15,27 @@ Alert.Danger = addClass(Alert, 'alert alert-danger');
 Alert.Error = Alert.Danger;
 Alert.Link = addClass('a', 'alert-link');
 
+const errorPropType = PropTypes.oneOfType([
+  PropTypes.instanceOf(Error),
+  PropTypes.node,
+]);
+
 export class AutoAlert extends Component {
   static propTypes = {
     type:     PropTypes.oneOf(['alarm', 'error', 'danger', 'warning', 'info', 'success']),
-    alarm:    PropTypes.node, 
-    error:    PropTypes.node, 
-    danger:   PropTypes.node, 
-    warning:  PropTypes.node, 
+    alarm:    errorPropType, 
+    error:    errorPropType, 
+    danger:   errorPropType, 
+    warning:  errorPropType, 
     info:     PropTypes.node, 
     success:  PropTypes.node,
   }
   render() {
     const {type, info, success, warning, danger, error, alarm, children} = this.props;
-    if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{alarm ? errorMessage(alarm) : children}</Alert.Danger>;
-    if (error   || type === 'error'  ) return <Alert.Danger {...this.props}>{error ? errorMessage(error) : children}</Alert.Danger>;
-    if (danger  || type === 'danger' ) return <Alert.Danger {...this.props}>{danger ? errorMessage(danger) : children}</Alert.Danger>;
-    if (warning || type === 'warning') return <Alert.Warning {...this.props}>{warning ? errorMessage(warning) : children}</Alert.Warning>;
+    if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{errorMessage(alarm || children)}</Alert.Danger>;
+    if (error   || type === 'error'  ) return <Alert.Danger {...this.props}>{errorMessage(error || children)}</Alert.Danger>;
+    if (danger  || type === 'danger' ) return <Alert.Danger {...this.props}>{errorMessage(danger || children)}</Alert.Danger>;
+    if (warning || type === 'warning') return <Alert.Warning {...this.props}>{errorMessage(warning || children)}</Alert.Warning>;
     if (info    || type === 'info'   ) return <Alert.Info {...this.props}>{info || children}</Alert.Info>;
     if (success || type === 'success') return <Alert.Success {...this.props}>{success || children}</Alert.Success>;
   }

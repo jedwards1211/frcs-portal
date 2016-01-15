@@ -1,14 +1,12 @@
 import React, {PropTypes} from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
-
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 
 import Modal from '../bootstrap/Modal';
+import Alert from '../bootstrap/Alert';
 import CloseButton from '../bootstrap/CloseButton';
 import Button from '../bootstrap/Button';
 import Spinner from '../common/Spinner';
-import ErrorAlert from '../common/ErrorAlert';
+import AutoAlertGroup from '../common/AutoAlertGroup';
 
 import './TypicalModal.sass';
 
@@ -31,13 +29,14 @@ export default class TypicalModal extends React.Component {
     onOutsideClick:         PropTypes.func,
     onCloseButtonClick:     PropTypes.func,
     saving:                 PropTypes.bool,
-    error:                  PropTypes.any,
+    error:                  Alert.Auto.propTypes.error,
     errors:                 PropTypes.object,
+    footerAlerts:           AutoAlertGroup.propTypes.alerts,
   }
   static defaultProps = {
     showOK:     true,
     showCancel: true,
-    errors: {},
+    footerAlerts: {},
   }
   onOK = () => {
     let {saving, OKdisabled, onOK} = this.props;
@@ -48,15 +47,16 @@ export default class TypicalModal extends React.Component {
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
         showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel, 
-        saving, error, errors, className, children} = this.props;
+        saving, error, errors, footerAlerts, className, children} = this.props;
 
-    if (error) {
-      errors = Object.assign({}, errors, {__singleError: error});
+    if (errors) {
+      for (let key in errors) {
+        footerAlerts[key] = {error: errors[key]};
+      }
     }
-
-    let errorAlerts = <CollapseTransitionGroup component="div" collapseProps={{className: 'error-collapse'}}>
-      {_.map(errors, (error, key) => (error && <ErrorAlert key={key} error={error}/>))}
-    </CollapseTransitionGroup>;
+    if (error) {
+      footerAlerts.error = {error};
+    }
 
     className = classNames(className, 'mf-typical-modal');
 
@@ -82,7 +82,7 @@ export default class TypicalModal extends React.Component {
         {children}
       </Modal.Body>
       <Modal.Footer>
-        {errorAlerts}
+        <AutoAlertGroup alerts={footerAlerts}/>
         {beforeButtons}
         {buttons}
         {afterButtons}
