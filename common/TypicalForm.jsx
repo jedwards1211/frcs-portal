@@ -73,9 +73,9 @@ export default class TypicalForm extends Component {
 
     className = classNames(className, "form-horizontal");
 
-    return <div {...this.props} className={className}>
+    return <form {...this.props} className={className}>
       {Children.map(children, child => cloneElement(child, {labelClass, controlClass}))}
-    </div>;
+    </form>;
   }
 }
 
