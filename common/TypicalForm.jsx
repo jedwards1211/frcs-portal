@@ -1,7 +1,9 @@
 import React, {Children, Component, PropTypes, isValidElement, cloneElement} from 'react';
 import classNames from 'classnames';
 
-import Autocollapse from 'mindfront-react-components/common/Autocollapse';
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
+
+import {errorMessage} from '../utils/errorUtils';
 
 class Group extends Component {
   static propTypes = {
@@ -23,12 +25,7 @@ class Group extends Component {
       let val = this.props[type];
       if (val) {
         validationClassNames[`has-${type}`] = true;
-        this[`last-${type}`] = val;
-      }
-      if (this[`last-${type}`]) {
-        validationMessages.push(<Autocollapse key={type}>
-          {val && <div className={`control-label ${type}-message`}>{val}</div>}
-        </Autocollapse>);
+        validationMessages.push(<div key={type} className={`control-label ${type}-message`}>{errorMessage(val)}</div>);
       }
     });
 
@@ -53,7 +50,9 @@ class Group extends Component {
           }
           return child;
         })}
-        {validationMessages}
+        <CollapseTransitionGroup component="div">
+          {validationMessages}
+        </CollapseTransitionGroup>
       </div>
     </div>;
   }

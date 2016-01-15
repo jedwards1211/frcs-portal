@@ -49,6 +49,8 @@ export default class TypicalModal extends React.Component {
         showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel, 
         saving, error, errors, footerAlerts, className, children} = this.props;
 
+    footerAlerts = Object.assign({}, footerAlerts);
+
     if (errors) {
       for (let key in errors) {
         footerAlerts[key] = {error: errors[key]};
