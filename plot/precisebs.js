@@ -80,6 +80,10 @@ function floorIndex(array, find, low, high, comparator) {
   return i === array.length || comparator(array[i], find) > 0 ? i - 1 : i;
 }
 
+function floorValue(array, find, low, high, comparator) {
+  return array[floorIndex(array, find, low, high, comparator)];
+}
+
 /**
  * Finds the index of the least element greater than or equal to a given element in an array 
  * using a binary search.  If the given element is greater than all elements in the
@@ -126,6 +130,7 @@ module.exports = {
   binarySearch: binarySearch,
   lowerIndex:   lowerIndex,
   floorIndex:   floorIndex,
+  floorValue:   floorValue,
   ceilingIndex: ceilingIndex,
   higherIndex:  higherIndex
 };
