@@ -44,7 +44,7 @@ export default function updateDataSubRange(currentRange, newViewRange, options) 
     }
   }
 
-  // expand to at least minRange
+  // expand to at least minRange or newViewRange
   beginTime = Math.min(beginTime, newViewRange.beginTime, center - minRange / 2);
   endTime   = Math.max(endTime  , newViewRange.endTime,   center + maxRange / 2);
 
