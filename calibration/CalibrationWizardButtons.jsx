@@ -29,10 +29,10 @@ export default class CalibrationWizardButtons extends Component {
       })),
     }).isRequired,
     dispatch: PropTypes.func,
-  }
+  };
   static defaultProps = {
     dispatch: function() {},
-  }
+  };
   focusApply() {
     if (this.refs.apply) {
       this.refs.apply.focus();

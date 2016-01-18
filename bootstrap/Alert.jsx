@@ -29,7 +29,7 @@ export class AutoAlert extends Component {
     warning:  errorPropType, 
     info:     PropTypes.node, 
     success:  PropTypes.node,
-  }
+  };;
   render() {
     const {type, info, success, warning, danger, error, alarm, children} = this.props;
     if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{alarm ? errorMessage(alarm) : children}</Alert.Danger>;

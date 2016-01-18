@@ -24,15 +24,15 @@ const nodePropType = ImmutablePropTypes.shape({
 });
 
 class Cell extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate;
   static propTypes = {
     depth: PropTypes.number,
     model: nodePropType.isRequired,
-  }
+  };
   static contextTypes = {
     basePadding:  PropTypes.number,
     indent:       PropTypes.number,
-  }
+  };
   render() {
     let {model, depth, style, className} = this.props;
     let {basePadding, indent} = this.context;
@@ -53,26 +53,26 @@ class Cell extends Component {
 }
 
 class Node extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate;
   static propTypes = {
     _key:           PropTypes.any.isRequired,
     depth:          PropTypes.number,
     model:          nodePropType.isRequired,
     dispatchEvent:  PropTypes.func,
-  }
+  };
   static defaultProps = {
     depth:          0,
     dispatchEvent:  function() {},
-  }
+  };
   static contextTypes = {
     defaultRenderer:  PropTypes.any,
-  }
+  };
   static defaultContextTypes = {
     defaultRenderer:  Cell,
-  }
+  };
   dispatchEvent = (e, path = []) => {
     this.props.dispatchEvent(e, ['children', this.props._key, ...path]);
-  }
+  };
   render() {
     let {className, depth, model} = this.props;
     let {defaultRenderer} = this.context;
@@ -97,26 +97,26 @@ class Node extends Component {
   }
 }
 export default class FastTree extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate;
   static propTypes = {
     basePadding:      PropTypes.number,
     indent:           PropTypes.number,
     model:            nodePropType.isRequired,
     defaultRenderer:  PropTypes.any,
     dispatchEvent:    PropTypes.func,
-  }
+  };
   static defaultProps = {
     basePadding:      7,
     indent:           18,
     defaultRenderer:  Cell,
     className:        'mf-tree-default',
     dispatchEvent:    function() {},
-  }
+  };
   static childContextTypes = {
     basePadding:      PropTypes.number.isRequired,
     indent:           PropTypes.number.isRequired,
     defaultRenderer:  PropTypes.any,
-  }
+  };
   getChildContext() {
     let {basePadding, indent, defaultRenderer} = this.props;
     return {basePadding, indent, defaultRenderer};

@@ -14,10 +14,10 @@ import {hslGenerator, restrictLuminance, generateColors} from '../utils/colorGen
 export default class BlockGridTest extends Component {
   static propTypes = {
     numBlocks: React.PropTypes.number,
-  }
+  };
   static defaultProps = {
     numBlocks: 20,
-  }
+  };
   constructor(props) {
     super(props);
 
@@ -50,7 +50,7 @@ export default class BlockGridTest extends Component {
       blocks = blocks.mergeDeepIn([index], Immutable.fromJS(newSize));
       this.setState({blocks});
     }
-  }
+  };
   onReorderBlocks = (newOrder) => {
     var {blocks} = this.state;
 
@@ -60,11 +60,11 @@ export default class BlockGridTest extends Component {
     let nextBlocks = Immutable.List(newOrder.map(id => blockMap[id]));
 
     this.setState({blocks: nextBlocks});
-  }
+  };
   onReorderFinished = () => {
-  }
+  };
   onResizeFinished = () => {
-  }
+  };
   renderBlock = (block) => {
     return <Block key={block.get('key')} {...block.toJS()}>
       <DragHandle touchDragRecognizer={TouchHoldDragRecognizer}>
@@ -72,7 +72,7 @@ export default class BlockGridTest extends Component {
       </DragHandle>
       <ResizeHandle><CornerKnob/></ResizeHandle>
     </Block>;
-  }
+  };
   render() {
     var {blocks} = this.state;
 

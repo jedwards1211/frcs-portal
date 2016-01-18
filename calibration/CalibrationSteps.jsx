@@ -50,18 +50,18 @@ function computeInputPrecision(props) {
 export class NumPoints extends Component {
   static defaultProps = {
     dispatch: function() {},
-  }
+  };
   onNumPointsChange = event => {
     this.props.dispatch({
       type: SET_NUM_POINTS,
       payload: event.target.value
     });
-  }
+  };
   onKeyDown = e => {
     if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
       this.props.dispatch({type: NEXT});
     }
-  }
+  };
   componentDidAppear() {
     this.componentDidEnter();
   }
@@ -109,16 +109,16 @@ export class NumPoints extends Component {
 export class Point extends Component {
   static defaultProps = {
     dispatch: function() {},
-  }
+  };
   onOutputValueChange = event => {
     let {dispatch, pointIndex} = this.props;
     dispatch(setOutputValue(pointIndex, event.target.value));
-  }
+  };
   onKeyDown = e => {
     if (e.key === 'Enter' && Point.validate(this.props).valid) {
       this.props.dispatch({type: NEXT});
     }
-  }
+  };
   componentDidAppear() {
     this.componentDidEnter();
   }
@@ -181,7 +181,7 @@ function isEmpty(value) {
 }
 
 export class Confirm extends Component {
-  _inputTextfields  = [];
+  _inputTextfields = [];
   _outputTextfields = [];
   componentWillMount() { this._mounted = true; }
   componentWillUnmount() { this._mounted = false; }
@@ -196,7 +196,7 @@ export class Confirm extends Component {
         dispatch(deletePoint(pointIndex));
       }
     }, 17);
-  }
+  };
   static validate(props) {
     const {calibration} = props;
     const points = calibration.get('points');

@@ -3,8 +3,8 @@ import LinearConversion from '../../LinearConversion';
 import TraceRenderer from '../../TraceRenderer';
 
 class TestTraceRenderer extends TraceRenderer {
-  lines = []
-  fills = []
+  lines = [];
+  fills = [];
 
   drawLine(line) { this.lines.push(line) }
   drawFill(fill) { this.fills.push(fill) }

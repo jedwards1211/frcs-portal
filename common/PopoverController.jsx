@@ -7,23 +7,23 @@ export default class PopoverController extends Component {
   static propTypes = {
     children: PropTypes.any.isRequired,
     dataPopover:  PropTypes.node.isRequired,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {};
   }
   onMouseEnter = () => {
     this.setState({hovered: true});
-  }
+  };
   onMouseLeave = () => {
     this.setState({hovered: false});
-  }
+  };
   onClick = () => {
     this.setState({toggled: true}); 
-  }
+  };
   onBlur = () => {
     this.setState({toggled: false});
-  }
+  };
   render() {
     let {children, dataPopover: popover} = this.props; 
     let {onMouseEnter, onMouseLeave, onClick, onBlur} = this;

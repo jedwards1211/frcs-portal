@@ -45,7 +45,7 @@ export default class Autocollapse extends Component {
       this.setState({children: undefined});
     }
     this.props.onTransitionEnd && this.props.onTransitionEnd();
-  }
+  };
   render() {
     let {open, children} = this.state;
     return <Collapse {...this.props} open={open} onTransitionEnd={this.onTransitionEnd}>

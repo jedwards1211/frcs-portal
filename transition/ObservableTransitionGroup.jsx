@@ -9,7 +9,7 @@ import EventEmitter from 'events';
 export class ChildWrapper extends Component {
   static childContextTypes = {
     transitionEvents: PropTypes.instanceOf(EventEmitter).isRequired,
-  }
+  };
   transitionEvents = new EventEmitter();
   constructor(props)  {
     super(props);
@@ -88,7 +88,7 @@ export default class ObservableTransitionGroup extends Component {
       child = childFactory(child);
     }
     return <ChildWrapper key={child.key}>{child}</ChildWrapper>;
-  }
+  };
   render() {
     return <InterruptibleTransitionGroup {...this.props} childFactory={this.wrapChild}/>;
   }

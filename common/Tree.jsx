@@ -18,24 +18,24 @@ class TreeCell extends Component {
 }
 
 class TreeNode extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate;
   static contextTypes = {
     basePadding: PropTypes.number,
     indent:      PropTypes.number,
-  }
+  };
   static defaultContextTypes = {
     basePadding: 7,
     indent:      15,
-  }
+  };
   static propTypes = {
     depth:      PropTypes.number,
     expanded:   PropTypes.bool,
     cell:       PropTypes.node,
-  }
+  };
   static defaultProps = {
     depth: 0,
     expanded: true,
-  }
+  };
   render() {
     let {className, depth, expanded, cell, children} = this.props;
     let {basePadding, indent} = this.context;
@@ -81,10 +81,10 @@ class AutoTreeNode extends Component {
     depth:        PropTypes.number,
     initExpanded: PropTypes.bool,
     cell:         PropTypes.node.isRequired,
-  }
+  };
   static defaultProps = {
     initExpanded: true,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -93,7 +93,7 @@ class AutoTreeNode extends Component {
   }
   onClick = () => {
     this.setState({expanded: !this.state.expanded});
-  }
+  };
   render() {
     let {cell} = this.props;
     let {onClick} = this;
@@ -111,16 +111,16 @@ export default class Tree extends Component {
   static propTypes = {
     basePadding:  PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
-  }
+  };
   static defaultProps = {
     basePadding: 7,
     indent:      15,
     className:   'mf-tree-default',
-  }
+  };
   static childContextTypes = {
     basePadding:  PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
-  }
+  };
   getChildContext() {
     let {basePadding, indent} = this.props;
     return {basePadding, indent};

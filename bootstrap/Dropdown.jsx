@@ -7,7 +7,7 @@ class DropdownToggle extends Component {
   static propTypes = {
     open:      React.PropTypes.bool,
     component: React.PropTypes.any.isRequired,
-  }
+  };
   render() {
     var {component, open, children, className, ...props} = this.props;
     props['aria-haspopup'] = 'true';
@@ -20,7 +20,7 @@ class DropdownToggle extends Component {
 class DropdownMenu extends Component {
   static propTypes = {
     component: React.PropTypes.any.isRequired,
-  }
+  };
   render() {
     var {component, children, className, ...props} = this.props;
     props.className = classNames('dropdown-menu', className);
@@ -39,10 +39,10 @@ class Dropdown extends Component {
     dropup:             React.PropTypes.any,
     onOpened:           React.PropTypes.func,
     onClosed:           React.PropTypes.func,
-  }
+  };
   static defaultProps = {
     closeOnInsideClick: true,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -63,7 +63,7 @@ class Dropdown extends Component {
   }
   onDropdownToggleClick = () => {
     this.setState({open: !this.state.open});
-  }
+  };
   componentWillReceiveProps(nextProps) {
     if (this.props.open !== undefined && nextProps.open === undefined) {
       this.setState({open: this.props.open});
@@ -114,7 +114,7 @@ class Dropdown extends Component {
       (!isDescendant(e.target, ReactDOM.findDOMNode(this.refs.toggle)))) {
       this.setState({open: false});
     }
-  }
+  };
   render() {
     var {className, component, openClassName, children} = this.props;
     var open = this.props.open !== undefined ? this.props.open : this.state.open;

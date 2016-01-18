@@ -21,10 +21,10 @@ export default class GaugeTypeSelector extends Component {
     ]).isRequired,
     selectedGaugeType:  PropTypes.any,
     onSelect:           PropTypes.func,
-  }
+  };
   static defaultProps = {
     onSelect: function() {},
-  }
+  };
   render() {
     var {gaugeTypes, selectedGaugeType, className, gaugeProps, onSelect, ...props} = this.props;
 

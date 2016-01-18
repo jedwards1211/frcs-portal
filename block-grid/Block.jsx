@@ -7,7 +7,7 @@ import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-p
 import './Block.sass';
 
 export default class Block extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate
+  shouldComponentUpdate = shouldPureComponentUpdate;
   static propTypes = {
     position:       ImmutablePropTypes.shape({
       x:      React.PropTypes.number,
@@ -22,14 +22,14 @@ export default class Block extends Component {
     blockKey:       React.PropTypes.string,
     grabbed:        React.PropTypes.bool,
     resizing:       React.PropTypes.bool,
-  }
+  };
   static contextTypes = {
     // (observer: (prevPosition, nextPosition) => undefined) => stopObserving: () => undefined
     observePosition:  React.PropTypes.func.isRequired,
-  }
+  };
   static childContextTypes = {
     blockKey:         React.PropTypes.string.isRequired,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {

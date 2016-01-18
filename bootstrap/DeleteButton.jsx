@@ -10,12 +10,12 @@ export default class DeleteButton extends Component {
     deletingText: React.PropTypes.string,
     onArmedClick: React.PropTypes.func,
     deleting:     React.PropTypes.bool,
-  }
+  };
   static defaultProps = {
     armedText:    'Are you sure?',
     disarmedText: '',
     deletingText: '',
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {armed: false};
@@ -23,7 +23,7 @@ export default class DeleteButton extends Component {
   onBlur = (e) => {
     this.setState({armed: false});
     if (this.props.onBlur) this.props.onBlur(e);
-  }
+  };
   onClick = (e) => {
     if (this.state.armed) {
       if (this.props.onArmedClick) this.props.onArmedClick(e);
@@ -32,7 +32,7 @@ export default class DeleteButton extends Component {
       this.setState({armed: true});
     }
     if (this.props.onClick) this.props.onClick(e);
-  }
+  };
   render() {
     let {className, deleting, deletingText, disabled} = this.props;
     let {armed} = this.state;

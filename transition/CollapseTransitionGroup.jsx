@@ -18,14 +18,14 @@ export default class CollapseTransitionGroup extends Component {
   static propTypes = {
     expandOnAppear: PropTypes.bool,
     collapseProps:  PropTypes.object,
-  }
+  };
   static defaultPropTypes = {
     expandOnAppear: false,
-  }
+  };
   wrapChild = (child) => {
     let {collapseProps, expandOnAppear} = this.props;
     return <ChildWrapper {...collapseProps} expandOnAppear={expandOnAppear} key={child.key}>{child}</ChildWrapper>;
-  }
+  };
   render() {
     return <ObservableTransitionGroup {...this.props} childFactory={this.wrapChild}/>;
   }

@@ -5,10 +5,10 @@ export default class Popover extends Component {
   static propTypes = {
     title: PropTypes.node,
     side:  PropTypes.oneOf(['top', 'left', 'bottom', 'right'])
-  }
+  };
   static defaultProps = {
     side: 'top'
-  }
+  };
   render() {
     let {className, side, title, children} = this.props;
 

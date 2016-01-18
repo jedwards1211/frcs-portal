@@ -29,12 +29,12 @@ export default class Navbar extends React.Component {
     expanded:      React.PropTypes.bool,
     onCollapse:    React.PropTypes.func,
     onExpand:      React.PropTypes.func,
-  }
+  };
   static defaultProps = {
     navbarToggle: <DefaultNavbarToggle/>,
     onCollapse: function() {},
     onExpand: function() {},
-  }
+  };
   componentDidMount() {
     document.addEventListener('click', this.onDocumentClick, true);
   }
@@ -56,11 +56,11 @@ export default class Navbar extends React.Component {
         element(e.target).isDescendantOf(ancestor => !!ancestor.href))) {
       this.props.onCollapse();
     }
-  }
+  };
   toggle = () => {
     let {expanded, onCollapse, onExpand} = this.props;
     expanded ? onCollapse() : onExpand();
-  }
+  };
   render() {
     let {className, children, headerContent, navbarToggle} = this.props;
     let expanded = !!this.props.expanded;

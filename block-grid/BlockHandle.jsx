@@ -12,16 +12,16 @@ export default class BlockHandle extends Component {
     onStart:              PropTypes.func,
     onMove:               PropTypes.func,
     onEnd:                PropTypes.func,
-  }
+  };
   static defaultProps = {
     transformPosition: p => p,
     onStart: noop,
     onMove: noop,
     onEnd: noop,
-  }
+  };
   static contextTypes = {
     blockKey:     React.PropTypes.string.isRequired,
-  }
+  };
   constructor(props) {
     super(props);
     this.touchDragging = false;
@@ -46,13 +46,13 @@ export default class BlockHandle extends Component {
       let {blockKey} = this.context;
       this.props.onStart(blockKey, this.props.transformPosition(getPosition(e)));
     }
-  }
+  };
   onMouseMove = e => {
     e.preventDefault();
     let {blockKey} = this.context;
     this.allowClick = false;
     this.props.onMove(blockKey, this.props.transformPosition(getPosition(e)));
-  }
+  };
   onMouseUp = e => {
     e.preventDefault();
     document.removeEventListener('mousemove', this.onMouseMove);
@@ -63,13 +63,13 @@ export default class BlockHandle extends Component {
 
     let {blockKey} = this.context;
     this.props.onEnd(blockKey);
-  }
+  };
   onClickCapture = e => {
     if (e.button !== 0 || !this.allowClick) {
       e.preventDefault();
       e.stopPropagation();
     }
-  }
+  };
   startTouchDrag = () => {
     if (this.touchOrder.length) {
       this.touchDragging = true;
@@ -78,7 +78,7 @@ export default class BlockHandle extends Component {
       this.props.onStart(blockKey, this.props.transformPosition(
         addPoints(getPosition(this.touches[this.touchOrder[0]]), this.touchOffset)));
     }
-  }
+  };
   onTouchStart = e => {
     let recognizer = this.recognizer;
     if (recognizer && recognizer.onTouchStart) {
@@ -96,7 +96,7 @@ export default class BlockHandle extends Component {
       e.preventDefault();
       this.startTouchDrag();
     }
-  }
+  };
   onTouchMove = e => {
     let recognizer = this.recognizer;
     if (recognizer && recognizer.onTouchMove) {
@@ -113,7 +113,7 @@ export default class BlockHandle extends Component {
       this.props.onMove(blockKey, this.props.transformPosition(
         addPoints(getPosition(this.touches[this.touchOrder[0]]), this.touchOffset)));
     }
-  }
+  };
   onTouchEnd = e => {
     let recognizer = this.recognizer;
     if (recognizer && recognizer.onTouchEnd) {
@@ -121,7 +121,7 @@ export default class BlockHandle extends Component {
     }
 
     this.removeTouches(e); 
-  }
+  };
   onTouchCancel = e => {
     let recognizer = this.recognizer;
     if (recognizer && recognizer.onTouchCancel) {
@@ -129,7 +129,7 @@ export default class BlockHandle extends Component {
     }
 
     this.removeTouches(e);
-  }
+  };
   removeTouches = e => {
     forEach(e.changedTouches, t => {
       let index = this.touchOrder.indexOf(t.identifier);
@@ -158,7 +158,7 @@ export default class BlockHandle extends Component {
         this.props.onEnd(blockKey);
       }
     }
-  }
+  };
   render() {
     if (this.props.disabled) {
       return this.props.children;

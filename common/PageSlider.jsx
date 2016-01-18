@@ -26,13 +26,13 @@ export default class PageSlider extends Component {
     useAbsolutePositioning: PropTypes.bool,
     onTransitionEnd:        PropTypes.func,
     transitionHeight:       PropTypes.bool,
-  }
+  };;
   static defaultProps = {
     onTransitionEnd() {},
     transitionDuration: 200,
     transitionHeight: true,
     restrictMaxHeight: false,
-  }
+  };;
   constructor(props) {
     super(props);
     this.state = {
@@ -108,7 +108,7 @@ export default class PageSlider extends Component {
       }
     });
     return true;
-  }
+  };
   wrapChild = (child, index) => {
     if (!child) return child;
     let {state: {transitioning, activeIndex}, props: {transitionHeight}} = this;
@@ -134,7 +134,7 @@ export default class PageSlider extends Component {
     return <div key={index} ref={c => this._wrappers[index] = c} style={style}>
       {React.cloneElement(child, {ref})}
     </div>;
-  }
+  };
   render() {
     var {className, style} = this.props;
     var {height, transitioning, activeIndex} = this.state;

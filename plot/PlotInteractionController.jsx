@@ -32,7 +32,7 @@ export default class PlotInteractionController extends React.Component {
     onMove:      React.PropTypes.func,
     onMoveEnd:   React.PropTypes.func,
     children:    React.PropTypes.node.isRequired,
-  }
+  };
 
   onMouseDown = (e) => {
     if (e.button === 0) {
@@ -51,7 +51,7 @@ export default class PlotInteractionController extends React.Component {
 
       if (onMoveStart) onMoveStart();
     }
-  }
+  };
   onMouseMove = (e) => {
     e.preventDefault();
 
@@ -69,7 +69,7 @@ export default class PlotInteractionController extends React.Component {
     if (this.props.onMove) {
       this.props.onMove(newXConversion, newYConversion);
     }
-  }
+  };
   onMouseUp = (e) => {
     if (e.button === 0) {
       e.preventDefault();
@@ -79,7 +79,7 @@ export default class PlotInteractionController extends React.Component {
       this.target = undefined;
       if (this.props.onMoveEnd) this.props.onMoveEnd();
     }
-  }
+  };
 
   onWheel = (e) => {
     function wheelDirection(e) {
@@ -138,7 +138,7 @@ export default class PlotInteractionController extends React.Component {
         if (this._mounted) animate();
       }, delay);
     }
-  }
+  };
   onTouchStart = (e) => {
     let alreadyMoving = Object.keys(this.touches).length;
     if (alreadyMoving) e.preventDefault();
@@ -157,7 +157,7 @@ export default class PlotInteractionController extends React.Component {
     });
 
     if (!alreadyMoving && onMoveStart) onMoveStart();
-  }
+  };
   onTouchMove = (e) => {
     e.preventDefault();
     let {onMove, xConversion, yConversion,
@@ -226,16 +226,16 @@ export default class PlotInteractionController extends React.Component {
 
       onMove(newXConversion, newYConversion);
     }
-  }
+  };
   onTouchEnd = (e) => {
     _.forEach(e.changedTouches, t => delete this.touches[t.identifier]);
     if (!Object.keys(this.touches).length && this.props.onMoveEnd) {
       this.props.onMoveEnd();
     }
-  }
+  };
   onTouchCancel = (e) => {
     this.onTouchEnd(e);
-  }
+  };
   render() {
     return React.cloneElement(this.props.children, {
       ref: 'target',

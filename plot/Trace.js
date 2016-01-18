@@ -29,13 +29,13 @@ export default class Trace extends Layer {
     // (CanvasRenderingContext2D) => TraceRenderer
     renderer:         React.PropTypes.func,
     domainAxis:       React.PropTypes.instanceOf(Axis),
-  }
+  };
   static defaultProps = {
     lineColor:        '#00f',
     plotter:          (...args) => new StepTracePlotter(new AutoFatTracePlotter(...args)),
     renderer:         ctx => new CanvasTraceRenderer(ctx),
     domainAxis:       xAxis,
-  }
+  };
   paint(canvas) {
     var ctx = canvas.getContext('2d');
     ctx.save();

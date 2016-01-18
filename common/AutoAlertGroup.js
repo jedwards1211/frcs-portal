@@ -6,7 +6,7 @@ import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 export default class AutoAlertGroup extends Component {
   static propTypes = {
     alerts: PropTypes.object,
-  }
+  };
   render() {
     const {alerts} = this.props;
     const children = [];

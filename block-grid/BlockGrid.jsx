@@ -27,7 +27,7 @@ export default class BlockGrid extends Component {
     maxRowSpan:       React.PropTypes.number,
     snapSize:         React.PropTypes.number,
     hAlign:           React.PropTypes.string,
-  }
+  };
   static defaultProps = {
     hAlign: 'center',
     cellWidth: 50,
@@ -43,7 +43,7 @@ export default class BlockGrid extends Component {
     onReorderFinished: _.noop,
     onResizeBlock: _.noop,
     onResizeFinished: _.noop,
-  }
+  };
   static childContextTypes = {
     observePosition:  React.PropTypes.func.isRequired,
     onDragStart:      React.PropTypes.func.isRequired,
@@ -52,7 +52,7 @@ export default class BlockGrid extends Component {
     onResizeStart:    React.PropTypes.func.isRequired,
     onResizeMove:     React.PropTypes.func.isRequired,
     onResizeEnd:      React.PropTypes.func.isRequired,
-  }
+  };
   constructor(props) {
     super(props);
 
@@ -97,7 +97,7 @@ export default class BlockGrid extends Component {
   observePosition = (key, observer) => {
     this.emitter.addListener(key, observer);
     return () => this.emitter.removeListener(key, observer);
-  }
+  };
   componentWillReceiveProps(newProps) {
     var layout = this.state.layout.withMutations(layout => {
       layout.set('cellWidth',   newProps.cellWidth)
@@ -132,7 +132,7 @@ export default class BlockGrid extends Component {
     if (layout !== this.state.layout) {
       this.setState({layout: this.props.layoutBlockGrid(layout)});
     }
-  }
+  };
   checkOrder = () => {
     var layout = this.props.layoutBlockGrid(this.state.layout, this.grabbed);
     if (layout !== this.state.layout) {
@@ -140,7 +140,7 @@ export default class BlockGrid extends Component {
       layout.get('blocks').forEach(block => newOrder.push(block.get('key')));
       this.props.onReorderBlocks(newOrder);
     }
-  }
+  };
   componentDidMount() {
     this.throttledResize      = _.throttle(this.resize, 250);
     this.throttledCheckOrder  = _.throttle(this.checkOrder, 100);
@@ -156,7 +156,7 @@ export default class BlockGrid extends Component {
     this.grabbed = this.grabbed.set('startX', this.grabbed.get('x'))
                                .set('startY', this.grabbed.get('y'));
     this.forceUpdate();
-  }
+  };
   onDragMove = (key, newPosition) => {
     let {x: startX, y: startY} = this.startPosition;
     let {x: newX,   y: newY  } = newPosition;
@@ -172,21 +172,21 @@ export default class BlockGrid extends Component {
     this.emitter.emit(key, block, position);
 
     this.throttledCheckOrder();
-  }
+  };
   onDragEnd = (key) => {
     delete this.grabbed;
     
     this.forceUpdate();
 
     this.props.onReorderFinished();
-  }
+  };
   onResizeStart = (key, startPosition) => {
     this.startPosition = startPosition;
     var block = this.state.layout.get('blocks').find(b => b.get('key') === key);
     this.resizing = block.set('startWidth' , block.get('width' ))
                          .set('startHeight', block.get('height'));
     this.forceUpdate();
-  }
+  };
   onResizeMove = (key, newPosition) => {
     let {x: startX, y: startY} = this.startPosition;
     let {x: newX,   y: newY  } = newPosition;
@@ -233,12 +233,12 @@ export default class BlockGrid extends Component {
     }
 
     this.throttledCheckOrder();
-  }
+  };
   onResizeEnd = (key) => {
     delete this.resizing;
     this.setState({layout: this.props.layoutBlockGrid(this.state.layout)});
     this.props.onResizeFinished();
-  }
+  };
   render() {
     var {props, state, grabbed, resizing} = this;
     var {className, hAlign} = props;

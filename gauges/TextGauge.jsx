@@ -15,10 +15,10 @@ export default class TextGauge extends React.Component {
   static propTypes = Object.assign({}, GaugePropTypes, {
     color:      React.PropTypes.string,
     showRange:  React.PropTypes.bool,
-  })
+  });
   static defaultProps = {
     className: 'text-gauge',
-  }
+  };
   resize() {
     var root = this.refs.root;
     var name = this.refs.name;

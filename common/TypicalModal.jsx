@@ -32,18 +32,18 @@ export default class TypicalModal extends React.Component {
     error:                  Alert.Auto.propTypes.error,
     errors:                 PropTypes.object,
     footerAlerts:           AutoAlertGroup.propTypes.alerts,
-  }
+  };
   static defaultProps = {
     showOK:     true,
     showCancel: true,
     footerAlerts: {},
-  }
+  };
   onOK = () => {
     let {saving, OKdisabled, onOK} = this.props;
     if (!saving && !OKdisabled && onOK) {
       onOK();
     }
-  }
+  };
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
         showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel, 

@@ -18,14 +18,14 @@ export default class SidebarView extends Component {
     sidebarSide:          PropTypes.oneOf([leftSide, rightSide]),
     sidebarWidth:         PropTypes.number,
     overlapToggleButton:  PropTypes.bool,
-  }
+  };;
   static defaultProps = {
     sidebarSide: leftSide,
     sidebarWidth: 200,
     overlapToggleButton: true,
     onOpenSidebarClick: function() {},
     onCloseSidebarClick: function() {},
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {rootWidth: 0};
@@ -34,7 +34,7 @@ export default class SidebarView extends Component {
     let {sidebarOpen = !this.isNarrow(), onOpenSidebarClick, onCloseSidebarClick} = this.props;
     sidebarOpen ? onCloseSidebarClick() : onOpenSidebarClick();
     callOnTransitionEnd(this.refs.sidebar, fireFakeResizeEvent, 1000);
-  }
+  };
   resize = _.throttle(() => {
     if (this.refs.root && this.refs.sidebarToggleBtn) {
       this.setState({
@@ -42,7 +42,7 @@ export default class SidebarView extends Component {
         sidebarToggleBtnWidth:  this.refs.sidebarToggleBtn.offsetWidth,
       });
     }
-  }, 30)
+  }, 30);
   componentWillMount() {
     this.canSetState = true;
     this.setState({

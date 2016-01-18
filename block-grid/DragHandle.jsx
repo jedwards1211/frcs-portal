@@ -7,10 +7,10 @@ export default class DragHandle extends Component {
     onDragStart:  React.PropTypes.func.isRequired,
     onDragMove:   React.PropTypes.func.isRequired,
     onDragEnd:    React.PropTypes.func.isRequired,
-  }
-  onStart = (key, newPosition) => {this.context.onDragStart(key, newPosition)}
-  onMove  = (key, newPosition) => {this.context.onDragMove (key, newPosition)}
-  onEnd   = (key)              => {this.context.onDragEnd  (key)}
+  };
+  onStart = (key, newPosition) => {this.context.onDragStart(key, newPosition)};
+  onMove = (key, newPosition) => {this.context.onDragMove (key, newPosition)};
+  onEnd = (key)              => {this.context.onDragEnd  (key)};
   render() {
     let {onStart, onMove, onEnd} = this;
     return <BlockHandle {...this.props} onStart={onStart} onMove={onMove} onEnd={onEnd}>

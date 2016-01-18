@@ -26,11 +26,11 @@ export default class Modal extends Component {
     transitionEvents: PropTypes.shape({
       on: PropTypes.func.isRequired,
     }),
-  }
+  };
   static propTypes = {
     dialogClassName: PropTypes.string,
     onOutsideClick:  PropTypes.func,
-  }
+  };
   componentWillMount() {
     if (++openModalCount === 1) {
       CSSCore.addClass(document.body, 'modal-open');
@@ -40,7 +40,7 @@ export default class Modal extends Component {
   }
   componentDidEnter = () => {
     this.props.onEntered && this.props.onEntered();
-  }
+  };
   componentWillUnmount() {
     if (--openModalCount === 0) {
       CSSCore.removeClass(document.body, 'modal-open');
@@ -56,7 +56,7 @@ export default class Modal extends Component {
     else {
       this.props.onClick && this.props.onClick(e);
     }
-  }
+  };
   render() {
     let {className, dialogClassName, children} = this.props;
     className = classNames('modal mf-modal', className);

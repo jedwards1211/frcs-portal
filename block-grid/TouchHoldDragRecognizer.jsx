@@ -9,7 +9,7 @@ export default class TouchHoldDragRecognizer {
     e.preventDefault();
     e.stopPropagation();
     return false;
-  }
+  };
   onTouchStart = (e, startTouchDrag) => {
     forEach(e.changedTouches, t => this.touches[t.identifier] = true);
     clearTimeout(this.timeout);
@@ -19,22 +19,22 @@ export default class TouchHoldDragRecognizer {
         startTouchDrag();
       }, this.holdDelay);
     }
-  }  
+  };  
   onTouchMove = (e) => {
     clearTimeout(this.timeout);
-  }
+  };
   onTouchEnd = (e) => {
     clearTimeout(this.timeout);
     forEach(e.changedTouches, t => delete this.touches[t.identifier]);
     if (!size(this.touches)) {
       window.removeEventListener('contextmenu', this.onContextMenu, true);
     }
-  }
+  };
   onTouchCancel = (e) => {
     clearTimeout(this.timeout);
     forEach(e.changedTouches, t => delete this.touches[t.identifier]);
     if (!size(this.touches)) {
       window.removeEventListener('contextmenu', this.onContextMenu, true);
     }
-  }
+  };
 }

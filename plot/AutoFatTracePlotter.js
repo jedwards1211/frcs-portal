@@ -8,25 +8,25 @@ class Column {
   // monotonic (values are strictly increasing or decreasing along domain axis)
   // in other words, if monotonic is false, the trace should be fat
   // within the column.
-  monotonic = true
+  monotonic = true;
 
   // the first point in the current column
-  start = [NaN, NaN]
+  start = [NaN, NaN];
 
   // the last point in the current column
-  end = [NaN, NaN]
+  end = [NaN, NaN];
 
   // the first valid point in the current column
-  validStart = [NaN, NaN]
+  validStart = [NaN, NaN];
 
   // the last valid point in the current column
-  validEnd = [NaN, NaN]
+  validEnd = [NaN, NaN];
 
   // the point with minimum value in the current column
-  min = [NaN, NaN]
+  min = [NaN, NaN];
 
   // the point with maximum value in the current column
-  max = [NaN, NaN]
+  max = [NaN, NaN];
 
   clear() {
     this.monotonic = true;

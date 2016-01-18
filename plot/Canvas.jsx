@@ -15,7 +15,7 @@ export default class Canvas extends React.Component {
 
   static propTypes = {
     onResize: React.PropTypes.func,
-  }
+  };
 
   getRootSize() {
     var root = this.refs.root;
@@ -34,7 +34,7 @@ export default class Canvas extends React.Component {
       this.setState(size, () => this.doRepaint());
       if (this.props.onResize) this.props.onResize(size);
     }
-  }
+  };
   doRepaint = () => {
     if (!this.mounted) return;
     var canvas = ReactDOM.findDOMNode(this.refs.canvas);
@@ -42,7 +42,7 @@ export default class Canvas extends React.Component {
       var child = this.refs[i];
       if (child) child.paint(canvas);
     }
-  }
+  };
 
   componentDidMount() {
     this.mounted = true;

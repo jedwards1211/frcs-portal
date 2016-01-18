@@ -36,14 +36,14 @@ export default class CalibrationWizard extends Component {
     inputPrecision: PropTypes.number,
     outputPrecision: PropTypes.number,
     dispatch: PropTypes.func,
-  }
+  };
   _pointSteps = [];
   updateFocus = () => {
     // let {stepNumber, calibration} = this.props;
     // if (stepNumber === calibration.get('points').size + 1) {
     //   this._buttons.focusApply();
     // }
-  }
+  };
   componentDidAppear() {
     this._pageSlider.componentDidAppear();
   }

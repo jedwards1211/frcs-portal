@@ -13,7 +13,7 @@ let history = createHistory();
 class Shell extends Component {
   static propTypes = {
     requireContext: PropTypes.func,
-  }
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -46,7 +46,7 @@ class Shell extends Component {
 export default class Sandbox extends Component {
   static propTypes = {
     requireContext: PropTypes.func,
-  }
+  };
   render() {
     let {requireContext} = this.props;
 

@@ -12,11 +12,11 @@ export default class Fader extends Component {
   static propTypes = {
     children:         PropTypes.any,
     onTransitionEnd:  PropTypes.func,
-  }
+  };
   static defaultProps = {
     onTransitionEnd() {},
     children:         <span/>,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -148,7 +148,7 @@ export default class Fader extends Component {
       }
     });
     return true;
-  }
+  };
 
   render() {
     let {transitioning, height, wrappedChildren} = this.state;

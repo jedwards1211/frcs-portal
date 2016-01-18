@@ -29,7 +29,7 @@ class ChildWrapper extends Component {
     appear: PropTypes.bool,
     enter:  PropTypes.bool,
     leave:  PropTypes.bool,
-  }
+  };
   doTransition(type, done) {
     if (!this.props[type]) return done();
 
@@ -98,12 +98,12 @@ export default class InterruptibleCSSTransitionGroup extends Component {
     transitionAppear: PropTypes.bool,
     transitionEnter:  PropTypes.bool,
     transitionLeave:  PropTypes.bool,
-  }
+  };
   static defaultProps = {
     transitionAppear: false,
     transitionEnter:  true,
     transitionLeave:  true
-  }
+  };
   wrapChild = child => {
     let {transitionName: name, transitionAppear: appear, transitionEnter: enter, 
         transitionLeave: leave} = this.props;
@@ -111,7 +111,7 @@ export default class InterruptibleCSSTransitionGroup extends Component {
             appear={appear} enter={enter} leave={leave}>
       {child}
     </ChildWrapper>;
-  }
+  };
   render() {
     return <InterruptibleTransitionGroup {...this.props} childFactory={this.wrapChild}/>;
   }

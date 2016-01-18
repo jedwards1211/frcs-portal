@@ -14,14 +14,14 @@ export default class ComboBox extends Component {
     render:             PropTypes.func,
     onChange:           PropTypes.func,
     disabled:           PropTypes.bool,
-  }
+  };
   static defaultProps = {
     render: item => String(item),
     placeholder: 'Select Item',
     noItemsPlaceholder: 'No Items Available',
     component: 'div',
     onChange: function() {},
-  }
+  };
   render() {
     let {items, selectedItem, render, placeholder,
         noItemsPlaceholder, onChange, disabled, className} = this.props;

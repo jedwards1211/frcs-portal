@@ -14,7 +14,7 @@ class Group extends Component {
     warning:      PropTypes.any,
     success:      PropTypes.any,
     noFormControlClass: PropTypes.any,
-  }
+  };
   render() {
     let {labelClass, controlClass, className, label, children} = this.props;
 
@@ -62,11 +62,11 @@ export default class TypicalForm extends Component {
   static propTypes = {
     labelClass:   PropTypes.string.isRequired,
     controlClass: PropTypes.string.isRequired,
-  }
+  };
   static defaultProps = {
     labelClass:   "col-sm-4 control-label",
     controlClass: "col-sm-8",
-  }
+  };
   render() {
     let {labelClass, controlClass, className, children} = this.props;
 

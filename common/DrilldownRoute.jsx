@@ -14,7 +14,7 @@ export default class DrilldownRoute extends Component {
         component:  PropTypes.any.isRequired,
       }).isRequired,
     }),
-  }
+  };;;
   render() {
     let {route, children} = this.props;
     let child = React.Children.only(children);

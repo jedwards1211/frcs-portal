@@ -7,7 +7,7 @@ function parseTime(time) {
   return parseFloat(time) || 0;
 }
 
-let getComputedStyle = window.getComputedStyle || () => ({});
+let getComputedStyle = window.getComputedStyle || (() => ({}));
 
 export function getTimeout(element) {
   let style = element && getComputedStyle(element);

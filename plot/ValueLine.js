@@ -11,10 +11,10 @@ export default class ValueLine extends Layer {
     conversion: React.PropTypes.instanceOf(Conversion).isRequired,
     value:      React.PropTypes.number,
     axis:       React.PropTypes.instanceOf(Axis),
-  }
+  };
   static defaultProps = {
     axis:       xAxis, 
-  }
+  };
   paint(canvas) {
     var {color, conversion, value, axis} = this.props;
     var cValue = conversion.convert(value);

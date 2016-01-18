@@ -10,14 +10,14 @@ export default class ModalExample extends React.Component {
   }
   showModal = () => {
     this.setState({modalVisible: true});
-  }
+  };
   hideModal = () => {
     this.setState({modalVisible: false});
-  }
+  };
   onOK = () => {
     console.log('You clicked OK!');
     this.hideModal();
-  }
+  };
   render() {
     var {modalVisible} = this.state;
 
