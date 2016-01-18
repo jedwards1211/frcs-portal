@@ -23,7 +23,7 @@ export default class ComboBox extends Component {
     onChange: function() {},
   };
   render() {
-    let {items, selectedItem, render, placeholder,
+    let {items, selectedItem, placeholder,
         noItemsPlaceholder, onChange, disabled, className} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
@@ -35,7 +35,7 @@ export default class ComboBox extends Component {
       <Dropdown.Toggle component="button" type="button" className="form-control btn btn-default" 
         disabled={disabled || !hasItems}>
         <span className="selected-item">
-          {render(noSelection ? 
+          {this.props.render(noSelection ? 
             (hasItems ? placeholder : noItemsPlaceholder)
             : 
             selectedItem)}
@@ -43,7 +43,7 @@ export default class ComboBox extends Component {
       </Dropdown.Toggle>
       {hasItems && <Dropdown.Menu component="ul">
         {items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
-          <a>{render(item)}</a>
+          <a>{this.props.render(item)}</a>
         </li>))}
       </Dropdown.Menu>}
     </Dropdown>;

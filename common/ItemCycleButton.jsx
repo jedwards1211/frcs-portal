@@ -26,7 +26,7 @@ export default class ItemCycleButton extends Component {
     }
   };
   render() {
-    let {items, selectedItem, render, placeholder,
+    let {items, selectedItem, placeholder,
         noItemsPlaceholder, className} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
@@ -35,7 +35,7 @@ export default class ItemCycleButton extends Component {
     className = classNames(className, 'mf-item-cycle-btn', {'no-selection': noSelection});
 
     return <Button {...this.props} className={className} onClick={this.onClick}>
-      {render(noSelection ? 
+      {this.props.render(noSelection ? 
         (hasItems ? placeholder : noItemsPlaceholder)
         : 
         selectedItem)}
