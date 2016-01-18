@@ -100,7 +100,9 @@ export default class SimpleDataCache extends EventEmitter {
     }
     for (var channelId in this.data) {
       let pages = this.data[channelId];
-      if (!channelIds[channelId]) delete pages[channelId];
+      if (!channelIds[channelId]) {
+        delete this.data[channelId];
+      }
       else {
         for (var time in pages) {
           let page = pages[time];
