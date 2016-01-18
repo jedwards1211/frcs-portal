@@ -1,0 +1,35 @@
+@import "../sass/css3-mixins"
+
+.mf-copy-to-clipboard-input
+  position: relative
+
+  .input-group-btn > .btn
+    height: 34px
+
+  .alert-danger
+    position: absolute
+    top: 100%
+    width: 100%
+    @include box-shadow(0 2px 10px rgba(0, 0, 0, 0.5))
+    cursor: pointer
+    @include transition(all ease-out 0.15s)
+
+    &:hover
+      opacity: 0.5
+
+    &.error-enter
+      transform: translateY(-100%) 
+      opacity: 0.01
+
+      &.error-enter-active
+        opacity: 1
+        transform: translateY(0)
+
+    &.error-leave
+      transform: translateY(0)
+      opacity: 1
+
+      &.error-leave-active
+        opacity: 0.01
+        transform: translateY(-100%)
+
