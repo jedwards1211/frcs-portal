@@ -18,7 +18,7 @@ export default class AutoAlertGroup extends Component {
         }
       }
     }
-    return <CollapseTransitionGroup component="div">
+    return <CollapseTransitionGroup component="div" {...this.props}>
       {children}
     </CollapseTransitionGroup>;
   }
