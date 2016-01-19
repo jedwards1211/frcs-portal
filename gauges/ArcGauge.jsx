@@ -67,7 +67,7 @@ export default React.createClass({
       maxWidth: NAME_WIDTH,
       maxHeight: NAME_HEIGHT,
       x: ARC_WIDTH / 2,
-      y: ARC_HEIGHT + PADDING,
+      y: ARC_HEIGHT + PADDING * 2,
       props: {className: 'name'},
     });
 
@@ -97,10 +97,10 @@ export default React.createClass({
                           max={max}
                           alarms={alarms} />
 
-          <text key="min"   ref="min"   className="min"   x={0}             y={ARC_HEIGHT + PADDING} style={makeStyle(rangeTextLength, RANGE_WIDTH, RANGE_HEIGHT)}>
+          <text key="min"   ref="min"   className="min"   x={0}             y={ARC_HEIGHT + PADDING * 2} style={makeStyle(rangeTextLength, RANGE_WIDTH, RANGE_HEIGHT)}>
             {minText}
           </text>
-          <text key="max"   ref="max"   className="max"   x={ARC_WIDTH}     y={ARC_HEIGHT + PADDING} style={makeStyle(rangeTextLength, RANGE_WIDTH, RANGE_HEIGHT)}>
+          <text key="max"   ref="max"   className="max"   x={ARC_WIDTH}     y={ARC_HEIGHT + PADDING * 2} style={makeStyle(rangeTextLength, RANGE_WIDTH, RANGE_HEIGHT)}>
             {maxText}
           </text>
           <text key="value" ref="value" className="value" x={ARC_WIDTH / 2} y={ARC_HEIGHT} style={makeStyle(valueText.length, VALUE_WIDTH, VALUE_HEIGHT)}>
