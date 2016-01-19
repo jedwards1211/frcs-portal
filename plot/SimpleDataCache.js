@@ -171,7 +171,7 @@ export default class SimpleDataCache extends EventEmitter {
           }
         }
       }
-      else {
+      else if (pageStart < to) {
         // pass a NaN value so that non-adjacent pages don't get connected by a straight line
         point.t = pageStart;
         point.v = NaN;
