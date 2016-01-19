@@ -6,7 +6,7 @@ import arcPath from '../svg/arcPath';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
 import dummyCanvas from '../utils/dummyCanvas';
-import measureTextPolyfill from '../utils/measureTextPolyfill';
+import FontMetricsCache from '../utils/FontMetricsCache';
 
 require('./ArcGauge.sass');
 
@@ -39,20 +39,17 @@ export default class ArgGauge extends Component {
     var {fontFamily, fontWeight} = window.getComputedStyle(root);
 
     if (fontFamily !== this.state.fontFamily || fontWeight !== this.state.fontWeight) {
-      var ctx = dummyCanvas.getContext('2d');
-      ctx.font = `${fontWeight} 10px ${fontFamily}`;
-
-      let textMetrics = measureTextPolyfill(ctx, 'ÁThegqjlf');
-
-      this.setState({fontFamily, fontWeight, textMetrics});
+      this.setState({fontFamily, fontWeight});
     }
   };
   render() {
     var {name, units, min, max, precision, alarms, value, 
         className, alarmState, children, ...restProps} = this.props;
-    var {fontWeight = '', fontFamily = 'sans-serif', textMetrics = {}} = this.state;
+    var {fontWeight = '', fontFamily = 'sans-serif'} = this.state;
+    var font = `${fontWeight} 10px ${fontFamily}`;
+    var fontMetrics = FontMetricsCache.getFontMetrics(font);
 
-    var {actualBoundingBoxAscent = 10, actualBoundingBoxDescent = 0} = textMetrics;
+    var {actualBoundingBoxAscent = 10, actualBoundingBoxDescent = 0} = fontMetrics;
 
     className = classNames(className, 'gauge arc-gauge', {
       'gauge-alarm': alarmState === 'alarm',
@@ -68,7 +65,7 @@ export default class ArgGauge extends Component {
     var fontAspect = 1.6;
 
     var ctx = dummyCanvas.getContext('2d');
-    ctx.font = `${fontWeight} 10px ${fontFamily}`;
+    ctx.font = font;
 
     var makeStyle = (text, maxWidth, maxHeight) => ({
       fontSize: Math.min(maxHeight * (actualBoundingBoxAscent + actualBoundingBoxDescent) / 10, 
