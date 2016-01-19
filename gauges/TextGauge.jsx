@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 import GaugePropTypes from './GaugePropTypes';
 import './TextGauge.sass';
@@ -19,7 +20,8 @@ export default class TextGauge extends React.Component {
   static defaultProps = {
     className: 'text-gauge',
   };
-  resize() {
+  resize = _.throttle(() => {
+    if (!this.mounted) return;
     var root = this.refs.root;
     var name = this.refs.name;
     var value = this.refs.value;
@@ -44,12 +46,18 @@ export default class TextGauge extends React.Component {
         fontWeight,
       });
     }
-  }
+  }, 50);
   componentDidMount() {
+    this.mounted = true;
     this.resize();
+    window.addEventListener('resize', this.resize);
   }
   componentDidUpdate() {
     this.resize();
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+    window.removeEventListener('resize', this.resize);
   }
   render() {
     var {className, value, min, max, showRange, name, color, units, 
