@@ -18,6 +18,7 @@ export default class SidebarView extends Component {
     sidebarSide:          PropTypes.oneOf([leftSide, rightSide]),
     sidebarWidth:         PropTypes.number,
     overlapToggleButton:  PropTypes.bool,
+    isNarrow:             PropTypes.func,
   };;
   static defaultProps = {
     sidebarSide: leftSide,
@@ -75,7 +76,10 @@ export default class SidebarView extends Component {
     }
   }
   isNarrow() {
-    let {props: {sidebarWidth}, state: {rootWidth = 0}} = this;
+    let {props: {isNarrow, sidebarWidth}, state: {rootWidth = 0}} = this;
+    if (isNarrow) {
+      return isNarrow(this.props, this.state);
+    }
     return rootWidth < sidebarWidth * 2;
   }
   render() {
@@ -91,7 +95,8 @@ export default class SidebarView extends Component {
       contentPosition += sidebarToggleBtnWidth;
     }
 
-    className = classNames(className, 'mf-sidebar-view', `mf-sidebar-${sidebarSide.name}`, {'laid-out': laidOut});
+    className = classNames(className, 'mf-sidebar-view', `mf-sidebar-${sidebarSide.name}`, 
+      {'laid-out': laidOut, 'sidebar-open': sidebarOpen});
 
     const sidebarStyle = {
       width: sidebarWidth,
