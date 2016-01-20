@@ -10,7 +10,7 @@ import FontMetricsCache from '../utils/FontMetricsCache';
 
 require('./ArcGauge.sass');
 
-var PADDING    = 5;
+var PADDING    = 7;
 var ARC_WIDTH  = 300;
 var ARC_HEIGHT = ARC_WIDTH / 2;
 var ARC_THICKNESS = 25;
@@ -23,8 +23,8 @@ var UNITS_HEIGHT = ARC_HEIGHT * 0.15;
 var NAME_HEIGHT = ARC_HEIGHT * 0.3;
 var RANGE_HEIGHT = ARC_HEIGHT * 0.15;
 var VALUE_WIDTH  = ARC_WIDTH  * 0.8;
-var NAME_WIDTH   = ARC_WIDTH * 0.6;
-var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH - PADDING * 2) / 2;
+var NAME_WIDTH   = ARC_WIDTH * 0.55;
+var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING * 2;
 var UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
 
 var TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
@@ -46,10 +46,9 @@ export default class ArgGauge extends Component {
     var {name, units, min, max, precision, alarms, value, 
         className, alarmState, children, ...restProps} = this.props;
     var {fontWeight = '', fontFamily = 'sans-serif'} = this.state;
-    var font = `${fontWeight} 10px ${fontFamily}`;
+    var fontSize = 20;
+    var font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     var fontMetrics = FontMetricsCache.getFontMetrics(font);
-
-    var {actualBoundingBoxAscent = 10, actualBoundingBoxDescent = 0} = fontMetrics;
 
     className = classNames(className, 'gauge arc-gauge', {
       'gauge-alarm': alarmState === 'alarm',
@@ -64,13 +63,13 @@ export default class ArgGauge extends Component {
     // height / width
     var fontAspect = 1.6;
 
-    var ctx = dummyCanvas.getContext('2d');
-    ctx.font = font;
-
-    var makeStyle = (text, maxWidth, maxHeight) => ({
-      fontSize: Math.min(maxHeight * (actualBoundingBoxAscent + actualBoundingBoxDescent) / 10, 
-                        10 * maxWidth / ctx.measureText(text).width)
-    });
+    var makeStyle = (text, maxWidth, maxHeight) => {
+      var ctx = dummyCanvas.getContext('2d');
+      ctx.font = font;
+      return {
+        fontSize: fontSize * Math.min(maxHeight / fontMetrics.hangingBaseline, maxWidth / ctx.measureText(text).width)
+      };
+    };
 
     var minText     = formatValue(min);
     var maxText     = formatValue(max);
@@ -84,6 +83,8 @@ export default class ArgGauge extends Component {
       fontAspect,
       maxWidth: NAME_WIDTH,
       maxHeight: NAME_HEIGHT,
+      fontWeight,
+      fontFamily,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
       props: {className: 'name'},
