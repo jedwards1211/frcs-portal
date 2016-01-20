@@ -5,6 +5,8 @@ import _ from 'lodash';
 import GaugePropTypes from './GaugePropTypes';
 import './TextGauge.sass';
 import dummyCanvas from '../utils/dummyCanvas';
+import FittedText from '../common/FittedText';
+import {pickFontSize} from './gaugeUtils';
 
 let decimalZerosRx = /^([^.]+)\.0+$/;
 
@@ -23,7 +25,6 @@ export default class TextGauge extends React.Component {
   resize = _.throttle(() => {
     if (!this.mounted) return;
     var root = this.refs.root;
-    var name = this.refs.name;
     var value = this.refs.value;
     var units = this.refs.units;
     var max = this.refs.max;
@@ -38,7 +39,6 @@ export default class TextGauge extends React.Component {
     if (width !== this.state.width || height !== this.state.height) {
       this.setState({
         width, height,
-        nameWidth: name.offsetWidth,
         valueWidth: value.offsetWidth,
         unitsWidth: units.offsetWidth,
         rangeWidth: max ? max.offsetWidth : 0,
@@ -62,7 +62,7 @@ export default class TextGauge extends React.Component {
   render() {
     var {className, value, min, max, showRange, name, color, units, 
         precision = 0, alarmState, children, ...props} = this.props;
-    var {width, height, nameWidth, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
+    var {width, height, valueWidth, unitsWidth, rangeWidth, fontFamily, fontWeight} = this.state;
 
     className = classNames('gauge', className, {
       'gauge-alarm': alarmState === 'alarm',
@@ -93,27 +93,24 @@ export default class TextGauge extends React.Component {
       var ctx = dummyCanvas.getContext('2d');
       ctx.font = `${fontWeight} 10px ${fontFamily}`;
 
-      var nameMetrics = ctx.measureText(name);
-      nameStyle.fontSize = Math.min(height * 0.4, 17 * nameWidth / nameMetrics.width);
-      nameStyle.lineHeight = nameStyle.fontSize + 'px';
-
       var unitsMetrics = ctx.measureText(units);
-      unitsStyle.fontSize = Math.min(height / 2, 10 * unitsWidth / unitsMetrics.width);
+      unitsStyle.fontSize = pickFontSize(Math.min(height / 2, 10 * unitsWidth / unitsMetrics.width));
       unitsStyle.lineHeight = unitsStyle.fontSize + 'px';
 
       var rangeMinMetrics = ctx.measureText(min);
       var rangeMaxMetrics = ctx.measureText(max);
 
-      rangeStyle.fontSize = Math.min(height / 2, 10 * (rangeWidth) / Math.max(rangeMinMetrics.width, rangeMaxMetrics.width));
+      rangeStyle.fontSize = pickFontSize(
+        Math.min(height / 2, 10 * (rangeWidth) / Math.max(rangeMinMetrics.width, rangeMaxMetrics.width)));
 
       var valueMetrics = ctx.measureText(value);
-      valueStyle.fontSize = Math.min(height, 10 * (valueWidth) / Math.max(
-        valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width));
+      valueStyle.fontSize = pickFontSize(Math.min(height, 10 * (valueWidth) / Math.max(
+        valueMetrics.width, rangeMinMetrics.width, rangeMaxMetrics.width)));
       valueStyle.lineHeight = valueStyle.fontSize + 'px';
     }
 
     return <div ref="root" {...props} className={className} tabIndex={0}>
-      <span ref="name" className="name" style={nameStyle}>{name}</span>
+      <FittedText ref="name" className="name" style={nameStyle} text={name} snapFontSize={pickFontSize}/>
       <div className="value-and-units">
         <span ref="value" className="value" style={valueStyle}>{value}</span>
         <span ref="units" className="units" style={unitsStyle}>{units}</span>

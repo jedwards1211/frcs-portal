@@ -6,6 +6,9 @@ import HBarFill from './HBarFill';
 import HBarAlarmLegend from './HBarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
+import {pickFontSize} from './gaugeUtils';
+import FontMetricsCache from '../utils/FontMetricsCache';
+import dummyCanvas from '../utils/dummyCanvas';
 
 require('./HBarGauge.sass');
 
@@ -59,10 +62,15 @@ export default React.createClass({
     var {fontFamily, fontWeight} = this.state;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
+    var fontSize = 20;
+    var font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    var fontMetrics = FontMetricsCache.getFontMetrics(font);
+    var isNA = isNaN(value) || value === null;
 
     className = classNames(className, 'gauge hbar-gauge', {
       'gauge-alarm':    alarmState === 'alarm',
       'gauge-warning':  alarmState === 'warning',
+      'gauge-na': isNA,
     });
 
     height = Math.min(height, 100);
@@ -79,15 +87,17 @@ export default React.createClass({
 
     function formatValue(value) {
       value = Number(value);
-      return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
+      return isNaN(value) || value === null ? 'NA' : value.toFixed(precision);
     }
 
-    // height / width
-    var fontAspect = 1.6;
 
-    var makeStyle = (textLength, maxWidth, maxHeight) => ({
-      fontSize: Math.max(10, Math.min(maxHeight, maxWidth / textLength * fontAspect))
-    });
+    var makeStyle = (text, maxWidth, maxHeight) => {
+      var ctx = dummyCanvas.getContext('2d');
+      ctx.font = font;
+      return {
+        fontSize: pickFontSize(fontSize * Math.min(maxHeight / fontMetrics.hangingBaseline, maxWidth / ctx.measureText(text).width))
+      };
+    };
 
     var minText     = formatValue(min);
     var maxText     = formatValue(max);
@@ -121,9 +131,6 @@ export default React.createClass({
     var rangeY = barY + barHeight / 2;
 
     let lines = layoutSvgText(nameText, {
-      separators: [/\s*>\s*/, /\s+/],
-      minFontSize: 15,
-      fontAspect,
       maxWidth: nameWidth,
       maxHeight: nameHeight,
       fontFamily,
@@ -141,7 +148,7 @@ export default React.createClass({
         }}>
           <rect key="track" className="track" x={0} y={barY} width={width} height={barHeight} />
           <HBarFill  key="fill"
-                    className={classNames('fill', {'na': isNaN(value) || value === null})}
+                    className={classNames('fill', {'na': isNA})}
                     x={0} y={barY} width={width} height={barHeight}
                     min={min}
                     max={max}

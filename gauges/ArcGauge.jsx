@@ -7,6 +7,7 @@ import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
 import dummyCanvas from '../utils/dummyCanvas';
 import FontMetricsCache from '../utils/FontMetricsCache';
+import {pickFontSize} from './gaugeUtils';
 
 require('./ArcGauge.sass');
 
@@ -43,28 +44,30 @@ export default class ArgGauge extends Component {
     }
   };
   render() {
-    var {name, units, min, max, precision, alarms, value, 
+    var {name, units, min, max, precision, alarms, value, debugRects,
         className, alarmState, children, ...restProps} = this.props;
     var {fontWeight = '', fontFamily = 'sans-serif'} = this.state;
     var fontSize = 20;
     var font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     var fontMetrics = FontMetricsCache.getFontMetrics(font);
+    var isNA = isNaN(value) || value === null;
 
     className = classNames(className, 'gauge arc-gauge', {
       'gauge-alarm': alarmState === 'alarm',
       'gauge-warning': alarmState === 'warning',
+      'gauge-na': isNA,
     });
 
     function formatValue(value) {
       value = Number(value);
-      return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
+      return isNaN(value) || value === null ? 'NA' : value.toFixed(precision);
     }
 
     var makeStyle = (text, maxWidth, maxHeight) => {
       var ctx = dummyCanvas.getContext('2d');
       ctx.font = font;
       return {
-        fontSize: fontSize * Math.min(maxHeight / fontMetrics.hangingBaseline, maxWidth / ctx.measureText(text).width)
+        fontSize: pickFontSize(fontSize * Math.min(maxHeight / fontMetrics.hangingBaseline, maxWidth / ctx.measureText(text).width))
       };
     };
 
@@ -93,7 +96,7 @@ export default class ArgGauge extends Component {
         <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + NAME_HEIGHT + PADDING)} 
           preserveAspectRatio="xMidYMid meet">
           <path key="track" className="track" d={TRACK_PATH} />
-          <ArcFill  key="fill" className={classNames('fill', {'na': isNaN(value) || value === null})}
+          <ArcFill  key="fill" className={classNames('fill', {'na': isNA})}
                     center={ARC_CENTER} radius={ARC_RADIUS} minAngle={Math.PI} angularSpan={-Math.PI}
                     thickness={ARC_THICKNESS} min={min} max={max} value={value} />
 
@@ -113,6 +116,10 @@ export default class ArgGauge extends Component {
             {unitsText}
           </text>
           {lines}
+          {debugRects && [
+            <rect key="name" x={(ARC_WIDTH - NAME_WIDTH) / 2} y={ARC_HEIGHT + PADDING} width={NAME_WIDTH} height={NAME_HEIGHT}
+                  style={{fill: 'none', stroke: 'blue'}}/>
+          ]}
         </svg>
         {children}
       </div>
