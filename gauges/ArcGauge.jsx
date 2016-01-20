@@ -60,9 +60,6 @@ export default class ArgGauge extends Component {
       return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
     }
 
-    // height / width
-    var fontAspect = 1.6;
-
     var makeStyle = (text, maxWidth, maxHeight) => {
       var ctx = dummyCanvas.getContext('2d');
       ctx.font = font;
@@ -78,14 +75,10 @@ export default class ArgGauge extends Component {
     var valueText   = formatValue(value);
 
     let lines = layoutSvgText(nameText, {
-      separators: [/\s*>\s*/,/\s+/],
-      minFontSize: 20,
-      fontAspect,
       maxWidth: NAME_WIDTH,
       maxHeight: NAME_HEIGHT,
       fontWeight,
       fontFamily,
-      log: true,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
       props: {className: 'name'},
@@ -100,26 +93,12 @@ export default class ArgGauge extends Component {
         <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + NAME_HEIGHT + PADDING)} 
           preserveAspectRatio="xMidYMid meet">
           <path key="track" className="track" d={TRACK_PATH} />
-          <ArcFill  key="fill"
-                    className={classNames('fill', {'na': isNaN(value) || value === null})}
-                    center={ARC_CENTER} 
-                    radius={ARC_RADIUS} 
-                    minAngle={Math.PI} 
-                    angularSpan={-Math.PI}
-                    thickness={ARC_THICKNESS}
-                    min={min}
-                    max={max}
-                    value={value} />
+          <ArcFill  key="fill" className={classNames('fill', {'na': isNaN(value) || value === null})}
+                    center={ARC_CENTER} radius={ARC_RADIUS} minAngle={Math.PI} angularSpan={-Math.PI}
+                    thickness={ARC_THICKNESS} min={min} max={max} value={value} />
 
-          <ArcAlarmLegend key="legend"
-                          center={ARC_CENTER}
-                          radius={LEGEND_RADIUS}
-                          thickness={LEGEND_THICKNESS}
-                          minAngle={Math.PI}
-                          angularSpan={-Math.PI}
-                          min={min}
-                          max={max}
-                          alarms={alarms} />
+          <ArcAlarmLegend key="legend" center={ARC_CENTER} radius={LEGEND_RADIUS} thickness={LEGEND_THICKNESS}
+                          minAngle={Math.PI} angularSpan={-Math.PI} min={min} max={max} alarms={alarms} />
 
           <text key="min"   ref="min"   className="min"   x={0}             y={ARC_HEIGHT + PADDING} style={minStyle}>
             {minText}
