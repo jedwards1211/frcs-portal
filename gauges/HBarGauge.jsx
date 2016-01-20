@@ -134,12 +134,22 @@ export default React.createClass({
       maxWidth: nameWidth,
       maxHeight: nameHeight,
       fontFamily,
-      fontWeight,
+      fontWeight: 'bold',
       x: 0,
       y: nameY,
       ascend: true,
       props: {className: 'name'},
     });
+
+    let valueStyle = makeStyle(valueText, valueWidth - padding, nameHeight);
+    let unitsStyle = makeStyle(unitsText, unitsWidth, nameHeight);
+
+    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, lines.fontSize, valueStyle.fontSize);
+
+    let minStyle = makeStyle(minText, rangeWidth, rangeHeight);
+    let maxStyle = makeStyle(maxText, rangeWidth, rangeHeight);
+
+    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize);
 
     return (
       <div ref={c => this.root = c} className={className} {...restProps}>
@@ -155,24 +165,19 @@ export default React.createClass({
                     value={value} />
           {legend}
 
-          <text key="min"   ref="min"   className="min"   x={rangePadding}       y={rangeY} style={makeStyle(rangeTextLength, rangeWidth, rangeHeight)}>
+          <text key="min"   ref="min"   className="min"   x={rangePadding}       y={rangeY} style={minStyle}>
             {minText}
           </text>
-          <text key="max"   ref="max"   className="max"   x={width - rangePadding} y={rangeY} style={makeStyle(rangeTextLength, rangeWidth, rangeHeight)}>
+          <text key="max"   ref="max"   className="max"   x={width - rangePadding} y={rangeY} style={maxStyle}>
             {maxText}
           </text>
-          <text key="value" ref="value" className="value" x={width - unitsWidth - padding} y={nameY} style={makeStyle(valueTextLength, valueWidth - padding, nameHeight)}>
+          <text key="value" ref="value" className="value" x={width - unitsWidth - padding} y={nameY} style={valueStyle}>
             {valueText}
           </text>
-          <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={makeStyle(unitsText.length, unitsWidth - padding, nameHeight)}> 
+          <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={unitsStyle}> 
             {unitsText}
           </text>
           {lines}
-          {/*
-          <text key="name"  ref="name"  className="name"  x={0}                  y={nameY} style={makeStyle(nameText.length , nameWidth - padding, nameHeight)}>
-            {nameText}
-          </text>
-        */}
         </svg>
         {children}
       </div>

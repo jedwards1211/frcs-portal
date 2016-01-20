@@ -25,8 +25,14 @@ var NAME_HEIGHT = ARC_HEIGHT * 0.3;
 var RANGE_HEIGHT = ARC_HEIGHT * 0.15;
 var VALUE_WIDTH  = ARC_WIDTH  * 0.8;
 var NAME_WIDTH   = ARC_WIDTH * 0.55;
-var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING * 2;
+var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING;
 var UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
+var TOTAL_HEIGHT = ARC_HEIGHT + NAME_HEIGHT + PADDING;
+
+var ALT_FONT_SIZE_THRESHOLD = 22;
+var RANGE_ALT_HEIGHT = RANGE_HEIGHT;
+var RANGE_ALT_WIDTH = ARC_WIDTH / 2 - PADDING * 4;
+var NAME_ALT_HEIGHT = TOTAL_HEIGHT - ARC_HEIGHT - RANGE_ALT_HEIGHT;
 
 var TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
 
@@ -79,8 +85,9 @@ export default class ArgGauge extends Component {
 
     let lines = layoutSvgText(nameText, {
       maxWidth: NAME_WIDTH,
-      maxHeight: NAME_HEIGHT,
-      fontWeight,
+      maxHeight: NAME_HEIGHT + PADDING,
+      maxFontSize: 30,
+      fontWeight: 'bold',
       fontFamily,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
@@ -89,12 +96,33 @@ export default class ArgGauge extends Component {
 
     let minStyle = makeStyle(minText, RANGE_WIDTH, RANGE_HEIGHT);
     let maxStyle = makeStyle(maxText, RANGE_WIDTH, RANGE_HEIGHT);
-    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize);
+    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize, lines.fontSize);
+
+      var altLines = layoutSvgText(nameText, {
+        maxWidth: ARC_WIDTH,
+        maxHeight: NAME_ALT_HEIGHT,
+        maxFontSize: 30,
+        fontWeight: 'bold',
+        fontFamily,
+        x: ARC_WIDTH / 2,
+        y: ARC_HEIGHT + RANGE_ALT_HEIGHT + PADDING * 2,
+        props: {className: 'name'},
+      });
+
+      var altMinStyle = makeStyle(minText, RANGE_ALT_WIDTH, RANGE_ALT_HEIGHT);
+      var altMaxStyle = makeStyle(maxText, RANGE_ALT_WIDTH, RANGE_ALT_HEIGHT);
+      altMinStyle.fontSize = altMaxStyle.fontSize = Math.min(
+        altMinStyle.fontSize, altMaxStyle.fontSize);
+
+      if (altMinStyle.fontSize > minStyle.fontSize && altLines.fontSize > lines.fontSize) {
+        lines = altLines;
+        minStyle = altMinStyle;
+        maxStyle = altMaxStyle;
+      }
 
     return (
       <div ref={c => this.root = c} className={className} {...restProps}>
-        <svg key="svg" ref="svg" viewBox={'0 0 ' + ARC_WIDTH + ' ' + (ARC_HEIGHT + NAME_HEIGHT + PADDING)} 
-          preserveAspectRatio="xMidYMid meet">
+        <svg key="svg" ref="svg" viewBox={`0 0 ${ARC_WIDTH} ${TOTAL_HEIGHT}`} preserveAspectRatio="xMidYMid meet">
           <path key="track" className="track" d={TRACK_PATH} />
           <ArcFill  key="fill" className={classNames('fill', {'na': isNA})}
                     center={ARC_CENTER} radius={ARC_RADIUS} minAngle={Math.PI} angularSpan={-Math.PI}
@@ -117,7 +145,7 @@ export default class ArgGauge extends Component {
           </text>
           {lines}
           {debugRects && [
-            <rect key="name" x={(ARC_WIDTH - NAME_WIDTH) / 2} y={ARC_HEIGHT + PADDING} width={NAME_WIDTH} height={NAME_HEIGHT}
+            <rect key="name" x={(ARC_WIDTH - NAME_WIDTH) / 2} y={ARC_HEIGHT + PADDING} width={NAME_WIDTH} height={NAME_HEIGHT + PADDING}
                   style={{fill: 'none', stroke: 'blue'}}/>
           ]}
         </svg>
