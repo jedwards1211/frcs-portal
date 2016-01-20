@@ -11,48 +11,50 @@ import {pickFontSize} from './gaugeUtils';
 
 require('./ArcGauge.sass');
 
-var PADDING    = 7;
-var ARC_WIDTH  = 300;
-var ARC_HEIGHT = ARC_WIDTH / 2;
-var ARC_THICKNESS = 25;
-var ARC_CENTER = [ARC_WIDTH / 2, ARC_HEIGHT];
-var ARC_RADIUS = [ARC_WIDTH / 2, ARC_HEIGHT];
-var LEGEND_RADIUS = [ARC_RADIUS[0] - ARC_THICKNESS, ARC_RADIUS[1] - ARC_THICKNESS];
-var LEGEND_THICKNESS = 4;
-var VALUE_HEIGHT = ARC_HEIGHT * 0.45;
-var UNITS_HEIGHT = ARC_HEIGHT * 0.15;
-var NAME_HEIGHT = ARC_HEIGHT * 0.3;
-var RANGE_HEIGHT = ARC_HEIGHT * 0.15;
-var VALUE_WIDTH  = ARC_WIDTH  * 0.8;
-var NAME_WIDTH   = ARC_WIDTH * 0.55;
-var RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING;
-var UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
-var TOTAL_HEIGHT = ARC_HEIGHT + NAME_HEIGHT + PADDING;
+const PADDING    = 7;
+const ARC_WIDTH  = 300;
+const ARC_HEIGHT = ARC_WIDTH / 2;
+const ARC_THICKNESS = 25;
+const ARC_CENTER = [ARC_WIDTH / 2, ARC_HEIGHT];
+const ARC_RADIUS = [ARC_WIDTH / 2, ARC_HEIGHT];
+const LEGEND_RADIUS = [ARC_RADIUS[0] - ARC_THICKNESS, ARC_RADIUS[1] - ARC_THICKNESS];
+const LEGEND_THICKNESS = 4;
+const VALUE_HEIGHT = ARC_HEIGHT * 0.45;
+const UNITS_HEIGHT = ARC_HEIGHT * 0.15;
+const NAME_HEIGHT = ARC_HEIGHT * 0.3;
+const RANGE_HEIGHT = ARC_HEIGHT * 0.15;
+const VALUE_WIDTH  = ARC_WIDTH  * 0.8;
+const NAME_WIDTH   = ARC_WIDTH * 0.55;
+const RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING;
+const UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
+const TOTAL_HEIGHT = ARC_HEIGHT + NAME_HEIGHT + PADDING;
 
-var ALT_FONT_SIZE_THRESHOLD = 22;
-var RANGE_ALT_HEIGHT = RANGE_HEIGHT;
-var RANGE_ALT_WIDTH = ARC_WIDTH / 2 - PADDING * 4;
-var NAME_ALT_HEIGHT = TOTAL_HEIGHT - ARC_HEIGHT - RANGE_ALT_HEIGHT;
+const RANGE_ALT_HEIGHT = RANGE_HEIGHT;
+const RANGE_ALT_WIDTH = ARC_WIDTH / 2 - PADDING * 4;
+const NAME_ALT_HEIGHT = TOTAL_HEIGHT - ARC_HEIGHT - RANGE_ALT_HEIGHT;
 
-var TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
+const TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
 
 export default class ArgGauge extends Component {
   static propTypes = GaugePropTypes;
+  refs = {};
   state = {};
   componentDidMount() {
     this.remeasure();
   }
   remeasure = () => {
-    var {fontFamily, fontWeight} = window.getComputedStyle(root);
+    var {fontFamily, fontWeight} = window.getComputedStyle(this.root);
+    var {fontWeight: nameFontWeight} = window.getComputedStyle(this.refs.name);
 
-    if (fontFamily !== this.state.fontFamily || fontWeight !== this.state.fontWeight) {
-      this.setState({fontFamily, fontWeight});
+    if (fontFamily !== this.state.fontFamily || fontWeight !== this.state.fontWeight ||
+        nameFontWeight !== this.state.nameFontWeight) {
+      this.setState({fontFamily, fontWeight, nameFontWeight});
     }
   };
   render() {
     var {name, units, min, max, precision, alarms, value, debugRects,
         className, alarmState, children, ...restProps} = this.props;
-    var {fontWeight = '', fontFamily = 'sans-serif'} = this.state;
+    var {fontWeight = '', nameFontWeight = 'bold', fontFamily = 'sans-serif'} = this.state;
     var fontSize = 20;
     var font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     var fontMetrics = FontMetricsCache.getFontMetrics(font);
@@ -87,11 +89,10 @@ export default class ArgGauge extends Component {
       maxWidth: NAME_WIDTH,
       maxHeight: NAME_HEIGHT + PADDING,
       maxFontSize: 30,
-      fontWeight: 'bold',
+      fontWeight: nameFontWeight,
       fontFamily,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
-      props: {className: 'name'},
     });
 
     let minStyle = makeStyle(minText, RANGE_WIDTH, RANGE_HEIGHT);
@@ -102,11 +103,10 @@ export default class ArgGauge extends Component {
         maxWidth: ARC_WIDTH,
         maxHeight: NAME_ALT_HEIGHT,
         maxFontSize: 30,
-        fontWeight: 'bold',
+        fontWeight: nameFontWeight,
         fontFamily,
         x: ARC_WIDTH / 2,
         y: ARC_HEIGHT + RANGE_ALT_HEIGHT + PADDING * 2,
-        props: {className: 'name'},
       });
 
       var altMinStyle = makeStyle(minText, RANGE_ALT_WIDTH, RANGE_ALT_HEIGHT);
@@ -143,7 +143,9 @@ export default class ArgGauge extends Component {
           <text key="units" ref="units" className="units" x={ARC_WIDTH / 2} y={ARC_HEIGHT - VALUE_HEIGHT - PADDING} style={makeStyle(unitsText, UNITS_WIDTH, UNITS_HEIGHT)}>
             {unitsText}
           </text>
-          {lines}
+          <g className="name" ref={c => this.refs.name = c}>
+            {lines}
+          </g>
           {debugRects && [
             <rect key="name" x={(ARC_WIDTH - NAME_WIDTH) / 2} y={ARC_HEIGHT + PADDING} width={NAME_WIDTH} height={NAME_HEIGHT + PADDING}
                   style={{fill: 'none', stroke: 'blue'}}/>

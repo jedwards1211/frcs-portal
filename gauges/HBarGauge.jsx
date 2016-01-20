@@ -33,10 +33,14 @@ export default React.createClass({
   getCurrentSize() {
     if (this.isMounted()) {
       var gauge = this.root;
-      var {fontFamily, fontWeight} = window.getComputedStyle(this.root);
+      var {fontFamily, fontWeight} = window.getComputedStyle(gauge);
+      if (this.refs.name) {
+        var {fontWeight: nameFontWeight} = window.getComputedStyle(this.refs.name);
+      }
       return {
         fontFamily,
         fontWeight,
+        nameFontWeight,
         width: gauge.offsetWidth,
         height: gauge.offsetHeight,
       };
@@ -52,14 +56,15 @@ export default React.createClass({
   componentWillUpdate(nextProps, nextState) {
     var size = this.getCurrentSize();
     if (size.width  !== this.state.width ||
-        size.height !== this.state.height) {
+        size.height !== this.state.height ||
+        size.nameFontWeight !== this.state.nameFontWeight) {
       this.setState(size);
     }
   },
   render() {
     var {name, units, min, max, precision, alarms, value, className, alarmState, 
         children, width, height, ...restProps} = this.props;
-    var {fontFamily, fontWeight} = this.state;
+    var {fontFamily = 'sans-serif', fontWeight = '', nameFontWeight = 'bold'} = this.state;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
     var fontSize = 20;
@@ -104,9 +109,6 @@ export default React.createClass({
     var valueText   = formatValue(value);
     var unitsText   = units || '';
     var nameText    = name  || '';
-    var valueTextLength = Math.max(valueText.length, minText.length, maxText.length);
-
-    var rangeTextLength = Math.max(minText.length, maxText.length);
 
     var barHeight = Math.round(height * BAR_HEIGHT);
     var barY = Math.round(height - barHeight);
@@ -134,11 +136,10 @@ export default React.createClass({
       maxWidth: nameWidth,
       maxHeight: nameHeight,
       fontFamily,
-      fontWeight: 'bold',
+      fontWeight: nameFontWeight,
       x: 0,
       y: nameY,
       ascend: true,
-      props: {className: 'name'},
     });
 
     let valueStyle = makeStyle(valueText, valueWidth - padding, nameHeight);
@@ -177,7 +178,9 @@ export default React.createClass({
           <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={unitsStyle}> 
             {unitsText}
           </text>
-          {lines}
+          <g className="name" ref="name">
+            {lines}
+          </g>
         </svg>
         {children}
       </div>
