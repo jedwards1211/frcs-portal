@@ -5,6 +5,16 @@ import _ from 'lodash';
 import layoutText from '../utils/layoutText';
 
 export default class FittedText extends Component {
+  static propTypes = {
+    text:         PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.arrayOf(PropTypes.string.isRequired),
+    ]).isRequired,
+    snapFontSize: PropTypes.func,
+  };
+  static defaultProps = {
+    snapFontSize: _.identity, 
+  };
   state = {};
   shouldComponentUpdate = PureRender.shouldComponentUpdate;
   remeasure = _.throttle(() => {
@@ -27,11 +37,11 @@ export default class FittedText extends Component {
     this.remeasure(); 
   }
   render() {
-    let {text, separators, splitRegExp, log, style} = this.props;
+    let {text, separators, splitRegExp, log, style, snapFontSize} = this.props;
     let {offsetWidth, offsetHeight, fontFamily, fontWeight} = this.state;
 
     style = Object.assign({overflow: 'visible'}, style);
-    let content = [];
+    let content;
 
     if (offsetWidth && offsetHeight && fontFamily && fontWeight) {
       let {lines, fontSize} = layoutText(text, {
@@ -44,18 +54,14 @@ export default class FittedText extends Component {
         log,
       });
 
-      if (lines.length > 0) {
-        content.push(lines[0]);
-        for (var i = 1; i < lines.length; i++) {
-          content.push(<br/>);
-          content.push(lines[i]);
-        }
-      }
+      fontSize = snapFontSize(fontSize);
+
+      content = lines.map((line, index) => (<div key={index}>{line}</div>));
 
       style.fontSize = fontSize;
       style.lineHeight = fontSize + 'px';
     }
 
-    return <span {...this.props} ref={c => this.root = c} style={style}>{content.length ? content : undefined}</span>;
+    return <span {...this.props} ref={c => this.root = c} style={style}>{content}</span>;
   }  
 }
