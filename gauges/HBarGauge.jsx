@@ -29,8 +29,11 @@ export default React.createClass({
   },
   getCurrentSize() {
     if (this.isMounted()) {
-      var gauge = this.refs.gauge;
+      var gauge = this.root;
+      var {fontFamily, fontWeight} = window.getComputedStyle(this.root);
       return {
+        fontFamily,
+        fontWeight,
         width: gauge.offsetWidth,
         height: gauge.offsetHeight,
       };
@@ -53,6 +56,7 @@ export default React.createClass({
   render() {
     var {name, units, min, max, precision, alarms, value, className, alarmState, 
         children, width, height, ...restProps} = this.props;
+    var {fontFamily, fontWeight} = this.state;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
 
@@ -68,7 +72,7 @@ export default React.createClass({
 
     // the following also tolerates undefined values
     if (!(width > 0) || !(height > 0)) {
-      return <div ref="gauge" className={className} {...restProps} />;
+      return <div ref={c => this.root = c} className={className} {...restProps} />;
     }
 
     var hasAlarms = alarms && alarms.length;
@@ -122,6 +126,8 @@ export default React.createClass({
       fontAspect,
       maxWidth: nameWidth,
       maxHeight: nameHeight,
+      fontFamily,
+      fontWeight,
       x: 0,
       y: nameY,
       ascend: true,
@@ -129,7 +135,7 @@ export default React.createClass({
     });
 
     return (
-      <div ref="gauge" className={className} {...restProps}>
+      <div ref={c => this.root = c} className={className} {...restProps}>
         <svg key="svg" ref="svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{
           padding: padding
         }}>

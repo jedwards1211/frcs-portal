@@ -85,6 +85,7 @@ export default class ArgGauge extends Component {
       maxHeight: NAME_HEIGHT,
       fontWeight,
       fontFamily,
+      log: true,
       x: ARC_WIDTH / 2,
       y: ARC_HEIGHT + PADDING,
       props: {className: 'name'},
