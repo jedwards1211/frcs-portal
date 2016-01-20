@@ -41,12 +41,14 @@ export default function layoutText(text: string | Array<string>, options: {
   maxWidth: number, 
   maxHeight: number, 
   log: boolean
-}) : {lines: Array<string>, fontSize: number} {
+}) : {lineStarts: Array<string>, fontSize: number} {
   let {splitRegExp, separators, fontWeight, fontFamily, maxWidth, maxHeight, log} = options;
   let ctx = dummyCanvas.getContext('2d');
   let baseFontSize = maxHeight;
   ctx.font = `${fontWeight} ${baseFontSize}px ${fontFamily}`;
 
+  // determines the font size that would shrink lines with the given widths and height = baseFontSize
+  // down to fit within maxWidth/maxHeight
   function calcFontSize(lineWidths) {
     return Math.min(maxHeight / lineWidths.length, baseFontSize * maxWidth / _.max(lineWidths));
   }
@@ -64,21 +66,26 @@ export default function layoutText(text: string | Array<string>, options: {
     }
   }
   let partWidths = parts.map(part => ctx.measureText(part).width);
+  // surround separators in | | and then subtract out their width, because measureText 
+  // seems return zero width for pure whitespace
   let pipeWidth = ctx.measureText('||').width;
   let separatorWidths = separators.map(separator => ctx.measureText(`|${separator}|`).width - pipeWidth);
+  // the total width of the text on one line with fontSize = baseFontSize
   let width = _.sum(partWidths) + _.sum(separatorWidths);
-  // each line is an array of part indices
-  let lines = [_.range(parts.length)];
+  // each line is the index of the part that starts that line
+  // last element is not the start of a line, but rather the last part index + 1
+  let lineStarts = [0, parts.length];
   let lineWidths = [width];
   let fontSize = calcFontSize(lineWidths);
 
-  // finds next smaller width such that only one of the lines doesn't fit
+  // finds next smaller width such that only one of the lineStarts doesn't fit
   // in the current layout
   function findNextWidth() {
     return _.max(lineWidths.map((lineWidth, index) => {
-      let line = lines[index];
-      if (lineWidth >= width && line.length > 1) {
-        return lineWidth - partWidths[line[line.length - 1]];
+      let firstPart = lineStarts[index];
+      let lastPart = lineStarts[index + 1] - 1;
+      if (lineWidth >= width && firstPart < lastPart) {
+        return lineWidth - partWidths[lastPart];
       }
       return lineWidth;
     }));
@@ -93,7 +100,7 @@ export default function layoutText(text: string | Array<string>, options: {
   // then we compute the font size that would fit the reflowed text within the
   // maxWidth and maxHeight limits.
 
-  // the font size should increase until there are too many lines to fit in
+  // the font size should increase until there are too many lineStarts to fit in
   // the vertical space, or all parts are on one line.
 
   let iteration = 0;
@@ -104,32 +111,37 @@ export default function layoutText(text: string | Array<string>, options: {
       console.log('  before:');
       console.log('    fontSize:    ', fontSize);
       console.log('    width:       ', width);
-      console.log('    lines:       ', lines);
+      console.log('    lineStarts:  ', lineStarts);
       console.log('    lineWidths:  ', lineWidths);
     }
 
     iteration++;
 
     // re-layout the parts into lines no longer than nextWidth
-    let nextLines = [[0]];
-    let nextLineWidths = [partWidths[0]];
+    let nextLineStarts = _.clone(lineStarts);
+    let nextLineWidths = _.clone(lineWidths);
     if (partWidths[0] <= nextWidth) {
-      let line = 0;
-      for (var i = 1; i < parts.length; i++) {
-        let partWidth = partWidths[i];
-        let nextLineWidth = nextLineWidths[line] + separatorWidths[i - 1] + partWidth;
-        if (nextLineWidth > nextWidth) {
-          if (partWidth > nextWidth) {
-            // can't shrink width any more
+      for (var line = 0; line < nextLineWidths.length; line++) {
+        let firstPart = nextLineStarts[line];
+        let lastPart = nextLineStarts[line + 1] - 1;
+        while (nextLineWidths[line] > nextWidth) {
+          if (firstPart === lastPart) {
+            //can't shrink any more
             break;
           }
-          line++;
-          nextLines.push([i]);
-          nextLineWidths.push(partWidth);
-        }
-        else {
-          nextLines[line].push(i);
-          nextLineWidths[line] = nextLineWidth;
+          // remove the last part from the current line
+          nextLineWidths[line] -= partWidths[lastPart] + separatorWidths[lastPart - 1];
+          if (line === nextLineWidths.length - 1) {
+            // add the last part to a new line
+            nextLineWidths.push(partWidths[lastPart]);
+            nextLineStarts.splice(line + 1, 0, lastPart);
+          }
+          else {
+            // add the last part to the next line
+            nextLineWidths[line + 1] += partWidths[lastPart] + separatorWidths[lastPart];
+            nextLineStarts[line + 1] = lastPart;
+          }
+          lastPart--;
         }
       }
     }
@@ -142,31 +154,37 @@ export default function layoutText(text: string | Array<string>, options: {
       break;
     }
 
+    // does this layout fit with fontSize >= the last one's?
     let nextFontSize = calcFontSize(nextLineWidths);
     if (log) {
       console.log('  nextFontSize:    ', nextFontSize);
     }
-
     if (nextFontSize < fontSize) {
       break;
     }
 
+    // it fits; continue to the next iteration
     fontSize = nextFontSize; 
-    lines = nextLines;
+    lineStarts = nextLineStarts;
     lineWidths = nextLineWidths;
     width = _.max(lineWidths);
     if (log) {
       console.log('  after:');
       console.log('    fontSize:    ', fontSize);
       console.log('    width:       ', width);
-      console.log('    lines:       ', lines);
+      console.log('    lineStarts:  ', lineStarts);
       console.log('    lineWidths:  ', lineWidths);
     }
   }
 
-  return {
-    fontSize,
-    lines: lines.map(line => line.map(
-      (partIndex, index) => index === 0 ? parts[partIndex] : separators[partIndex - 1] + parts[partIndex]).join('')),
-  };
+  // rebuild the text of the laid-out lines
+  let lines = [];
+  for (var i = 1; i < lineStarts.length; i++) {
+    let lineStart = lineStarts[i - 1];
+    let lineEnd   = lineStarts[i];
+    lines.push(parts.slice(lineStart, lineEnd).map(
+      (part, index) => index === 0 ? part : separators[lineStart + index - 1] + part).join(''));
+  }
+
+  return {fontSize, lines};
 }
