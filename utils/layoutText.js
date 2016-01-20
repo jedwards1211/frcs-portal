@@ -6,7 +6,7 @@ import _ from 'lodash';
 function splitWithMatchedSeps(text: string, splitRegExp: RegExp) {
   let parts = [];
   let separators = [];
-  let match, lastMatchEnd;
+  let match, lastMatchEnd = 0;
   while ((match = splitRegExp.exec(text))) {
     parts.push(text.substring(lastMatchEnd, match.index));
     separators.push(match[0]);
