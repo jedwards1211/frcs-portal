@@ -66,19 +66,11 @@ export default class Trace extends Layer {
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
 
-    let points = pointGenerator(leftDomain, rightDomain, {surround: true});
-    let lastTime;
+    let points = pointGenerator(leftDomain, rightDomain, {surround: true, currentTime});
     let next;
     while (!(next = points.next()).done) {
       let {t, v} = next.value;
       plotter.addPoint(t, v);
-      if (!isNaN(v)) lastTime = t;
-    }
-
-    if (currentTime && currentTime >= lastTime) {
-      // prevent the plot from extending past the current time to a page boundary
-      // (unless for whatever reason there's data in the "future")
-      plotter.addPoint(currentTime, NaN);
     }
 
     // don't forget to flush, otherwise some of the plotted data might not get drawn.
