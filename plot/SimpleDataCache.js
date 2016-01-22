@@ -5,7 +5,7 @@ import _ from 'lodash';
 import * as GridMath from './GridMath';
 import CachePage from './CachePage';
 
-import {floorIndex, ceilingIndex, lowerIndex, higherIndex} from './precisebs';
+import {floorIndex, lowerIndex, higherIndex} from './precisebs';
 
 export default class SimpleDataCache extends EventEmitter {
   /**
@@ -134,20 +134,8 @@ export default class SimpleDataCache extends EventEmitter {
   *get(channelId, from, to, options = {}) {
     let {surround, currentTime} = options;
 
-    let pages = this.data[channelId];
-    if (!pages) return;
-
-    let pageBeginTimes = [];
-    let pageEndTimes = [];
-    for (var beginTime in pages) {
-      pageBeginTimes.push(beginTime);
-      pageEndTimes.push(pages[beginTime].endTime);
-    }
-    pageBeginTimes.sort();
-    pageEndTimes.sort();
-
-    let fromPageIndex = Math.max(floorIndex  (pageEndTimes  , from), 0);
-    let toPageIndex   = Math.min(ceilingIndex(pageBeginTimes, to  ), pageBeginTimes.length - 1);
+    let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
+    let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
 
     let modCount = this.modCount;
 
@@ -156,23 +144,23 @@ export default class SimpleDataCache extends EventEmitter {
       v: NaN,
     };
 
-    let lastPage;
+    let pageStart = fromAdj;
+    let pageEnd = pageStart + this.pageRange;
 
-    for (var pageIndex = fromPageIndex; pageIndex <= toPageIndex; pageIndex++) {
-      let pageStart = pageBeginTimes[pageIndex];
-      let pageEnd   = pageEndTimes[pageIndex];
-      let page = pages[pageStart];
+    let lastPage;
+    while (pageStart < toAdj) {
+      let page = this.getPage(channelId, pageStart);
 
       if (page) {
         lastPage = page;
         // determine where to start and end within the page, in case from and to fall within the page.
         // we want to return from the greatest value less than {from} to the least value greater than {to}.
-        let startIndex = pageIndex === fromPageIndex ?
+        let startIndex = pageStart === fromAdj ?
           Math.max(0, (surround ? lowerIndex : floorIndex)(page.times, from))
           :
           0;
 
-        let endIndex = pageIndex === toPageIndex ?
+        let endIndex = pageEnd === toAdj ?
           Math.min(page.times.length - 1,
             (surround ? higherIndex : lowerIndex)(page.times, to, startIndex, page.times.length - 1))
           :
@@ -186,6 +174,11 @@ export default class SimpleDataCache extends EventEmitter {
             throw new Error('cache has been modified since last call to next()');
           }
         }
+      }
+      else if (!currentTime || pageStart < currentTime) {
+        point.t = pageStart;
+        point.v = NaN;
+        yield point;
       }
 
       pageStart = pageEnd;
