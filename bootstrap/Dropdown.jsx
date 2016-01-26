@@ -136,10 +136,21 @@ class Dropdown extends Component {
             : 
             this.onDropdownToggleClick;
 
-          return React.cloneElement(child, {ref: 'toggle', open, onClick});
+          let origRef = child.ref;
+          return React.cloneElement(child, {
+            ref: c => {
+              if (origRef) origRef(c);
+              this.refs.toggle = c;
+            }, 
+            open, onClick
+          });
         }
         if (child.type === DropdownMenu) {
-          return React.cloneElement(child, {ref: 'menu'});
+          let origRef = child.ref;
+          return React.cloneElement(child, {ref: c => {
+            if (origRef) origRef(c);
+            this.refs.menu = c; 
+          }});
         }
       }
       return child;
