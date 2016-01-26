@@ -2,13 +2,14 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import HBarFill from './HBarFill';
+import BarFill from './BarFill';
 import HBarAlarmLegend from './HBarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
 import {pickFontSize} from './gaugeUtils';
 import FontMetricsCache from '../utils/FontMetricsCache';
 import dummyCanvas from '../utils/dummyCanvas';
+import {leftSide} from '../utils/orient';
 
 require('./HBarGauge.sass');
 
@@ -158,11 +159,12 @@ export default React.createClass({
           padding: padding
         }}>
           <rect key="track" className="track" x={0} y={barY} width={width} height={barHeight} />
-          <HBarFill  key="fill"
+          <BarFill  key="fill"
                     className={classNames('fill', {'na': isNA})}
                     x={0} y={barY} width={width} height={barHeight}
                     min={min}
                     max={max}
+                    minSide={leftSide}
                     value={value} />
           {legend}
 
