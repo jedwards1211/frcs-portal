@@ -20,6 +20,12 @@ export var leftSide = new Side({
   isInside(x, threshold) {
     return x >= threshold; 
   },
+  setInRect(rect, value) {
+    rect.x = value;
+  },
+  getFromRect(rect) {
+    return rect.x;
+  },
 });
 export var rightSide = new Side({
   name: 'right',
@@ -34,6 +40,12 @@ export var rightSide = new Side({
   },
   isInside(x, threshold) {
     return x <= threshold; 
+  },
+  setInRect(rect, value) {
+    rect.x = value - rect.width;
+  },
+  getFromRect(rect) {
+    return rect.x + rect.width;
   },
 });
 export var topSide = new Side({
@@ -50,6 +62,12 @@ export var topSide = new Side({
   isInside(y, threshold) {
     return y >= threshold; 
   },
+  setInRect(rect, value) {
+    rect.y = value;
+  },
+  getFromRect(rect) {
+    return rect.y;
+  },
 });
 export var bottomSide = new Side({
   name: 'bottom',
@@ -64,6 +82,12 @@ export var bottomSide = new Side({
   },
   isInside(y, threshold) {
     return y <= threshold; 
+  },
+  setInRect(rect, value) {
+    rect.y = value - rect.height;
+  },
+  getFromRect(rect) {
+    return rect.y + rect.height;
   },
 });
 
