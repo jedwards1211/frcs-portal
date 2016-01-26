@@ -3,7 +3,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import BarFill from './BarFill';
-import HBarAlarmLegend from './HBarAlarmLegend';
+import BarAlarmLegend from './BarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
 import {pickFontSize} from './gaugeUtils';
@@ -118,7 +118,7 @@ export default React.createClass({
       legendHeight = Math.max(2, Math.round(height * LEGEND_HEIGHT));
       barHeight -= legendHeight;
       legendY = barY + barHeight;
-      legend = <HBarAlarmLegend min={min} max={max} alarms={alarms} 
+      legend = <BarAlarmLegend min={min} max={max} alarms={alarms} minSide={leftSide}
                 x={0} y={legendY} width={width} height={legendHeight} />;
     }
 

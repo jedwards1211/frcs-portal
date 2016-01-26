@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import alarmTypes from './alarmTypes';
 import {alarmLegendPropTypes} from './GaugePropTypes';
+import {Side, xAxis} from '../utils/orient';
 
 require('./AlarmLegend.sass');
 
@@ -14,9 +15,12 @@ export default React.createClass({
     y: React.PropTypes.number.isRequired,
     width: React.PropTypes.number.isRequired,
     height: React.PropTypes.number.isRequired,
+    minSide: React.PropTypes.instanceOf(Side).isRequired,
   }),
   render() {
-    var {min, max, alarms, x, y, width, height, className, ...restProps} = this.props;
+    var {min, max, alarms, x, y, width, height, minSide, className, ...restProps} = this.props;
+    var axis = minSide.axis;
+    var span = axis.select(width, height);
 
     if (!alarms) {
       return <g className={className} {...restProps}/>;
@@ -27,6 +31,12 @@ export default React.createClass({
 
     min = Math.min(smin, smax);
     max = Math.max(smin, smax);
+
+    if (minSide.direction > 0) {
+      var swap = smin;
+      smin = smax;
+      smax = swap;
+    }
 
     className = classNames(className, 'alarm-legend');
 
@@ -42,13 +52,24 @@ export default React.createClass({
     }
 
     function makeRect(className, from, to) {
-      var fromX = (from - smin) * width / (smax - smin);
-      var toX   = (to   - smin) * width / (smax - smin);
+      var fromX = (from - smin) * span / (smax - smin);
+      var toX   = (to   - smin) * span / (smax - smin);
       var x0 = Math.max(0,     Math.min(fromX, toX));
-      var x1 = Math.min(width, Math.max(fromX, toX));
-      var rx = x + x0;
-      var rwidth = x1 - x0;
-      return <rect className={className} x={rx} y={y} width={rwidth} height={height} />;
+      var x1 = Math.min(span, Math.max(fromX, toX));
+      var rx, ry, rwidth, rheight;
+      if (axis === xAxis) {
+        rx = x + x0;
+        ry = y;
+        rwidth = x1 - x0;
+        rheight = height;
+      }
+      else {
+        rx = x;
+        ry = y + x0;
+        rwidth = width;
+        rheight = x1 - x0;
+      }
+      return <rect className={className} x={rx} y={ry} width={rwidth} height={rheight} />;
     }
 
     if (!isNaN(min) && !isNaN(max) && min !== null && max !== null &&
