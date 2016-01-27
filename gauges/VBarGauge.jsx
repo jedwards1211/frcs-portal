@@ -133,6 +133,8 @@ export default React.createClass({
 
     legendRect.width = Math.max(2, Math.round(height * LEGEND_WIDTH));
 
+    let narrowLayout = false;
+
     if (barSide.axis === xAxis) {
       barRect.y = 0;
       barRect.height = height;
@@ -145,15 +147,18 @@ export default React.createClass({
       nameRect.y = 0;
 
       if (width / height <= NARROW_LAYOUT_ASPECT_RATIO) {
+        narrowLayout = true;
         className += ' narrow-layout';
+        nameRect.height = valueRect.height = unitsRect.height = (height - padding * 2) / 3;
         valueRect.width = unitsRect.width = nameRect.width;
         let valueAndUnitsHeight = height - nameRect.height - padding;
-        valueRect.height = (valueAndUnitsHeight - padding) * VALUE_HEIGHT_RATIO;
-        unitsRect.height = valueAndUnitsHeight - valueRect.height - padding;
         valueRect.x = unitsRect.x = nameRect.x;
         unitsRect.y = height - unitsRect.height;
         valueRect.y = unitsRect.y - padding - valueRect.height;
-        unitsRect.textX = unitsRect.x + unitsRect.width;
+        valueRect.textX = valueRect.x + valueRect.width  / 2;
+        valueRect.textY = valueRect.y + valueRect.height / 2;
+        unitsRect.textX = unitsRect.x + unitsRect.width  / 2;
+        unitsRect.textY = unitsRect.y + unitsRect.height / 2;
       }
       else {
         valueRect.y = unitsRect.y = nameRect.y + nameRect.height + padding;
@@ -163,6 +168,9 @@ export default React.createClass({
         unitsRect.x = valueRect.x + valueRect.width + padding;
         unitsRect.width = nameRect.width - valueRect.width - padding;
         unitsRect.textX = unitsRect.x;
+        valueRect.textX = valueRect.x + valueRect.width;
+        valueRect.textY = valueRect.y + valueRect.height;
+        unitsRect.textY = unitsRect.y + unitsRect.height;
       }
     }
     else {
@@ -187,15 +195,16 @@ export default React.createClass({
       maxHeight: nameRect.height,
       fontFamily,
       fontWeight: nameFontWeight,
-      x: nameRect.x,
-      y: nameRect.y,
+      x: nameRect.x + nameRect.width / 2,
+      y: narrowLayout ? nameRect.y + nameRect.height / 2 : nameRect.y,
+      centerVertically: narrowLayout,
       ascend: false,
     });
 
     let valueStyle = makeStyle(valueText, valueRect);
     let unitsStyle = makeStyle(unitsText, unitsRect);
 
-    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, valueStyle.fontSize * 0.8);
+    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, valueStyle.fontSize * 0.7);
 
     let minStyle = makeStyle(minText, rangeRect);
     let maxStyle = makeStyle(maxText, rangeRect);
@@ -223,10 +232,10 @@ export default React.createClass({
           <text key="max"   ref="max"   className="max"   x={barRect.x + barRect.width - rangePadding} y={barRect.y + rangePadding} style={maxStyle}>
             {maxText}
           </text>
-          <text key="value" ref="value" className="value" x={valueRect.x + valueRect.width} y={valueRect.y + valueRect.height} style={valueStyle}>
+          <text key="value" ref="value" className="value" x={valueRect.textX} y={valueRect.textY} style={valueStyle}>
             {valueText}
           </text>
-          <text key="units" ref="units" className="units" x={unitsRect.textX} y={unitsRect.y + unitsRect.height} style={unitsStyle}>
+          <text key="units" ref="units" className="units" x={unitsRect.textX} y={unitsRect.textY} style={unitsStyle}>
             {unitsText}
           </text>
           <g className="name" ref="name">
