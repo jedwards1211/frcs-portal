@@ -13,15 +13,20 @@ import {Side, leftSide, bottomSide, xAxis} from '../utils/orient';
 
 require('./VBarGauge.sass');
 
+var BAR_WIDTH_RATIO = 0.3;
+var MIN_BAR_WIDTH = 30;
+var MAX_BAR_WIDTH = 100;
 var LEGEND_WIDTH = 0.04;
-var VALUE_WIDTH = 0.6;
+var VALUE_HEIGHT_RATIO = 0.6;
+var VALUE_WIDTH_RATIO = 0.7;
 
 var MIN_RANGE_FONT_SIZE = 15;
 var MAX_RANGE_FONT_SIZE = 30;
 
 var MIN_NAME_WIDTH = 200;
 
-var ALT_MIN_FONT_SIZE = 15;
+// if width / height is < this, narrow layout will be used
+var NARROW_LAYOUT_ASPECT_RATIO = 2;
 
 function createRect() {
   return {x: 0, y: 0, width: 0, height: 0};
@@ -137,15 +142,12 @@ export default React.createClass({
     var unitsRect = createRect();
     var rangeRect = createRect();
 
-    if (hasAlarms) {
-      legendRect.width = Math.max(2, Math.round(height * LEGEND_WIDTH));
-    }
+    legendRect.width = Math.max(2, Math.round(height * LEGEND_WIDTH));
 
     if (barSide.axis === xAxis) {
       barRect.y = 0;
       barRect.height = height;
-      barRect.width = Math.max(minRangeWidth,
-        Math.min(maxRangeWidth, width - MIN_NAME_WIDTH - LEGEND_WIDTH - padding));
+      barRect.width = Math.max(MIN_BAR_WIDTH, Math.min(MAX_BAR_WIDTH, width * BAR_WIDTH_RATIO));
       barSide.setInRect(barRect, barSide.getFromRect(gaugeRect));
 
       nameRect.x = barSide === leftSide ? barRect.x + barRect.width + legendRect.width + padding : 0;
@@ -153,13 +155,26 @@ export default React.createClass({
       nameRect.height = (height - padding) * 0.5;
       nameRect.y = 0;
 
-      valueRect.y = unitsRect.y = nameRect.y + nameRect.height + padding;
-      valueRect.height = unitsRect.height = height - nameRect.height - padding;
-      valueRect.width = nameRect.width * VALUE_WIDTH;
-      valueRect.x = nameRect.x;
-      unitsRect.x = valueRect.x + valueRect.width + padding;
-      unitsRect.width = nameRect.width - valueRect.width - padding;
-      unitsRect.textX = unitsRect.x;
+      if (width / height <= NARROW_LAYOUT_ASPECT_RATIO) {
+        className += ' narrow-layout';
+        valueRect.width = unitsRect.width = nameRect.width;
+        let valueAndUnitsHeight = height - nameRect.height - padding;
+        valueRect.height = (valueAndUnitsHeight - padding) * VALUE_HEIGHT_RATIO;
+        unitsRect.height = valueAndUnitsHeight - valueRect.height - padding;
+        valueRect.x = unitsRect.x = nameRect.x;
+        unitsRect.y = height - unitsRect.height;
+        valueRect.y = unitsRect.y - padding - valueRect.height;
+        unitsRect.textX = unitsRect.x + unitsRect.width;
+      }
+      else {
+        valueRect.y = unitsRect.y = nameRect.y + nameRect.height + padding;
+        valueRect.height = unitsRect.height = height - nameRect.height - padding;
+        valueRect.width = (nameRect.width - padding) * VALUE_WIDTH_RATIO;
+        valueRect.x = nameRect.x;
+        unitsRect.x = valueRect.x + valueRect.width + padding;
+        unitsRect.width = nameRect.width - valueRect.width - padding;
+        unitsRect.textX = unitsRect.x;
+      }
     }
     else {
       barRect.x = 0;
@@ -192,31 +207,6 @@ export default React.createClass({
     let unitsStyle = makeStyle(unitsText, unitsRect);
 
     unitsStyle.fontSize = Math.min(unitsStyle.fontSize, lines.fontSize, valueStyle.fontSize);
-
-    if (unitsStyle.fontSize < ALT_MIN_FONT_SIZE) {
-      let altValueRect = createRect();
-      let altUnitsRect = createRect();
-      altValueRect.width = altUnitsRect.width = nameRect.width;
-      altValueRect.height = valueRect.height * VALUE_WIDTH;
-      altUnitsRect.height = valueRect.height - altValueRect.height - padding;
-      altValueRect.x = altUnitsRect.x = valueRect.x;
-      altValueRect.y = valueRect.y;
-      altUnitsRect.y = valueRect.y + valueRect.height - altUnitsRect.height;
-      altUnitsRect.textX = altUnitsRect.x + altUnitsRect.width;
-
-      let altValueStyle = makeStyle(valueText, altValueRect);
-      let altUnitsStyle = makeStyle(unitsText, altUnitsRect);
-
-      altUnitsStyle.fontSize = Math.min(altUnitsStyle.fontSize, lines.fontSize, altValueStyle.fontSize);
-
-      if (altUnitsStyle.fontSize > unitsStyle.fontSize && altValueStyle.fontSize > valueStyle.fontSize) {
-        className += ' alt-layout';
-        valueRect = altValueRect;
-        unitsRect = altUnitsRect;
-        valueStyle = altValueStyle;
-        unitsStyle = altUnitsStyle;
-      }
-    }
 
     let minStyle = makeStyle(minText, rangeRect);
     let maxStyle = makeStyle(maxText, rangeRect);
