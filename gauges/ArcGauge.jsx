@@ -21,17 +21,13 @@ const LEGEND_RADIUS = [ARC_RADIUS[0] - ARC_THICKNESS, ARC_RADIUS[1] - ARC_THICKN
 const LEGEND_THICKNESS = 4;
 const VALUE_HEIGHT = ARC_HEIGHT * 0.45;
 const UNITS_HEIGHT = ARC_HEIGHT * 0.15;
-const NAME_HEIGHT = ARC_HEIGHT * 0.3;
+const NAME_WIDTH   = ARC_WIDTH * 0.55;
+const RANGE_WIDTH = ARC_WIDTH / 2 - PADDING * 4;
 const RANGE_HEIGHT = ARC_HEIGHT * 0.15;
 const VALUE_WIDTH  = ARC_WIDTH  * 0.8;
-const NAME_WIDTH   = ARC_WIDTH * 0.55;
-const RANGE_WIDTH  = (ARC_WIDTH - NAME_WIDTH) / 2 - PADDING;
 const UNITS_WIDTH  = 2 * Math.sqrt(Math.pow(ARC_HEIGHT - ARC_THICKNESS, 2) - Math.pow(VALUE_HEIGHT + PADDING + UNITS_HEIGHT, 2));
-const TOTAL_HEIGHT = ARC_HEIGHT + NAME_HEIGHT + PADDING;
-
-const RANGE_ALT_HEIGHT = RANGE_HEIGHT;
-const RANGE_ALT_WIDTH = ARC_WIDTH / 2 - PADDING * 4;
-const NAME_ALT_HEIGHT = TOTAL_HEIGHT - ARC_HEIGHT - RANGE_ALT_HEIGHT;
+const TOTAL_HEIGHT = ARC_HEIGHT * 1.3 + PADDING;
+const NAME_HEIGHT = TOTAL_HEIGHT - ARC_HEIGHT - RANGE_HEIGHT;
 
 const TRACK_PATH = arcPath(ARC_CENTER, ARC_RADIUS, ARC_THICKNESS, Math.PI, -Math.PI);
 
@@ -85,40 +81,19 @@ export default class ArgGauge extends Component {
     var nameText    = name  || '';
     var valueText   = formatValue(value);
 
-    let lines = layoutSvgText(nameText, {
-      maxWidth: NAME_WIDTH,
-      maxHeight: NAME_HEIGHT + PADDING,
+    var lines = layoutSvgText(nameText, {
+      maxWidth: ARC_WIDTH,
+      maxHeight: NAME_HEIGHT,
       maxFontSize: 30,
       fontWeight: nameFontWeight,
       fontFamily,
       x: ARC_WIDTH / 2,
-      y: ARC_HEIGHT + PADDING,
+      y: ARC_HEIGHT + RANGE_HEIGHT + PADDING * 2,
     });
 
-    let minStyle = makeStyle(minText, RANGE_WIDTH, RANGE_HEIGHT);
-    let maxStyle = makeStyle(maxText, RANGE_WIDTH, RANGE_HEIGHT);
-    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize, lines.fontSize);
-
-      var altLines = layoutSvgText(nameText, {
-        maxWidth: ARC_WIDTH,
-        maxHeight: NAME_ALT_HEIGHT,
-        maxFontSize: 30,
-        fontWeight: nameFontWeight,
-        fontFamily,
-        x: ARC_WIDTH / 2,
-        y: ARC_HEIGHT + RANGE_ALT_HEIGHT + PADDING * 2,
-      });
-
-      var altMinStyle = makeStyle(minText, RANGE_ALT_WIDTH, RANGE_ALT_HEIGHT);
-      var altMaxStyle = makeStyle(maxText, RANGE_ALT_WIDTH, RANGE_ALT_HEIGHT);
-      altMinStyle.fontSize = altMaxStyle.fontSize = Math.min(
-        altMinStyle.fontSize, altMaxStyle.fontSize);
-
-      if (altMinStyle.fontSize > minStyle.fontSize && altLines.fontSize > lines.fontSize) {
-        lines = altLines;
-        minStyle = altMinStyle;
-        maxStyle = altMaxStyle;
-      }
+    var minStyle = makeStyle(minText, RANGE_WIDTH, RANGE_HEIGHT);
+    var maxStyle = makeStyle(maxText, RANGE_WIDTH, RANGE_HEIGHT);
+    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize);
 
     return (
       <div ref={c => this.root = c} className={className} {...restProps}>
