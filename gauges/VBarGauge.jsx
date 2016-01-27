@@ -195,7 +195,7 @@ export default React.createClass({
     let valueStyle = makeStyle(valueText, valueRect);
     let unitsStyle = makeStyle(unitsText, unitsRect);
 
-    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, lines.fontSize, valueStyle.fontSize);
+    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, valueStyle.fontSize * 0.8);
 
     let minStyle = makeStyle(minText, rangeRect);
     let maxStyle = makeStyle(maxText, rangeRect);
