@@ -29,7 +29,6 @@ export default class GaugeTypeSelector extends Component {
     var {gaugeTypes, selectedGaugeType, className, gaugeProps, onSelect, ...props} = this.props;
 
     return <div {...props} className={classNames('gauge-type-selector', className)}>
-      <h3 className="gauge-radio-header">Gauge Type</h3>
       <div role="radiogroup">
         {_.map(gaugeTypes,gaugeType => {
           var {name, type} = gaugeType;
