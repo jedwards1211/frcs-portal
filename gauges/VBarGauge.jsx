@@ -20,11 +20,6 @@ var LEGEND_WIDTH = 0.04;
 var VALUE_HEIGHT_RATIO = 0.6;
 var VALUE_WIDTH_RATIO = 0.7;
 
-var MIN_RANGE_FONT_SIZE = 15;
-var MAX_RANGE_FONT_SIZE = 30;
-
-var MIN_NAME_WIDTH = 200;
-
 // if width / height is < this, narrow layout will be used
 var NARROW_LAYOUT_ASPECT_RATIO = 2;
 
@@ -128,12 +123,6 @@ export default React.createClass({
     var valueText   = formatValue(value);
     var unitsText   = units || '';
     var nameText    = name  || '';
-
-    var ctx = dummyCanvas.getContext('2d');
-    ctx.font = `${fontWeight} ${MIN_RANGE_FONT_SIZE}px ${fontFamily}`;
-    var minRangeWidth = Math.max(ctx.measureText(minText).width, ctx.measureText(maxText).width);
-    ctx.font = `${fontWeight} ${MAX_RANGE_FONT_SIZE}px ${fontFamily}`;
-    var maxRangeWidth = Math.max(ctx.measureText(maxText).width, ctx.measureText(maxText).width);
 
     var barRect = createRect();
     var legendRect = createRect();
