@@ -17,7 +17,6 @@ var BAR_WIDTH_RATIO = 0.3;
 var MIN_BAR_WIDTH = 30;
 var MAX_BAR_WIDTH = 100;
 var LEGEND_WIDTH = 0.04;
-var VALUE_HEIGHT_RATIO = 0.6;
 var VALUE_WIDTH_RATIO = 0.7;
 
 // if width / height is < this, narrow layout will be used
@@ -151,7 +150,6 @@ export default React.createClass({
         className += ' narrow-layout';
         nameRect.height = valueRect.height = unitsRect.height = (height - padding * 2) / 3;
         valueRect.width = unitsRect.width = nameRect.width;
-        let valueAndUnitsHeight = height - nameRect.height - padding;
         valueRect.x = unitsRect.x = nameRect.x;
         unitsRect.y = height - unitsRect.height;
         valueRect.y = unitsRect.y - padding - valueRect.height;
