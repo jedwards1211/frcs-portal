@@ -3,8 +3,8 @@ import {Router, Route, Redirect} from 'react-router';
 
 import createHistory from 'history/lib/createHashHistory';
 
-import SidebarView from 'mindfront-react-components/common/SidebarView';
-import Tree from 'mindfront-react-components/common/Tree';
+import SidebarView from './SidebarView';
+import Tree from './Tree';
 
 import './Sandbox.sass';
 

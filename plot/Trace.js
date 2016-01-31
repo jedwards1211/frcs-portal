@@ -29,6 +29,7 @@ export default class Trace extends Layer {
     // (CanvasRenderingContext2D) => TraceRenderer
     renderer:         React.PropTypes.func,
     domainAxis:       React.PropTypes.instanceOf(Axis),
+    currentTime:      React.PropTypes.number,
   };
   static defaultProps = {
     lineColor:        '#00f',
@@ -41,7 +42,7 @@ export default class Trace extends Layer {
     ctx.save();
 
     var {pointGenerator, lineColor, fillColor, domainConversion, valueConversion, 
-        plotter, renderer, domainAxis} = this.props;
+        plotter, renderer, domainAxis, currentTime} = this.props;
 
     if (!fillColor) {
       var rgba = color(lineColor).toRgbaArray();
@@ -65,7 +66,7 @@ export default class Trace extends Layer {
     var leftDomain  = domainConversion.invert(0);
     var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
 
-    let points = pointGenerator(leftDomain, rightDomain, {surround: true});
+    let points = pointGenerator(leftDomain, rightDomain, {surround: true, currentTime});
     let next;
     while (!(next = points.next()).done) {
       let {t, v} = next.value;

@@ -27,7 +27,10 @@ export const alarmLegendPropTypes = {
 };
 
 export default {
-  name:       PropTypes.string,
+  name:       PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string.isRequired)
+  ]),
   value:      PropTypes.number,
   units:      PropTypes.string,
   min:        PropTypes.number,

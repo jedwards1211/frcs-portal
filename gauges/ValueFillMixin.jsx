@@ -55,7 +55,7 @@ export default {
   getTransitionValue() {
     if (!this.state.transitionStartMillis) {
       this.stopTransition();
-      return this.props.value;
+      return this.props.value || 0;
     }
 
     var lastValue = this.state.lastValue || 0;

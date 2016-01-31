@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import Conversion from './Conversion';
 
@@ -39,10 +39,7 @@ export default class LinearConversion extends Conversion {
     return new LinearConversion({scale, offset});
   }
 
-  set( a: number ,
-       b: number ,
-       c: number ,
-       d: number ) {
+  set( a, b, c, d ) {
     if ( c !== undefined ) {
       // a * s + o == b
       // c * s + o == d
@@ -90,8 +87,8 @@ export default class LinearConversion extends Conversion {
   clampDomain( r1: number, r2: number, center: number, minRange: number | void, maxRange: number | void) {
     // minRange <= |((r1 - o') / s') - ((r2 - o') / s')| <= maxRange
     // minRange <= |(r1 - r2) / s'| <= maxRange
-    minRange = Math.abs(minRange);
-    maxRange = Math.abs(maxRange);
+    minRange = minRange ? Math.abs(minRange) : NaN;
+    maxRange = maxRange ? Math.abs(maxRange) : NaN;
     let newScale = this.scale;
     let diff = requireNotZero( requireFinite( Math.abs(r1 - r2) ) );
     if      (Math.abs(diff / newScale) < minRange) newScale = Math.sign(this.scale) * diff / minRange;

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 
-import PageSlider from 'mindfront-react-components/common/PageSlider';
-import BSModal from 'mindfront-react-components/bootstrap/Modal';
+import PageSlider from './PageSlider';
+import BSModal from '../bootstrap/Modal';
 
 export default function createWizard({Steps, title, baseClassName, propTypes, defaultProps}) {
   class Body extends Component {

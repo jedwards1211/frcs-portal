@@ -14,6 +14,7 @@ class Group extends Component {
     warning:      PropTypes.any,
     success:      PropTypes.any,
     noFormControlClass: PropTypes.any,
+    useSingleValidationMessage: PropTypes.any,
   };
   render() {
     let {labelClass, controlClass, className, label, children} = this.props;
@@ -25,7 +26,12 @@ class Group extends Component {
       let val = this.props[type];
       if (val) {
         validationClassNames[`has-${type}`] = true;
-        validationMessages.push(<div key={type} className={`control-label ${type}-message`}>{errorMessage(val)}</div>);
+        if ('useSingleValidationMessage' in this.props) {
+          validationMessages = <div className={`control-label ${type}-message`}>{errorMessage(val)}</div>;
+        }
+        else {
+          validationMessages.push(<div key={type} className={`control-label ${type}-message`}>{errorMessage(val)}</div>);
+        }
       }
     });
 

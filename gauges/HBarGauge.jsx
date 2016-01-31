@@ -2,10 +2,14 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import HBarFill from './HBarFill';
-import HBarAlarmLegend from './HBarAlarmLegend';
+import BarFill from './BarFill';
+import BarAlarmLegend from './BarAlarmLegend';
 import GaugePropTypes from './GaugePropTypes';
 import layoutSvgText from './layoutSvgText';
+import {pickFontSize} from './gaugeUtils';
+import FontMetricsCache from '../utils/FontMetricsCache';
+import dummyCanvas from '../utils/dummyCanvas';
+import {leftSide} from '../utils/orient';
 
 require('./HBarGauge.sass');
 
@@ -29,8 +33,15 @@ export default React.createClass({
   },
   getCurrentSize() {
     if (this.isMounted()) {
-      var gauge = this.refs.gauge;
+      var gauge = this.root;
+      var {fontFamily, fontWeight} = window.getComputedStyle(gauge);
+      if (this.refs.name) {
+        var {fontWeight: nameFontWeight} = window.getComputedStyle(this.refs.name);
+      }
       return {
+        fontFamily,
+        fontWeight,
+        nameFontWeight,
         width: gauge.offsetWidth,
         height: gauge.offsetHeight,
       };
@@ -46,19 +57,26 @@ export default React.createClass({
   componentWillUpdate(nextProps, nextState) {
     var size = this.getCurrentSize();
     if (size.width  !== this.state.width ||
-        size.height !== this.state.height) {
+        size.height !== this.state.height ||
+        size.nameFontWeight !== this.state.nameFontWeight) {
       this.setState(size);
     }
   },
   render() {
     var {name, units, min, max, precision, alarms, value, className, alarmState, 
         children, width, height, ...restProps} = this.props;
+    var {fontFamily = 'sans-serif', fontWeight = '', nameFontWeight = 'bold'} = this.state;
     if (!width ) width  = this.state.width;
     if (!height) height = this.state.height;
+    var fontSize = 20;
+    var font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    var fontMetrics = FontMetricsCache.getFontMetrics(font);
+    var isNA = isNaN(value) || value === null;
 
     className = classNames(className, 'gauge hbar-gauge', {
       'gauge-alarm':    alarmState === 'alarm',
       'gauge-warning':  alarmState === 'warning',
+      'gauge-na': isNA,
     });
 
     height = Math.min(height, 100);
@@ -68,31 +86,30 @@ export default React.createClass({
 
     // the following also tolerates undefined values
     if (!(width > 0) || !(height > 0)) {
-      return <div ref="gauge" className={className} {...restProps} />;
+      return <div ref={c => this.root = c} className={className} {...restProps} />;
     }
 
     var hasAlarms = alarms && alarms.length;
 
     function formatValue(value) {
       value = Number(value);
-      return !isNaN(value) && value !== null ? value.toFixed(precision) : 'NA';
+      return isNaN(value) || value === null ? 'NA' : value.toFixed(precision);
     }
 
-    // height / width
-    var fontAspect = 1.6;
 
-    var makeStyle = (textLength, maxWidth, maxHeight) => ({
-      fontSize: Math.max(10, Math.min(maxHeight, maxWidth / textLength * fontAspect))
-    });
+    var makeStyle = (text, maxWidth, maxHeight) => {
+      var ctx = dummyCanvas.getContext('2d');
+      ctx.font = font;
+      return {
+        fontSize: pickFontSize(fontSize * Math.min(maxHeight / fontMetrics.hangingBaseline, maxWidth / ctx.measureText(text).width))
+      };
+    };
 
     var minText     = formatValue(min);
     var maxText     = formatValue(max);
     var valueText   = formatValue(value);
     var unitsText   = units || '';
     var nameText    = name  || '';
-    var valueTextLength = Math.max(valueText.length, minText.length, maxText.length);
-
-    var rangeTextLength = Math.max(minText.length, maxText.length);
 
     var barHeight = Math.round(height * BAR_HEIGHT);
     var barY = Math.round(height - barHeight);
@@ -101,7 +118,7 @@ export default React.createClass({
       legendHeight = Math.max(2, Math.round(height * LEGEND_HEIGHT));
       barHeight -= legendHeight;
       legendY = barY + barHeight;
-      legend = <HBarAlarmLegend min={min} max={max} alarms={alarms} 
+      legend = <BarAlarmLegend min={min} max={max} alarms={alarms} minSide={leftSide}
                 x={0} y={legendY} width={width} height={legendHeight} />;
     }
 
@@ -117,49 +134,55 @@ export default React.createClass({
     var rangeY = barY + barHeight / 2;
 
     let lines = layoutSvgText(nameText, {
-      separators: [/\s*>\s*/, /\s+/],
-      minFontSize: 15,
-      fontAspect,
       maxWidth: nameWidth,
       maxHeight: nameHeight,
+      fontFamily,
+      fontWeight: nameFontWeight,
       x: 0,
       y: nameY,
       ascend: true,
-      props: {className: 'name'},
     });
 
+    let valueStyle = makeStyle(valueText, valueWidth - padding, nameHeight);
+    let unitsStyle = makeStyle(unitsText, unitsWidth, nameHeight);
+
+    unitsStyle.fontSize = Math.min(unitsStyle.fontSize, lines.fontSize, valueStyle.fontSize);
+
+    let minStyle = makeStyle(minText, rangeWidth, rangeHeight);
+    let maxStyle = makeStyle(maxText, rangeWidth, rangeHeight);
+
+    minStyle.fontSize = maxStyle.fontSize = Math.min(minStyle.fontSize, maxStyle.fontSize);
+
     return (
-      <div ref="gauge" className={className} {...restProps}>
+      <div ref={c => this.root = c} className={className} {...restProps}>
         <svg key="svg" ref="svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{
           padding: padding
         }}>
           <rect key="track" className="track" x={0} y={barY} width={width} height={barHeight} />
-          <HBarFill  key="fill"
-                    className={classNames('fill', {'na': isNaN(value) || value === null})}
+          <BarFill  key="fill"
+                    className={classNames('fill', {'na': isNA})}
                     x={0} y={barY} width={width} height={barHeight}
                     min={min}
                     max={max}
+                    minSide={leftSide}
                     value={value} />
           {legend}
 
-          <text key="min"   ref="min"   className="min"   x={rangePadding}       y={rangeY} style={makeStyle(rangeTextLength, rangeWidth, rangeHeight)}>
+          <text key="min"   ref="min"   className="min"   x={rangePadding}       y={rangeY} style={minStyle}>
             {minText}
           </text>
-          <text key="max"   ref="max"   className="max"   x={width - rangePadding} y={rangeY} style={makeStyle(rangeTextLength, rangeWidth, rangeHeight)}>
+          <text key="max"   ref="max"   className="max"   x={width - rangePadding} y={rangeY} style={maxStyle}>
             {maxText}
           </text>
-          <text key="value" ref="value" className="value" x={width - unitsWidth - padding} y={nameY} style={makeStyle(valueTextLength, valueWidth - padding, nameHeight)}>
+          <text key="value" ref="value" className="value" x={width - unitsWidth - padding} y={nameY} style={valueStyle}>
             {valueText}
           </text>
-          <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={makeStyle(unitsText.length, unitsWidth - padding, nameHeight)}> 
+          <text key="units" ref="units" className="units" x={width - unitsWidth} y={nameY} style={unitsStyle}> 
             {unitsText}
           </text>
-          {lines}
-          {/*
-          <text key="name"  ref="name"  className="name"  x={0}                  y={nameY} style={makeStyle(nameText.length , nameWidth - padding, nameHeight)}>
-            {nameText}
-          </text>
-        */}
+          <g className="name" ref="name">
+            {lines}
+          </g>
         </svg>
         {children}
       </div>

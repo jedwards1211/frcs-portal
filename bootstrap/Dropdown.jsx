@@ -110,8 +110,8 @@ class Dropdown extends Component {
     }
 
     if (this.props.closeOnInsideClick || 
-      (!isDescendant(e.target, ReactDOM.findDOMNode(this.refs.menu))) &&
-      (!isDescendant(e.target, ReactDOM.findDOMNode(this.refs.toggle)))) {
+      (!isDescendant(e.target, ReactDOM.findDOMNode(this.menu))) &&
+      (!isDescendant(e.target, ReactDOM.findDOMNode(this.toggle)))) {
       this.setState({open: false});
     }
   };
@@ -136,10 +136,21 @@ class Dropdown extends Component {
             : 
             this.onDropdownToggleClick;
 
-          return React.cloneElement(child, {ref: 'toggle', open, onClick});
+          let origRef = child.ref;
+          return React.cloneElement(child, {
+            ref: c => {
+              if (origRef) origRef(c);
+              this.toggle = c;
+            }, 
+            open, onClick
+          });
         }
         if (child.type === DropdownMenu) {
-          return React.cloneElement(child, {ref: 'menu'});
+          let origRef = child.ref;
+          return React.cloneElement(child, {ref: c => {
+            if (origRef) origRef(c);
+            this.menu = c; 
+          }});
         }
       }
       return child;

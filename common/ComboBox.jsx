@@ -12,8 +12,10 @@ export default class ComboBox extends Component {
     placeholder:        PropTypes.any,
     noItemsPlaceholder: PropTypes.any,
     render:             PropTypes.func,
+    renderSelectedItem: PropTypes.func,
     onChange:           PropTypes.func,
     disabled:           PropTypes.bool,
+    toggleButtonClassName: PropTypes.string,
   };
   static defaultProps = {
     render: item => String(item),
@@ -21,27 +23,29 @@ export default class ComboBox extends Component {
     noItemsPlaceholder: 'No Items Available',
     component: 'div',
     onChange: function() {},
+    toggleButtonClassName: 'form-control',
   };
   render() {
-    let {items, selectedItem, placeholder,
-        noItemsPlaceholder, onChange, disabled, className} = this.props;
+    let {items, selectedItem, render, renderSelectedItem = render, placeholder, noItemsPlaceholder,
+        onChange, disabled, className, toggleButtonClassName} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
     let hasItems = items && items.length;
 
     className = classNames(className, 'mf-combo-box', {'no-selection': noSelection});
+    toggleButtonClassName = classNames(toggleButtonClassName, 'btn btn-default');
 
     return <Dropdown {...this.props} className={className}>
-      <Dropdown.Toggle component="button" type="button" className="form-control btn btn-default" 
+      <Dropdown.Toggle component="button" type="button" className={toggleButtonClassName}
         disabled={disabled || !hasItems}>
-        <span className="selected-item">
-          {this.props.render(noSelection ? 
+        <span ref={c => this.selectedItem = c} className="selected-item">
+          {renderSelectedItem(noSelection ? 
             (hasItems ? placeholder : noItemsPlaceholder)
             : 
             selectedItem)}
         </span> <span className="caret"/>
       </Dropdown.Toggle>
-      {hasItems && <Dropdown.Menu component="ul">
+      {hasItems && <Dropdown.Menu component="ul" ref={c => this.dropdownMenu = c}>
         {items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
           <a>{this.props.render(item)}</a>
         </li>))}

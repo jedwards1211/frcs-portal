@@ -125,18 +125,17 @@ export default class SimpleDataCache extends EventEmitter {
    * @param {boolean} options.surround - if truthy, points from the greatest time less than <code>from</code> to
    *      the least time greater than <code>to</code> will be returned.  Otherwise, points in
    *      the range [from, to) will be returned.
+   * @param {number} options.currentTime - if given, a NaN point at this time will be added if it is beyond all
+   *      the available data within the requested range.
    *
    * @throws Error if the cache is modified between two calls to next() on an iterator returned
    *      by this method.
    */
   *get(channelId, from, to, options = {}) {
-    let {surround} = options;
+    let {surround, currentTime} = options;
 
     let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange);
     let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to  , this.pageRange);
-
-    let pageStart = fromAdj;
-    let pageEnd = pageStart + this.pageRange;
 
     let modCount = this.modCount;
 
@@ -145,10 +144,15 @@ export default class SimpleDataCache extends EventEmitter {
       v: NaN,
     };
 
+    let pageStart = fromAdj;
+    let pageEnd = pageStart + this.pageRange;
+
+    let lastPage;
     while (pageStart < toAdj) {
       let page = this.getPage(channelId, pageStart);
 
       if (page) {
+        lastPage = page;
         // determine where to start and end within the page, in case from and to fall within the page.
         // we want to return from the greatest value less than {from} to the least value greater than {to}.
         let startIndex = pageStart === fromAdj ?
@@ -171,18 +175,20 @@ export default class SimpleDataCache extends EventEmitter {
           }
         }
       }
-      else {
-        // pass a NaN value so that non-adjacent pages don't get connected by a straight line
+      else if (!currentTime || pageStart < currentTime) {
         point.t = pageStart;
         point.v = NaN;
         yield point;
-        if (modCount !== this.modCount) {
-          throw new Error('cache has been modified since last call to next()');
-        }
       }
 
       pageStart = pageEnd;
       pageEnd += this.pageRange;
+    }
+
+    if (currentTime && lastPage && lastPage.times[lastPage.times.length - 1] < currentTime) {
+      point.t = currentTime;
+      point.v = NaN;
+      yield point;
     }
   }
 }

@@ -16,6 +16,7 @@ $gauge-legend-color:            #666
 $gauge-legend-color-warning:    #fc0
 $gauge-legend-color-alarm:      red
 $gauge-pulse-duration:          1.2s
+$gauge-na-value-color:           #999
 
 @include keyframes(gauge-bg-warning-pulse)
   from
@@ -79,6 +80,9 @@ $gauge-pulse-duration:          1.2s
 
   .fill
     fill: $gauge-fill-color
+
+  &.gauge-na
+    opacity: 0.6
 
   &.gauge-warning
     @include animation(gauge-bg-warning-pulse infinite linear $gauge-pulse-duration)
