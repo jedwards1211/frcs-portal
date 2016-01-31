@@ -7,7 +7,8 @@ import approxMatchers from '../../../utils/approxMatchers';
 
 describe('LinearConversion', () => {
   beforeEach(function() {
-    this.addMatchers(approxMatchers);
+    if (this.addMatchers) this.addMatchers(approxMatchers);
+    else if (jasmine.addMatchers) jasmine.addMatchers(approxMatchers);
   });
 
   describe('set', () => {
@@ -56,7 +57,7 @@ describe('LinearConversion', () => {
           let expected = c.convert(center);
           c.zoom(center, Math.random() + 0.1);
           let actual = c.convert(center);
-          expect(actual).toBe(expected);
+          expect(actual).toBeApprox(expected);
         }
       });
     });
