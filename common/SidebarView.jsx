@@ -76,9 +76,9 @@ export default class SidebarView extends Component {
     }
   }
   isNarrow() {
-    let {props: {isNarrow, sidebarWidth}, state: {rootWidth = 0}} = this;
-    if (isNarrow) {
-      return isNarrow(this.props, this.state);
+    let {props: {isNarrow: _isNarrow, sidebarWidth}, state: {rootWidth = 0}} = this;
+    if (_isNarrow) {
+      return _isNarrow(this.props, this.state);
     }
     return rootWidth < sidebarWidth * 2;
   }

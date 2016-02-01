@@ -26,7 +26,7 @@ export default class ComboBox extends Component {
     toggleButtonClassName: 'form-control',
   };
   render() {
-    let {items, selectedItem, render, renderSelectedItem = render, placeholder, noItemsPlaceholder,
+    let {items, selectedItem, render: renderItem, renderSelectedItem = renderItem, placeholder, noItemsPlaceholder,
         onChange, disabled, className, toggleButtonClassName} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
@@ -47,7 +47,7 @@ export default class ComboBox extends Component {
       </Dropdown.Toggle>
       {hasItems && <Dropdown.Menu component="ul" ref={c => this.dropdownMenu = c}>
         {items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
-          <a>{this.props.render(item)}</a>
+          <a>{renderItem(item)}</a>
         </li>))}
       </Dropdown.Menu>}
     </Dropdown>;
