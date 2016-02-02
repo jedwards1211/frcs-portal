@@ -91,7 +91,12 @@ export default React.createClass({
   render() {
     var {component, className, children, keepChildrenMounted, ...props} = this.props;
     var {open, collapsing, height} = this.state;
-    props.className = classNames(className, {'collapse': !collapsing, 'in': open && !collapsing, collapsing: collapsing});
+    props.className = classNames(className, {
+      collapse: !collapsing,
+      'in': open && !collapsing,
+      collapsing: collapsing,
+      expanding: open && collapsing,
+    });
     if (height !== undefined) {
       if (!props.style) props.style = {};
       props.style.height = height;
