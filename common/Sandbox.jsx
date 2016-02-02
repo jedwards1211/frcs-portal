@@ -54,6 +54,9 @@ export default class Sandbox extends Component {
       <Route component={(props) => <Shell {...props} requireContext={requireContext}/>}>
         {requireContext.keys().map(key => {
           let sourceComponent = requireContext(key);
+          if (sourceComponent.__esModule) {
+            sourceComponent = sourceComponent.default;
+          }
           let component = sourceComponent;
           if (React.isValidElement(sourceComponent)) {
             component = props => React.cloneElement(sourceComponent, {...props, ...sourceComponent.props});
