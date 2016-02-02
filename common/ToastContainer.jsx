@@ -11,7 +11,7 @@ export default class ToastContainer extends Component {
     className = classNames('mf-toast-container', className);
 
     return <div {...this.props} className={className}>
-      <CollapseTransitionGroup component="div">
+      <CollapseTransitionGroup component="div" className="transition-group">
         {children}
       </CollapseTransitionGroup>
     </div>;
