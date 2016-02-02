@@ -29,21 +29,17 @@ export default function $(tree) {
     },
     find(selector) {
       if (selector.prototype instanceof Component) {
-        console.log('Test 1');
         return TestUtils.scryRenderedComponentsWithType(tree, selector);
       }
       else if (selector instanceof Function) {
-        console.log('Test 2');
         return TestUtils.findAllInRenderedTree(tree, selector);
       }
       else if (typeof selector === 'string') {
         selector = selector.trim();
         if (selector[0] === '.') {
-          console.log('Test 3');
           return TestUtils.scryRenderedDOMComponentsWithClass(tree, selector.substring(1));
         }
         else {
-          console.log('Test 4');
           return TestUtils.scryRenderedDOMComponentsWithTag(tree, selector);
         }
       }
