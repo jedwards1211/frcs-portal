@@ -7,7 +7,7 @@ import _ from 'lodash';
  * @param b
  * @returns {Array} [{path: [string], a: aValue, b: bValue}] for each path that differs
  */
-export function unequalPaths(a, b) {
+export default function unequalPaths(a, b) {
   function helper(a, b, result, path) {
     if (a !== b) {
       if (a instanceof Object && b instanceof Object) {

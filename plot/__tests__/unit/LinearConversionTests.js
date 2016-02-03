@@ -3,12 +3,11 @@
  */
 
 import LinearConversion from '../../LinearConversion';
-import approxMatchers from '../../../utils/approxMatchers';
+import approxMatchers from '../../../test/approxMatchers';
 
 describe('LinearConversion', () => {
   beforeEach(function() {
-    if (this.addMatchers) this.addMatchers(approxMatchers);
-    else if (jasmine.addMatchers) jasmine.addMatchers(approxMatchers);
+    jasmine.addMatchers(approxMatchers);
   });
 
   describe('set', () => {
