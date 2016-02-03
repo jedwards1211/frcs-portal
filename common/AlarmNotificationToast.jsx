@@ -39,9 +39,9 @@ export default class AlarmNotificationToast extends Component {
         <table>
           <tbody>
             {alarmNotifications && alarmNotifications.map((notification, index) => {
-              let {fqChannelId, severity, message} = notification;
+              let {alarmId, severity, message} = notification;
               let icon = `glyphicon-${severity === 'alarm' ? 'exclamation-sign' : 'warning-sign'}`;
-              return <tr key={fqChannelId} className={severity}>
+              return <tr key={alarmId} className={severity}>
                 <td className="icon"><i className={`glyphicon ${icon}`}/>&nbsp;</td>
                 <td className="message" className="message">{message}</td>
                 {index === 0 && <td className="acknowledge" rowSpan={alarmNotifications ? alarmNotifications.length : 1}>
