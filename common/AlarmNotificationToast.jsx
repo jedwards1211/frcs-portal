@@ -14,7 +14,6 @@ type Props = {
   alarmNotifications?: Array<{
     acknowledged: boolean,
     alarmId: number,
-    fqChannelId: string,
     message: string,
     severity: string,
   }>,
