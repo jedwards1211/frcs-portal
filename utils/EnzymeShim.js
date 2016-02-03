@@ -1,9 +1,11 @@
 import {Component} from 'react';
 import TestUtils from 'react-addons-test-utils';
 
-// who wants to type the long method names in TestUtils all the time??
+// there are currently multiple issues getting enzyme to work with webpack.
+// it's possible, but in the meantime this allows us to at least write tests with a subset of its interface.
 
-export default function $(tree) {
+export function mount(element) {
+  let tree = TestUtils.renderIntoDocument(element);
   return {
     findOne(selector) {
       if (selector.prototype instanceof Component) {
