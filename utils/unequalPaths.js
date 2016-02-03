@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 /**
  * Note: this is intended for testing only.
+ * WARNING: this will infinite loop if there are circular references.
  * Finds paths for which the values in the two given objects/immutables.
  * @param a
  * @param b
