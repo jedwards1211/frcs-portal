@@ -14,4 +14,4 @@ export type Store<S> = {
 
 export type Reducer<S> = (state: S, action: Action) => ?any;
 
-export type Middleware = (store: Store) => (next: (action: Action) => any) => (action: Action) => any;
+export type Middleware = (store: Store) => (next: (action: Action) => ?any) => (action: Action) => ?any;
