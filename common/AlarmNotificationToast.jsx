@@ -10,6 +10,8 @@ import Spinner from './Spinner';
 
 import './AlarmNotificationToast.sass';
 
+import type {ErrorMessage} from '../flowtypes/ErrorMessage';
+
 type Props = {
   alarmNotifications?: Array<{
     acknowledged: boolean,
@@ -19,6 +21,7 @@ type Props = {
   }>,
   className?: string,
   acknowledging?: boolean,
+  acknowledgeError?: ErrorMessage,
   disabled?: boolean,
   onAcknowledgeClick?: Function,
 };
@@ -27,7 +30,7 @@ export default class AlarmNotificationToast extends Component {
   props: Props;
   defaultProps: {};
   render() {
-    let {className, acknowledging, alarmNotifications, onAcknowledgeClick, disabled} = this.props;
+    let {className, acknowledging, acknowledgeError, alarmNotifications, onAcknowledgeClick, disabled} = this.props;
 
     let isAlarm = alarmNotifications && _.any(alarmNotifications, n => n.severity === 'alarm');
 
@@ -44,7 +47,10 @@ export default class AlarmNotificationToast extends Component {
                 <td className="icon"><i className={`glyphicon ${icon}`}/>&nbsp;</td>
                 <td className="message" className="message">{message}</td>
                 {index === 0 && <td className="acknowledge" rowSpan={alarmNotifications ? alarmNotifications.length : 1}>
-                  <button type="button" className={classNames('btn', {'btn-warning': !isAlarm, 'btn-danger': isAlarm})}
+                  <button type="button" className={classNames('btn', 'ack-btn', {
+                      'btn-warning': !isAlarm,
+                      'btn-danger': isAlarm
+                     })}
                     disabled={!!(disabled || acknowledging)} onClick={onAcknowledgeClick}>
                     {acknowledging ? <span><Spinner key="spinner" /> Acknowledging...</span> : 'Acknowledge'}
                   </button>
@@ -53,6 +59,7 @@ export default class AlarmNotificationToast extends Component {
             })}
           </tbody>
         </table>
+        {acknowledgeError && <Alert.Auto style={{border: 'none'}} error={acknowledgeError}/>}
       </Alert.Auto>
     </Toast>;
   }
