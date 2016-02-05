@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 import addClass from '../wrappers/addClass';
-import {getContextClass, getContextClassValue} from './bootstrapPropUtils';
+import {getContextClass, getContextContent} from './bootstrapPropUtils';
 
 import {errorMessage} from '../utils/errorUtils';
 
@@ -26,7 +26,7 @@ export default class Alert extends Component {
   static Link    = addClass('a', 'alert-link');
   render()/*: ReactElement<any,any,any> */ {
     let contextClass = getContextClass(this.props, 'type');
-    let content = getContextClassValue(this.props);
+    let content = getContextContent(this.props);
     if (typeof content === 'boolean') content = undefined;
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {

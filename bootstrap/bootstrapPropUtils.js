@@ -13,17 +13,15 @@ export const CONTEXT_CLASSES = {
   primary:  'primary',
 };
 
-export function getContextClass(props: Object, shortcutProp: ?string): ?string {
-  return  CONTEXT_CLASSES[props.contextClass] ||
-          CONTEXT_CLASSES[props[shortcutProp]] ||
-          getEnumProp(props, CONTEXT_CLASSES);
+export function getContextClass(props: Object): ?string {
+  return getEnumProp(props, CONTEXT_CLASSES, 'contextClass');
 }
 
-export function getContextClassValue(props: Object): ?any {
+export function getContextContent(props: Object): ?any {
+  if (props.contextClass) return props[props.contextClass];
   for (let contextClass in CONTEXT_CLASSES) {
-    if (props.hasOwnProperty(contextClass)) {
-      let value = props[contextClass];
-      return value === true ? undefined : value;
-    }
+    let value = props[contextClass];
+    if (value === true) return undefined;
+    else if (value) return value;
   }
 }

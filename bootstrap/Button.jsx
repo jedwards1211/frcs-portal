@@ -2,7 +2,7 @@
 
 import React, {Component} from 'react';
 import classNames from 'classnames';
-import {getContextClass, getContextClassValue} from './bootstrapPropUtils';
+import {getContextClass, getContextContent} from './bootstrapPropUtils';
 
 type Props = {
   type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok' | 'primary',
@@ -23,7 +23,7 @@ export default class Button extends Component {
   static defaultProps: {};
   render()/*: ReactElement<any,any,any> */ {
     let contextClass = getContextClass(this.props) || 'default';
-    let content = getContextClassValue(this.props);
+    let content = getContextContent(this.props);
 
     let className = classNames(this.props.className, 'btn', 'btn-' + contextClass);
 

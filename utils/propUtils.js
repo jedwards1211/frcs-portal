@@ -1,14 +1,25 @@
 /* @flow */
 
-export function getEnumProp(props: Object, constants: Array<string> | {[key: string]: string}): ?string {
-  if (constants instanceof Array) {
-    for (let constant of constants) {
-      if (props.hasOwnProperty(constant)) return constant;
-    }
+export function getEnumProp(
+  props: Object,
+  constants: {[key: string]: string},
+  shortcutProp?: ?string): ?string
+{
+  if (props[shortcutProp] && constants[props[shortcutProp]]) {
+    return constants[props[shortcutProp]];
   }
-  else {
-    for (let constant in constants) {
-      if (props.hasOwnProperty(constant)) return constants[constant];
-    }
+  for (let constant in constants) {
+    if (props[constant]) return constants[constant];
   }
+}
+
+export const SIDES = {
+  top: 'top',
+  left: 'left',
+  right: 'right',
+  bottom: 'bottom',
+};
+
+export function getSide(props: Object, shortcutProp?: string = 'side'): ?string {
+  return getEnumProp(props, SIDES, shortcutProp);
 }

@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
-import {getContextClass, getContextClassValue} from './bootstrapPropUtils';
+import {getContextClass, getContextContent} from './bootstrapPropUtils';
 import {errorMessage} from '../utils/errorUtils';
 
 type Props = {
@@ -32,7 +32,7 @@ export default class Panel extends Component {
   render()/*: ReactElement<any,any,any> */ {
     let {className, children, heading, title, footer, collapseProps} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
-    let content = getContextClassValue(this.props);
+    let content = getContextContent(this.props);
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
       content = errorMessage(content);

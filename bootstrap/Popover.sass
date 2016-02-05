@@ -1,17 +1,30 @@
+@import ../sass/css3-mixins
 @import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables
 
-.mf-has-auto-popover
-  > .popover
-    position: absolute
+.popover
+  display: block
 
-    &.top
-      bottom: 0
-    &.bottom
-      top: 100%
-    &.left
-      right: 0
-    &.right
-      left: 100%
+.popover.popover-positioned
+  position: absolute
+
+  &.top
+    top: 0
+    left: 50%
+    transform: translateX(-50%) translateY(-100%)
+
+  &.bottom
+    top: 100%
+    left: 50%
+    transform: translateX(-50%)
+
+  &.left
+    top: 50%
+    transform: translateX(-100%) translateY(-50%)
+
+  &.right
+    left: 100%
+    top: 50%
+    transform: translateY(-50%)
 
 .popover.popover-danger
   > .popover-title
@@ -34,3 +47,15 @@
     background-color: $alert-success-bg
     border: $alert-success-border
 
+.popover.popover-info,
+.popover.popover-success,
+.popover.popover-warning,
+.popover.popover-danger
+  > .popover-title
+    border-width: 1px
+    border-style: solid
+
+.popover.popover-contentless
+  > .popover-title
+    border-bottom-left-radius: $border-radius-large
+    border-bottom-right-radius: $border-radius-large
