@@ -45,7 +45,7 @@ export default class CopyToClipboardInput extends Component {
         </InputGroup.Button>
       </InputGroup>
       <InterruptibleCSSTransitionGroup component="div" transitionName="error">
-        {showErrorMessage && <Alert.Auto error={<span>
+        {showErrorMessage && <Alert error={<span>
           <CloseButton onClick={this.onCloseErrorMessageClick}/>
           {"Failed to copy to clipboard; this feature isn't supported on older browsers"}
         </span>}/>}

@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
 import {getContextClass, getContextClassValue} from './bootstrapPropUtils';
+import {errorMessage} from '../utils/errorUtils';
 
 type Props = {
   type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok' | 'primary',
@@ -20,6 +21,9 @@ type Props = {
   title?: any,
   heading?: any,
   footer?: any,
+  collapseProps?: Object,
+  open?: boolean,
+  onTransitionEnd?: Function,
 };
 
 export default class Panel extends Component {
@@ -29,6 +33,10 @@ export default class Panel extends Component {
     let {className, children, heading, title, footer, collapseProps} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
     let content = getContextClassValue(this.props);
+
+    if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
+      content = errorMessage(content);
+    }
 
     className = classNames(className, 'panel', 'panel-' + contextClass);
 

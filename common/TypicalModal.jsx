@@ -5,7 +5,7 @@ import Modal from '../bootstrap/Modal';
 import CloseButton from '../bootstrap/CloseButton';
 import Button from '../bootstrap/Button';
 import Spinner from '../common/Spinner';
-import AutoAlertGroup from '../common/AutoAlertGroup';
+import AlertGroup from './AlertGroup';
 
 import './TypicalModal.sass';
 
@@ -30,7 +30,7 @@ export default class TypicalModal extends React.Component {
     saving:                 PropTypes.bool,
     error:                  PropTypes.any, //Alert.Auto.propTypes.error,
     errors:                 PropTypes.object,
-    footerAlerts:           AutoAlertGroup.propTypes.alerts,
+    footerAlerts:           AlertGroup.propTypes.alerts,
   };
   static defaultProps = {
     showOK:     true,
@@ -67,9 +67,9 @@ export default class TypicalModal extends React.Component {
         buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>{cancelText || 'Cancel'}</Button>);
       }
       if (showOK) {
-        buttons.push(<Button.Primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
+        buttons.push(<Button primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
           {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
-        </Button.Primary>);
+        </Button>);
       }
     }
 
@@ -83,7 +83,7 @@ export default class TypicalModal extends React.Component {
         {children}
       </Modal.Body>
       <Modal.Footer>
-        <AutoAlertGroup alerts={footerAlerts}/>
+        <AlertGroup alerts={footerAlerts}/>
         {beforeButtons}
         {buttons}
         {afterButtons}

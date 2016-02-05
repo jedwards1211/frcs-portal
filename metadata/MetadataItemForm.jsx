@@ -169,9 +169,9 @@ export default React.createClass({
         {this.renderRange()}
         {this.renderAlarms()}
         <Collapse className="error-alert" open={hasErrors(metadataItem)}>
-          <Alert.Danger>
+          <Alert danger>
             Please correct invalid input in the fields outlined in red before continuing
-          </Alert.Danger>
+          </Alert>
         </Collapse>
       </div>
     );

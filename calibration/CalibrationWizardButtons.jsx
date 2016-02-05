@@ -70,9 +70,9 @@ export default class CalibrationWizardButtons extends Component {
     }
     else {
       buttons.push(
-        <Button.Primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
+        <Button primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
           <i className="glyphicon glyphicon-chevron-right" /> Next
-        </Button.Primary>
+        </Button>
       );
     }
 

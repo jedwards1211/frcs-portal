@@ -21,15 +21,6 @@ type Props = {
 export default class Button extends Component {
   props: Props;
   static defaultProps: {};
-  // these are included for backwards compatibility
-  static Info    = props => (<Button info    {...props}/>);
-  static OK      = props => (<Button ok      {...props}/>);
-  static Primary = props => (<Button primary {...props}/>);
-  static Success = props => (<Button success {...props}/>);
-  static Warning = props => (<Button warning {...props}/>);
-  static Danger  = props => (<Button danger  {...props}/>);
-  static Error   = props => (<Button error   {...props}/>);
-  static Alarm   = props => (<Button alarm   {...props}/>);
   render()/*: ReactElement<any,any,any> */ {
     let contextClass = getContextClass(this.props) || 'default';
     let content = getContextClassValue(this.props);

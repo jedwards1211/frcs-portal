@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import Button from '../bootstrap/Button';
 
-import AutoAlertGroup from '../common/AutoAlertGroup';
+import AlertGroup from '../common/AlertGroup';
 import validationClassNames from '../common/validationClassNames';
 
 import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue, 
@@ -100,7 +100,7 @@ export class NumPoints extends Component {
         <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
                value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}/>
       </p>
-      <AutoAlertGroup alerts={validation}/>
+      <AlertGroup alerts={validation}/>
       <p>or <Button onClick={() => dispatch({type: GO_TO_EDIT_MANUALLY})}>Edit Manually</Button></p>
     </div>;
   }
@@ -171,7 +171,7 @@ export class Point extends Component {
           </div>
         </div>
       </div>
-      <AutoAlertGroup alerts={validation}/>
+      <AlertGroup alerts={validation}/>
     </div>;
   }
 }
@@ -282,7 +282,7 @@ export class Confirm extends Component {
           {rows}
         </tbody>
       </table>
-      <AutoAlertGroup alerts={validation}/>
+      <AlertGroup alerts={validation}/>
     </div>;
   }
 }

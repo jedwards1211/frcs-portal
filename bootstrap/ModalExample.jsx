@@ -47,7 +47,7 @@ export default class ModalExample extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.hideModal}>Cancel</Button>
-          <Button.Primary onClick={this.onOK}>OK</Button.Primary>
+          <Button primary onClick={this.onOK}>OK</Button>
         </Modal.Footer>
       </Modal>;
     }

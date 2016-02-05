@@ -37,7 +37,7 @@ export default class AlarmNotificationToast extends Component {
     className = classNames(className, 'mf-alarm-notification-toast');
 
     return <Toast {...this.props} className={className}>
-      <Alert.Auto type={isAlarm ? 'alarm' : 'warning'}>
+      <Alert type={isAlarm ? 'alarm' : 'warning'}>
         <table>
           <tbody>
             {alarmNotifications && alarmNotifications.map((notification, index) => {
@@ -59,8 +59,8 @@ export default class AlarmNotificationToast extends Component {
             })}
           </tbody>
         </table>
-        {acknowledgeError && <Alert.Auto style={{border: 'none'}} error={acknowledgeError}/>}
-      </Alert.Auto>
+        {acknowledgeError && <Alert style={{border: 'none'}} error={acknowledgeError}/>}
+      </Alert>
     </Toast>;
   }
 }
