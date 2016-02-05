@@ -1,46 +1,49 @@
-import React, {Component, PropTypes} from 'react';
+/* @flow */
+
+import React, {Component} from 'react';
+import classNames from 'classnames';
 import addClass from '../wrappers/addClass';
+import {getContextClass, getContextClassValue} from './bootstrapPropUtils';
 
 import {errorMessage} from '../utils/errorUtils';
 
-var Alert = (props) => (<div {...props} role="alert">
-  {props.children}
-</div>);
+type Props = {
+  type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok',
+  alarm?: ?any,
+  error?: ?any,
+  danger?: ?any,
+  warning?: ?any,
+  info?: ?any,
+  success?: ?any,
+  ok?: ?any,
+  className?: string,
+  children?: any,
+};
 
-Alert = addClass(Alert, 'alert');
-Alert.Info = addClass(Alert, 'alert alert-info');
-Alert.Success = addClass(Alert, 'alert alert-success');
-Alert.Warning = addClass(Alert, 'alert alert-warning');
-Alert.Danger = addClass(Alert, 'alert alert-danger');
-Alert.Error = Alert.Danger;
-Alert.Link = addClass('a', 'alert-link');
+export default class Alert extends Component {
+  props: Props;
+  defaultProps: {};
+  // these are included for backwards compatibility
+  static Auto    = Alert;
+  static Info    = props => (<Alert info    {...props}/>);
+  static OK      = props => (<Alert ok      {...props}/>);
+  static Success = props => (<Alert success {...props}/>);
+  static Warning = props => (<Alert warning {...props}/>);
+  static Danger  = props => (<Alert danger  {...props}/>);
+  static Error   = props => (<Alert error   {...props}/>);
+  static Alarm   = props => (<Alert alarm   {...props}/>);
+  static Link    = addClass('a', 'alert-link');
+  render()/*: ReactElement<any,any,any> */ {
+    let contextClass = getContextClass(this.props, 'type');
+    let content = getContextClassValue(this.props);
+    if (typeof content === 'boolean') content = undefined;
 
-const errorPropType = PropTypes.oneOfType([
-  PropTypes.instanceOf(Error),
-  PropTypes.node,
-]);
+    if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
+      content = errorMessage(content);
+    }
 
-export class AutoAlert extends Component {
-  static propTypes = {
-    type:     PropTypes.oneOf(['alarm', 'error', 'danger', 'warning', 'info', 'success']),
-    alarm:    errorPropType, 
-    error:    errorPropType, 
-    danger:   errorPropType, 
-    warning:  errorPropType, 
-    info:     PropTypes.node, 
-    success:  PropTypes.node,
-  };;
-  render() {
-    const {type, info, success, warning, danger, error, alarm, children} = this.props;
-    if (alarm   || type === 'alarm'  ) return <Alert.Danger {...this.props}>{alarm ? errorMessage(alarm) : children}</Alert.Danger>;
-    if (error   || type === 'error'  ) return <Alert.Danger {...this.props}>{error ? errorMessage(error) : children}</Alert.Danger>;
-    if (danger  || type === 'danger' ) return <Alert.Danger {...this.props}>{danger ? errorMessage(danger) : children}</Alert.Danger>;
-    if (warning || type === 'warning') return <Alert.Warning {...this.props}>{warning ? errorMessage(warning) : children}</Alert.Warning>;
-    if (info    || type === 'info'   ) return <Alert.Info {...this.props}>{info || children}</Alert.Info>;
-    if (success || type === 'success') return <Alert.Success {...this.props}>{success || children}</Alert.Success>;
+    let className = classNames(this.props.className, 'alert', contextClass && ('alert-' + contextClass));
+
+    return <div {...this.props} className={className}>{content}{this.props.children}</div>;
   }
 }
-
-Alert.Auto = AutoAlert;
-
-export default Alert;

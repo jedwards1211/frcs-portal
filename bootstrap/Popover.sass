@@ -1,3 +1,5 @@
+@import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables
+
 .mf-has-auto-popover
   > .popover
     position: absolute
@@ -10,3 +12,25 @@
       right: 0
     &.right
       left: 100%
+
+.popover.popover-danger
+  > .popover-title
+    color: $alert-danger-text
+    background-color: $alert-danger-bg
+    border: $alert-danger-border
+.popover.popover-warning
+  > .popover-title
+    color: $alert-warning-text
+    background-color: $alert-warning-bg
+    border: $alert-warning-border
+.popover.popover-info
+  > .popover-title
+    color: $alert-info-text
+    background-color: $alert-info-bg
+    border: $alert-info-border
+.popover.popover-success
+  > .popover-title
+    color: $alert-success-text
+    background-color: $alert-success-bg
+    border: $alert-success-border
+

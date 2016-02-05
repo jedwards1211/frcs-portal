@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import classNames from 'classnames';
 
 import Modal from '../bootstrap/Modal';
-import Alert from '../bootstrap/Alert';
 import CloseButton from '../bootstrap/CloseButton';
 import Button from '../bootstrap/Button';
 import Spinner from '../common/Spinner';
@@ -29,7 +28,7 @@ export default class TypicalModal extends React.Component {
     onOutsideClick:         PropTypes.func,
     onCloseButtonClick:     PropTypes.func,
     saving:                 PropTypes.bool,
-    error:                  Alert.Auto.propTypes.error,
+    error:                  PropTypes.any, //Alert.Auto.propTypes.error,
     errors:                 PropTypes.object,
     footerAlerts:           AutoAlertGroup.propTypes.alerts,
   };
