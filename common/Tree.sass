@@ -1,8 +1,6 @@
 @import "../sass/noselect"
 @import "../sass/css3-mixins"
 
-$item-height: 35px
-
 $selected-bg: #fb0
 $selected-color: black
 $selected-border: #fa0
@@ -21,14 +19,16 @@ $selected-hover-color: black
     @include transition(height ease 0.15s)
 
   .collapse-icon
-    @include transition(transform ease 0.15s)
+    display: inline-block
+    > .glyphicon
+      display: inline-block
+      @include transition(transform ease 0.15s)
 
   .mf-tree-node
     position: relative
     margin-left: 0
     padding-left: 0
     cursor: pointer
-    line-height: $item-height
 
     /* :not(:first-child) */
     margin-top: -1px

@@ -30,12 +30,15 @@ class Cell extends Component {
     model: nodePropType.isRequired,
   };
   static contextTypes = {
-    basePadding:  PropTypes.number,
     indent:       PropTypes.number,
+    itemHeight:   PropTypes.number,
+    collapseIconWidth: PropTypes.number,
   };
   render() {
-    let {model, depth, style, className} = this.props;
-    let {basePadding, indent} = this.context;
+    let {model, depth, style, collapseIconProps = {}, className} = this.props;
+    let {indent, itemHeight, collapseIconWidth} = this.context;
+
+    let basePadding = collapseIconWidth - indent;
 
     let selected = model.get('selected'),
         expanded = model.get('expanded'),
@@ -45,9 +48,18 @@ class Cell extends Component {
 
     let hasChildren = children && !!children.size;
 
-    return <div {...this.props} className={className}
-      style={propAssign(style, {paddingLeft: basePadding + indent * depth})}>
-      {hasChildren && <CollapseIcon open={expanded}/>} {model.get('value')}
+    return <div {...this.props} className={className} style={propAssign(style, {
+        paddingLeft: basePadding + indent * depth,
+        height: itemHeight,
+        lineHeight: itemHeight + 'px'})}>
+      {hasChildren && <CollapseIcon {...collapseIconProps} open={expanded}
+        style={propAssign(collapseIconProps.style, {
+          paddingLeft: basePadding,
+          marginLeft: -basePadding,
+          height: itemHeight,
+          lineHeight: itemHeight + 'px',
+          width: collapseIconWidth
+        })}/>}{model.get('value')}
     </div>;
   }
 }
@@ -99,27 +111,30 @@ class Node extends Component {
 export default class FastTree extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
   static propTypes = {
-    basePadding:      PropTypes.number,
     indent:           PropTypes.number,
+    itemHeight:       PropTypes.number,
+    collapseIconWidth:PropTypes.number,
     model:            nodePropType.isRequired,
     defaultRenderer:  PropTypes.any,
     dispatchEvent:    PropTypes.func,
   };
   static defaultProps = {
-    basePadding:      7,
-    indent:           18,
+    indent:           20,
+    itemHeight:       35,
+    collapseIconWidth:30,
     defaultRenderer:  Cell,
     className:        'mf-tree-default',
     dispatchEvent:    function() {},
   };
   static childContextTypes = {
-    basePadding:      PropTypes.number.isRequired,
     indent:           PropTypes.number.isRequired,
     defaultRenderer:  PropTypes.any,
+    itemHeight:       PropTypes.number.isRequired,
+    collapseIconWidth:PropTypes.number.isRequired,
   };
   getChildContext() {
-    let {basePadding, indent, defaultRenderer} = this.props;
-    return {basePadding, indent, defaultRenderer};
+    let {indent, itemHeight, collapseIconWidth, defaultRenderer} = this.props;
+    return {indent, itemHeight, collapseIconWidth, defaultRenderer};
   }
   scrollToPath(path) {
     let target = this;

@@ -1,6 +1,7 @@
 @import "../sass/css3-mixins"
 
 .collapse-icon
-  @include transition(transform linear 0.35s) 
-  &.open
+  > .glyphicon
+    @include transition(transform linear 0.35s)
+  &.open > .glyphicon
     @include transform(rotate(90deg))

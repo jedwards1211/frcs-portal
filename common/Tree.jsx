@@ -9,24 +9,34 @@ import propAssign from '../utils/propAssign';
 import './Tree.sass';
 
 class TreeCell extends Component {
+  static contextTypes = {
+    itemHeight:   PropTypes.number.isRequired,
+    indent:       PropTypes.number.isRequired,
+    collapseIconWidth: PropTypes.number.isRequired,
+  };
   render() {
-    let {hasChildren, expanded, children} = this.props;
-    return <div {...this.props}>
-      {hasChildren && <CollapseIcon open={expanded}/>} {children}
+    let {hasChildren, depth, expanded, style, collapseIconProps = {}, children} = this.props;
+    let {itemHeight, indent, collapseIconWidth} = this.context;
+    let basePadding = collapseIconWidth - indent;
+
+    return <div {...this.props} style={propAssign(style, {
+      paddingLeft: basePadding + depth * indent,
+      height: itemHeight,
+      lineHeight: itemHeight + 'px'
+    })}>
+      {hasChildren && <CollapseIcon open={expanded} style={propAssign(collapseIconProps.style, {
+        paddingLeft: basePadding,
+        marginLeft: -basePadding,
+        height: itemHeight,
+        lineHeight: itemHeight + 'px',
+        width: collapseIconWidth
+      })}/>}{children}
     </div>;
   }
 }
 
 class TreeNode extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
-  static contextTypes = {
-    basePadding: PropTypes.number,
-    indent:      PropTypes.number,
-  };
-  static defaultContextTypes = {
-    basePadding: 7,
-    indent:      15,
-  };
   static propTypes = {
     depth:      PropTypes.number,
     expanded:   PropTypes.bool,
@@ -38,19 +48,15 @@ class TreeNode extends Component {
   };
   render() {
     let {className, depth, expanded, cell, children} = this.props;
-    let {basePadding, indent} = this.context;
 
     let childArray = React.Children.toArray(children);
     if (!cell) cell = childArray.find(child => child.type === TreeCell);
     let childNodes = childArray.filter(child => child.type === TreeNode);
-    let otherChildren = childArray.filter(child => child.type !== TreeNode && child.type !== TreeCell);
     let hasChildren = !!childNodes.length;
 
     className = classNames(className, "mf-tree-node", {
       'mf-tree-node-branch': hasChildren,
     });
-
-    let paddingLeft = basePadding + depth * indent;
 
     if (cell || cell === 0) {
       if (!React.isValidElement(cell)) {
@@ -59,8 +65,8 @@ class TreeNode extends Component {
       cell = React.cloneElement(cell, {
         className: classNames(cell.props.className, 'mf-tree-node-cell'),
         hasChildren,
+        depth,
         expanded,
-        style: propAssign(cell.props.style, {paddingLeft}),
       });
     }
 
@@ -69,9 +75,6 @@ class TreeNode extends Component {
       <Autocollapse>
         {expanded && childNodes.map(child => React.cloneElement(child, {depth: depth + 1}))}
       </Autocollapse>
-      {!!otherChildren.length && <div style={{paddingLeft}}>
-        {otherChildren}
-      </div>}
     </div>;
   }
 }
@@ -109,21 +112,24 @@ class AutoTreeNode extends Component {
 
 export default class Tree extends Component {
   static propTypes = {
-    basePadding:  PropTypes.number.isRequired,
+    itemHeight:   PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
+    collapseIconWidth: PropTypes.number.isRequired,
   };
   static defaultProps = {
-    basePadding: 7,
-    indent:      15,
+    itemHeight:  35,
+    indent:      20,
+    collapseIconWidth: 30,
     className:   'mf-tree-default',
   };
   static childContextTypes = {
-    basePadding:  PropTypes.number.isRequired,
+    itemHeight:   PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
+    collapseIconWidth: PropTypes.number.isRequired,
   };
   getChildContext() {
-    let {basePadding, indent} = this.props;
-    return {basePadding, indent};
+    let {itemHeight, indent, collapseIconWidth} = this.props;
+    return {itemHeight, indent, collapseIconWidth};
   }
   render() {
     let {className, children} = this.props;
