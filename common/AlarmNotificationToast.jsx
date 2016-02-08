@@ -37,7 +37,7 @@ export default class AlarmNotificationToast extends Component {
     className = classNames(className, 'mf-alarm-notification-toast');
 
     return <Toast {...this.props} className={className}>
-      <Alert type={isAlarm ? 'alarm' : 'warning'}>
+      <Alert contextClass={isAlarm ? 'alarm' : 'warning'}>
         <table>
           <tbody>
             {alarmNotifications && alarmNotifications.map((notification, index) => {

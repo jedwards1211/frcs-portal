@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 
+import Button from './Button.jsx';
 import Spinner from '../common/Spinner';
 
 export default class DeleteButton extends Component {
@@ -37,15 +38,15 @@ export default class DeleteButton extends Component {
     let {className, deleting, deletingText, disabled} = this.props;
     let {armed} = this.state;
     let {armedText, disarmedText} = this.props;
-    className = classNames(className, 'btn', 'delete-btn', {'btn-default': !armed, 'btn-danger': armed});
+    className = classNames(className, 'btn', 'delete-btn');
 
-    return <button type="button" {...this.props} className={className} 
+    return <Button {...this.props} danger={armed} className={className}
       onBlur={this.onBlur} onClick={this.onClick} disabled={disabled || deleting}>
       {deleting ? 
         <span><Spinner/> {deletingText}</span>
         :
         <span><i className="glyphicon glyphicon-trash"/> {armed ? armedText : disarmedText}</span>
       }
-    </button>;
+    </Button>;
   }
 }

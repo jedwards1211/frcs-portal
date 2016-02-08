@@ -27,7 +27,6 @@ export default class Alert extends Component {
   render()/*: ReactElement<any,any,any> */ {
     let contextClass = getContextClass(this.props, 'type');
     let content = getContextContent(this.props);
-    if (typeof content === 'boolean') content = undefined;
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
       content = errorMessage(content);

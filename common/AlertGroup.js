@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
+import {getContextClass} from '../bootstrap/bootstrapPropUtils';
+
 import Alert from '../bootstrap/Alert';
 import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 
@@ -12,9 +14,9 @@ export default class AlertGroup extends Component {
     const children = [];
     if (alerts) {
       for (var key in alerts) {
-        let v = alerts[key];
-        if (v && (v.type || v.alarm || v.error || v.danger || v.warning || v.info || v.success)) {
-          children.push(<Alert key={key} {...v}/>);
+        let props = alerts[key];
+        if (getContextClass(props)) {
+          children.push(<Alert key={key} {...props}/>);
         }
       }
     }

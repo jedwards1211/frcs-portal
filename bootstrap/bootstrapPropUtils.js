@@ -17,11 +17,14 @@ export function getContextClass(props: Object): ?string {
   return getEnumProp(props, CONTEXT_CLASSES, 'contextClass');
 }
 
+function nontrue(val: ?any) {
+  return val === true ? undefined : val;
+}
+
 export function getContextContent(props: Object): ?any {
-  if (props.contextClass) return props[props.contextClass];
+  if (CONTEXT_CLASSES[props.contextClass]) return nontrue(props[props.contextClass]);
   for (let contextClass in CONTEXT_CLASSES) {
     let value = props[contextClass];
-    if (value === true) return undefined;
-    else if (value) return value;
+    if (value) return nontrue(value);
   }
 }

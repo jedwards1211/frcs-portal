@@ -21,6 +21,7 @@ type Props = {
   title?: any,
   heading?: any,
   footer?: any,
+  collapse?: boolean,
   collapseProps?: Object,
   open?: boolean,
   onTransitionEnd?: Function,
@@ -30,7 +31,7 @@ export default class Panel extends Component {
   props: Props;
   static defaultProps: {};
   render()/*: ReactElement<any,any,any> */ {
-    let {className, children, heading, title, footer, collapseProps} = this.props;
+    let {className, children, heading, title, footer, collapse} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
     let content = getContextContent(this.props);
 
@@ -45,8 +46,8 @@ export default class Panel extends Component {
       {children}
     </div>;
 
-    if (this.props.hasOwnProperty('collapse')) {
-      let {open, onTransitionEnd} = this.props;
+    if (collapse) {
+      let {open, onTransitionEnd, collapseProps} = this.props;
       body = <Collapse className="panel-collapse" {...(collapseProps || {})}
         open={open} onTransitionEnd={onTransitionEnd}>
         {body}
