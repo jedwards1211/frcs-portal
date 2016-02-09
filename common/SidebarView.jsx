@@ -15,25 +15,28 @@ export default class SidebarView extends Component {
     content:              PropTypes.node,
     onOpenSidebarClick:   PropTypes.func,
     onCloseSidebarClick:  PropTypes.func,
+    onSidebarOpenChange: PropTypes.func,
     sidebarSide:          PropTypes.oneOf([leftSide, rightSide]),
     sidebarWidth:         PropTypes.number,
     overlapToggleButton:  PropTypes.bool,
     isNarrow:             PropTypes.func,
-  };;
+  };
   static defaultProps = {
     sidebarSide: leftSide,
     sidebarWidth: 200,
     overlapToggleButton: true,
     onOpenSidebarClick: function() {},
     onCloseSidebarClick: function() {},
+    onSidebarOpenChange: function() {},
   };
   constructor(props) {
     super(props);
     this.state = {rootWidth: 0};
   }
   onSidebarToggleBtnClick = () => {
-    let {sidebarOpen = !this.isNarrow(), onOpenSidebarClick, onCloseSidebarClick} = this.props;
+    let {sidebarOpen = !this.isNarrow(), onOpenSidebarClick, onCloseSidebarClick, onSidebarOpenChange} = this.props;
     sidebarOpen ? onCloseSidebarClick() : onOpenSidebarClick();
+    onSidebarOpenChange(!sidebarOpen);
     callOnTransitionEnd(this.refs.sidebar, fireFakeResizeEvent, 1000);
   };
   resize = _.throttle(() => {
@@ -83,7 +86,7 @@ export default class SidebarView extends Component {
     return rootWidth < sidebarWidth * 2;
   }
   render() {
-    let {className, sidebar, sidebarOpen = !this.isNarrow(), sidebarSide, sidebarWidth, 
+    let {className, sidebar, sidebarOpen = !this.isNarrow(), sidebarSide, sidebarWidth,
         content, overlapToggleButton, ...props} = this.props;
     let {mounted, laidOut, rootWidth = 0, sidebarToggleBtnWidth = 0} = this.state;
 

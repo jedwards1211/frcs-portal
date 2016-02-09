@@ -1,4 +1,8 @@
+import React from 'react';
 import Immutable from 'immutable';
+import shallowEqual from 'fbjs/lib/shallowEqual';
+import Tree from './Tree.jsx';
+import _ from 'lodash';
 
 export function forEachNode(tree, iteratee) {
   function helper(root, path) {
@@ -37,6 +41,32 @@ export function updateEachNode(tree, iteratee) {
   return helper(tree, []);
 }
 
+/**
+ * Merges values from nodes in oldTree into the corresponding nodes in newTree that don't contain a
+ * value for a given key.
+ * @param oldTree
+ * @param newTree
+ * @returns {*|Iterable|Array}
+ */
+export function updateTree(oldTree, newTree) {
+  if (!oldTree) return newTree;
+  return newTree.map((newValue, key) => {
+    let oldValue = oldTree.get(key);
+    if (key === 'children') {
+      return newValue.map((newChild, key) => {
+        updateTree(oldValue && oldValue.get(key), newChild)
+      });
+    }
+    else {
+      return newValue || oldValue;
+    }
+  });
+}
+
+export function interleaveChildren(path) {
+  return _.flatten(path.map(elem => ['children', elem]));
+}
+
 export function expandTreePath(model, path) {
   return model && model.withMutations(model => {
     if (model.get('children')) {
@@ -47,3 +77,26 @@ export function expandTreePath(model, path) {
     }
   });
 }
+
+export const FastTreeAdapter = {
+  shouldUpdate(oldNode, newNode) { return !shallowEqual(oldNode, newNode); },
+  hasChildren(node) {
+    let children = node.get("children");
+    return !!(children && children.size);
+  },
+  mapChildren(node, iteratee) {
+    let children = node.get('children');
+    if (children) return children.map(iteratee).toArray();
+  },
+  isExpanded(node) { return !!node.get("expanded"); },
+  isSelected(node) { return !!node.get("selected"); },
+  render(node, props) {
+    let selected = this.isSelected(node),
+        expanded = this.isExpanded(node),
+        children = this.hasChildren(node);
+
+    return <Tree.Cell {...props} selected={selected} expanded={expanded} hasChildren={!!children}>
+      {node.get('value')}
+    </Tree.Cell>;
+  },
+};

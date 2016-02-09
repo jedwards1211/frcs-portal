@@ -8,10 +8,12 @@ export function replaceNonMatching(input: string, pattern: string) {
 export default class RestrictedInput extends Component {
   static propTypes = {
     filterPattern: PropTypes.string,
+    decimalNumber: PropTypes.bool,
   };
   onChange = e => {
     let {value} = e.target;
-    let {filterPattern} = this.props;
+    let {filterPattern, decimalNumber} = this.props;
+    if (decimalNumber) filterPattern = "\\d+(\\.\\d*)|\\.\\d+";
     let restrictedValue = filterPattern ? replaceNonMatching(value, filterPattern) : value;
     if (value !== restrictedValue) {
       e = _.assign({}, e, {

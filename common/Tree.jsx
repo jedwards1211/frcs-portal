@@ -15,7 +15,8 @@ export class TreeCell extends Component {
     collapseIconWidth: PropTypes.number.isRequired,
   };
   render() {
-    let {className, hasChildren, depth, expanded, selected, style, collapseIconProps = {}, children} = this.props;
+    let {className, hasChildren, depth, expanded, selected, style, collapseIconProps, children} = this.props;
+    collapseIconProps = collapseIconProps || {};
     let {itemHeight, indent, collapseIconWidth} = this.context;
     let basePadding = collapseIconWidth - indent;
 
@@ -26,7 +27,7 @@ export class TreeCell extends Component {
       height: itemHeight,
       lineHeight: itemHeight + 'px'
     })}>
-      {hasChildren && <CollapseIcon open={expanded} style={propAssign(collapseIconProps.style, {
+      {hasChildren && <CollapseIcon {...collapseIconProps} open={expanded} style={propAssign(collapseIconProps.style, {
         paddingLeft: basePadding,
         marginLeft: -basePadding,
         height: itemHeight,
@@ -45,6 +46,10 @@ class TreeNode extends Component {
     let {dispatch, pathKey} = this.props;
     if (dispatch) dispatch(e, [pathKey, ...path]);
   };
+  getPath = () => {
+    let {getPath, pathKey} = this.props;
+    return [...getPath(), pathKey];
+  };
   render() {
     let {node, adapter, depth} = this.props;
     let {dispatch} = this;
@@ -54,20 +59,20 @@ class TreeNode extends Component {
     });
 
     return <div className={className}>
-      {adapter.render(node, {depth, dispatch})}
-      {adapter.hasChildren(node) && <TreeChildren {...this.props} dispatch={dispatch}/>}
+      {adapter.render(node, {depth, dispatch, getPath: this.getPath})}
+      {adapter.hasChildren(node) && <TreeChildren {...this.props} getPath={this.getPath} dispatch={dispatch}/>}
     </div>;
   }
 }
 
 class TreeChildren extends Component {
   render() {
-    let {node, adapter, depth, dispatch} = this.props;
+    let {node, isRoot, adapter, depth, dispatch, getPath} = this.props;
 
     return <Autocollapse>
-      {adapter.isExpanded(node) && adapter.mapChildren(node, (child, key) => {
+      {(isRoot || adapter.isExpanded(node)) && adapter.mapChildren(node, (child, key) => {
         return <TreeNode key={key} pathKey={key} node={child} adapter={adapter}
-                         depth={depth + 1} dispatch={dispatch}/>;
+                         depth={depth + 1} dispatch={dispatch} getPath={getPath}/>;
       })}
     </Autocollapse>;
   }
@@ -87,15 +92,17 @@ export default class Tree extends Component {
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
-  getChildContext(): Object {
+  getChildContext() {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
-  render()/*: ReactElement<any,any,any> */ {
+  getPath = () => [];
+  render() {
     let {root, adapter, dispatch} = this.props;
 
     return <div {...this.props}>
-      {root && <TreeChildren node={root} adapter={adapter} depth={-1} dispatch={dispatch}/>}
+      {root && <TreeChildren node={root} isRoot={true} adapter={adapter} depth={-1} dispatch={dispatch}
+                             getPath={this.getPath}/>}
     </div>;
   }
 }
