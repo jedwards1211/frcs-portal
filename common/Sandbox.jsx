@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Router, Route, Redirect} from 'react-router';
+import shallowEqual from 'fbjs/lib/shallowEqual';
 
 import createHistory from 'history/lib/createHashHistory';
 
@@ -20,21 +21,32 @@ class Shell extends Component {
       sidebarOpen: true,
     };
   }
+  adapter = {
+    shouldUpdate: (oldNode, newNode) => !shallowEqual(oldNode, newNode),
+    hasChildren: node => node.children && node.children.length > 0,
+    mapChildren: (node, iteratee) => node.children && node.children.map(iteratee),
+    isExpanded: node => this.adapter.hasChildren(node),
+    render: (node, props) => {
+      return <Tree.Cell {...props} {...node}>
+        {node.text}
+      </Tree.Cell>;
+    }
+  };
   render() {
     let {sidebarOpen} = this.state;
     let {requireContext, location: {pathname}, children} = this.props;
 
-    let sidebar = <Tree>
-      {requireContext.keys().map(key => {
-        if (key === './Sandbox.jsx') return;
-        return <Tree.Node key={key} cell={key.substring(2)}
-          className={key.substring(1) === pathname ? 'selected' : ''}
-          onClick={() => history.pushState(null, key.substring(1))}/>;
-      })}
-    </Tree>;
+    let root = {
+      children: requireContext.keys().filter(key => key !== './Sandbox.jsx').map(key => {
+        return {
+          text: key,
+          selected: key.substring(1) === pathname,
+          onClick: () => history.pushState(null, key.substring(1)),
+        };
+      }),
+    };
 
-    // let content = children && React.createElement(children);
-    // let content = <div/>;
+    let sidebar = <Tree root={root} adapter={this.adapter}/>;
 
     return <SidebarView className="mf-sandbox" sidebarOpen={sidebarOpen} 
       onCloseSidebarClick={() => this.setState({sidebarOpen: false})}

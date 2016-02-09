@@ -8,18 +8,20 @@ import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
 
-class TreeCell extends Component {
+export class TreeCell extends Component {
   static contextTypes = {
     itemHeight:   PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
   render() {
-    let {hasChildren, depth, expanded, style, collapseIconProps = {}, children} = this.props;
+    let {className, hasChildren, depth, expanded, selected, style, collapseIconProps = {}, children} = this.props;
     let {itemHeight, indent, collapseIconWidth} = this.context;
     let basePadding = collapseIconWidth - indent;
 
-    return <div {...this.props} style={propAssign(style, {
+    className = classNames(className, 'mf-tree-node-cell', {selected});
+
+    return <div {...this.props} className={className} style={propAssign(style, {
       paddingLeft: basePadding + depth * indent,
       height: itemHeight,
       lineHeight: itemHeight + 'px'
@@ -36,86 +38,44 @@ class TreeCell extends Component {
 }
 
 class TreeNode extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate;
-  static propTypes = {
-    depth:      PropTypes.number,
-    expanded:   PropTypes.bool,
-    cell:       PropTypes.node,
-  };
-  static defaultProps = {
-    depth: 0,
-    expanded: true,
+  shouldComponentUpdate(nextProps) {
+    return nextProps.adapter.shouldUpdate(this.props.node, nextProps.node);
+  }
+  dispatch = (e, path = []) => {
+    let {dispatch, pathKey} = this.props;
+    if (dispatch) dispatch(e, [pathKey, ...path]);
   };
   render() {
-    let {className, depth, expanded, cell, children} = this.props;
+    let {node, adapter, depth} = this.props;
+    let {dispatch} = this;
 
-    let childArray = React.Children.toArray(children);
-    if (!cell) cell = childArray.find(child => child.type === TreeCell);
-    let childNodes = childArray.filter(child => child.type === TreeNode);
-    let hasChildren = !!childNodes.length;
-
-    className = classNames(className, "mf-tree-node", {
-      'mf-tree-node-branch': hasChildren,
+    let className = classNames("mf-tree-node", {
+      'mf-tree-node-branch': adapter.hasChildren(node),
     });
 
-    if (cell || cell === 0) {
-      if (!React.isValidElement(cell)) {
-        cell = <TreeCell>{cell}</TreeCell>;
-      }
-      cell = React.cloneElement(cell, {
-        className: classNames(cell.props.className, 'mf-tree-node-cell'),
-        hasChildren,
-        depth,
-        expanded,
-      });
-    }
-
-    return <div {...this.props} className={className}>
-      {cell}
-      <Autocollapse>
-        {expanded && childNodes.map(child => React.cloneElement(child, {depth: depth + 1}))}
-      </Autocollapse>
+    return <div className={className}>
+      {adapter.render(node, {depth, dispatch})}
+      {adapter.hasChildren(node) && <TreeChildren {...this.props} dispatch={dispatch}/>}
     </div>;
   }
 }
 
-class AutoTreeNode extends Component {
-  static propTypes = {
-    depth:        PropTypes.number,
-    initExpanded: PropTypes.bool,
-    cell:         PropTypes.node.isRequired,
-  };
-  static defaultProps = {
-    initExpanded: true,
-  };
-  constructor(props) {
-    super(props);
-    this.state = {
-      expanded: props.initExpanded,
-    };
-  }
-  onClick = () => {
-    this.setState({expanded: !this.state.expanded});
-  };
+class TreeChildren extends Component {
   render() {
-    let {cell} = this.props;
-    let {onClick} = this;
+    let {node, adapter, depth, dispatch} = this.props;
 
-    if (!React.isValidElement(cell)) {
-      cell = <TreeCell>{cell}</TreeCell>;
-    }
-    cell = React.cloneElement(cell, {onClick});
-
-    return <TreeNode {...this.props} {...this.state} cell={cell}/>;
+    return <Autocollapse>
+      {adapter.isExpanded(node) && adapter.mapChildren(node, (child, key) => {
+        return <TreeNode key={key} pathKey={key} node={child} adapter={adapter}
+                         depth={depth + 1} dispatch={dispatch}/>;
+      })}
+    </Autocollapse>;
   }
 }
 
 export default class Tree extends Component {
-  static propTypes = {
-    itemHeight:   PropTypes.number.isRequired,
-    indent:       PropTypes.number.isRequired,
-    collapseIconWidth: PropTypes.number.isRequired,
-  };
+  shouldComponentUpdate = shouldPureComponentUpdate;
+  static Cell = TreeCell;
   static defaultProps = {
     itemHeight:  35,
     indent:      20,
@@ -127,21 +87,15 @@ export default class Tree extends Component {
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
-  getChildContext() {
+  getChildContext(): Object {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
-  render() {
-    let {className, children} = this.props;
+  render()/*: ReactElement<any,any,any> */ {
+    let {root, adapter, dispatch} = this.props;
 
-    className = classNames(className, 'mf-tree');
-
-    return <div {...this.props} className={className}>
-      {children}
+    return <div {...this.props}>
+      {root && <TreeChildren node={root} adapter={adapter} depth={-1} dispatch={dispatch}/>}
     </div>;
   }
 }
-
-Tree.Node = TreeNode;
-Tree.Node.Auto = AutoTreeNode;
-Tree.Cell = TreeCell;
