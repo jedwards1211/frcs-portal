@@ -8,7 +8,7 @@ import {getContextClass, getContextContent} from './bootstrapPropUtils';
 import {errorMessage} from '../utils/errorUtils';
 
 type Props = {
-  type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok',
+  contextClass?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok',
   alarm?: ?any,
   error?: ?any,
   danger?: ?any,
@@ -20,11 +20,9 @@ type Props = {
   children?: any,
 };
 
-export default class Alert extends Component {
-  props: Props;
-  defaultProps: {};
-  static Link    = addClass('a', 'alert-link');
-  render()/*: ReactElement<any,any,any> */ {
+export default class Alert extends Component<void,Props,void> {
+  static Link = addClass('a', 'alert-link');
+  render(): ReactElement {
     let contextClass = getContextClass(this.props, 'type');
     let content = getContextContent(this.props);
 

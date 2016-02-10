@@ -116,7 +116,6 @@ type TreeNodeProps = {
 
 class TreeNode extends Component<void,TreeNodeProps,void> {
   shouldComponentUpdate(nextProps) {
-    //return nextProps.adapter.shouldUpdate(this.props.node, nextProps.node);
     return this.props.node.shouldUpdate(nextProps.node);
   }
   dispatch = (e, path = []) => {

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import {getContextClass, getContextContent} from './bootstrapPropUtils';
 
 type Props = {
-  type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok' | 'primary',
+  contextClass?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok' | 'primary',
   alarm?: ?any,
   error?: ?any,
   danger?: ?any,

@@ -1,28 +1,44 @@
-import React, {Component, PropTypes} from 'react';
-import _ from 'lodash';
+/* @flow */
 
-export function replaceNonMatching(input: string, pattern: string) {
+import React, {Component} from 'react';
+
+export function replaceNonMatching(input: string, pattern: string): string {
   return input.replace(new RegExp(`(${pattern})|.`, 'gi'), (match, p1) => p1 || '');
 }
 
-export default class RestrictedInput extends Component {
-  static propTypes = {
-    filterPattern: PropTypes.string,
-    decimalNumber: PropTypes.bool,
-  };
-  onChange = e => {
+export function restrictDecimalNumber(input: string): string {
+  let decimalIndex = input.indexOf('.');
+  if (decimalIndex >= 0) {
+    return  input.substring(0, decimalIndex ).replace(/\D/g, '') + '.' +
+            input.substring(decimalIndex + 1).replace(/\D/g, '');
+  }
+  return input.replace(/\D/g, '');
+}
+
+type Props = {
+  restrictValue?: (value: string) => string,
+  filterPattern?: string,
+  decimalNumber?: boolean,
+  value?: string,
+};
+
+export default class RestrictedInput extends Component<void,Props,void> {
+  onChange: (e: {target: {value: ?string}}) => void = e => {
     let {value} = e.target;
-    let {filterPattern, decimalNumber} = this.props;
-    if (decimalNumber) filterPattern = "\\d+(\\.\\d*)|\\.\\d+";
-    let restrictedValue = filterPattern ? replaceNonMatching(value, filterPattern) : value;
-    if (value !== restrictedValue) {
-      e = _.assign({}, e, {
-        target: _.assign({}, e.target, {value: restrictedValue}),
+    value = value || '';
+    let {restrictValue, filterPattern, decimalNumber} = this.props;
+    let restrictedValue = restrictValue ? restrictValue(value) :
+                          filterPattern ? replaceNonMatching(value, filterPattern) :
+                          decimalNumber ? restrictDecimalNumber(value) :
+                          value;
+    if (this.props.value !== restrictedValue) {
+      e = Object.assign({}, e, {
+        target: Object.assign({}, e.target, {value: restrictedValue}),
       });
+      this.props.onChange && this.props.onChange(e);
     }
-    this.props.onChange && this.props.onChange(e);
   };
-  render() {
+  render(): ReactElement {
     return <input {...this.props} onChange={this.onChange}/>;
   }
 }
