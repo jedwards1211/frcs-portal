@@ -19,29 +19,39 @@ export type Node = {
   shouldUpdate: (newNode: Node) => boolean,
 };
 
+type BasicNodeData = {
+  children: Array<BasicNodeData> | {[key: string]: BasicNodeData},
+  expanded?: boolean,
+  selected?: boolean,
+};
+
 export class BasicNode {
-  constructor(data) {
+  data: BasicNodeData;
+  model: any;
+
+  constructor(data: BasicNodeData, model: any) {
     this.data = data;
+    this.model = model;
   }
 
-  shouldUpdate(newNode) {
-    return this.data !== newNode.data;
+  shouldUpdate(newNode: BasicNode): boolean {
+    return this.data !== newNode.data || this.model !== newNode.model;
   }
 
-  hasChildren() {
+  hasChildren(): boolean {
     return !!(this.data.children && this.data.children.length);
   }
 
-  children() {
-    return _.map(this.data.children || [], child => new BasicNode(child));
+  children(): Array<BasicNode> | {[key: string]: BasicNode} {
+    return _.map(this.data.children || [], child => new BasicNode(child, this.model));
   }
 
-  isExpanded() {
-    return this.data.expanded;
+  isExpanded(): boolean {
+    return !!this.data.expanded;
   }
 
-  isSelected() {
-    return this.data.selected;
+  isSelected(): boolean {
+    return !!this.data.selected;
   }
 }
 
