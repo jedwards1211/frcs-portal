@@ -19,7 +19,7 @@ export type Node = {
   shouldUpdate: (newNode: Node) => boolean,
 };
 
-type BasicNodeData = {
+export type BasicNodeData = {
   children: Array<BasicNodeData> | {[key: string]: BasicNodeData},
   expanded?: boolean,
   selected?: boolean,
@@ -155,6 +155,9 @@ type TreeChildrenProps = {
 };
 
 class TreeChildren extends Component<void,TreeChildrenProps,void> {
+  shouldComponentUpdate(nextProps) {
+    return this.props.node.shouldUpdate(nextProps.node);
+  }
   render(): ReactElement {
     let {node, renderNode, expanded, depth, dispatch, getPath} = this.props;
 
@@ -186,8 +189,7 @@ type TreeDefaultProps = {
 export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
   shouldComponentUpdate: (props: Object, state: void, context: Object) => boolean = shouldPureComponentUpdate;
   static Cell = TreeCell;
-  props: TreeProps;
-  static defaultProps: TreeDefaultProps = {
+  static defaultProps = {
     itemHeight:  35,
     indent:      20,
     collapseIconWidth: 30,
