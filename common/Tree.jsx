@@ -15,7 +15,6 @@ export type Node = {
   hasChildren: () => boolean,
   children: () => Array<Node> | {[key: string]: Node},
   isExpanded: () => boolean,
-  isSelected?: () => boolean,
   shouldUpdate: (newNode: Node) => boolean,
 };
 
@@ -83,7 +82,8 @@ export class TreeCell extends Component<void,TreeCellProps,void> {
       expanded = expanded || node.isExpanded();
       hasChildren = hasChildren || node.hasChildren();
       if (node.isSelected instanceof Function) {
-        selected = selected || node.isSelected();
+        let flowWorkaround = node.isSelected;
+        selected = selected || flowWorkaround.call(node);
       }
     }
 
@@ -110,7 +110,7 @@ type TreeNodeProps = {
   depth: number,
   renderNode: (node: Node, props: Object) => ReactElement,
   dispatch: ?(event: any, path: Array<string | number>) => ?any,
-  pathKey: string | number,
+  pathKey: string | number, // should really be string | number but flow is buggy
   getPath: () => Array<string | number>,
 };
 
@@ -176,7 +176,7 @@ type TreeProps = {
   className: string,
   root?: ?Node,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch: ?(event: any, path: Array<string | number>) => ?any,
+  dispatch?: ?(event: any, path: Array<string | number>) => ?any,
 };
 type TreeDefaultProps = {
   itemHeight: number,
