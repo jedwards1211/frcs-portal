@@ -19,6 +19,32 @@ export type Node = {
   shouldUpdate: (newNode: Node) => boolean,
 };
 
+export class BasicNode {
+  constructor(data) {
+    this.data = data;
+  }
+
+  shouldUpdate(newNode) {
+    return this.data !== newNode.data;
+  }
+
+  hasChildren() {
+    return !!(this.data.children && this.data.children.length);
+  }
+
+  children() {
+    return _.map(this.data.children || [], child => new BasicNode(child));
+  }
+
+  isExpanded() {
+    return this.data.expanded;
+  }
+
+  isSelected() {
+    return this.data.selected;
+  }
+}
+
 type TreeCellProps = {
   node?: Node,
   className?: string,

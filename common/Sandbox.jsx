@@ -1,11 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {Router, Route, Redirect} from 'react-router';
-import shallowEqual from 'fbjs/lib/shallowEqual';
 
 import createHistory from 'history/lib/createHashHistory';
 
 import SidebarView from './SidebarView';
-import Tree from './Tree';
+import Tree, {BasicNode} from './Tree';
 
 import './Sandbox.sass';
 
@@ -21,32 +20,27 @@ class Shell extends Component {
       sidebarOpen: true,
     };
   }
-  adapter = {
-    shouldUpdate: (oldNode, newNode) => !shallowEqual(oldNode, newNode),
-    hasChildren: node => node.children && node.children.length > 0,
-    mapChildren: (node, iteratee) => node.children && node.children.map(iteratee),
-    isExpanded: node => this.adapter.hasChildren(node),
-    render: (node, props) => {
-      return <Tree.Cell {...props} {...node}>
-        {node.text}
-      </Tree.Cell>;
-    }
+  renderTreeNode = (node, props) => {
+    return <Tree.Cell {...props} node={node} onClick={() => history.pushState(null, node.data.module.substring(1))}>
+      {node.data.module}
+    </Tree.Cell>;
   };
   render() {
     let {sidebarOpen} = this.state;
     let {requireContext, location: {pathname}, children} = this.props;
 
-    let root = {
-      children: requireContext.keys().filter(key => key !== './Sandbox.jsx').map(key => {
+    let root = new BasicNode({
+      expanded: true,
+      children: requireContext.keys().filter(key => key !== './Sandbox.jsx').map(module => {
         return {
-          text: key,
-          selected: key.substring(1) === pathname,
-          onClick: () => history.pushState(null, key.substring(1)),
+          module,
+          selected: module.substring(1) === pathname,
+          //onClick: () => history.pushState(null, key.substring(1)),
         };
       }),
-    };
+    });
 
-    let sidebar = <Tree root={root} adapter={this.adapter}/>;
+    let sidebar = <Tree root={root} renderNode={this.renderTreeNode}/>;
 
     return <SidebarView className="mf-sandbox" sidebarOpen={sidebarOpen} 
       onCloseSidebarClick={() => this.setState({sidebarOpen: false})}
