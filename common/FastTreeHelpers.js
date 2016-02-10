@@ -1,7 +1,5 @@
 import React from 'react';
 import Immutable from 'immutable';
-import shallowEqual from 'fbjs/lib/shallowEqual';
-import Tree from './Tree.jsx';
 import _ from 'lodash';
 
 export function forEachNode(tree, iteratee) {
@@ -78,25 +76,28 @@ export function expandTreePath(model, path) {
   });
 }
 
-export const FastTreeAdapter = {
-  shouldUpdate(oldNode, newNode) { return !shallowEqual(oldNode, newNode); },
-  hasChildren(node) {
-    let children = node.get("children");
-    return !!(children && children.size);
-  },
-  mapChildren(node, iteratee) {
-    let children = node.get('children');
-    if (children) return children.map(iteratee).toArray();
-  },
-  isExpanded(node) { return !!node.get("expanded"); },
-  isSelected(node) { return !!node.get("selected"); },
-  render(node, props) {
-    let selected = this.isSelected(node),
-        expanded = this.isExpanded(node),
-        children = this.hasChildren(node);
-
-    return <Tree.Cell {...props} selected={selected} expanded={expanded} hasChildren={!!children}>
-      {node.get('value')}
-    </Tree.Cell>;
-  },
-};
+export class FastTreeNode {
+  constructor(data, model) {
+    this.data = data;
+    this.model = model;
+  }
+  shouldUpdate(newNode) {
+    return newNode.data !== this.data || newNode.model !== this.model;
+  }
+  hasChildren() {
+    let children = this.data.get('children');
+    return !!children && children.size;
+  }
+  children() {
+    let _children = this.data.get('children');
+    if (!_children) return {};
+    _children = _children.map(child => new FastTreeNode(child, this.model));
+    return _children.toObject();
+  }
+  isExpanded() {
+    return this.data.get('expanded');
+  }
+  isSelected() {
+    return this.data.get('selected');
+  }
+}

@@ -1,6 +1,9 @@
+/* @flow */
+
 import React, {Component, PropTypes} from 'react';
 import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 import Autocollapse from './Autocollapse';
 import CollapseIcon from './CollapseIcon';
@@ -8,17 +11,45 @@ import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
 
-export class TreeCell extends Component {
+export type Node = {
+  hasChildren: () => boolean,
+  children: () => Array<Node> | {[key: string]: Node},
+  isExpanded: () => boolean,
+  isSelected?: () => boolean,
+  shouldUpdate: (newNode: Node) => boolean,
+};
+
+type TreeCellProps = {
+  node?: Node,
+  className?: string,
+  hasChildren?: boolean,
+  depth: number,
+  expanded?: boolean,
+  selected?: boolean,
+  style?: Object,
+  collapseIconProps?: Object,
+  children?: any,
+};
+
+export class TreeCell extends Component<void,TreeCellProps,void> {
   static contextTypes = {
     itemHeight:   PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
-  render() {
-    let {className, hasChildren, depth, expanded, selected, style, collapseIconProps, children} = this.props;
+  render(): ReactElement {
+    let {node, className, hasChildren, depth, expanded, selected, style, collapseIconProps, children} = this.props;
     collapseIconProps = collapseIconProps || {};
     let {itemHeight, indent, collapseIconWidth} = this.context;
     let basePadding = collapseIconWidth - indent;
+
+    if (node) {
+      expanded = expanded || node.isExpanded();
+      hasChildren = hasChildren || node.hasChildren();
+      if (node.isSelected instanceof Function) {
+        selected = selected || node.isSelected();
+      }
+    }
 
     className = classNames(className, 'mf-tree-node-cell', {selected});
 
@@ -38,50 +69,89 @@ export class TreeCell extends Component {
   }
 }
 
-class TreeNode extends Component {
+type TreeNodeProps = {
+  node: Node,
+  depth: number,
+  renderNode: (node: Node, props: Object) => ReactElement,
+  dispatch: ?(event: any, path: Array<string | number>) => ?any,
+  pathKey: any, // should really be string | number but flow is buggy
+  getPath: () => Array<string | number>,
+};
+
+class TreeNode extends Component<void,TreeNodeProps,void> {
   shouldComponentUpdate(nextProps) {
-    return nextProps.adapter.shouldUpdate(this.props.node, nextProps.node);
+    //return nextProps.adapter.shouldUpdate(this.props.node, nextProps.node);
+    return this.props.node.shouldUpdate(nextProps.node);
   }
   dispatch = (e, path = []) => {
     let {dispatch, pathKey} = this.props;
     if (dispatch) dispatch(e, [pathKey, ...path]);
   };
-  getPath = () => {
+  getPath: () => Array<string | number> = () => {
     let {getPath, pathKey} = this.props;
     return [...getPath(), pathKey];
   };
-  render() {
-    let {node, adapter, depth} = this.props;
+  render(): ReactElement {
+    let {node, renderNode, depth} = this.props;
     let {dispatch} = this;
 
+    let hasChildren = node.hasChildren();
+
     let className = classNames("mf-tree-node", {
-      'mf-tree-node-branch': adapter.hasChildren(node),
+      'mf-tree-node-branch': hasChildren
     });
 
     return <div className={className}>
-      {adapter.render(node, {depth, dispatch, getPath: this.getPath})}
-      {adapter.hasChildren(node) && <TreeChildren {...this.props} getPath={this.getPath} dispatch={dispatch}/>}
+      {renderNode(node, {depth, dispatch, getPath: this.getPath})}
+      {hasChildren && <TreeChildren node={node} renderNode={renderNode} getPath={this.getPath} dispatch={dispatch}
+                                    depth={depth}/>}
     </div>;
   }
 }
 
-class TreeChildren extends Component {
-  render() {
-    let {node, isRoot, adapter, depth, dispatch, getPath} = this.props;
+type TreeChildrenProps = {
+  node: Node,
+  expanded?: boolean,
+  depth: number,
+  renderNode: (node: Node, props: Object) => ReactElement,
+  dispatch: ?(event: any, path: Array<string | number>) => ?any,
+  getPath: () => Array<string | number>,
+};
+
+class TreeChildren extends Component<void,TreeChildrenProps,void> {
+  render(): ReactElement {
+    let {node, renderNode, expanded, depth, dispatch, getPath} = this.props;
 
     return <Autocollapse>
-      {(isRoot || adapter.isExpanded(node)) && adapter.mapChildren(node, (child, key) => {
-        return <TreeNode key={key} pathKey={key} node={child} adapter={adapter}
-                         depth={depth + 1} dispatch={dispatch} getPath={getPath}/>;
+      {(expanded || node.isExpanded()) && _.map(node.children(), (child, key) => {
+        return <TreeNode key={key} pathKey={key} node={child} renderNode={renderNode} depth={depth + 1}
+                         dispatch={dispatch} getPath={getPath}/>;
       })}
     </Autocollapse>;
   }
 }
 
-export default class Tree extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate;
+type TreeProps = {
+  itemHeight: number,
+  indent: number,
+  collapseIconWidth: number,
+  className: string,
+  root?: ?Node,
+  renderNode: (node: Node, props: Object) => ReactElement,
+  dispatch: ?(event: any, path: Array<string | number>) => ?any,
+};
+type TreeDefaultProps = {
+  itemHeight: number,
+  indent: number,
+  collapseIconWidth: number,
+  className: string,
+};
+
+export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
+  shouldComponentUpdate: (props: Object, state: void, context: Object) => boolean = shouldPureComponentUpdate;
   static Cell = TreeCell;
-  static defaultProps = {
+  props: TreeProps;
+  static defaultProps: TreeDefaultProps = {
     itemHeight:  35,
     indent:      20,
     collapseIconWidth: 30,
@@ -92,16 +162,20 @@ export default class Tree extends Component {
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
-  getChildContext() {
+  getChildContext(): {
+    itemHeight: number,
+    indent: number,
+    collapseIconWidth: number,
+  } {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
-  getPath = () => [];
-  render() {
-    let {root, adapter, dispatch} = this.props;
+  getPath: () => Array<string | number> = () => [];
+  render(): ReactElement {
+    let {root, renderNode, dispatch} = this.props;
 
     return <div {...this.props}>
-      {root && <TreeChildren node={root} isRoot={true} adapter={adapter} depth={-1} dispatch={dispatch}
+      {root && <TreeChildren node={root} renderNode={renderNode} expanded={true} depth={-1} dispatch={dispatch}
                              getPath={this.getPath}/>}
     </div>;
   }

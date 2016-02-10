@@ -18,6 +18,10 @@
     "es6": true,
     "commonjs": true
   },
+  "globals": {
+    "ReactElement": false,
+    "ReactComponent": false
+  },
   "plugins": [
     "react"
   ]
