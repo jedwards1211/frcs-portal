@@ -110,7 +110,7 @@ type TreeNodeProps = {
   depth: number,
   renderNode: (node: Node, props: Object) => ReactElement,
   dispatch: ?(event: any, path: Array<string | number>) => ?any,
-  pathKey: any, // should really be string | number but flow is buggy
+  pathKey: string | number,
   getPath: () => Array<string | number>,
 };
 
@@ -124,7 +124,7 @@ class TreeNode extends Component<void,TreeNodeProps,void> {
   };
   getPath: () => Array<string | number> = () => {
     let {getPath, pathKey} = this.props;
-    return [...getPath(), pathKey];
+    return getPath().concat(pathKey);
   };
   render(): ReactElement {
     let {node, renderNode, depth} = this.props;

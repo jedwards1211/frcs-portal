@@ -16,5 +16,5 @@ export function errorMessage(err) {
   if (!err.length) {
     return 'an unknown error has occurred';
   }
-  return String(err);
+  return JSON.stringify(err);
 }
