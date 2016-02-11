@@ -109,7 +109,7 @@ type TreeNodeProps = {
   node: Node,
   depth: number,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch: ?(event: any, path: Array<string | number>) => ?any,
+  dispatch: ?(event: any, path: Array<string | number>) => any,
   pathKey: string | number, // should really be string | number but flow is buggy
   getPath: () => Array<string | number>,
 };
@@ -174,9 +174,9 @@ type TreeProps = {
   indent: number,
   collapseIconWidth: number,
   className: string,
-  root?: ?Node,
+  root?: Node,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch?: ?(event: any, path: Array<string | number>) => ?any,
+  dispatch?: ?(event: any, path: Array<string | number>) => any,
 };
 type TreeDefaultProps = {
   itemHeight: number,
