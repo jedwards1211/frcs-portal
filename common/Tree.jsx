@@ -76,8 +76,15 @@ type TreeNodeProps = {
 };
 
 class TreeNode extends Component<void,TreeNodeProps,void> {
+  childrenRef: ?TreeChildren;
   shouldComponentUpdate(nextProps) {
     return this.props.node.shouldUpdate(nextProps.node);
+  }
+  getIn(path: Array<string | number>, index?: number = 0): ?TreeNode {
+    if (index === path.length) {
+      return this;
+    }
+    return this.childrenRef && this.childrenRef.getIn(path, index);
   }
   render(): ReactElement {
     let {node, renderNode, depth} = this.props;
@@ -90,7 +97,8 @@ class TreeNode extends Component<void,TreeNodeProps,void> {
 
     return <div className={className}>
       {renderNode(node, {depth})}
-      {hasChildren && <TreeChildren node={node} renderNode={renderNode} depth={depth}/>}
+      {hasChildren && <TreeChildren node={node} renderNode={renderNode} depth={depth}
+                      ref={(c: TreeChildren) => this.childrenRef = c}/>}
     </div>;
   }
 }
@@ -103,15 +111,21 @@ type TreeChildrenProps = {
 };
 
 class TreeChildren extends Component<void,TreeChildrenProps,void> {
+  childRefs: {[key: string | number]: TreeNode} = {};
   shouldComponentUpdate(nextProps) {
     return this.props.node.shouldUpdate(nextProps.node);
+  }
+  getIn(path: Array<string | number>, index?: number = 0): ?TreeNode {
+    let child = this.childRefs[path[index]];
+    return child && child.getIn(path, index + 1);
   }
   render(): ReactElement {
     let {node, renderNode, expanded, depth} = this.props;
 
     return <Autocollapse>
       {(expanded || node.isExpanded()) && _.map(node.children(), (child, key) => {
-        return <TreeNode key={key} pathKey={key} node={child} renderNode={renderNode} depth={depth + 1}/>;
+        return <TreeNode key={key} pathKey={key} node={child} renderNode={renderNode} depth={depth + 1}
+                ref={(c: TreeNode) => this.childRefs[key] = c}/>;
       })}
     </Autocollapse>;
   }
@@ -134,6 +148,7 @@ type TreeDefaultProps = {
 
 export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
   shouldComponentUpdate: (props: Object, state: void, context: Object) => boolean = shouldPureComponentUpdate;
+  childrenRef: ?TreeChildren;
   static Cell = TreeCell;
   static defaultProps = {
     itemHeight:  35,
@@ -154,11 +169,15 @@ export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
+  getIn(path: Array<string | number>): ?TreeNode {
+    return this.childrenRef && this.childrenRef.getIn(path);
+  }
   render(): ReactElement {
     let {root, renderNode} = this.props;
 
     return <div {...this.props}>
-      {root && <TreeChildren node={root} renderNode={renderNode} expanded={true} depth={-1}/>}
+      {root && <TreeChildren node={root} renderNode={renderNode} expanded={true} depth={-1}
+                ref={(c: TreeChildren) => this.childrenRef = c}/>}
     </div>;
   }
 }
