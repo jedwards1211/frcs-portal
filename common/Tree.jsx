@@ -5,54 +5,18 @@ import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-p
 import classNames from 'classnames';
 import _ from 'lodash';
 
+export type Node = {
+  shouldUpdate: (node: any) => boolean,
+  hasChildren: () => boolean,
+  children: () => any,
+  isExpanded: () => boolean,
+};
+
 import Autocollapse from './Autocollapse';
 import CollapseIcon from './CollapseIcon';
 import propAssign from '../utils/propAssign';
 
 import './Tree.sass';
-
-export type Node = {
-  hasChildren: () => boolean,
-  children: () => Array<Node> | {[key: string]: Node},
-  isExpanded: () => boolean,
-  shouldUpdate: (newNode: Node) => boolean,
-};
-
-export type BasicNodeData = {
-  children: Array<BasicNodeData> | {[key: string]: BasicNodeData},
-  expanded?: boolean,
-  selected?: boolean,
-};
-
-export class BasicNode {
-  data: BasicNodeData;
-  model: any;
-
-  constructor(data: BasicNodeData, model: any) {
-    this.data = data;
-    this.model = model;
-  }
-
-  shouldUpdate(newNode: BasicNode): boolean {
-    return this.data !== newNode.data || this.model !== newNode.model;
-  }
-
-  hasChildren(): boolean {
-    return !!(this.data.children && this.data.children.length);
-  }
-
-  children(): Array<BasicNode> | {[key: string]: BasicNode} {
-    return _.map(this.data.children || [], child => new BasicNode(child, this.model));
-  }
-
-  isExpanded(): boolean {
-    return !!this.data.expanded;
-  }
-
-  isSelected(): boolean {
-    return !!this.data.selected;
-  }
-}
 
 type TreeCellProps = {
   node?: Node,
@@ -109,26 +73,14 @@ type TreeNodeProps = {
   node: Node,
   depth: number,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch: ?(event: any, path: Array<string | number>) => any,
-  pathKey: string | number, // should really be string | number but flow is buggy
-  getPath: () => Array<string | number>,
 };
 
 class TreeNode extends Component<void,TreeNodeProps,void> {
   shouldComponentUpdate(nextProps) {
     return this.props.node.shouldUpdate(nextProps.node);
   }
-  dispatch = (e, path = []) => {
-    let {dispatch, pathKey} = this.props;
-    if (dispatch) dispatch(e, [pathKey, ...path]);
-  };
-  getPath: () => Array<string | number> = () => {
-    let {getPath, pathKey} = this.props;
-    return getPath().concat(pathKey);
-  };
   render(): ReactElement {
     let {node, renderNode, depth} = this.props;
-    let {dispatch} = this;
 
     let hasChildren = node.hasChildren();
 
@@ -137,9 +89,8 @@ class TreeNode extends Component<void,TreeNodeProps,void> {
     });
 
     return <div className={className}>
-      {renderNode(node, {depth, dispatch, getPath: this.getPath})}
-      {hasChildren && <TreeChildren node={node} renderNode={renderNode} getPath={this.getPath} dispatch={dispatch}
-                                    depth={depth}/>}
+      {renderNode(node, {depth})}
+      {hasChildren && <TreeChildren node={node} renderNode={renderNode} depth={depth}/>}
     </div>;
   }
 }
@@ -149,8 +100,6 @@ type TreeChildrenProps = {
   expanded?: boolean,
   depth: number,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch: ?(event: any, path: Array<string | number>) => ?any,
-  getPath: () => Array<string | number>,
 };
 
 class TreeChildren extends Component<void,TreeChildrenProps,void> {
@@ -158,12 +107,11 @@ class TreeChildren extends Component<void,TreeChildrenProps,void> {
     return this.props.node.shouldUpdate(nextProps.node);
   }
   render(): ReactElement {
-    let {node, renderNode, expanded, depth, dispatch, getPath} = this.props;
+    let {node, renderNode, expanded, depth} = this.props;
 
     return <Autocollapse>
       {(expanded || node.isExpanded()) && _.map(node.children(), (child, key) => {
-        return <TreeNode key={key} pathKey={key} node={child} renderNode={renderNode} depth={depth + 1}
-                         dispatch={dispatch} getPath={getPath}/>;
+        return <TreeNode key={key} pathKey={key} node={child} renderNode={renderNode} depth={depth + 1}/>;
       })}
     </Autocollapse>;
   }
@@ -176,7 +124,6 @@ type TreeProps = {
   className: string,
   root?: Node,
   renderNode: (node: Node, props: Object) => ReactElement,
-  dispatch?: ?(event: any, path: Array<string | number>) => any,
 };
 type TreeDefaultProps = {
   itemHeight: number,
@@ -207,13 +154,11 @@ export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
-  getPath: () => Array<string | number> = () => [];
   render(): ReactElement {
-    let {root, renderNode, dispatch} = this.props;
+    let {root, renderNode} = this.props;
 
     return <div {...this.props}>
-      {root && <TreeChildren node={root} renderNode={renderNode} expanded={true} depth={-1} dispatch={dispatch}
-                             getPath={this.getPath}/>}
+      {root && <TreeChildren node={root} renderNode={renderNode} expanded={true} depth={-1}/>}
     </div>;
   }
 }

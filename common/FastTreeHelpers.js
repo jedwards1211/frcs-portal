@@ -2,6 +2,8 @@ import React from 'react';
 import Immutable from 'immutable';
 import _ from 'lodash';
 
+import {Node} from './TreeModel';
+
 export function forEachNode(tree, iteratee) {
   function helper(root, path) {
     if (iteratee(root, path) === false) return false;
@@ -76,10 +78,17 @@ export function expandTreePath(model, path) {
   });
 }
 
-export class FastTreeNode {
-  constructor(data, model) {
-    this.data = data;
-    this.model = model;
+export class FastTreeNode extends Node {
+  constructor(parent, key, data, model) {
+    super(arguments.length > 2 ? parent : undefined, arguments.length > 2 ? key : undefined);
+    if (arguments.length <= 2) {
+      this.data = arguments[0];
+      this.model = arguments[1];
+    }
+    else {
+      this.data = data;
+      this.model = model;
+    }
   }
   shouldUpdate(newNode) {
     return newNode.data !== this.data || newNode.model !== this.model;
@@ -88,16 +97,12 @@ export class FastTreeNode {
     let children = this.data.get('children');
     return !!children && children.size;
   }
-  children() {
+  createChildren() {
     let _children = this.data.get('children');
     if (!_children) return {};
-    _children = _children.map(child => new FastTreeNode(child, this.model));
+    _children = _children.map((child, key) => new FastTreeNode(this, key, child, this.model));
     return _children.toObject();
   }
-  isExpanded() {
-    return this.data.get('expanded');
-  }
-  isSelected() {
-    return this.data.get('selected');
-  }
+  isExpanded() { return !!this.data.get('expanded'); }
+  isSelected() { return !!this.data.get('selected'); }
 }

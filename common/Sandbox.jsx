@@ -4,7 +4,8 @@ import {Router, Route, Redirect} from 'react-router';
 import createHistory from 'history/lib/createHashHistory';
 
 import SidebarView from './SidebarView';
-import Tree, {BasicNode} from './Tree';
+import Tree from './Tree';
+import {BasicNode} from './TreeModel';
 
 import './Sandbox.sass';
 
