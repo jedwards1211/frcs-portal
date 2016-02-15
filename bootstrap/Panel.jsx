@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
 import {getContextClass, getContextContent} from './bootstrapPropUtils';
-import {errorMessage} from '../utils/errorUtils';
+import {errorMessage} from '../utils/reactErrorUtils';
 
 type Props = {
   type?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok' | 'primary',

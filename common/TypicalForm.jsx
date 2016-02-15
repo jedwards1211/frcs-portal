@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 
-import {errorMessage} from '../utils/errorUtils';
+import {errorMessage} from '../utils/reactErrorUtils';
 
 class Group extends Component {
   static propTypes = {
