@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from './Modal';
+import {Header, Title, Body, Footer} from './Content';
 import Button from './Button';
 import CloseButton from './CloseButton';
 
@@ -37,18 +38,18 @@ export default class ModalExample extends React.Component {
       // the buttons manually.  All of the elements inside Modal
       // are optional.
       modal = <Modal key="modal">
-        <Modal.Header>
+        <Header>
           {/* the CloseButton must come first for correct layout, unfortunately */}
           <CloseButton onClick={this.hideModal}/>
-          <Modal.Title>Example Modal</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+          <Title>Example Modal</Title>
+        </Header>
+        <Body>
           Body text
-        </Modal.Body>
-        <Modal.Footer>
+        </Body>
+        <Footer>
           <Button onClick={this.hideModal}>Cancel</Button>
           <Button primary onClick={this.onOK}>OK</Button>
-        </Modal.Footer>
+        </Footer>
       </Modal>;
     }
 

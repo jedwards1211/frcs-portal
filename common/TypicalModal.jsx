@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import classNames from 'classnames';
 
 import Modal from '../bootstrap/Modal';
+import {Header, Title, Body, Footer} from '../bootstrap/Content.jsx';
 import CloseButton from '../bootstrap/CloseButton';
 import Button from '../bootstrap/Button';
 import Spinner from '../common/Spinner';
@@ -74,20 +75,20 @@ export default class TypicalModal extends React.Component {
     }
 
     return <Modal {...this.props} className={className} onOutsideClick={onOutsideClick}>
-      <Modal.Header>
+      <Header>
         <CloseButton onClick={onCloseButtonClick} disabled={disabled}/>
-        {title && <Modal.Title>{title}</Modal.Title>}
+        {title && <Title>{title}</Title>}
         {header}
-      </Modal.Header>
-      <Modal.Body>
+      </Header>
+      <Body>
         {children}
-      </Modal.Body>
-      <Modal.Footer>
+      </Body>
+      <Footer>
         <AlertGroup alerts={footerAlerts}/>
         {beforeButtons}
         {buttons}
         {afterButtons}
-      </Modal.Footer>
+      </Footer>
     </Modal>;
   }
 }

@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 
 import PageSlider from './PageSlider';
-import BSModal from '../bootstrap/Modal';
+import {Header, Title, Body, Footer} from '../bootstrap/Content.jsx';
+import Modal from '../bootstrap/Modal';
 
 export default function createWizard({Steps, title, baseClassName, propTypes, defaultProps}) {
-  class Body extends Component {
+  class WizardBody extends Component {
     static propTypes = propTypes;
     static defaultProps = defaultProps;
     render() {
@@ -17,7 +18,7 @@ export default function createWizard({Steps, title, baseClassName, propTypes, de
     }
   }
 
-  class Buttons extends Component {
+  class WizardButtons extends Component {
     static propTypes = propTypes;
     static defaultProps = defaultProps;
     render() {
@@ -30,24 +31,24 @@ export default function createWizard({Steps, title, baseClassName, propTypes, de
     }
   }
 
-  class Modal extends Component {
+  class WizardModal extends Component {
     render() {
       let {className} = this.props;
       className = classNames(className, baseClassName + '-modal');
 
-      return <BSModal {...this.props} className={className}>
-        <BSModal.Header>
-          <BSModal.Title>{title}</BSModal.Title>
-        </BSModal.Header>
-        <BSModal.Body>
-          <Body {...this.props}/>
-        </BSModal.Body>
-        <BSModal.Footer>
-          <Buttons {...this.props}/>
-        </BSModal.Footer>
-      </BSModal>;
+      return <Modal {...this.props} className={className}>
+        <Header>
+          <Title>{title}</Title>
+        </Header>
+        <Body>
+          <WizardBody {...this.props}/>
+        </Body>
+        <Footer>
+          <WizardButtons {...this.props}/>
+        </Footer>
+      </Modal>;
     }
   }
 
-  return {Body, Buttons, Modal};
+  return {Body: WizardBody, Buttons: WizardButtons, Modal: WizardModal};
 }

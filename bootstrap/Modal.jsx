@@ -3,11 +3,10 @@
 import React, {PropTypes, Component} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import {createSkinComponent} from 'react-skin';
 
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
 import CSSCore from 'fbjs/lib/CSSCore';
-
-import addClass from '../wrappers/addClass';
 
 import './Modal.sass';
 
@@ -21,16 +20,35 @@ import './Modal.sass';
 
 let openModalCount = 0;
 
+const ModalHeaderSkin = createSkinComponent('BootstrapModalHeader', {component: 'div', className: 'modal-header'});
+const ModalTitleSkin  = createSkinComponent('BootstrapModalTitle' , {component: 'h3' , className: 'modal-title' });
+const ModalBodySkin   = createSkinComponent('BootstrapModalBody'  , {component: 'div', className: 'modal-body'  });
+const ModalFooterSkin = createSkinComponent('BootstrapModalFooter', {component: 'div', className: 'modal-footer'});
+
 export default class Modal extends Component {
   static contextTypes = {
     transitionEvents: PropTypes.shape({
       on: PropTypes.func.isRequired,
     }),
   };
+  static childContextTypes = {
+    HeaderSkin: PropTypes.any.isRequired,
+    TitleSkin:  PropTypes.any.isRequired,
+    BodySkin:   PropTypes.any.isRequired,
+    FooterSkin: PropTypes.any.isRequired,
+  };
   static propTypes = {
     dialogClassName: PropTypes.string,
     onOutsideClick:  PropTypes.func,
   };
+  getChildContext() {
+    return {
+      HeaderSkin: ModalHeaderSkin,
+      TitleSkin:  ModalTitleSkin,
+      BodySkin:   ModalBodySkin,
+      FooterSkin: ModalFooterSkin,
+    };
+  }
   componentWillMount() {
     if (++openModalCount === 1) {
       CSSCore.addClass(document.body, 'modal-open');
@@ -58,9 +76,11 @@ export default class Modal extends Component {
     }
   };
   render() {
-    let {className, dialogClassName, children} = this.props;
+    let {className, dialogClassName, children, small} = this.props;
     className = classNames('modal mf-modal', className);
-    dialogClassName = classNames('modal-dialog', dialogClassName);
+    dialogClassName = classNames('modal-dialog', dialogClassName, {
+      'modal-sm': small
+    });
     return <div ref="modal" {...this.props} className={className} role="dialog"
       onClick={this.onClick}>
       <div className={dialogClassName}>
@@ -72,13 +92,6 @@ export default class Modal extends Component {
   }
 }
 
-Modal.Small = class extends Modal {}
-Modal.Small.defaultProps = {
-  dialogClassName: 'modal-sm',
-};
-
-var ModalContent = Modal.Content = addClass('div', 'modal-content');
-
 class ModalBackdrop extends Component {
   render() {
     let {className} = this.props;
@@ -88,11 +101,6 @@ class ModalBackdrop extends Component {
 }
 
 Modal.Backdrop = ModalBackdrop;
-
-var ModalHeader = Modal.Header = addClass('div', 'modal-header');
-var ModalBody   = Modal.Body   = addClass('div', 'modal-body');
-var ModalFooter = Modal.Footer = addClass('div', 'modal-footer');
-var ModalTitle  = Modal.Title  = addClass('h4', 'modal-title');
 
 class ModalTransitionGroup extends Component {
   render() {
@@ -109,4 +117,4 @@ class ModalTransitionGroup extends Component {
 
 Modal.TransitionGroup = ModalTransitionGroup;
 
-export { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody, ModalFooter, ModalBackdrop, ModalTransitionGroup};
+export { Modal, ModalBackdrop, ModalTransitionGroup};
