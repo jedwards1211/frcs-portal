@@ -28,3 +28,24 @@ export function parseNumber(value, regExp) {
     return value;
   }
 }
+
+export function validateNumber(number, options = {}) {
+  let {required, range} = options;
+  if (typeof number === 'string') {
+    if (!required) {
+      if (number === '' || number === undefined || number === null) {
+        return;
+      }
+    }
+    if (!numberRegExp.test(number)) {
+      return {error: 'Please enter a valid number'};
+    }
+  }
+  number = parseFloat(number);
+  if (isNaN(number)) {
+    return {error: 'Please enter a valid number'};
+  }
+  if (range && number < range.min || number > range.max) {
+    return {error: `Please enter a number between ${range.min} and ${range.max}`} ;
+  }
+}

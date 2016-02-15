@@ -9,10 +9,12 @@ export function replaceNonMatching(input: string, pattern: string): string {
 export function restrictDecimalNumber(input: string): string {
   let decimalIndex = input.indexOf('.');
   if (decimalIndex >= 0) {
-    return  input.substring(0, decimalIndex ).replace(/\D/g, '') + '.' +
+    return  restrictDecimalNumber(input.substring(0, decimalIndex )) + '.' +
             input.substring(decimalIndex + 1).replace(/\D/g, '');
   }
-  return input.replace(/\D/g, '');
+  let negative = /^\s*-/.test(input);
+  let result = input.replace(/\D/g, '');
+  return negative ? '-' + result : result;
 }
 
 type Props = {

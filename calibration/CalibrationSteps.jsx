@@ -12,7 +12,7 @@ import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue
 
 import {isValidNumPoints, isValidInputValue, isValidOutputValue, 
   isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation';
-import {isEmptyValue} from '../utils/validationRegExps';
+import {isEmptyValue} from '../utils/validationUtils';
 
 import './CalibrationSteps.sass';
 

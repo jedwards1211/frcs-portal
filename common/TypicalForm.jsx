@@ -26,11 +26,14 @@ class Group extends Component {
       let val = this.props[type];
       if (val) {
         validationClassNames[`has-${type}`] = true;
-        if ('useSingleValidationMessage' in this.props) {
-          validationMessages = <div className={`control-label ${type}-message`}>{errorMessage(val)}</div>;
-        }
-        else {
-          validationMessages.push(<div key={type} className={`control-label ${type}-message`}>{errorMessage(val)}</div>);
+        if (val !== true) {
+          if ('useSingleValidationMessage' in this.props) {
+            validationMessages = <div className={`control-label ${type}-message`}>{errorMessage(val)}</div>;
+          }
+          else {
+            validationMessages.push(<div key={type}
+                                         className={`control-label ${type}-message`}>{errorMessage(val)}</div>);
+          }
         }
       }
     });

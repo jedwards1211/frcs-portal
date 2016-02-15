@@ -1,4 +1,4 @@
-import {numberRegExp, integerRegExp} from '../utils/validationRegExps';
+import {numberRegExp, integerRegExp} from '../utils/validationUtils';
 import {PropTypes} from 'react';
 import _ from 'lodash';
 
