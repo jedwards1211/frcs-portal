@@ -2,9 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
-import Collapse from '../bootstrap/Collapse';
-import Alert from '../bootstrap/Alert';
-
+import AlertGroup from '../common/AlertGroup.js';
 import Toggle from '../common/Toggle';
 import alarmTypes from './alarmTypes';
 
@@ -50,16 +48,16 @@ let AlarmRow = React.createClass({
     let disabled = this.props.disabled;
 
     return (
-      <div className={classNames('AlarmRow', 'form-group', {'has-error': alarmHasErrors(alarm)})}>
-        <div key="alarm-name" className="alarm-name">
+      <div className={classNames('form-group', {'has-error': alarmHasErrors(alarm)})}>
+        <div className="label-column">
           <h4 className="control-label">{humanName}</h4>
         </div>
-        <div key="alarm-setpoint" className="alarm-setpoint">
+        <div className="input-column">
           <input name={name} type="text" inputMode="number" className="form-control" value={alarm.setpoint}
             disabled={disabled} style={{display: 'setpoint' in alarm ? undefined : 'none'}}
             onChange={this.onSetpointChange} />
         </div>
-        <div key="alarm-enabled" className="alarm-enabled">
+        <div className="last-column">
           <Toggle checked={alarm.enabled} className={alarm.severity} 
             disabled={disabled} onChange={this.props.onEnabledChange} />
         </div>
@@ -100,27 +98,27 @@ export default React.createClass({
     return [
       <h3 key="display-range" className="display-range">Display Range</h3>,
       <div key="range" className="range" style={{margin: 0, padding: 0}}>
-        <div key="max" className={classNames('max', 'form-group', {'has-error': !numberRegExp.test(metadataItem.max)})}>
-          <span key="to" className="to">
+        <div className={classNames('form-group', {'has-error': !numberRegExp.test(metadataItem.max)})}>
+          <span className="label-column">
             <h4 className="control-label">Max</h4>
           </span>
-          <span key="value" className="value">
+          <span className="input-column">
             <input name="range-max" type="text" inputMode="number" className="form-control" value={metadataItem.max}
               disabled={disabled} onChange={this.onRangeMaxChange} />
           </span>
-          <span key="units" className="units">
+          <span className="last-column">
             {metadataItem.units}
           </span>
         </div>
-        <div key="min" className={classNames('min', 'form-group', {'has-error': !numberRegExp.test(metadataItem.min)})}>
-          <span key="from" className="from">
+        <div className={classNames('form-group', {'has-error': !numberRegExp.test(metadataItem.min)})}>
+          <span className="label-column">
             <h4 className="control-label">Min</h4>
           </span>
-          <span key="value" className="value">
+          <span className="input-column">
             <input name="range-min" type="text" inputMode="number" className="form-control" value={metadataItem.min}
                    disabled={disabled} onChange={this.onRangeMinChange} />
           </span>
-          <span key="units" className="units">
+          <span className="last-column">
             {metadataItem.units}
           </span>
         </div>
@@ -152,7 +150,7 @@ export default React.createClass({
 
       if (result.length) {
         result.unshift(
-          <div key="alarms" className="alarms">
+          <div key="alarms">
             <h3>Alarms</h3>
           </div>
         );
@@ -164,16 +162,17 @@ export default React.createClass({
     let {className, metadataItem} = this.props;
     className = classNames(className, 'metadata-item-form');
 
+    let alerts = {};
+    if (hasErrors(metadataItem)) {
+      alerts.invalidInput = {error: 'Please correct invalid input in the fields outlined in red before continuing'};
+    }
+
     return (
-      <div {...this.props} className={className}>
+      <form {...this.props} className={className}>
         {this.renderRange()}
         {this.renderAlarms()}
-        <Collapse className="error-alert" open={hasErrors(metadataItem)}>
-          <Alert danger>
-            Please correct invalid input in the fields outlined in red before continuing
-          </Alert>
-        </Collapse>
-      </div>
+        <AlertGroup alerts={alerts}/>
+      </form>
     );
   }
 });

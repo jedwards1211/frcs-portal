@@ -1,24 +1,17 @@
+@import ~sass-flex-mixin/flex
+
 $input-width: 125px
-$label-width: 120px
+$label-width: 125px
 $toggle-width: 55px
-$units-width: 75px
+$units-width: 65px
 $modal-inset: 52px
 
 $xs-width: $input-width + $label-width + $toggle-width + $modal-inset
 $xs-width-m1: $xs-width - 1px
 $sm-width: $input-width + $label-width * 2 + $modal-inset
 $sm-width-m1: $sm-width - 1px
-$md-width: $input-width * 2 + $units-width * 4 + $modal-inset
-$md-width-m1: $md-width - 1px
-
-$xs-label-height: 30px
-$xs-input-height: 34px
-$xs-alarm-row-height: $xs-label-height + $xs-input-height
 
 .metadata-item-form
-  .form-group
-    margin-bottom: 3px
-
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button
     -webkit-appearance: none
@@ -30,135 +23,56 @@ $xs-alarm-row-height: $xs-label-height + $xs-input-height
     > .alert
       margin: 0
 
-  > .display-range,
-  > .alarms
-    text-align: center
+  .react-toggle
+    > .react-toggle-track
+      background-color: #bbbbbb
+    > .react-toggle-thumb
+      border-color: #bbbbbb
 
-  > .range
-    > .min,
-    > .max
-      margin-top: 5px
-      display: block
+    &:hover
+      > .react-toggle-track
+        background-color: #999999
 
-    .value
-      display: inline-block
-      width: $input-width
+    &.react-toggle--checked
+      > .react-toggle-track
+        background-color: #2662b1
+      > .react-toggle-thumb
+        border-color: #2662b1
 
-      > input
-        text-align: right
+    &.react-toggle--checked:hover:not(.react-toggle--disabled)
+      > .react-toggle-track
+        background-color: #1d4b88
 
-    .from,
-    .to
+  .form-group
+    margin-bottom: 3px
+    @include flexbox
+    @include align-items(center)
+
+    .label-column
       text-align: right
-      padding-right: 5px
-      display: inline-block
-      width: calc((100% - #{$input-width}) / 2)
+      margin-right: 5px
+      @include flex(1 1 $label-width)
+    .input-column
+      @include flex(0 0 $input-width)
+    .last-column
+      margin-left: 5px
+      @include flex(1 0 $label-width)
 
-    .units
-      display: inline-block
-      padding-left: 5px
+    @media (max-width: #{$sm-width-m1})
+      .last-column
+        @include flex(1 0 $units-width)
 
-    @media (min-width: $xs-width)
-      .from,
-      .to
-        width: $label-width
+    @media (max-width: #{$xs-width-m1})
+      @include flex-wrap(wrap)
 
-    @media (min-width: $sm-width)
-      >.min,
-      >.max
-        width: 100%
-        
-      .from,
-      .to
-        width: calc((100% - #{$input-width}) / 2)
-
-
-  .AlarmRow
-    margin-top: 5px
-
-    > .alarm-name,
-    > .alarm-enabled
-      width: calc((100% - #{$input-width}) / 2)
-
-    > .alarm-name
-      display: inline-block
-      text-align: right
-      padding-right: 5px
- 
-    > .alarm-setpoint
-      display: inline-block
-      width: $input-width
-
-      > input
+      .label-column
+        text-align: left
+        @include flex(1 1 0)
+      .last-column
         text-align: right
+        @include flex(0 0 $toggle-width)
+        @include order(1)
+      .input-column
+        @include flex(1 1 $xs-width)
+        @include order(2)
 
-    > .alarm-enabled
-      display: inline-block
-      padding-left: 5px
-
-      > .react-toggle
-        > .react-toggle-track
-          background-color: #bbbbbb
-        > .react-toggle-thumb
-          border-color: #bbbbbb
-
-        &:hover
-          > .react-toggle-track
-            background-color: #999999
-
-        &.react-toggle--checked
-          > .react-toggle-track
-            background-color: #2662b1
-          > .react-toggle-thumb
-            border-color: #2662b1
-
-        &.react-toggle--checked:hover:not(.react-toggle--disabled)
-          > .react-toggle-track
-            background-color: #1d4b88
-
-  @media (max-width: #{$sm-width-m1})
-    .AlarmRow > .alarm-name
-      width: $label-width
-    .AlarmRow > .alarm-enabled
-      width: auto
-
-  @media (max-width: #{$xs-width-m1})
-    .AlarmRow,
-    .min,
-    .max
-      margin-top: 15px
-      position: relative
-      width: 100%
-      height: $xs-alarm-row-height
-
-    .AlarmRow > .alarm-name,
-    .from > .control-label,
-    .to > .control-label
-      position: absolute
-      text-align: left
-      height: $xs-label-height
-      top: 0
-      left: 0
-
-      > h4
-        margin: 0
-        line-height: $xs-label-height
-
-    .AlarmRow > .alarm-enabled,
-    .units
-      position: absolute
-      padding-left: 0
-      top: 0
-      right: 0
-      height: 30px
-      line-height: $xs-label-height
-
-    .AlarmRow > .alarm-setpoint,
-    .value > input
-      position: absolute
-      margin-top: $xs-label-height
-      height: $xs-input-height
-      top: 0
-      bottom: 0
-      left: 0
-      width: 100%
