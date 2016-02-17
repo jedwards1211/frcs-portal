@@ -14,8 +14,8 @@ export const CONTEXT_CLASSES = {
 };
 
 export const SHADE_CLASSES = {
-  darker:   'shade-darker',
   brighter: 'shade-brighter',
+  darker:   'shade-darker',
 }
 
 export function getContextClass(props: Object): ?string {

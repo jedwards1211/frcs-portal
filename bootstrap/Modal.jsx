@@ -32,10 +32,11 @@ export default class Modal extends Component {
     }),
   };
   static childContextTypes = {
-    HeaderSkin: PropTypes.any.isRequired,
-    TitleSkin:  PropTypes.any.isRequired,
-    BodySkin:   PropTypes.any.isRequired,
-    FooterSkin: PropTypes.any.isRequired,
+    ContainerSkin:  PropTypes.any.isRequired,
+    HeaderSkin:     PropTypes.any.isRequired,
+    TitleSkin:      PropTypes.any.isRequired,
+    BodySkin:       PropTypes.any.isRequired,
+    FooterSkin:     PropTypes.any.isRequired,
   };
   static propTypes = {
     dialogClassName: PropTypes.string,
@@ -43,10 +44,11 @@ export default class Modal extends Component {
   };
   getChildContext() {
     return {
-      HeaderSkin: ModalHeaderSkin,
-      TitleSkin:  ModalTitleSkin,
-      BodySkin:   ModalBodySkin,
-      FooterSkin: ModalFooterSkin,
+      ContainerSkin:  Modal,
+      HeaderSkin:     ModalHeaderSkin,
+      TitleSkin:      ModalTitleSkin,
+      BodySkin:       ModalBodySkin,
+      FooterSkin:     ModalFooterSkin,
     };
   }
   componentWillMount() {

@@ -57,17 +57,19 @@ export default class Panel extends Component {
   props: Props;
   static defaultProps: {};
   static childContextTypes = {
-    HeaderSkin: PropTypes.any.isRequired,
-    TitleSkin:  PropTypes.any.isRequired,
-    BodySkin:   PropTypes.any.isRequired,
-    FooterSkin: PropTypes.any.isRequired,
+    ContainerSkin:  PropTypes.any.isRequired,
+    HeaderSkin:     PropTypes.any.isRequired,
+    TitleSkin:      PropTypes.any.isRequired,
+    BodySkin:       PropTypes.any.isRequired,
+    FooterSkin:     PropTypes.any.isRequired,
   };
   getChildContext(): Object {
     return {
-      HeaderSkin: PanelHeaderSkin,
-      TitleSkin:  PanelTitleSkin,
-      BodySkin:   PanelBodySkin,
-      FooterSkin: PanelFooterSkin,
+      ContainerSkin:  Panel,
+      HeaderSkin:     PanelHeaderSkin,
+      TitleSkin:      PanelTitleSkin,
+      BodySkin:       PanelBodySkin,
+      FooterSkin:     PanelFooterSkin,
     };
   }
   render()/*: ReactElement<any,any,any> */ {

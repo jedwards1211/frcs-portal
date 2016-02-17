@@ -2,6 +2,9 @@ import {createSkinnableComponent, createSkinComponent} from 'react-skin';
 
 import './Content.sass';
 
+export const Container = createSkinnableComponent('Container', {
+  defaultComponent: createSkinComponent('DefaultContainer', {component: 'div', className: 'mf-default-container'})
+});
 export const Header = createSkinnableComponent('Header', {
   defaultComponent: createSkinComponent('DefaultHeader', {component: 'div', className: 'mf-default-header'})
 });
