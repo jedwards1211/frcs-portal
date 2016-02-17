@@ -1,0 +1,125 @@
+@import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables
+@import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_alerts
+@import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_panels
+
+@function shade-darker($color)
+  @return darken($color, 5%)
+
+@function shade-brighter($color)
+  @return saturate(lighten($color, 3%), 10%)
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// .alert
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+@mixin alert-variant-shade-darker($bg, $border, $text)
+  @include alert-variant(shade-darker($bg), shade-darker($border), shade-darker($text))
+
+.alert-success.shade-darker
+  @include alert-variant-shade-darker($alert-success-bg, $alert-success-border, $alert-success-text)
+.alert-info.shade-darker
+  @include alert-variant-shade-darker($alert-info-bg, $alert-info-border, $alert-info-text)
+.alert-warning.shade-darker
+  @include alert-variant-shade-darker($alert-warning-bg, $alert-warning-border, $alert-warning-text)
+.alert-danger.shade-darker
+  @include alert-variant-shade-darker($alert-danger-bg, $alert-danger-border, $alert-danger-text)
+
+@mixin alert-variant-shade-brighter($bg, $border, $text)
+  @include alert-variant(shade-brighter($bg), shade-brighter($border), shade-brighter($text))
+
+.alert-success.shade-brighter
+  @include alert-variant-shade-darker($alert-success-bg, $alert-success-border, $alert-success-text)
+.alert-info.shade-brighter
+  @include alert-variant-shade-darker($alert-info-bg, $alert-info-border, $alert-info-text)
+.alert-warning.shade-brighter
+  @include alert-variant-shade-darker($alert-warning-bg, $alert-warning-border, $alert-warning-text)
+.alert-danger.shade-brighter
+  @include alert-variant-shade-darker($alert-danger-bg, $alert-danger-border, $alert-danger-text)
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// .panel
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+@mixin panel-variant-shade-darker($border, $heading-text-color, $heading-bg-color, $heading-border)
+  @include panel-variant(shade-darker($border), shade-darker($heading-text-color), shade-darker($heading-bg-color), shade-darker($heading-border))
+
+.panel-default.shade-darker
+  @include panel-variant-shade-darker($panel-default-border, $panel-default-text, $panel-default-heading-bg, $panel-default-border)
+.panel-primary.shade-darker
+  @include panel-variant-shade-darker($panel-primary-border, $panel-primary-text, $panel-primary-heading-bg, $panel-primary-border)
+.panel-success.shade-darker
+  @include panel-variant-shade-darker($panel-success-border, $panel-success-text, $panel-success-heading-bg, $panel-success-border)
+.panel-info.shade-darker
+  @include panel-variant-shade-darker($panel-info-border, $panel-info-text, $panel-info-heading-bg, $panel-info-border)
+.panel-warning.shade-darker
+  @include panel-variant-shade-darker($panel-warning-border, $panel-warning-text, $panel-warning-heading-bg, $panel-warning-border)
+.panel-danger.shade-darker
+  @include panel-variant-shade-darker($panel-danger-border, $panel-danger-text, $panel-danger-heading-bg, $panel-danger-border)
+
+@mixin panel-variant-shade-brighter($border, $heading-text-color, $heading-bg-color, $heading-border)
+  @include panel-variant(shade-brighter($border), shade-brighter($heading-text-color), shade-brighter($heading-bg-color), shade-brighter($heading-border))
+
+.panel-default.shade-brighter
+  @include panel-variant-shade-brighter($panel-default-border, $panel-default-text, darken($panel-default-heading-bg, 1.5%), $panel-default-border)
+.panel-primary.shade-brighter
+  @include panel-variant-shade-brighter($panel-primary-border, $panel-primary-text, $panel-primary-heading-bg, $panel-primary-border)
+.panel-success.shade-brighter
+  @include panel-variant-shade-brighter($panel-success-border, $panel-success-text, $panel-success-heading-bg, $panel-success-border)
+.panel-info.shade-brighter
+  @include panel-variant-shade-brighter($panel-info-border, $panel-info-text, $panel-info-heading-bg, $panel-info-border)
+.panel-warning.shade-brighter
+  @include panel-variant-shade-brighter($panel-warning-border, $panel-warning-text, $panel-warning-heading-bg, $panel-warning-border)
+.panel-danger.shade-brighter
+  @include panel-variant-shade-brighter($panel-danger-border, $panel-danger-text, $panel-danger-heading-bg, $panel-danger-border)
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// .popover
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+@mixin popover-variant($border, $heading-text-color, $heading-bg-color, $heading-border)
+  & > .popover-title
+    color: $heading-text-color
+    background-color: $heading-bg-color
+    border-color: $heading-border
+
+    .badge
+      color: $heading-bg-color
+      background-color: $heading-text-color
+
+.popover-danger
+  @include popover-variant($alert-danger-border, $alert-danger-text, $alert-danger-bg, $alert-danger-border)
+.popover-warning
+  @include popover-variant($alert-warning-border, $alert-warning-text, $alert-warning-bg, $alert-warning-border)
+.popover-info
+  @include popover-variant($alert-info-border, $alert-info-text, $alert-info-bg, $alert-info-border)
+.popover-success
+  @include popover-variant($alert-success-border, $alert-success-text, $alert-success-bg, $alert-success-border)
+
+@mixin popover-variant-shade-darker($border, $heading-text-color, $heading-bg-color, $heading-border)
+  @include popover-variant(shade-darker($border), shade-darker($heading-text-color), shade-darker($heading-bg-color), shade-darker($heading-border))
+
+.popover.shade-darker
+  @include popover-variant-shade-darker($popover-border-color, $text-color, $popover-title-bg, $popover-border-color)
+.popover-danger.shade-darker
+  @include popover-variant-shade-darker($alert-danger-border, $alert-danger-text, $alert-danger-bg, $alert-danger-border)
+.popover-warning.shade-darker
+  @include popover-variant-shade-darker($alert-warning-border, $alert-warning-text, $alert-warning-bg, $alert-warning-border)
+.popover-info.shade-darker
+  @include popover-variant-shade-darker($alert-info-border, $alert-info-text, $alert-info-bg, $alert-info-border)
+.popover-success.shade-darker
+  @include popover-variant-shade-darker($alert-success-border, $alert-success-text, $alert-success-bg, $alert-success-border)
+
+
+@mixin popover-variant-shade-brighter($border, $heading-text-color, $heading-bg-color, $heading-border)
+  @include popover-variant(shade-brighter($border), shade-brighter($heading-text-color), shade-brighter($heading-bg-color), shade-brighter($heading-border))
+
+.popover.shade-brighter
+  @include popover-variant-shade-brighter($popover-border-color, $text-color, darken($popover-title-bg, 1.5%), $popover-border-color)
+.popover-danger.shade-brighter
+  @include popover-variant-shade-brighter($alert-danger-border, $alert-danger-text, $alert-danger-bg, $alert-danger-border)
+.popover-warning.shade-brighter
+  @include popover-variant-shade-brighter($alert-warning-border, $alert-warning-text, $alert-warning-bg, $alert-warning-border)
+.popover-info.shade-brighter
+  @include popover-variant-shade-brighter($alert-info-border, $alert-info-text, $alert-info-bg, $alert-info-border)
+.popover-success.shade-brighter
+  @include popover-variant-shade-brighter($alert-success-border, $alert-success-text, $alert-success-bg, $alert-success-border)

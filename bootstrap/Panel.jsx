@@ -5,8 +5,10 @@ import classNames from 'classnames';
 import {createSkinComponent} from 'react-skin';
 import {Header, Title, Body, Footer} from './Content.jsx';
 import Collapse from './Collapse';
-import {getContextClass, getContextContent} from './bootstrapPropUtils';
+import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
 import {errorMessage} from '../utils/reactErrorUtils';
+
+import './Panel.sass';
 
 const PanelHeaderSkin = createSkinComponent('BootstrapPanelHeader', {component: 'div', className: 'panel-heading'});
 const PanelTitleSkin  = createSkinComponent('BootstrapPanelTitle' , {component: 'h3' , className: 'panel-title' });
@@ -35,6 +37,9 @@ type Props = {
   success?: any,
   ok?: any,
   primary?: any,
+  shade?: 'darker' | 'brighter',
+  darker?: boolean,
+  brighter?: boolean,
   className?: string,
   children?: any,
   title?: any,
@@ -57,7 +62,7 @@ export default class Panel extends Component {
     BodySkin:   PropTypes.any.isRequired,
     FooterSkin: PropTypes.any.isRequired,
   };
-  getChildContext() {
+  getChildContext(): Object {
     return {
       HeaderSkin: PanelHeaderSkin,
       TitleSkin:  PanelTitleSkin,
@@ -68,13 +73,14 @@ export default class Panel extends Component {
   render()/*: ReactElement<any,any,any> */ {
     let {className, children, header, headerProps, title, footer, collapse, skin} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
+    let shadeClass = getShadeClass(this.props);
     let content = getContextContent(this.props);
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
       content = errorMessage(content);
     }
 
-    className = classNames(className, 'panel', 'panel-' + contextClass);
+    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
 
     if (skin) {
       return <div {...this.props} className={className}>

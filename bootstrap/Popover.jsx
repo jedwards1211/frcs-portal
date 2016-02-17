@@ -1,8 +1,8 @@
 /* @flow */
 
-import React, {Component} from 'react';
+import React, {Component, Children} from 'react';
 import classNames from 'classnames';
-import {getContextClass} from './bootstrapPropUtils';
+import {getContextClass, getShadeClass} from './bootstrapPropUtils';
 import {getSide} from '../utils/propUtils';
 
 import './Popover.sass';
@@ -21,6 +21,9 @@ type Props = {
   warning?: boolean,
   info?: boolean,
   success?: boolean,
+  shade?: 'darker' | 'brighter',
+  darker?: boolean,
+  brighter?: boolean,
   className?: string,
   children?: any,
   positioned?: boolean,
@@ -30,23 +33,24 @@ type Props = {
 export default class Popover extends Component {
   props: Props;
   static defaultProps: {};
-  render()/*: ReactElement<any,any,any> */ {
+  render(): ReactElement {
     let {className, title, children, positioned} = this.props;
 
     let side = getSide(this.props) || 'top';
     let contextClass = getContextClass(this.props);
+    let shadeClass = getShadeClass(this.props);
 
-    className = classNames(className, 'popover', side, contextClass && ('popover-' + contextClass), {
-      'popover-contentless': !children,
+    className = classNames(className, 'popover', side, shadeClass, contextClass && ('popover-' + contextClass), {
+      'popover-contentless': !Children.count(children),
       'popover-positioned': positioned,
     });
 
     return <div {...this.props} className={className}>
       <div className="arrow"/>
       {title && <h3 className="popover-title">{title}</h3>}
-      {children && <div className="popover-content">
+      <div className="popover-content">
         {children}
-      </div>}
+      </div>
     </div>;
   }
 }

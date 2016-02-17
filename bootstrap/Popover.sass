@@ -26,38 +26,9 @@
     top: 50%
     transform: translateY(-50%)
 
-.popover.popover-danger
-  > .popover-title
-    color: $alert-danger-text
-    background-color: $alert-danger-bg
-    border: $alert-danger-border
-.popover.popover-warning
-  > .popover-title
-    color: $alert-warning-text
-    background-color: $alert-warning-bg
-    border: $alert-warning-border
-.popover.popover-info
-  > .popover-title
-    color: $alert-info-text
-    background-color: $alert-info-bg
-    border: $alert-info-border
-.popover.popover-success
-  > .popover-title
-    color: $alert-success-text
-    background-color: $alert-success-bg
-    border: $alert-success-border
-
-.popover.popover-info,
-.popover.popover-success,
-.popover.popover-warning,
-.popover.popover-danger
-  > .popover-title
-    border-width: 1px
-    border-style: solid
-  > .popover-content
-    color: $text-color
-
 .popover.popover-contentless
-  > .popover-title
+  .popover-content
+    display: none
+  .popover-title
     border-bottom-left-radius: $border-radius-large
     border-bottom-right-radius: $border-radius-large

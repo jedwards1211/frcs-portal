@@ -13,8 +13,17 @@ export const CONTEXT_CLASSES = {
   primary:  'primary',
 };
 
+export const SHADE_CLASSES = {
+  darker:   'shade-darker',
+  brighter: 'shade-brighter',
+}
+
 export function getContextClass(props: Object): ?string {
   return getEnumProp(props, CONTEXT_CLASSES, 'contextClass');
+}
+
+export function getShadeClass(props: Object): ?string {
+  return getEnumProp(props, SHADE_CLASSES, 'shade');
 }
 
 function nontrue(val: ?any) {
