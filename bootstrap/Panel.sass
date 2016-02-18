@@ -7,3 +7,33 @@
     border-radius: 0
     margin-bottom: -1px
 
+$panel-container-heading-height: 40px
+
+.panel-sidebar
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  margin: 0
+  border: none
+  border-radius: 0
+
+  > .panel-heading
+    position: relative
+    padding: 0
+    height: $panel-container-heading-height
+    line-height: $panel-container-heading-height
+    > .panel-title
+      margin: 0 5px
+      line-height: $panel-container-heading-height
+      font-size: 24px
+
+  > .panel-body
+    position: absolute
+    padding: 0
+    top: $panel-container-heading-height
+    left: 0
+    right: 0
+    bottom: 0
+    overflow: auto
