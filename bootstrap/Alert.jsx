@@ -26,6 +26,7 @@ type Props = {
 export default class Alert extends Component<void,Props,void> {
   static Link = addClass('a', 'alert-link');
   render(): ReactElement {
+    let {className, children} = this.props;
     let contextClass = getContextClass(this.props, 'type');
     let shadeClass = getShadeClass(this.props);
     let content = getContextContent(this.props);
@@ -34,8 +35,11 @@ export default class Alert extends Component<void,Props,void> {
       content = errorMessage(content);
     }
 
-    let className = classNames(this.props.className, 'alert', contextClass && ('alert-' + contextClass), shadeClass);
+    className = classNames(className, 'alert', contextClass && ('alert-' + contextClass), shadeClass);
 
-    return <div role="alert" {...this.props} className={className}>{content}{this.props.children}</div>;
+    return <div role="alert" {...this.props} className={className}>
+      {content}
+      {children}
+    </div>;
   }
 }
