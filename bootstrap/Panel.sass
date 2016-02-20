@@ -26,8 +26,11 @@ $panel-container-heading-height: 40px
     line-height: $panel-container-heading-height
     > .panel-title
       margin: 0 5px
-      line-height: $panel-container-heading-height
-      font-size: 24px
+
+      &,
+      & > *
+        line-height: $panel-container-heading-height
+        font-size: 24px
 
   > .panel-body
     position: absolute
