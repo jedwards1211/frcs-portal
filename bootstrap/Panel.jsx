@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component, PropTypes, Children} from 'react';
 import classNames from 'classnames';
 import {Header, Title, Body, Footer} from './Content.jsx';
 import Collapse from './Collapse';
@@ -82,7 +82,10 @@ export default class Panel extends Component {
     className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
 
     if (skin || (!header && !title && !footer)) {
-      return children ? React.cloneElement(children, {className}) : <div {...this.props} className={className}/>;
+      return Children.count(children) === 1 ? React.cloneElement(children, {className}) :
+        <div {...this.props} className={className}>
+          {children}
+        </div>;
     }
 
     let bodyProps = {};
