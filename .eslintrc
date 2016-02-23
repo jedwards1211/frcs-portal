@@ -19,7 +19,7 @@
     "commonjs": true
   },
   "globals": {
-    "ReactElement": false,
+    "ReactElement": false
   },
   "plugins": [
     "react"
