@@ -151,12 +151,17 @@ export default class Fader extends Component {
   };
 
   render() {
+    let Comp = this.props.component || 'div';
+    let {style} = this.props;
     let {transitioning, height, wrappedChildren} = this.state;
     let className = classNames(this.props.className, 'mf-fader', {transitioning});
 
-    return <div {...this.props} ref={c => this._root = c} className={className} 
-            style={height ? {height} : {}}>
+    if (height) {
+      style = Object.assign({}, style, {height});
+    }
+
+    return <Comp {...this.props} ref={c => this._root = c} className={className} style={style}>
       {wrappedChildren}
-    </div>;
+    </Comp>;
   }
 }

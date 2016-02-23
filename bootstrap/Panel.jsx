@@ -2,7 +2,6 @@
 
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
-import {createSkinComponent} from 'react-skin';
 import {Header, Title, Body, Footer} from './Content.jsx';
 import Collapse from './Collapse';
 import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
@@ -10,14 +9,10 @@ import {errorMessage} from '../utils/reactErrorUtils';
 
 import './Panel.sass';
 
-const PanelHeaderSkin = createSkinComponent('BootstrapPanelHeader', {component: 'div', className: 'panel-heading'});
-const PanelTitleSkin  = createSkinComponent('BootstrapPanelTitle' , {component: 'h3' , className: 'panel-title' });
-const PanelFooterSkin = createSkinComponent('BootstrapPanelFooter', {component: 'div', className: 'panel-footer'});
 class PanelBodySkin extends Component {
   render() {
-    let {className, collapse, children} = this.props;
-    className = classNames(className, 'panel-body');
-    let result = <div {...this.props} className={className}>
+    let {collapse, children} = this.props;
+    let result = <div {...this.props}>
       {children}
     </div>;
     if (collapse) {
@@ -57,22 +52,24 @@ export default class Panel extends Component {
   props: Props;
   static defaultProps: {};
   static childContextTypes = {
-    ContainerSkin:  PropTypes.any.isRequired,
-    HeaderSkin:     PropTypes.any.isRequired,
-    TitleSkin:      PropTypes.any.isRequired,
     BodySkin:       PropTypes.any.isRequired,
-    FooterSkin:     PropTypes.any.isRequired,
+    ContainerClassName: PropTypes.string.isRequired,
+    HeaderClassName:PropTypes.string.isRequired,
+    TitleClassName: PropTypes.string.isRequired,
+    BodyClassName:  PropTypes.string.isRequired,
+    FooterClassName:PropTypes.string.isRequired,
   };
   getChildContext(): Object {
     return {
-      ContainerSkin:  Panel,
-      HeaderSkin:     PanelHeaderSkin,
-      TitleSkin:      PanelTitleSkin,
       BodySkin:       PanelBodySkin,
-      FooterSkin:     PanelFooterSkin,
+      ContainerClassName:'panel',
+      HeaderClassName:'panel-heading',
+      TitleClassName: 'panel-title',
+      BodyClassName:  'panel-body',
+      FooterClassName:'panel-footer',
     };
   }
-  render()/*: ReactElement<any,any,any> */ {
+  render(): ReactElement {
     let {className, children, header, headerProps, title, footer, collapse, skin} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
     let shadeClass = getShadeClass(this.props);
@@ -84,10 +81,8 @@ export default class Panel extends Component {
 
     className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
 
-    if (skin) {
-      return <div {...this.props} className={className}>
-        {children}
-      </div>;
+    if (skin || (!header && !title && !footer)) {
+      return React.cloneElement(children, {className});
     }
 
     let bodyProps = {};

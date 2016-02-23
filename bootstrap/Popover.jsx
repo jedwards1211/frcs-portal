@@ -5,19 +5,14 @@ import classNames from 'classnames';
 import {getContextClass, getShadeClass} from './bootstrapPropUtils';
 import {Title, Body} from './Content.jsx';
 import {getSide} from '../utils/propUtils';
-import {createSkinComponent} from 'react-skin';
 import Collapse from './Collapse.jsx';
 
 import './Popover.sass';
 
-const PopoverHeaderSkin = createSkinComponent('BootstrapPopoverHeader', {component: 'div', className: 'popover-header'});
-const PopoverTitleSkin  = createSkinComponent('BootstrapPopoverTitle' , {component: 'h3',  className: 'popover-title'});
-const PopoverFooterSkin = createSkinComponent('BootstrapPopoverFooter', {component: 'div', className: 'panel-footer'});
 class PopoverBodySkin extends Component {
   render() {
-    let {className, collapse, children} = this.props;
-    className = classNames(className, 'popover-content');
-    let result = <div {...this.props} className={className}>
+    let {collapse, children} = this.props;
+    let result = <div {...this.props}>
       {children}
     </div>;
     if (collapse) {
@@ -55,18 +50,20 @@ export default class Popover extends Component {
   static defaultProps: {};
   static childContextTypes = {
     ContainerSkin:  PropTypes.any.isRequired,
-    HeaderSkin:     PropTypes.any.isRequired,
-    TitleSkin:      PropTypes.any.isRequired,
     BodySkin:       PropTypes.any.isRequired,
-    FooterSkin:     PropTypes.any.isRequired,
+    HeaderClassName:PropTypes.string.isRequired,
+    TitleClassName: PropTypes.string.isRequired,
+    BodyClassName:  PropTypes.string.isRequired,
+    FooterClassName:PropTypes.string.isRequired,
   };
   getChildContext(): Object {
     return {
       ContainerSkin:  Popover,
-      HeaderSkin:     PopoverHeaderSkin,
-      TitleSkin:      PopoverTitleSkin,
       BodySkin:       PopoverBodySkin,
-      FooterSkin:     PopoverFooterSkin,
+      HeaderClassName:'popover-header',
+      TitleClassName: 'popover-title',
+      BodyClassName:  'popover-content',
+      FooterClassName:'popover-footer',
     };
   }
   render(): ReactElement {

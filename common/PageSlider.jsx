@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import propAssign from '../utils/propAssign';
 import setStateChain from '../utils/setStateChain';
+import paddingHeight from '../utils/paddingHeight';
 import {getTimeout} from '../transition/callOnTransitionEnd';
 
 import {TICK} from '../transition/animConstants';
@@ -83,13 +84,13 @@ export default class PageSlider extends Component {
     const leavingChild = this._childRefs[activeIndex];
 
     let sequence = _.compact([
-      transitionHeight && (cb => ({height: this._viewport.scrollHeight})),
+      transitionHeight && (cb => ({height: this._viewport.scrollHeight + paddingHeight(this._root)})),
       cb => ({transitioning: true}),
       cb => {
         let nextState = {activeIndex: nextActiveIndex};
         let wrapper = this._wrappers[nextActiveIndex];
         if (transitionHeight && wrapper) {
-          nextState.height = wrapper.scrollHeight;
+          nextState.height = wrapper.scrollHeight + paddingHeight(this._root);
         }
         return nextState;
       },

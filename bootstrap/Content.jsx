@@ -1,19 +1,29 @@
-import {createSkinnableComponent, createSkinComponent} from 'react-skin';
+import {createSkinnableComponent} from 'react-skin';
 
 import './Content.sass';
 
 export const Container = createSkinnableComponent('Container', {
-  defaultComponent: createSkinComponent('DefaultContainer', {component: 'div', className: 'mf-default-container'})
+  defaultComponent: 'div',
+  defaultClassName: 'mf-default-container',
+  className:        'skinnable-container',
 });
 export const Header = createSkinnableComponent('Header', {
-  defaultComponent: createSkinComponent('DefaultHeader', {component: 'div', className: 'mf-default-header'})
+  defaultComponent: 'div',
+  defaultClassName: 'mf-default-header',
+  className:        'skinnable-header',
 });
 export const Body   = createSkinnableComponent('Body', {
-  defaultComponent: createSkinComponent('DefaultBody'  , {component: 'div', className: 'mf-default-body'  })
+  defaultComponent: 'div',
+  defaultClassName: 'mf-default-body',
+  className:        'skinnable-body',
 });
 export const Title  = createSkinnableComponent('Title', {
-  defaultComponent: createSkinComponent('DefaultTitle' , {component: 'h1' , className: 'mf-default-title' })
+  defaultComponent: 'h3',
+  defaultClassName: 'mf-default-title',
+  className:        'skinnable-title',
 });
 export const Footer = createSkinnableComponent('Footer', {
-  defaultComponent: createSkinComponent('DefaultFooter', {component: 'div', className: 'mf-default-footer'})
+  defaultComponent: 'div',
+  defaultClassName: 'mf-default-footer',
+  className:        'skinnable-footer',
 });

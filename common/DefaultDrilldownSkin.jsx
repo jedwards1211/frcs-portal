@@ -16,8 +16,6 @@ function pickBy(object, predicate) {
   return result;
 }
 
-import {createSkinComponent} from 'react-skin';
-
 import Fader from './Fader.jsx';
 import PageSlider from './PageSlider.jsx';
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
@@ -37,11 +35,10 @@ class DefaultDrilldownHeaderSkin extends Component {
   };
   static defaultProps: {};
   render() {
-    let {className, children} = this.props;
+    let {children} = this.props;
     let path = normalize(this.context.drilldown.props.path);
-    className = classNames(className, 'drilldown-header');
 
-    return <div {...this.props} className={className}>
+    return <div {...this.props}>
       <Link className="up-link" to=".." disabled={path === '/'}>
         <Glyphicon menuLeft float="left"/>
       </Link>
@@ -51,11 +48,6 @@ class DefaultDrilldownHeaderSkin extends Component {
     </div>;
   }
 }
-
-const DefaultDrilldownTitleSkin = createSkinComponent('DrilldownTitle', {
-  component: 'h3',
-  className: 'drilldown-title',
-});
 
 class DefaultDrilldownBodySkin extends Component {
   static contextTypes = {
@@ -109,7 +101,6 @@ class DefaultDrilldownBodySkin extends Component {
 
   render() {
     let {path} = this.context.drilldown.props;
-    let {className} = this.props;
     let {pathContents} = this.state;
 
     let pathParts = getPathParts(path);
@@ -125,9 +116,7 @@ class DefaultDrilldownBodySkin extends Component {
       pages[i] = <div key={i}/>;
     }
 
-    className = classNames(className, 'drilldown-body');
-
-    return <PageSlider {...this.props} className={className} activeIndex={activeIndex}
+    return <PageSlider {...this.props} activeIndex={activeIndex}
                                        onTransitionEnd={this.onTransitionEnd}>
       {pages}
     </PageSlider>;
@@ -137,25 +126,22 @@ class DefaultDrilldownBodySkin extends Component {
 export default class DefaultDrilldownSkin extends Component {
   static childContextTypes = {
     HeaderSkin: PropTypes.any.isRequired,
-    TitleSkin:  PropTypes.any.isRequired,
     BodySkin:   PropTypes.any.isRequired,
   };
   getChildContext(): Object {
     return {
       HeaderSkin: DefaultDrilldownHeaderSkin,
-      TitleSkin:  DefaultDrilldownTitleSkin,
-      BodySkin:   DefaultDrilldownBodySkin,
+      BodySkin: DefaultDrilldownBodySkin,
     };
   }
   render(): ReactElement {
     let {path, root, className} = this.props;
-    className = classNames(className, 'drilldown mf-default-drilldown');
+
+    className = classNames(className, 'drilldown');
 
     let route = root.childAtPath(path);
-    let Component: any = route ? route.getComponent() : 'div';
+    let Component:any = (route && route.getComponent()) || 'div';
 
-    return <div {...this.props} className={className}>
-      <Component path={path} route={route}/>
-    </div>;
+    return <Component {...this.props} className={className} route={route}/>;
   }
 }

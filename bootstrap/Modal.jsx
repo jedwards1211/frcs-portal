@@ -3,7 +3,6 @@
 import React, {PropTypes, Component} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import {createSkinComponent} from 'react-skin';
 
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
 import CSSCore from 'fbjs/lib/CSSCore';
@@ -20,11 +19,6 @@ import './Modal.sass';
 
 let openModalCount = 0;
 
-const ModalHeaderSkin = createSkinComponent('BootstrapModalHeader', {component: 'div', className: 'modal-header'});
-const ModalTitleSkin  = createSkinComponent('BootstrapModalTitle' , {component: 'h3' , className: 'modal-title' });
-const ModalBodySkin   = createSkinComponent('BootstrapModalBody'  , {component: 'div', className: 'modal-body'  });
-const ModalFooterSkin = createSkinComponent('BootstrapModalFooter', {component: 'div', className: 'modal-footer'});
-
 export default class Modal extends Component {
   static contextTypes = {
     transitionEvents: PropTypes.shape({
@@ -33,10 +27,10 @@ export default class Modal extends Component {
   };
   static childContextTypes = {
     ContainerSkin:  PropTypes.any.isRequired,
-    HeaderSkin:     PropTypes.any.isRequired,
-    TitleSkin:      PropTypes.any.isRequired,
-    BodySkin:       PropTypes.any.isRequired,
-    FooterSkin:     PropTypes.any.isRequired,
+    HeaderClassName:PropTypes.string.isRequired,
+    TitleClassName: PropTypes.string.isRequired,
+    BodyClassName:  PropTypes.string.isRequired,
+    FooterClassName:PropTypes.string.isRequired,
   };
   static propTypes = {
     dialogClassName: PropTypes.string,
@@ -45,10 +39,10 @@ export default class Modal extends Component {
   getChildContext() {
     return {
       ContainerSkin:  Modal,
-      HeaderSkin:     ModalHeaderSkin,
-      TitleSkin:      ModalTitleSkin,
-      BodySkin:       ModalBodySkin,
-      FooterSkin:     ModalFooterSkin,
+      HeaderClassName:'modal-header',
+      TitleClassName: 'modal-title',
+      BodyClassName:  'modal-body',
+      FooterClassName:'modal-footer',
     };
   }
   componentWillMount() {
