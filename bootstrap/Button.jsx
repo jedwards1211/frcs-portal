@@ -21,7 +21,7 @@ type Props = {
 export default class Button extends Component {
   props: Props;
   static defaultProps: {};
-  render()/*: ReactElement<any,any,any> */ {
+  render(): ReactElement {
     let contextClass = getContextClass(this.props) || 'default';
     let content = getContextContent(this.props);
 

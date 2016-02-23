@@ -50,9 +50,11 @@ export default class Drilldown extends Component {
   static childContextTypes = {
     drilldown: PropTypes.any.isRequired,
     path: PropTypes.string.isRequired,
+    LinkSkin: PropTypes.any.isRequired,
   };
   getChildContext(): Object {
     return {
+      LinkSkin: Link,
       drilldown: this,
       path: path.normalize(this.props.path),
     };

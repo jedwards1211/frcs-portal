@@ -27,3 +27,6 @@ export const Footer = createSkinnableComponent('Footer', {
   defaultClassName: 'mf-default-footer',
   className:        'skinnable-footer',
 });
+export const Link   = createSkinnableComponent('Link', {
+  defaultComponent: 'a',
+});
