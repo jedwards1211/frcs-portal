@@ -4,6 +4,8 @@ import _ from 'lodash';
 
 import propAssign from '../utils/propAssign';
 
+import './Glyphicon.sass';
+
 const EXCLUDED_PROPS = [
   'className',
   'style',

@@ -82,7 +82,7 @@ export default class Panel extends Component {
     className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
 
     if (skin || (!header && !title && !footer)) {
-      return React.cloneElement(children, {className});
+      return children ? React.cloneElement(children, {className}) : <div {...this.props} className={className}/>;
     }
 
     let bodyProps = {};

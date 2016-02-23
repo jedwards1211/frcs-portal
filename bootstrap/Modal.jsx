@@ -1,11 +1,13 @@
 'use strict';
 
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes, Component, Children} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
 import CSSCore from 'fbjs/lib/CSSCore';
+
+import {Container} from './Content.jsx';
 
 import './Modal.sass';
 
@@ -26,7 +28,7 @@ export default class Modal extends Component {
     }),
   };
   static childContextTypes = {
-    ContainerSkin:  PropTypes.any.isRequired,
+    ContainerClassName: PropTypes.string.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
     BodyClassName:  PropTypes.string.isRequired,
@@ -38,7 +40,7 @@ export default class Modal extends Component {
   };
   getChildContext() {
     return {
-      ContainerSkin:  Modal,
+      ContainerClassName: 'modal-content',
       HeaderClassName:'modal-header',
       TitleClassName: 'modal-title',
       BodyClassName:  'modal-body',
@@ -77,12 +79,13 @@ export default class Modal extends Component {
     dialogClassName = classNames('modal-dialog', dialogClassName, {
       'modal-sm': small
     });
+    if (Children.count(children) > 1) {
+      children = <Container>{children}</Container>;
+    }
     return <div ref="modal" {...this.props} className={className} role="dialog"
       onClick={this.onClick}>
       <div className={dialogClassName}>
-        <div className="modal-content">
-          {children}
-        </div>
+        {children}
       </div>
     </div>;
   }

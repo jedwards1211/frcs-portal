@@ -1,10 +1,8 @@
 /* @flow */
 
-import React, {Component, PropTypes, Children} from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import path from 'path';
-
-const normalize = path.normalize.bind(path);
 
 function pickBy(object, predicate) {
   let result = {};
@@ -24,26 +22,60 @@ import {DrilldownRoute, getPathParts} from './DrilldownModel.jsx';
 
 import './DefaultDrilldownSkin.sass';
 
-class DefaultDrilldownHeaderSkin extends Component {
+class PathContext extends Component {
+  static childContextTypes = {
+    path: PropTypes.string.isRequired,
+  };
+  getChildContext() {
+    return {
+      path: this.props.path,
+    };
+  }
+  render() {
+    return this.props.children;
+  }
+}
+
+class DefaultDrilldownTitleSkin extends Component {
   static contextTypes = {
-    drilldown: PropTypes.any.isRequired,
+    path: PropTypes.string.isRequired,
   };
   props: {
-    className?: string,
-    path: string,
     children?: any,
   };
   static defaultProps: {};
   render() {
     let {children} = this.props;
-    let path = normalize(this.context.drilldown.props.path);
+    let {path} = this.context;
+
+    return <h3 {...this.props}>
+      {path === '/' ? undefined : <Link className="up-link" to="..">
+        <Glyphicon menuLeft float="left"/>
+      </Link>}
+      {children}
+    </h3>;
+  }
+}
+
+class DefaultDrilldownHeaderFooterSkin extends Component {
+  static contextTypes = {
+    path: PropTypes.string.isRequired,
+  };
+  props: {
+    children?: any,
+  };
+  static defaultProps: {};
+  render() {
+    let {children} = this.props;
+    let {path} = this.context;
 
     return <div {...this.props}>
-      <Link className="up-link" to=".." disabled={path === '/'}>
-        <Glyphicon menuLeft float="left"/>
-      </Link>
-      {Children.count(children) === 1 && children && children.key !== undefined ?
-        <Fader>{React.cloneElement(children, {key: path})}</Fader> :
+      {children && React.isValidElement(children) ?
+        <Fader>
+          <PathContext key={children.key || path} path={path}>
+            {children}
+          </PathContext>
+        </Fader> :
         children}
     </div>;
   }
@@ -52,11 +84,11 @@ class DefaultDrilldownHeaderSkin extends Component {
 class DefaultDrilldownBodySkin extends Component {
   static contextTypes = {
     drilldown: PropTypes.any.isRequired,
+    path: PropTypes.string.isRequired,
   };
 
   props: {
     className?: string,
-    path: string,
     root: DrilldownRoute,
     children?: any,
   };
@@ -77,7 +109,7 @@ class DefaultDrilldownBodySkin extends Component {
   }
 
   componentWillReceiveProps(nextProps: Object) {
-    let nextPath = normalize(this.context.drilldown.props.path);
+    let nextPath = this.context.drilldown.props.path;
     if (nextPath !== this.targetPath) {
       this.targetPath = nextPath;
       let curPath  = this.renderedPath || '/';
@@ -86,21 +118,25 @@ class DefaultDrilldownBodySkin extends Component {
       let pathContents = pickBy(this.state.pathContents, (value, path) => {
         return path.startsWith(shortPath) && longPath.startsWith(path);
       });
-      pathContents[nextPath] = <div key={nextPath}>{nextProps.children}</div>;
+      pathContents[nextPath] = <PathContext key={nextPath} path={nextPath}>
+        {nextProps.children}
+      </PathContext>;
       this.setState({pathContents});
     }
   }
 
   onTransitionEnd: Function = () => {
-    this.renderedPath = this.targetPath = normalize(this.context.drilldown.props.path);
+    this.renderedPath = this.targetPath = this.context.path;
     let pathContents = {
-      [this.renderedPath]: <div key={this.renderedPath}>{this.props.children}</div>
+      [this.renderedPath]: <PathContext key={this.renderedPath} path={this.renderedPath}>
+        {this.props.children}
+      </PathContext>
     };
     this.setState({pathContents});
   };
 
   render() {
-    let {path} = this.context.drilldown.props;
+    let {path} = this.context;
     let {pathContents} = this.state;
 
     let pathParts = getPathParts(path);
@@ -126,12 +162,16 @@ class DefaultDrilldownBodySkin extends Component {
 export default class DefaultDrilldownSkin extends Component {
   static childContextTypes = {
     HeaderSkin: PropTypes.any.isRequired,
+    TitleSkin:  PropTypes.any.isRequired,
     BodySkin:   PropTypes.any.isRequired,
+    FooterSkin: PropTypes.any.isRequired,
   };
   getChildContext(): Object {
     return {
-      HeaderSkin: DefaultDrilldownHeaderSkin,
+      HeaderSkin: DefaultDrilldownHeaderFooterSkin,
+      TitleSkin: DefaultDrilldownTitleSkin,
       BodySkin: DefaultDrilldownBodySkin,
+      FooterSkin: DefaultDrilldownHeaderFooterSkin,
     };
   }
   render(): ReactElement {
@@ -142,6 +182,6 @@ export default class DefaultDrilldownSkin extends Component {
     let route = root.childAtPath(path);
     let Component:any = (route && route.getComponent()) || 'div';
 
-    return <Component {...this.props} className={className} route={route}/>;
+    return <Component {...this.props} className={className} path={path} route={route}/>;
   }
 }
