@@ -4,6 +4,14 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import path from 'path';
 
+import Fader from './Fader.jsx';
+import PageSlider from './PageSlider.jsx';
+import Glyphicon from '../bootstrap/Glyphicon.jsx';
+import {Link} from './Drilldown.jsx';
+import {DrilldownRoute, getPathParts} from './DrilldownModel.jsx';
+
+import './DefaultDrilldownSkin.sass';
+
 function pickBy(object, predicate) {
   let result = {};
   for (let key in object) {
@@ -13,14 +21,6 @@ function pickBy(object, predicate) {
   }
   return result;
 }
-
-import Fader from './Fader.jsx';
-import PageSlider from './PageSlider.jsx';
-import Glyphicon from '../bootstrap/Glyphicon.jsx';
-import {Link} from './Drilldown.jsx';
-import {DrilldownRoute, getPathParts} from './DrilldownModel.jsx';
-
-import './DefaultDrilldownSkin.sass';
 
 class PathContext extends Component {
   static childContextTypes = {
