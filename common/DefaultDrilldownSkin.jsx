@@ -4,28 +4,32 @@ import React, {Component, PropTypes, Children} from 'react';
 import classNames from 'classnames';
 import path from 'path';
 
-import {createSkin, createSkinComponent} from 'react-skin';
+const normalize = path.normalize.bind(path);
+
+function pickBy(object, predicate) {
+  let result = {};
+  for (let key in object) {
+    if (predicate(object[key], key, object)) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+
+import {createSkinComponent} from 'react-skin';
 
 import Fader from './Fader.jsx';
 import PageSlider from './PageSlider.jsx';
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
-import type {DrilldownRoute} from './DrilldownModel.jsx';
+import {Link} from './Drilldown.jsx';
+import {DrilldownRoute, getPathParts} from './DrilldownModel.jsx';
 
-import './Drilldown.sass';
+import './DefaultDrilldownSkin.sass';
 
-export function getPathParts(strpath: string): Array<string> {
-  return strpath === '/' ? [''] : path.normalize(strpath).split('/').map(decodeURIComponent);
-}
-
-type Props = {
-  className?: string,
-  path: string,
-  root: ?DrilldownRoute,
-  onPathChange: (newPath: string) => any,
-};
-
-
-class HeaderSkin extends Component {
+class DefaultDrilldownHeaderSkin extends Component {
+  static contextTypes = {
+    drilldown: PropTypes.any.isRequired,
+  };
   props: {
     className?: string,
     path: string,
@@ -33,60 +37,95 @@ class HeaderSkin extends Component {
   };
   static defaultProps: {};
   render() {
-    let {className, children, path} = this.props;
-    className = classNames(className, 'mf-default-drilldown-header');
+    let {className, children} = this.props;
+    let path = normalize(this.context.drilldown.props.path);
+    className = classNames(className, 'drilldown-header');
 
     return <div {...this.props} className={className}>
-      {<Link className="up-link" to=".." disabled={path === '/'}><Glyphicon menuLeft float="left"/></Link>}
-      {Children.count(children) === 1 && children.key !== undefined ? <Fader>{children}</Fader> : children}
+      <Link className="up-link" to=".." disabled={path === '/'}>
+        <Glyphicon menuLeft float="left"/>
+      </Link>
+      {Children.count(children) === 1 && children && children.key !== undefined ?
+        <Fader>{React.cloneElement(children, {key: path})}</Fader> :
+        children}
     </div>;
   }
 }
 
-const TitleSkin = createSkinComponent('DrilldownTitle', {
+const DefaultDrilldownTitleSkin = createSkinComponent('DrilldownTitle', {
   component: 'h3',
-  className: 'mf-default-drilldown-title',
+  className: 'drilldown-title',
 });
 
-class BodySkin extends Component {
+class DefaultDrilldownBodySkin extends Component {
+  static contextTypes = {
+    drilldown: PropTypes.any.isRequired,
+  };
+
   props: {
     className?: string,
     path: string,
     root: DrilldownRoute,
+    children?: any,
   };
+
   defaultProps: {};
+
   state: {
-    lastPath?: string,
-  } = {};
+    pathContents: Object,
+  } = {
+    pathContents: {},
+  };
+
+  renderedPath: ?string;
+  targetPath: ?string;
+
+  componentWillMount() {
+    this.onTransitionEnd();
+  }
+
   componentWillReceiveProps(nextProps: Object) {
-    let curPath  = path.normalize(this.props.path);
-    let nextPath = path.normalize(nextProps.path);
-    if (nextPath !== curPath && curPath.startsWith(nextPath)) {
-      let {lastPath} = this.state;
-      if (!lastPath || !lastPath.startsWith(nextPath)) {
-        this.setState({lastPath: curPath});
-      }
+    let nextPath = normalize(this.context.drilldown.props.path);
+    if (nextPath !== this.targetPath) {
+      this.targetPath = nextPath;
+      let curPath  = this.renderedPath || '/';
+      let shortPath = curPath.length < nextPath.length ? curPath : nextPath;
+      let longPath  = curPath.length > nextPath.length ? curPath : nextPath;
+      let pathContents = pickBy(this.state.pathContents, (value, path) => {
+        return path.startsWith(shortPath) && longPath.startsWith(path);
+      });
+      pathContents[nextPath] = <div key={nextPath}>{nextProps.children}</div>;
+      this.setState({pathContents});
     }
   }
+
   onTransitionEnd: Function = () => {
-    this.setState({lastPath: undefined});
+    this.renderedPath = this.targetPath = normalize(this.context.drilldown.props.path);
+    let pathContents = {
+      [this.renderedPath]: <div key={this.renderedPath}>{this.props.children}</div>
+    };
+    this.setState({pathContents});
   };
+
   render() {
-    let {className, root} = this.props;
-    let {lastPath} = this.state;
-    let pathParts = getPathParts(lastPath || this.props.path);
-    let activeIndex = lastPath ? getPathParts(this.props.path).length - 1 : pathParts.length - 1;
+    let {path} = this.context.drilldown.props;
+    let {className} = this.props;
+    let {pathContents} = this.state;
+
+    let pathParts = getPathParts(path);
+    let activeIndex = pathParts.length - 1;
 
     let pages = [];
-    let route = root;
-    for (let i = 0; i < pathParts.length && route; i++) {
-      let Component = route.getComponent();
-      let pagePath = pathParts.join('/');
-      pages[i] = <Component key={pagePath} route={route} path={pagePath}/>;
-      route = route.getChild(pathParts[i + 1]);
+
+    for (let otherPath in pathContents) {
+      let index = getPathParts(otherPath).length - 1;
+      pages[index] = pathContents[otherPath];
+    }
+    for (let i = 0; i < pages.length && !pages[i]; i++) {
+      pages[i] = <div key={i}/>;
     }
 
-    className = classNames(className, 'mf-default-drilldown-body');
+    className = classNames(className, 'drilldown-body');
 
     return <PageSlider {...this.props} className={className} activeIndex={activeIndex}
                                        onTransitionEnd={this.onTransitionEnd}>
@@ -95,15 +134,28 @@ class BodySkin extends Component {
   }
 }
 
-export default createSkin('DefaultDrilldownSkin', {
-  Drilldown: createSkinComponent('Drilldown', {
-    component: createSkin('DefaultDrilldownContentSkin', {
-      Header: HeaderSkin,
-      Title: TitleSkin,
-      Body: BodySkin,
-    }, {
-      component: 'div',
-      className: 'mf-default-drilldown',
-    }),
-  }),
-});
+export default class DefaultDrilldownSkin extends Component {
+  static childContextTypes = {
+    HeaderSkin: PropTypes.any.isRequired,
+    TitleSkin:  PropTypes.any.isRequired,
+    BodySkin:   PropTypes.any.isRequired,
+  };
+  getChildContext(): Object {
+    return {
+      HeaderSkin: DefaultDrilldownHeaderSkin,
+      TitleSkin:  DefaultDrilldownTitleSkin,
+      BodySkin:   DefaultDrilldownBodySkin,
+    };
+  }
+  render(): ReactElement {
+    let {path, root, className} = this.props;
+    className = classNames(className, 'drilldown mf-default-drilldown');
+
+    let route = root.childAtPath(path);
+    let Component: any = route ? route.getComponent() : 'div';
+
+    return <div {...this.props} className={className}>
+      <Component path={path} route={route}/>
+    </div>;
+  }
+}

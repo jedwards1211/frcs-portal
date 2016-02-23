@@ -49,7 +49,7 @@ export default class Fader extends Component {
   }
 
   doTransition = (props = this.props) => {
-    let {state: {height, curChild: prevChild}} = this;
+    let {state: {curChild: prevChild}} = this;
     let nextChild = Children.only(props.children);
 
     if (nextChild.key === prevChild.key) {
