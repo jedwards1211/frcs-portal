@@ -15,11 +15,13 @@ export default class AlertGroup extends Component {
     if (alerts) {
       for (var key in alerts) {
         let alert = alerts[key];
-        if (React.isValidElement(alert)) {
-          children.push(React.cloneElement(alert, {key}));
-        }
-        if (getContextClass(alert)) {
-          children.push(<Alert key={key} {...alert}/>);
+        if (alert) {
+          if (React.isValidElement(alert)) {
+            children.push(React.cloneElement(alert, {key}));
+          }
+          if (getContextClass(alert)) {
+            children.push(<Alert key={key} {...alert}/>);
+          }
         }
       }
     }
