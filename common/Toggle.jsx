@@ -83,6 +83,7 @@ export default React.createClass({
         <div className="react-toggle-track">
           <div className="react-toggle-thumb"/>
         </div>
+        {this.props.children}
       </div>
     )
   }
