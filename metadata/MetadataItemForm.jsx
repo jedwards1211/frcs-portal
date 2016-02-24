@@ -23,7 +23,7 @@ function alarmHasErrors(alarm) {
 export function hasErrors(metadataItem) {
   return !numberRegExp.test(metadataItem.min) ||
     !numberRegExp.test(metadataItem.max) ||
-    _.any(metadataItem.alarms, alarmHasErrors);
+    _.some(metadataItem.alarms, alarmHasErrors);
 }
 
 /**

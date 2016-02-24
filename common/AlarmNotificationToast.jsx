@@ -32,7 +32,7 @@ export default class AlarmNotificationToast extends Component {
   render() {
     let {className, acknowledging, acknowledgeError, alarmNotifications, onAcknowledgeClick, disabled} = this.props;
 
-    let isAlarm = alarmNotifications && _.any(alarmNotifications, n => n.severity === 'alarm');
+    let isAlarm = alarmNotifications && _.some(alarmNotifications, n => n.severity === 'alarm');
 
     className = classNames(className, 'mf-alarm-notification-toast');
 
