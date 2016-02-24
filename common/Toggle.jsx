@@ -64,9 +64,9 @@ export default React.createClass({
 
   render() {
     var classes = classNames('react-toggle', {
-      'react-toggle--checked': this.state.checked,
-      'react-toggle--focus': this.state.hasFocus,
-      'react-toggle--disabled': this.props.disabled
+      'react-toggle-checked': this.state.checked,
+      'react-toggle-focus': this.state.hasFocus,
+      'react-toggle-disabled': this.props.disabled
     }, this.props.className)
 
     var otherProps = _.clone(this.props);
@@ -80,8 +80,9 @@ export default React.createClass({
         onBlur={this.handleBlur}
         onClick={this.handleClick}
         {...otherProps}>
-        <div className="react-toggle-track">&nbsp;</div>
-        <div className="react-toggle-thumb"></div>
+        <div className="react-toggle-track">
+          <div className="react-toggle-thumb"/>
+        </div>
       </div>
     )
   }

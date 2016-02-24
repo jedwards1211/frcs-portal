@@ -2,7 +2,7 @@ import {getEnumProp} from '../../propUtils';
 import _ from 'lodash';
 
 describe('getEnumProp', () => {
-  let constants = _.indexBy(['left', 'right', 'up', 'down'], _.identity);
+  let constants = _.keyBy(['left', 'right', 'up', 'down'], _.identity);
   it('(without shortcutProp): returns first truthy prop', () => {
     expect(getEnumProp({up: true, right: false, down: true}, constants)).toBe('up');
   });
