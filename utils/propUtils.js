@@ -23,3 +23,14 @@ export const SIDES = {
 export function getSide(props: Object, shortcutProp?: string = 'side'): ?string {
   return getEnumProp(props, SIDES, shortcutProp);
 }
+
+export const DIRECTIONS = {
+  up: 'up',
+  down: 'down',
+  left: 'left',
+  right: 'right',
+};
+
+export function getDirection(props: Object, shortcutProp?: string = 'direction'): ?string {
+  return getEnumProp(props, DIRECTIONS, shortcutProp);
+}

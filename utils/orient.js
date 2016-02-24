@@ -98,6 +98,13 @@ export var sides = {
   bottom: bottomSide,
 };
 
+export var directionSides = {
+  up: topSide,
+  down: bottomSide,
+  left: leftSide,
+  right: rightSide,
+};
+
 export function Axis(props) {
   _.assign(this, props);
 }
