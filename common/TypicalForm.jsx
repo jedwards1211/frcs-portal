@@ -7,17 +7,19 @@ import {errorMessage} from '../utils/reactErrorUtils';
 
 class Group extends Component {
   static propTypes = {
+    component:    PropTypes.any,
     labelClass:   PropTypes.string,
     controlClass: PropTypes.string,
     label:        PropTypes.any,
     error:        PropTypes.any,
     warning:      PropTypes.any,
     success:      PropTypes.any,
-    noFormControlClass: PropTypes.any,
+    noFormControlClass: PropTypes.bool,
     useSingleValidationMessage: PropTypes.any,
   };
   render() {
-    let {labelClass, controlClass, className, label, children} = this.props;
+    let {labelClass, noFormControlClass, controlClass, className, label, children} = this.props;
+    let Comp = this.props.component || 'div';
 
     let validationClassNames = {};
     let validationMessages = [];
@@ -48,22 +50,17 @@ class Group extends Component {
       label = <label className={labelClass}>{label}</label>;
     }
 
-    return <div {...this.props} className={className}>
+    return <Comp {...this.props} className={className}>
       {label}
       <div className={controlClass}>
-        {'noFormControlClass' in this.props ? children :
-        Children.map(children, child => {
-          if (React.isValidElement(child)) {
-            let className = classNames(child.props.className, 'form-control');
-            return cloneElement(child, {className});
-          }
-          return child;
-        })}
+        {noFormControlClass || !React.isValidElement(children) ?
+          children :
+          cloneElement(children, {className: classNames(children.props.className, 'form-control')})}
         <CollapseTransitionGroup component="div">
           {validationMessages}
         </CollapseTransitionGroup>
       </div>
-    </div>;
+    </Comp>;
   }
 }
 
