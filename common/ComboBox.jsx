@@ -26,7 +26,7 @@ export default class ComboBox extends Component {
     toggleButtonClassName: 'form-control',
   };
   render() {
-    let {items, selectedItem, render: renderItem, renderSelectedItem = renderItem, placeholder, noItemsPlaceholder,
+    let {items, selectedItem, render: renderItem, renderSelectedItem, placeholder, noItemsPlaceholder,
         onChange, disabled, className, toggleButtonClassName} = this.props;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
