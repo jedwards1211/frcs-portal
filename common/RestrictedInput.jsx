@@ -29,15 +29,20 @@ export default class RestrictedInput extends Component<void,Props,void> {
     let {value} = e.target;
     value = value || '';
     let {restrictValue, filterPattern, decimalNumber} = this.props;
-    let restrictedValue = restrictValue ? restrictValue(value) :
-                          filterPattern ? replaceNonMatching(value, filterPattern) :
-                          decimalNumber ? restrictDecimalNumber(value) :
-                          value;
-    if (this.props.value !== restrictedValue) {
-      e = Object.assign({}, e, {
-        target: Object.assign({}, e.target, {value: restrictedValue}),
-      });
-      this.props.onChange && this.props.onChange(e);
+    try {
+      let restrictedValue = restrictValue ? restrictValue(value) :
+        filterPattern ? replaceNonMatching(value, filterPattern) :
+          decimalNumber ? restrictDecimalNumber(value) :
+            value;
+      if (this.props.value !== restrictedValue) {
+        e = Object.assign({}, e, {
+          target: Object.assign({}, e.target, {value: restrictedValue}),
+        });
+        this.props.onChange && this.props.onChange(e);
+      }
+    }
+    catch (e) {
+      return;
     }
   };
   render(): ReactElement {
