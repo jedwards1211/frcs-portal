@@ -3,7 +3,7 @@
 import React, {Component, Children, PropTypes} from 'react';
 import classNames from 'classnames';
 import {getContextClass, getShadeClass} from './bootstrapPropUtils';
-import {Title, Body} from './Content.jsx';
+import {Title, Body} from './../common/View.jsx';
 import {getSide} from '../utils/propUtils';
 import Collapse from './Collapse.jsx';
 
@@ -49,7 +49,7 @@ export default class Popover extends Component {
   props: Props;
   static defaultProps: {};
   static childContextTypes = {
-    ContainerSkin:  PropTypes.any.isRequired,
+    ViewSkin:  PropTypes.any.isRequired,
     BodySkin:       PropTypes.any.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
@@ -58,7 +58,7 @@ export default class Popover extends Component {
   };
   getChildContext(): Object {
     return {
-      ContainerSkin:  Popover,
+      ViewSkin:  Popover,
       BodySkin:       PopoverBodySkin,
       HeaderClassName:'popover-header',
       TitleClassName: 'popover-title',

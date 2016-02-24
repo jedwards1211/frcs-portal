@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import classNames from 'classnames';
 
 import Modal from '../bootstrap/Modal';
-import {Header, Title, Body, Footer} from '../bootstrap/Content.jsx';
+import {Header, Title, Body, Footer} from './View.jsx';
 import CloseButton from '../bootstrap/CloseButton';
 import Button from '../bootstrap/Button';
 import Spinner from '../common/Spinner';

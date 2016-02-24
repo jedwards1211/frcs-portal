@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
 import CSSCore from 'fbjs/lib/CSSCore';
 
-import {Container} from './Content.jsx';
+import {View} from './../common/View.jsx';
 
 import './Modal.sass';
 
@@ -28,7 +28,7 @@ export default class Modal extends Component {
     }),
   };
   static childContextTypes = {
-    ContainerClassName: PropTypes.string.isRequired,
+    ViewClassName: PropTypes.string.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
     BodyClassName:  PropTypes.string.isRequired,
@@ -40,7 +40,7 @@ export default class Modal extends Component {
   };
   getChildContext() {
     return {
-      ContainerClassName: 'modal-content',
+      ViewClassName: 'modal-content',
       HeaderClassName:'modal-header',
       TitleClassName: 'modal-title',
       BodyClassName:  'modal-body',
@@ -80,7 +80,7 @@ export default class Modal extends Component {
       'modal-sm': small
     });
     if (Children.count(children) > 1) {
-      children = <Container>{children}</Container>;
+      children = <View>{children}</View>;
     }
     return <div ref="modal" {...this.props} className={className} role="dialog"
       onClick={this.onClick}>

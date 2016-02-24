@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 
 import PageSlider from './PageSlider';
-import {Header, Title, Body, Footer} from '../bootstrap/Content.jsx';
+import {Header, Title, Body, Footer} from './View.jsx';
 import Modal from '../bootstrap/Modal';
 
 export default function createWizard({Steps, title, baseClassName, propTypes, defaultProps}) {

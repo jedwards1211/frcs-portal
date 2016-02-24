@@ -7,7 +7,7 @@
     border-radius: 0
     margin-bottom: -1px
 
-$panel-container-heading-height: 40px
+$panel-View-heading-height: 40px
 
 .panel-sidebar
   position: absolute
@@ -22,20 +22,20 @@ $panel-container-heading-height: 40px
   > .panel-heading
     position: relative
     padding: 0
-    height: $panel-container-heading-height
-    line-height: $panel-container-heading-height
+    height: $panel-View-heading-height
+    line-height: $panel-View-heading-height
     > .panel-title
       margin: 0 5px
 
       &,
       & > *
-        line-height: $panel-container-heading-height
+        line-height: $panel-View-heading-height
         font-size: 24px
 
   > .panel-body
     position: absolute
     padding: 0
-    top: $panel-container-heading-height
+    top: $panel-View-heading-height
     left: 0
     right: 0
     bottom: 0
@@ -43,3 +43,7 @@ $panel-container-heading-height: 40px
 
 .mf-fader .panel-title
   overflow-y: hidden
+
+.panel-footer button:not(:first-child)
+  float: right
+  margin-left: 5px

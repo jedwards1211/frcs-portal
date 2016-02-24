@@ -68,7 +68,7 @@ export default class Navbar extends React.Component {
     className = classNames(className, 'navbar');
 
     return <nav ref="navbar" className={className}>
-      <div className="container-fluid">
+      <div className="View-fluid">
         <div className="navbar-header">
           {React.cloneElement(navbarToggle, {onClick: this.toggle})}
           {headerContent}

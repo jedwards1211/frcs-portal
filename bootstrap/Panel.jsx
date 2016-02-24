@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes, Children} from 'react';
 import classNames from 'classnames';
-import {Header, Title, Body, Footer} from './Content.jsx';
+import {Header, Title, Body, Footer} from './../common/View.jsx';
 import Collapse from './Collapse';
 import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
 import {errorMessage} from '../utils/reactErrorUtils';
@@ -53,7 +53,7 @@ export default class Panel extends Component {
   static defaultProps: {};
   static childContextTypes = {
     BodySkin:       PropTypes.any.isRequired,
-    ContainerClassName: PropTypes.string.isRequired,
+    ViewClassName: PropTypes.string.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
     BodyClassName:  PropTypes.string.isRequired,
@@ -62,7 +62,7 @@ export default class Panel extends Component {
   getChildContext(): Object {
     return {
       BodySkin:       PanelBodySkin,
-      ContainerClassName:'panel',
+      ViewClassName:'panel',
       HeaderClassName:'panel-heading',
       TitleClassName: 'panel-title',
       BodyClassName:  'panel-body',

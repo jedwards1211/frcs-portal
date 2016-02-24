@@ -1,11 +1,11 @@
 import {createSkinnableComponent} from 'react-skin';
 
-import './Content.sass';
+import './View.sass';
 
-export const Container = createSkinnableComponent('Container', {
+export const View = createSkinnableComponent('View', {
   defaultComponent: 'div',
-  defaultClassName: 'mf-default-container',
-  className:        'skinnable-container',
+  defaultClassName: 'mf-default-view',
+  className:        'skinnable-view',
 });
 export const Header = createSkinnableComponent('Header', {
   defaultComponent: 'div',

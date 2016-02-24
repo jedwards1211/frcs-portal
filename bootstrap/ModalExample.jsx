@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from './Modal';
-import {Header, Title, Body, Footer} from './Content';
+import {Header, Title, Body, Footer} from './../common/View';
 import Button from './Button';
 import CloseButton from './CloseButton';
 
