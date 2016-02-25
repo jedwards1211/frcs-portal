@@ -7,7 +7,7 @@ export function getPathParts(strpath: string): Array<string> {
 }
 
 export class DrilldownRoute {
-  getComponent(): any {
+  getComponent(): ReactTag {
     return 'div';
   }
   getChild(key: string): ?DrilldownRoute {
