@@ -32,7 +32,8 @@ class PathContext extends Component {
     };
   }
   render() {
-    return this.props.children;
+    let {children} = this.props;
+    return React.isValidElement(children) ? children : <div>{children}</div>;
   }
 }
 
