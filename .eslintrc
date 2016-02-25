@@ -19,7 +19,10 @@
     "commonjs": true
   },
   "globals": {
-    "ReactElement": false
+    "ReactElement": false,
+    "ReactClass": false,
+    "FunctionalComponent": false,
+    "ReactTag": false
   },
   "plugins": [
     "react"

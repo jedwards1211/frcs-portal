@@ -8,13 +8,20 @@ import {getContextClass} from './bootstrapPropUtils';
 
 import {Title, Body} from '../common/View.jsx';
 
+type DefaultProps = {
+  component: ReactTag
+};
+
 type Props = {
-  component: any,
+  component: ReactTag,
   className?: string,
   children?: any,
 };
 
-export default class ListGroup extends Component<void,Props,void> {
+export default class ListGroup extends Component<DefaultProps,Props,void> {
+  static defaultProps = {
+    component: 'div'
+  };
   static childContextTypes = {
     TitleSkin: PropTypes.any.isRequired,
     TitleClassName: PropTypes.string.isRequired,
@@ -54,7 +61,8 @@ export default class ListGroup extends Component<void,Props,void> {
   render(): ReactElement {
     let {className, children} = this.props;
 
-    let Comp = this.props.component || 'div';
+    // any -- because the flow def for createElement is currently wrong
+    let Comp: any = this.props.component;
     className = classNames(className, 'list-group');
 
     return <Comp {...this.props} className={className}>
