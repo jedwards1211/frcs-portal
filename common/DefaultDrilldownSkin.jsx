@@ -124,6 +124,14 @@ class DefaultDrilldownBodySkin extends Component {
       </PathContext>;
       this.setState({pathContents});
     }
+    else {
+      let pathContents = Object.assign({}, this.state.pathContents, {
+        [nextPath]: <PathContext key={nextPath} path={nextPath}>
+          {nextProps.children}
+        </PathContext>
+      });
+      this.setState({pathContents});
+    }
   }
 
   onTransitionEnd: Function = () => {
@@ -181,8 +189,17 @@ export default class DefaultDrilldownSkin extends Component {
     className = classNames(className, 'drilldown');
 
     let route = root.childAtPath(path);
-    let Component:any = (route && route.getComponent()) || 'div';
 
+    if (route && route.render instanceof Function) {
+      return route.render({
+        ...this.props,
+        className,
+        path,
+        route
+      });
+    }
+
+    let Component:any = (route && route.getComponent()) || 'div';
     return <Component {...this.props} className={className} path={path} route={route}/>;
   }
 }
