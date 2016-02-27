@@ -4,6 +4,8 @@ import React, {PropTypes, Component, Children} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
+import {getSizingClass} from './bootstrapPropUtils';
+
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup';
 import CSSCore from 'fbjs/lib/CSSCore';
 
@@ -74,11 +76,12 @@ export default class Modal extends Component {
     }
   };
   render() {
-    let {className, dialogClassName, children, small} = this.props;
+    let {className, dialogClassName, children} = this.props;
     className = classNames('modal mf-modal', className);
-    dialogClassName = classNames('modal-dialog', dialogClassName, {
-      'modal-sm': small
-    });
+
+    let sizingClass = getSizingClass(this.props);
+    dialogClassName = classNames('modal-dialog', dialogClassName, sizingClass && 'modal-' + sizingClass);
+
     if (Children.count(children) > 1) {
       children = <View>{children}</View>;
     }
