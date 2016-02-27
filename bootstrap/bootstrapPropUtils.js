@@ -2,6 +2,10 @@
 
 import {getEnumProp} from '../utils/propUtils';
 
+import type {FormValidation} from '../flowtypes/validationTypes';
+
+import _ from 'lodash';
+
 export const CONTEXT_CLASSES = {
   alarm:    'danger',
   error:    'danger',
@@ -49,4 +53,12 @@ export function getContextContent(props: Object): ?any {
     let value = props[contextClass];
     if (value) return nontrue(value);
   }
+}
+
+export function getValidationContextClass(validation: FormValidation): ?string {
+  let props = {};
+  _.forEach(validation, field => {
+    if (field instanceof Object) Object.assign(props, field);
+  });
+  return getContextClass(props);
 }
