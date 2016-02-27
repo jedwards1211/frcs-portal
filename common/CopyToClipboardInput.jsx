@@ -38,11 +38,9 @@ export default class CopyToClipboardInput extends Component {
     return <div className="mf-copy-to-clipboard-input">
       <InputGroup>
         <input {...this.props} ref={c => this.input = c} className={className}/>
-        <InputGroup.Button>
-          <Button onClick={this.onCopyToClipboardClick}>
-            <i className="glyphicon glyphicon-copy"/> Copy
-          </Button>
-        </InputGroup.Button>
+        <Button onClick={this.onCopyToClipboardClick}>
+          <i className="glyphicon glyphicon-copy"/> Copy
+        </Button>
       </InputGroup>
       <InterruptibleCSSTransitionGroup component="div" transitionName="error">
         {showErrorMessage && <Alert error={<span>

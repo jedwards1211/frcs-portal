@@ -18,12 +18,23 @@ export const SHADE_CLASSES = {
   darker:   'shade-darker',
 }
 
+export const SIZING_CLASSES = {
+  sm: 'sm',
+  small: 'sm',
+  lg: 'lg',
+  large: 'lg'
+};
+
 export function getContextClass(props: Object): ?string {
   return getEnumProp(props, CONTEXT_CLASSES, 'contextClass');
 }
 
 export function getShadeClass(props: Object): ?string {
   return getEnumProp(props, SHADE_CLASSES, 'shade');
+}
+
+export function getSizingClass(props: Object): ?string {
+  return getEnumProp(props, SIZING_CLASSES, 'sizing');
 }
 
 function nontrue(val: ?any) {

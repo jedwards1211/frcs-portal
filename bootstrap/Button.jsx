@@ -19,6 +19,7 @@ type Props = {
 };
 
 export default class Button extends Component {
+  static supportsInputGroupBtn = true;
   props: Props;
   static defaultProps: {};
   render(): ReactElement {

@@ -25,6 +25,7 @@ type Props = {
 };
 
 export default class RestrictedInput extends Component<void,Props,void> {
+  static supportsInputGroupInput = true;
   onChange: (e: {target: {value: ?string}}) => void = e => {
     let {value} = e.target;
     value = value || '';

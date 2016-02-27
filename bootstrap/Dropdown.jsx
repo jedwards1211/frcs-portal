@@ -29,6 +29,7 @@ class DropdownMenu extends Component {
 }
 
 class Dropdown extends Component {
+  static supportsInputGroupBtn = true;
   static propTypes = {
     /*
      * optional (overrides state.open if used)

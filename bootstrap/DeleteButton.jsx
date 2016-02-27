@@ -5,6 +5,7 @@ import Button from './Button.jsx';
 import Spinner from '../common/Spinner';
 
 export default class DeleteButton extends Component {
+  static supportsInputGroupBtn = true;
   static propTypes = {
     armedText:    React.PropTypes.string,
     disarmedText: React.PropTypes.string,
