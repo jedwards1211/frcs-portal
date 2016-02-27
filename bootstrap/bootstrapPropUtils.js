@@ -22,7 +22,9 @@ export const SIZING_CLASSES = {
   sm: 'sm',
   small: 'sm',
   lg: 'lg',
-  large: 'lg'
+  large: 'lg',
+  xs: 'xs',
+  extraSmall: 'xs',
 };
 
 export function getContextClass(props: Object): ?string {

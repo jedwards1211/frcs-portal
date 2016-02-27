@@ -10,6 +10,7 @@ type LinkProps = {
   to: string,
   disabled?: boolean,
   children?: any,
+  onClick?: (e: MouseEvent) => any,
 };
 
 export class Link extends Component<void,LinkProps,void> {
@@ -18,9 +19,10 @@ export class Link extends Component<void,LinkProps,void> {
     path: PropTypes.any.isRequired,
   };
   render(): ReactElement {
-    let {to, children, disabled} = this.props;
+    let {to, children, disabled, onClick} = this.props;
     let {drilldown: {navigate}} = this.context;
     return <a href="" {...this.props} onClick={e => {
+      if (onClick) onClick(e);
       e.preventDefault();
       if (!disabled) {
         navigate(path.join(this.context.path, to));

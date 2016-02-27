@@ -1,7 +1,23 @@
-import addClass from '../wrappers/addClass';
+/* @flow */
 
-var Well = addClass('div', 'well');
-Well.Sm = addClass('div', 'well-sm');
-Well.Lg = addClass('div', 'well-lg');
+import React, {Component} from 'react';
+import classNames from 'classnames';
 
-export default Well;
+import {getSizingClass} from './bootstrapPropUtils';
+
+type Props = {
+  sm?: boolean,
+  small?: boolean,
+  lg?: boolean,
+  large?: boolean,
+  sizing?: 'sm' | 'small' | 'lg' | 'large',
+  children?: any,
+};
+
+export default class Well extends Component<void,Props,void> {
+  render(): ReactElement {
+    let sizingClass = getSizingClass(this.props);
+    let className = classNames(className, 'well', sizingClass && 'well-' + sizingClass);
+    return <div {...this.props} className={className}/>;
+  }
+}

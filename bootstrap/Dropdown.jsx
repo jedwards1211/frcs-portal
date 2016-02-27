@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Children} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -24,7 +24,12 @@ class DropdownMenu extends Component {
   render() {
     var {component, children, className, ...props} = this.props;
     props.className = classNames('dropdown-menu', className);
-    return React.createElement(component, props, children);
+    return React.createElement(component, props, Children.map(children, child => {
+      if (child && child.props.divider) {
+        return React.cloneElement(child, {role: 'separator', className: classNames(child.props.className, 'divider')});
+      }
+      return child;
+    }));
   }
 }
 
@@ -117,16 +122,27 @@ class Dropdown extends Component {
     }
   };
   render() {
-    var {className, component, openClassName, children} = this.props;
+    var {className, dropup, component, openClassName, children} = this.props;
     var open = this.props.open !== undefined ? this.props.open : this.state.open;
     var props = _.clone(this.props);
 
-    let type = this.props.hasOwnProperty('dropup') ? 'dropup' : 'dropdown';
+    let type = dropup ? 'dropup' : 'dropdown';
 
     props.className = classNames(className, type, {open: open}, openClassName && {openClassName: open});
     props.ref = 'dropdown';
 
-    children = React.Children.map(children, child => {
+    children = Children.toArray(children);
+
+    if (!children.find(child => child.type === DropdownToggle)) {
+      let count = children.length;
+      children = [
+        ...children.slice(0, count - 2),
+        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props} component={children[count - 2].type}/>,
+        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props} component={children[count - 1].type}/>
+      ];
+    }
+
+    children = children.map(child => {
       if (child) {
         if (child.type === DropdownToggle) {
           var onClick = child.props.onClick ? 

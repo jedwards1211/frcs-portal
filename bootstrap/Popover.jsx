@@ -11,10 +11,8 @@ import './Popover.sass';
 
 class PopoverBodySkin extends Component {
   render() {
-    let {collapse, children} = this.props;
-    let result = <div {...this.props}>
-      {children}
-    </div>;
+    let {collapse} = this.props;
+    let result = <div {...this.props}/>;
     if (collapse) {
       result = <Collapse {...this.props} className="popover-collapse">{result}</Collapse>;
     }

@@ -4,7 +4,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 export default (props: Object): ReactElement => {
-  let {className, children} = props;
+  let {className} = props;
   className = classNames(className, 'badge');
-  return <span {...props} className={className}>{children}</span>;
+  return <span {...props} className={className}/>;
 };
