@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 
 type Props = {
@@ -10,9 +10,15 @@ type Props = {
 };
 
 export default class ButtonToolbar extends Component<void,Props,void> {
+  static contextTypes = {
+    insideForm: PropTypes.bool
+  };
   render(): ReactElement {
     let {className} = this.props;
-    className = classNames(className, 'btn-toolbar');
+    let {insideForm} = this.context;
+    className = classNames(className, 'btn-toolbar', {
+      'form-control': insideForm
+    });
     let Comp: any = this.props.component || 'div';
     return <Comp role="toolbar" {...this.props} className={className}/>;
   }

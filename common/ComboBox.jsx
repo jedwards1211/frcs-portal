@@ -24,7 +24,6 @@ export default class ComboBox extends Component {
     noItemsPlaceholder: 'No Items Available',
     component: 'div',
     onChange: function() {},
-    toggleButtonClassName: 'form-control',
   };
   render() {
     let {items, selectedItem, render: renderItem, renderSelectedItem, placeholder, noItemsPlaceholder,
