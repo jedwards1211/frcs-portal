@@ -19,6 +19,10 @@ export default React.createClass({
     'aria-label': React.PropTypes.string
   },
 
+  contextTypes: {
+    insideForm: React.PropTypes.bool,
+  },
+
   getInitialState() {
     var checked = false;
     if ('checked' in this.props) {
@@ -64,6 +68,7 @@ export default React.createClass({
 
   render() {
     var classes = classNames('react-toggle', {
+      'form-control': this.context.insideForm,
       'react-toggle-checked': this.state.checked,
       'react-toggle-focus': this.state.hasFocus,
       'react-toggle-disabled': this.props.disabled

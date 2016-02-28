@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, {Component, Children} from 'react';
+import React, {Component, Children, PropTypes} from 'react';
 import classNames from 'classnames';
 import {getContextClass, getContextContent, getSizingClass} from './bootstrapPropUtils';
 
@@ -33,17 +33,27 @@ type Props = {
 };
 
 export default class Button extends Component {
+  static contextTypes = {
+    insideForm: PropTypes.bool,
+    insideButtonGroup: PropTypes.bool
+  };
   static supportsInputGroupBtn = true;
   props: Props;
   static defaultProps: {};
   render(): ReactElement {
     let {a, input, submit, caret, active, disabled, block, className, children} = this.props;
+    let {insideForm, insideButtonGroup} = this.context;
+
     let contextClass = getContextClass(this.props) || 'default';
     let sizingClass = getSizingClass(this.props);
     let content = getContextContent(this.props);
 
     className = classNames(className, 'btn', 'btn-' + contextClass,
-      sizingClass && 'btn-' + sizingClass, {active, 'btn-block': block});
+      sizingClass && 'btn-' + sizingClass, {
+        active,
+        'btn-block': block,
+        'form-control': insideForm && !insideButtonGroup
+      });
 
     if (caret) {
       if (Children.count(children)) {

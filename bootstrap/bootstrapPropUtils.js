@@ -17,6 +17,12 @@ export const CONTEXT_CLASSES = {
   primary:  'primary',
 };
 
+export const FORM_GROUP_CONTEXT_CLASSES = {
+  error:    'error',
+  warning:  'warning',
+  success:  'success',
+};
+
 export const SHADE_CLASSES = {
   brighter: 'shade-brighter',
   darker:   'shade-darker',
@@ -33,6 +39,10 @@ export const SIZING_CLASSES = {
 
 export function getContextClass(props: Object): ?string {
   return getEnumProp(props, CONTEXT_CLASSES, 'contextClass');
+}
+
+export function getFormGroupContextClass(props: Object): ?string {
+  return getEnumProp(props, FORM_GROUP_CONTEXT_CLASSES, 'contextClass');
 }
 
 export function getShadeClass(props: Object): ?string {
