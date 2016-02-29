@@ -23,19 +23,22 @@ class DropdownToggle extends Component {
 
 class DropdownMenu extends Component {
   render() {
-    let {children, className, ...props} = this.props;
-    className = classNames('dropdown-menu', className);
-    return React.cloneElement(children, {...this.props, className},
-      Children.map(children.props.children, child => {
-        if (child && child.props.divider) {
-          return React.cloneElement(child, {role: 'separator', className: classNames(child.props.className, 'divider')});
-        }
-        return child;
-      })
-    );
+    let {children: component, className} = this.props;
+    className = classNames('dropdown-menu', className, component.props.className);
+    return React.cloneElement(component, {...this.props, className}, component.props.children);
   }
 }
 
+/**
+ * Wrapper for Bootstrap dropdown menus.
+ * The last child will be rendered as the .dropdown-menu,
+ * and the next-to-last child as the .dropdown-toggle.
+ * Preceeding children will be rendered next to the toggle, so that
+ * e.g. split buttons work.
+ *
+ * Magic properties of .dropdown-menu children:
+ * * divider - clones the child with role="separator" and .divider class
+ */
 class Dropdown extends Component {
   static supportsInputGroupBtn = true;
   static propTypes = {
