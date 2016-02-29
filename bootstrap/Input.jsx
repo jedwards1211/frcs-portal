@@ -21,9 +21,13 @@ type Props = {
 };
 
 export default class Input extends Component<void,Props,void> {
+  root: HTMLImageElement;
+  focus(): void {
+    this.root.focus();
+  }
   render(): ReactElement {
     let {className, type} = this.props;
     className = classNames(className, type && classNameForType[type]);
-    return <input {...this.props} className={className}/>;
+    return <input {...this.props} className={className} ref={c => this.root = c}/>;
   }
 }

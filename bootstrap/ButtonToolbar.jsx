@@ -11,13 +11,13 @@ type Props = {
 
 export default class ButtonToolbar extends Component<void,Props,void> {
   static contextTypes = {
-    insideForm: PropTypes.bool
+    insideFormGroup: PropTypes.bool
   };
   render(): ReactElement {
     let {className} = this.props;
-    let {insideForm} = this.context;
+    let {insideFormGroup} = this.context;
     className = classNames(className, 'btn-toolbar', {
-      'form-control': insideForm
+      'form-control': insideFormGroup
     });
     let Comp: any = this.props.component || 'div';
     return <Comp role="toolbar" {...this.props} className={className}/>;

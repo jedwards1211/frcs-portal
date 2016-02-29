@@ -34,7 +34,7 @@ type Props = {
 
 export default class Button extends Component {
   static contextTypes = {
-    insideForm: PropTypes.bool,
+    insideFormGroup: PropTypes.bool,
     insideButtonGroup: PropTypes.bool
   };
   static supportsInputGroupBtn = true;
@@ -42,7 +42,7 @@ export default class Button extends Component {
   static defaultProps: {};
   render(): ReactElement {
     let {a, input, submit, caret, active, disabled, block, className, children} = this.props;
-    let {insideForm, insideButtonGroup} = this.context;
+    let {insideFormGroup, insideButtonGroup} = this.context;
 
     let contextClass = getContextClass(this.props) || 'default';
     let sizingClass = getSizingClass(this.props);
@@ -52,7 +52,7 @@ export default class Button extends Component {
       sizingClass && 'btn-' + sizingClass, {
         active,
         'btn-block': block,
-        'form-control': insideForm && !insideButtonGroup
+        'form-control': insideFormGroup && !insideButtonGroup
       });
 
     if (caret) {
@@ -81,7 +81,7 @@ export default class Button extends Component {
                     children={undefined} className={className}/>;
     }
 
-    return <button type="button" {...this.props} className={className}>
+    return <button type={submit ? 'submit' : 'button'} {...this.props} className={className}>
       {content}
       {children}
     </button>;

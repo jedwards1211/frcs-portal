@@ -31,6 +31,14 @@ export class Group extends Component<void,GroupProps,void> {
     labelClass:   PropTypes.string,
     controlClass: PropTypes.string,
   };
+  static childContextTypes = {
+    insideFormGroup: PropTypes.bool,
+  };
+  getChildContext(): Object {
+    return {
+      insideFormGroup: true
+    };
+  }
   render(): ReactElement {
     let {className, label, children, validation} = this.props;
 
@@ -79,18 +87,30 @@ export default class Form extends Component<void,FormProps,void> {
       controlClass
     };
   }
-  mapChildren(children: any): any {
-   return Children.map(children, child => {
-     if (child && child.type === 'fieldset') {
-       return React.cloneElement(child, {children: this.mapChildren(child.props.children)});
-     }
-     if (child && child.props.formGroup) {
-       return <Group {...child.props} className={undefined}>
-         {child}
-       </Group>;
-     }
-     return child;
-   });
+  /**
+   * Recursively wraps any descendants with a truthy formGroup prop in a <Group>.
+   */
+  addFormGroups(children: any): any {
+    let anyChanged = false;
+    let newChildren = Children.map(children, child => {
+      if (child && child.props) {
+        if (child.props.formGroup) {
+          anyChanged = true;
+          return <Group {...child.props} className={undefined}>
+            {child}
+          </Group>;
+        }
+        else if (child.props.children) {
+          let newGrandchildren = this.addFormGroups(child.props.children);
+          if (newGrandchildren !== child.props.children) {
+            anyChanged = true;
+            return React.cloneElement(child, {children: newGrandchildren});
+          }
+        }
+      }
+      return child;
+    });
+    return anyChanged ? newChildren : children;
   }
   render(): ReactElement {
     let {className, inline, horizontal, children} = this.props;
@@ -99,7 +119,7 @@ export default class Form extends Component<void,FormProps,void> {
       'form-horizontal':  horizontal,
     });
     return <form {...this.props} className={className}>
-      {this.mapChildren(children)}
+      {this.addFormGroups(children)}
     </form>;
   }
 }
