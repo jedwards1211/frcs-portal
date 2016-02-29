@@ -26,6 +26,12 @@ type GroupProps = {
   }
 };
 
+/**
+ * Wrapper for a .form-group div.  You specify the label in the "label" prop,
+ * and the control(s) in the children.  If you add a truthy "formGroup" prop to any
+ * descendants of Form, it will wrap them in a <Group>, so you should rarely
+ * need to use this directly.
+ */
 export class Group extends Component<void,GroupProps,void> {
   static contextTypes = {
     labelClass:   PropTypes.string,
@@ -66,16 +72,18 @@ export class Group extends Component<void,GroupProps,void> {
 
 type FormProps = {
   className?: string,
-  inline?: boolean,           // use .form-inline
-  horizontal?: boolean,       // use .form-horizontal
+  inline?: boolean,       // use .form-inline
+  horizontal?: boolean,   // use .form-horizontal
   labelClass?: string,    // applies to all labels in Groups
   controlClass?: string,  // applies to <div>s wrapping contents of each Group
-  children?: any,
+  children?: any,         // any descendants with a truthy "formGroup" prop will be
+                          // wrapped in a <Group>
 };
 
 export default class Form extends Component<void,FormProps,void> {
   static childContextTypes = {
-    insideForm:   PropTypes.bool,
+    insideForm:   PropTypes.bool,   // some components add .form-control class
+                                    // when they detect this
     labelClass:   PropTypes.string,
     controlClass: PropTypes.string,
   };
