@@ -6,30 +6,33 @@ import _ from 'lodash';
 class DropdownToggle extends Component {
   static propTypes = {
     open:      React.PropTypes.bool,
-    component: React.PropTypes.any.isRequired,
   };
   render() {
-    var {component, open, children, className, ...props} = this.props;
-    props['aria-haspopup'] = 'true';
-    props['aria-expanded'] = open;
-    props.className = classNames('dropdown-toggle', className);
-    return React.createElement(component, props, children);
+    var {open, children, className} = this.props;
+    className = classNames('dropdown-toggle', className);
+
+    return React.cloneElement(children, {
+      ...this.props,
+      children: children.props.children,
+      className,
+      'aria-haspopup': true,
+      'aria-expanded': open
+    });
   }
 }
 
 class DropdownMenu extends Component {
-  static propTypes = {
-    component: React.PropTypes.any.isRequired,
-  };
   render() {
-    var {component, children, className, ...props} = this.props;
-    props.className = classNames('dropdown-menu', className);
-    return React.createElement(component, props, Children.map(children, child => {
-      if (child && child.props.divider) {
-        return React.cloneElement(child, {role: 'separator', className: classNames(child.props.className, 'divider')});
-      }
-      return child;
-    }));
+    let {children, className, ...props} = this.props;
+    className = classNames('dropdown-menu', className);
+    return React.cloneElement(children, {...this.props, className},
+      Children.map(children.props.children, child => {
+        if (child && child.props.divider) {
+          return React.cloneElement(child, {role: 'separator', className: classNames(child.props.className, 'divider')});
+        }
+        return child;
+      })
+    );
   }
 }
 
@@ -137,8 +140,12 @@ class Dropdown extends Component {
       let count = children.length;
       children = [
         ...children.slice(0, count - 2),
-        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props} component={children[count - 2].type}/>,
-        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props} component={children[count - 1].type}/>
+        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props}>
+          {children[count - 2]}
+        </DropdownToggle>,
+        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props}>
+          {children[count - 1]}
+        </DropdownMenu>
       ];
     }
 
