@@ -2,6 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
+import {createSelector} from 'reselect';
 
 import PageSlider from './PageSlider.jsx';
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
@@ -60,38 +61,44 @@ export default class SimpleDrilldownSkin extends Component {
   }
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.path !== this.props.path && this.props.path.startsWith(nextProps.path)) {
+      // keep the child route mounted while we are animating back to an ancestor
       this.setState({fromPath: this.props.path});
     }
   }
+  selectPageSliderProps: (comp: SimpleDrilldownSkin) => Object = createSelector(
+    comp => comp.props.root,
+    comp => comp.props.path,
+    comp => comp.state.fromPath,
+    (root, path, fromPath) => {
+      let parts = splitPath(fromPath || path);
+      let activeIndex = fromPath ? splitPath(path).length : parts.length;
+
+      let route = root;
+
+      let children = [<PathContext path="/" key="/">
+        {route.render({...this.props, path: '/', route})}
+      </PathContext>];
+
+      for (let i = 0; i < parts.length && route; i++) {
+        route = route.getChild(parts[i]);
+        if (!route) break;
+        let partPath = joinPath(parts.slice(0, i + 1));
+        children.push(<PathContext path={partPath} key={partPath}>
+          {route.render({...this.props, path, route})}
+        </PathContext>);
+      }
+
+      return {children, activeIndex};
+    }
+  );
   onTransitionEnd: () => void = () => this.setState({fromPath: undefined});
   render(): ReactElement {
-    let {path, root, className} = this.props;
-    let {fromPath} = this.state;
+    let {className} = this.props;
 
     className = classNames(className, 'mf-simple-drilldown');
 
-    let parts = splitPath(fromPath || path);
-    let activeIndex = fromPath ? splitPath(path).length : parts.length;
-
-    let route = root;
-
-    let pages = [<PathContext path="/" key="/">
-      {route.render({...this.props, path: '/', route})}
-    </PathContext>];
-
-    for (let i = 0; i < parts.length && route; i++) {
-      route = route.getChild(parts[i]);
-      if (!route) break;
-      let partPath = joinPath(parts.slice(0, i + 1));
-      pages.push(<PathContext path={partPath} key={partPath}>
-        {route.render({...this.props, path, route})}
-      </PathContext>);
-    }
-
     return <div {...this.props} className={className}>
-      <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd}>
-        {pages}
-      </PageSlider>
+      <PageSlider {...this.selectPageSliderProps(this)} onTransitionEnd={this.onTransitionEnd}/>
     </div>;
   }
 }
