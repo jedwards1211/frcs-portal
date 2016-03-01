@@ -4,7 +4,7 @@ import React, {Component, PropTypes, Children} from 'react';
 import path from 'path';
 
 import {DrilldownRoute} from './DrilldownModel.jsx';
-import DefaultDrilldownSkin from './DefaultDrilldownSkin.jsx';
+import SimpleDrilldownSkin from './SimpleDrilldownSkin.jsx';
 
 type LinkProps = {
   to: string,
@@ -25,7 +25,7 @@ export class Link extends Component<void,LinkProps,void> {
       if (onClick) onClick(e);
       e.preventDefault();
       if (!disabled) {
-        navigate(path.join(this.context.path, to));
+        navigate(path.isAbsolute(to) ? to : path.join(this.context.path, to));
       }
     }}>
       {children}
@@ -112,7 +112,7 @@ export default class Drilldown extends Component {
       root = new ReactElementRoute(children);
     }
 
-    let DrilldownSkin = this.context.DrilldownSkin || this.props.skin || DefaultDrilldownSkin;
+    let DrilldownSkin = this.context.DrilldownSkin || this.props.skin || SimpleDrilldownSkin;
     return <DrilldownSkin {...this.props} root={root}/>;
   }
 }

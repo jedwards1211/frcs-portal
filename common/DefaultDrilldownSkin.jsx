@@ -1,5 +1,8 @@
 /* @flow */
 
+// NOTE: THIS IS LIKELY BROKEN RIGHT NOW.  I may try to get it working with
+// unstable_renderSubtreeIntoContainer eventually.
+
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import path from 'path';
@@ -8,7 +11,7 @@ import Fader from './Fader.jsx';
 import PageSlider from './PageSlider.jsx';
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
 import {Link} from './Drilldown.jsx';
-import {DrilldownRoute, getPathParts} from './DrilldownModel.jsx';
+import {DrilldownRoute, splitPath} from './DrilldownModel.jsx';
 
 import './DefaultDrilldownSkin.sass';
 
@@ -148,13 +151,13 @@ class DefaultDrilldownBodySkin extends Component {
     let {path} = this.context;
     let {pathContents} = this.state;
 
-    let pathParts = getPathParts(path);
+    let pathParts = splitPath(path);
     let activeIndex = pathParts.length - 1;
 
     let pages = [];
 
     for (let otherPath in pathContents) {
-      let index = getPathParts(otherPath).length - 1;
+      let index = splitPath(otherPath).length - 1;
       pages[index] = pathContents[otherPath];
     }
     for (let i = 0; i < pages.length && !pages[i]; i++) {
