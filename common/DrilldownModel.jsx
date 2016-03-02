@@ -16,7 +16,7 @@ export class DrilldownRoute {
   getComponent(): ReactTag {
     return 'div';
   }
-  render(props: Object): ReactElement {
+  render(props: Object): ?ReactElement {
     let Comp: any = this.getComponent();
     return <Comp {...props}/>;
   }

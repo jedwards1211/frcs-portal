@@ -3,11 +3,15 @@
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import {createSelector} from 'reselect';
+import _ from 'lodash';
 
 import PageSlider from './PageSlider.jsx';
+import Alert from '../bootstrap/Alert.jsx';
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
 import {Link} from './Drilldown.jsx';
 import {splitPath, joinPath} from './DrilldownModel.jsx';
+
+import {View, Header, Title, Body} from './View.jsx';
 
 import './SimpleDrilldownSkin.sass';
 
@@ -87,6 +91,27 @@ export default class SimpleDrilldownSkin extends Component {
           {route.render({...this.props, path, route})}
         </PathContext>);
       }
+
+      if (children[parts.length] === undefined || children[parts.length] === null) {
+        children[parts.length] = <View>
+          <Header>
+            <Title>
+              Invalid Route
+            </Title>
+          </Header>
+          <Body>
+            <Alert danger>
+              Can't find route: {fromPath || path}
+            </Alert>
+          </Body>
+        </View>;
+      }
+
+      let lengthBefore = children.length;
+      children = _.filter(children,
+        child => child.props.children !== undefined && child.props.children !== null);
+
+      activeIndex = activeIndex - lengthBefore + children.length;
 
       return {children, activeIndex};
     }
