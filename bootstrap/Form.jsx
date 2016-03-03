@@ -12,6 +12,7 @@ type GroupProps = {
   className?: string,
   labelClass?: string,
   controlClass?: string,
+  staticControl?: boolean,
   label?: any,
   children?: any,
   contextClass?: 'error' | 'warning' | 'success',
@@ -46,7 +47,7 @@ export class Group extends Component<void,GroupProps,void> {
     };
   }
   render(): ReactElement {
-    let {className, label, children, validation} = this.props;
+    let {className, staticControl, label, children, validation} = this.props;
 
     let contextClass   = getFormGroupContextClass(validation || this.props);
     let contextContent = getContextContent       (validation || this.props);
@@ -55,6 +56,12 @@ export class Group extends Component<void,GroupProps,void> {
 
     let labelClass   = classNames(this.context.labelClass,   this.props.labelClass,   'control-label');
     let controlClass = classNames(this.context.controlClass, this.props.controlClass);
+
+    if (staticControl && children) {
+      children = Children.map(children, child => child && React.cloneElement(child, {
+        className: classNames(child.props.className, 'form-control-static')
+      }));
+    }
 
     return <div {...this.props} className={className}>
       {label && <label className={labelClass}>{label}</label>}
