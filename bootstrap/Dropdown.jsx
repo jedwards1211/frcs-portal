@@ -144,10 +144,12 @@ class Dropdown extends Component {
       let count = children.length;
       children = [
         ...children.slice(0, count - 2),
-        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props} disabled={disabled}>
+        children[count - 2] && <DropdownToggle key="dropdown-toggle"
+            {...(children[count - 2].props || {})} disabled={disabled}>
           {children[count - 2]}
         </DropdownToggle>,
-        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props} disabled={disabled}>
+        children[count - 1] && <DropdownMenu key="dropdown-menu"
+            {...(children[count - 1].props || {})} disabled={disabled}>
           {children[count - 1]}
         </DropdownMenu>
       ];
