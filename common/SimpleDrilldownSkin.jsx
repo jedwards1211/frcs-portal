@@ -109,7 +109,7 @@ export default class SimpleDrilldownSkin extends Component {
 
       let lengthBefore = children.length;
       children = _.filter(children,
-        child => child.props.children !== undefined && child.props.children !== null);
+        child => child && child.props.children !== undefined && child.props.children !== null);
 
       activeIndex = activeIndex - lengthBefore + children.length;
 
