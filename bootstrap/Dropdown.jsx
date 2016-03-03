@@ -47,6 +47,7 @@ class Dropdown extends Component {
      */
     open:               React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
+    disabled:           React.PropTypes.bool,
     component:          React.PropTypes.any.isRequired,
     dropup:             React.PropTypes.any,
     onOpened:           React.PropTypes.func,
@@ -128,7 +129,7 @@ class Dropdown extends Component {
     }
   };
   render() {
-    var {className, dropup, component, openClassName, children} = this.props;
+    var {className, dropup, component, openClassName, children, disabled} = this.props;
     var open = this.props.open !== undefined ? this.props.open : this.state.open;
     var props = _.clone(this.props);
 
@@ -143,10 +144,10 @@ class Dropdown extends Component {
       let count = children.length;
       children = [
         ...children.slice(0, count - 2),
-        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props}>
+        <DropdownToggle key="dropdown-toggle" {...children[count - 2].props} disabled={disabled}>
           {children[count - 2]}
         </DropdownToggle>,
-        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props}>
+        <DropdownMenu   key="dropdown-menu"   {...children[count - 1].props} disabled={disabled}>
           {children[count - 1]}
         </DropdownMenu>
       ];
@@ -155,13 +156,10 @@ class Dropdown extends Component {
     children = children.map(child => {
       if (child) {
         if (child.type === DropdownToggle) {
-          var onClick = child.props.onClick ? 
-            () => {
-              child.props.onClick();
-              this.onDropdownToggleClick();
-            } 
-            : 
-            this.onDropdownToggleClick;
+          var onClick = () => {
+            if (child.props.onClick) child.props.onClick();
+            if (!disabled) this.onDropdownToggleClick();
+          };
 
           let origRef = child.ref;
           return React.cloneElement(child, {
