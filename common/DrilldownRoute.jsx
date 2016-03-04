@@ -1,6 +1,9 @@
 import React, {Component, PropTypes} from 'react';
+import classNames from 'classnames';
 
 import PageSlider from './PageSlider';
+
+import './DrilldownRoute.sass';
 
 /**
  * When used as the component for a react-router route with an IndexRoute and
@@ -20,7 +23,8 @@ export default class DrilldownRoute extends Component {
     this.forceUpdate();
   };
   render() {
-    let {route, children} = this.props;
+    let {className, route, children} = this.props;
+    className = classNames(className, 'mf-drilldown-route');
     let child = React.Children.only(children);
 
     let activeIndex;
@@ -35,7 +39,7 @@ export default class DrilldownRoute extends Component {
 
     let IndexComponent = route.indexRoute.component;
 
-    return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd}>
+    return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
       <IndexComponent {...this.props} route={route.indexRoute}/>
       {child}
     </PageSlider>;
