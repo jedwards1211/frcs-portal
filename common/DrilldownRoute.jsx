@@ -15,6 +15,10 @@ export default class DrilldownRoute extends Component {
       }).isRequired,
     }),
   };
+  onTransitionEnd = () => {
+    this.lastActiveChild = undefined;
+    this.forceUpdate();
+  };
   render() {
     let {route, children} = this.props;
     let child = React.Children.only(children);
@@ -31,7 +35,7 @@ export default class DrilldownRoute extends Component {
 
     let IndexComponent = route.indexRoute.component;
 
-    return <PageSlider activeIndex={activeIndex}>
+    return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd}>
       <IndexComponent {...this.props} route={route.indexRoute}/>
       {child}
     </PageSlider>;
