@@ -31,7 +31,7 @@ export default class ComboBox extends Component {
     renderSelectedItem = renderSelectedItem || renderItem;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
-    let hasItems = items && items.length;
+    let hasItems = items && !!items.length;
 
     className = classNames(className, 'mf-combo-box', {'no-selection': noSelection});
 
@@ -44,11 +44,11 @@ export default class ComboBox extends Component {
             selectedItem)}
         </span>
       </Button>
-      {hasItems && <ul ref={c => this.dropdownMenu = c}>
-        {items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
+      <ul ref={c => this.dropdownMenu = c}>
+        {hasItems && items.map((item, index) => (<li key={index} onClick={() => onChange(item, index)}>
           <a>{renderItem(item)}</a>
         </li>))}
-      </ul>}
+      </ul>
     </Dropdown>;
   }
 }
