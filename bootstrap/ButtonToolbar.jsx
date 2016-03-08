@@ -3,6 +3,8 @@
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 
+import './ButtonToolbar.sass';
+
 type Props = {
   className?: string,
   component?: ReactTag,
@@ -10,9 +12,23 @@ type Props = {
 };
 
 export default class ButtonToolbar extends Component<void,Props,void> {
+  static contextTypes = {
+    insideFormGroup: PropTypes.bool
+  };
+  static childContextTypes = {
+    insideButtonToolbar: PropTypes.bool
+  };
+  getChildContext(): Object {
+    return {
+      insideButtonToolbar: true
+    };
+  }
   render(): ReactElement {
     let {className} = this.props;
-    className = classNames(className, 'btn-toolbar');
+    let {insideFormGroup} = this.context;
+    className = classNames(className, 'btn-toolbar', {
+      'form-control': insideFormGroup
+    });
     let Comp: any = this.props.component || 'div';
     return <Comp role="toolbar" {...this.props} className={className}/>;
   }

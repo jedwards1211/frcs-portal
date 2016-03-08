@@ -7,6 +7,8 @@ import Dropdown from './Dropdown.jsx';
 
 import {getSizingClass} from './bootstrapPropUtils';
 
+import './ButtonGroup.sass';
+
 type Props = {
   children?: any,
   component?: any,
@@ -26,7 +28,9 @@ type Props = {
 
 export default class ButtonGroup extends Component<void,Props,void> {
   static contextTypes = {
+    insideButtonToolbar: PropTypes.bool,
     insideButtonGroup: PropTypes.bool,
+    insideFormGroup: PropTypes.bool,
     sizing: PropTypes.string
   };
   static childContextTypes = {
@@ -41,12 +45,13 @@ export default class ButtonGroup extends Component<void,Props,void> {
   }
   render(): ReactElement {
     let {className, vertical, justified, dropup, dropdown} = this.props;
-    let {insideButtonGroup} = this.context;
+    let {insideButtonToolbar, insideButtonGroup, insideFormGroup} = this.context;
     let sizingClass = getSizingClass(this.props) || this.context.sizing;
     className = classNames(className, sizingClass && 'btn-group-' + sizingClass, {
       'btn-group': !vertical,
       'btn-group-vertical': vertical,
       'btn-group-justified': justified,
+      'form-control': insideFormGroup && !insideButtonGroup && !insideButtonToolbar
     });
 
     if (insideButtonGroup || dropup || dropdown) {
