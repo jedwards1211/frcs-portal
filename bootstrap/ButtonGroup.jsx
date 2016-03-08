@@ -26,7 +26,6 @@ type Props = {
 
 export default class ButtonGroup extends Component<void,Props,void> {
   static contextTypes = {
-    insideFormGroup: PropTypes.bool,
     insideButtonGroup: PropTypes.bool,
     sizing: PropTypes.string
   };
@@ -42,13 +41,12 @@ export default class ButtonGroup extends Component<void,Props,void> {
   }
   render(): ReactElement {
     let {className, vertical, justified, dropup, dropdown} = this.props;
-    let {insideFormGroup, insideButtonGroup} = this.context;
+    let {insideButtonGroup} = this.context;
     let sizingClass = getSizingClass(this.props) || this.context.sizing;
     className = classNames(className, sizingClass && 'btn-group-' + sizingClass, {
       'btn-group': !vertical,
       'btn-group-vertical': vertical,
       'btn-group-justified': justified,
-      'form-control': insideFormGroup && !insideButtonGroup
     });
 
     if (insideButtonGroup || dropup || dropdown) {
