@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import {getSizingClass} from './bootstrapPropUtils';
 
 type Props = {
+  className?: string,
   sm?: boolean,
   small?: boolean,
   lg?: boolean,
@@ -17,7 +18,7 @@ type Props = {
 export default class Well extends Component<void,Props,void> {
   render(): ReactElement {
     let sizingClass = getSizingClass(this.props);
-    let className = classNames(className, 'well', sizingClass && 'well-' + sizingClass);
+    let className = classNames(this.props.className, 'well', sizingClass && 'well-' + sizingClass);
     return <div {...this.props} className={className}/>;
   }
 }

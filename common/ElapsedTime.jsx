@@ -1,20 +1,25 @@
 /* @flow */
 
 import React from 'react';
+import classNames from 'classnames';
 import _ from 'lodash';
 
 import {modFloor} from '../plot/GridMath';
 
+import './ElapsedTime.sass';
+
 type Props = {
+  className?: string,
   millis: number,
   showMillis?: boolean,
   style?: Object
 };
 
 const ElapsedTime: (props: Props) => ReactElement = (props) => {
-  const {millis, showMillis} = props;
-  return <div {...props} style={Object.assign({textAlign: 'right'}, props.style)}>
-    {formatElapsedTime(millis, { showMillis })}
+  let {className, millis, showMillis} = props;
+  className = classNames(className, 'mf-elapsed-time');
+  return <div {...props} className={className}>
+    {formatElapsedTime(millis, {showMillis})}
   </div>;
 };
 
