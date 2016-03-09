@@ -12,12 +12,12 @@ import {getTimeout} from '../transition/callOnTransitionEnd';
 
 import {TICK} from '../transition/animConstants';
 
-import {Link} from './NewDrilldown.jsx';
-import type {Props, DefaultProps, RouteProps} from './NewDrilldown.jsx';
+import {Link} from './Drilldown.jsx';
+import type {Props, DefaultProps, RouteProps} from './Drilldown.jsx';
 
 import createOrCloneElement from '../utils/createOrCloneElement';
 
-import './NewDefaultDrilldownSkin.sass';
+import './DefaultDrilldownSkin.sass';
 
 export class DefaultDrilldownTitleSkin extends Component {
   static contextTypes = {
