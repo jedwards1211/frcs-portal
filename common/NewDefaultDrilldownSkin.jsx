@@ -1,6 +1,7 @@
 /* @flow */
 
 import React, {Component, PropTypes} from 'react';
+import {createSelector} from 'reselect';
 import classNames from 'classnames';
 
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
@@ -99,7 +100,8 @@ type State = {
   path: string,
   mountedPath: string,
   transitioning: boolean,
-  height?: number
+  height?: number,
+  routes: {[path: string]: ?DefaultDrilldownRouteSkin}
 };
 
 type ExtraProps = {
@@ -110,7 +112,6 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
   mounted: boolean = false;
   root: ?HTMLElement;
   viewport: ?HTMLElement;
-  routes: {[path: string]: ?DefaultDrilldownRouteSkin} = {};
   transitioning: boolean = false;
 
   constructor(props: Props) {
@@ -119,7 +120,8 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
       path: props.path,
       mountedPath: props.path,
       transitioning: false,
-      height: undefined
+      height: undefined,
+      routes: {}
     };
   }
 
@@ -148,12 +150,18 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     return this.mounted;
   }
   routeDidMount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    this.routes[route.getPath()] = route;
-    this.forceUpdate();
+    this.setState({
+      routes: Object.assign({}, this.state.routes, {
+        [route.getPath()]: route
+      })
+    });
   };
   routeWillUnmount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    delete this.routes[route.getPath()];
-    this.forceUpdate();
+    this.setState({
+      routes: Object.assign({}, this.state.routes, {
+        [route.getPath()]: undefined
+      })
+    });
   };
   doTransition: (nextPath?: string) => boolean = (nextPath = this.props.path) => {
     let {state: {path}} = this;
@@ -167,13 +175,13 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
 
     let sequence = [
       cb => ({
-        height: scrollHeight(this.routes[path]) + paddingHeight(this.root),
+        height: scrollHeight(this.state.routes[path]) + paddingHeight(this.root),
         mountedPath: nextPath.startsWith(path) ? nextPath : path
       }),
       cb => ({transitioning: true}),
       cb => ({
         path: nextPath,
-        height: scrollHeight(this.routes[nextPath]) + paddingHeight(this.root)
+        height: scrollHeight(this.state.routes[nextPath]) + paddingHeight(this.root)
       }),
       cb => setTimeout(cb, Math.max(TICK, getTimeout(this.viewport) || 0, getTimeout(this.root) || 0)),
       cb => ({transitioning: false}),
@@ -186,30 +194,38 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     });
     return true;
   };
-  getActiveDepth(): number {
-    let {path} = this.state;
-    let route = this.routes[path];
-    if (route) return route.getDepth();
-    let depth = 0;
-    for (let key in this.routes) {
-      if (this.routes[key] && path.startsWith(key)) {
-        depth = Math.max(depth, this.routes[key].getDepth());
+  selectActiveDepth: (state: State) => number = createSelector(
+    state => state.path,
+    state => state.routes,
+    (path, routes) => {
+      let route = routes[path];
+      if (route) return route.getDepth();
+      let depth = 0;
+      for (let key in routes) {
+        if (routes[key] && path.startsWith(key)) {
+          depth = Math.max(depth, routes[key].getDepth());
+        }
       }
+      return depth;
     }
-    return depth;
-  }
-  getActivePath(): string {
-    let {path} = this.state;
-    let route = this.routes[path];
-    if (route) return path;
-    let activePath = '';
-    for (let key in this.routes) {
-      if (this.routes[key] && path.startsWith(key)) {
-        activePath = key.length > activePath.length ? key : activePath;
+  );
+  getActiveDepth(): number { return this.selectActiveDepth(this.state); }
+  selectActivePath: (state: State) => string = createSelector(
+    state => state.path,
+    state => state.routes,
+    (path, routes) => {
+      let route = routes[path];
+      if (route) return path;
+      let activePath = '';
+      for (let key in routes) {
+        if (routes[key] && path.startsWith(key)) {
+          activePath = key.length > activePath.length ? key : activePath;
+        }
       }
+      return activePath;
     }
-    return activePath;
-  }
+  );
+  getActivePath(): string { return this.selectActivePath(this.state); }
   render(): ReactElement {
     let {className, style} = this.props;
     let {height, mountedPath} = this.state;
