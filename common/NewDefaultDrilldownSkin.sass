@@ -1,0 +1,16 @@
+@import ../sass/css3-mixins
+
+.mf-default-drilldown
+  @include transition(height 0.15s ease-out)
+
+.mf-default-drilldown-route
+  white-space: nowrap
+
+.mf-default-drilldown-viewport
+  @include transition(transform 0.15s ease-out)
+
+.mf-default-drilldown-route-content,
+.mf-default-drilldown-route-child
+  display: inline-block
+  vertical-align: top
+  width: 100%
