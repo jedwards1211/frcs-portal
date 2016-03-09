@@ -23,6 +23,9 @@ export class Paths {
   static split(path: string): Array<string> {
     return path.split('/').filter(e => e.length).map(decodeURI);
   }
+  static join(path: Array<string>) {
+    return path.map(encodeURI).join('/');
+  }
 }
 
 /**
@@ -80,15 +83,16 @@ export class Link extends Component<void,LinkProps,void> {
 
 export type RouteProps = {
   className?: string,
-  children?: any,        // the contents of this route to display
-  childRoute?: ReactTag, // the element type that will be used to render the active child of this route, if any
-  childPath?: string     // the path of the child route, if any (relative to this route's path)
+  children?: any,      // the contents of this route to display
+  childRoute?: any,    // (actually a ReactTag or ReactElement) to render the child route, if any
+  childPath?: string   // the path of the child route, if any (relative to this route's path)
 };
 
 export class Route extends Component<void,RouteProps,void> {
   static contextTypes = {
     RouteSkin: PropTypes.any.isRequired,
     drilldown: PropTypes.any.isRequired,
+    drilldownRoute: PropTypes.any,
     drilldownRoutePath: PropTypes.string.isRequired,
     drilldownRouteDepth: PropTypes.number.isRequired
   };
@@ -103,6 +107,12 @@ export class Route extends Component<void,RouteProps,void> {
   getPath(): string {
     return this.context.drilldownRoutePath;
   }
+  getParentPath(): ?string {
+    let {drilldownRoute} = this.context;
+    if (!drilldownRoute) return undefined;
+    if (drilldownRoute.props.children) return drilldownRoute.getPath();
+    return drilldownRoute.getParentPath();
+  }
   getChildPath(): string {
     let {childPath} = this.props;
     if (childPath) {
@@ -115,11 +125,11 @@ export class Route extends Component<void,RouteProps,void> {
     this.context.drilldown.navigateTo(absPath);
   }
   getChildContext(): Object {
-    let {childPath} = this.props;
+    let {childPath, children} = this.props;
     let result: Object = {drilldownRoute: this};
     if (childPath) {
       result.drilldownRoutePath = this.getChildPath();
-      result.drilldownRouteDepth = this.getDepth() + 1;
+      result.drilldownRouteDepth = this.getDepth() + (children ? 1 : 0);
     }
     return result;
   }
@@ -136,7 +146,7 @@ export type DefaultProps = {
 
 export type Props = DefaultProps & {
   className?: string,
-  root?: ReactTag
+  rootRoute?: any,
 };
 
 export default class Drilldown extends Component<DefaultProps,Props,void> {

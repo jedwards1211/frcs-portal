@@ -15,6 +15,8 @@ import {TICK} from '../transition/animConstants';
 import {Link} from './NewDrilldown.jsx';
 import type {Props, DefaultProps, RouteProps} from './NewDrilldown.jsx';
 
+import createOrCloneElement from '../utils/createOrCloneElement';
+
 import './NewDefaultDrilldownSkin.sass';
 
 export class DefaultDrilldownTitleSkin extends Component {
@@ -28,10 +30,10 @@ export class DefaultDrilldownTitleSkin extends Component {
   render(): ReactElement {
     let {children} = this.props;
     let {drilldownRoute} = this.context;
-    let path = drilldownRoute.getPath();
+    let parentPath = drilldownRoute.getParentPath();
 
     return <h3 {...this.props}>
-      {path === '/' ? undefined : <Link className="up-link" to="..">
+      {parentPath && <Link className="up-link" to={parentPath}>
         <Glyphicon menuLeft float="left"/>
       </Link>}
       {children}
@@ -70,10 +72,9 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
     this.context.drilldownSkin.routeWillUnmount(this);
   }
   render(): ReactElement {
-    let {className, children} = this.props;
+    let {className, children, childRoute} = this.props;
     let {drilldownSkin, drilldownRoute} = this.context;
     let {transitioning} = drilldownSkin.state;
-    let ChildRoute: any = this.props.childRoute;
 
     let visible = transitioning || this.getPath() === drilldownSkin.getActivePath();
 
@@ -84,13 +85,15 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
     });
 
     return <div {...this.props} className={className}>
-      <div className="mf-default-drilldown-route-content" ref={c => this.content = c} style={contentStyle}>
+      {children && <div className="mf-default-drilldown-route-content" ref={c => this.content = c} style={contentStyle}>
         {children}
-      </div>
-      {ChildRoute && <div className="mf-default-drilldown-route-child"
+      </div>}
+      {childRoute && <div className="mf-default-drilldown-route-child"
                           key={drilldownRoute.getChildPath()}>
-        <ChildRoute path={drilldownRoute.getChildPath()}
-                    subpath={this.getChildSubpath()}/>
+        {createOrCloneElement(childRoute, {
+          path: drilldownRoute.getChildPath(),
+          subpath: this.getChildSubpath()
+        })}
       </div>}
     </div>;
   }
@@ -113,6 +116,7 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
   root: ?HTMLElement;
   viewport: ?HTMLElement;
   transitioning: boolean = false;
+  forceUpdateRoutes: boolean = false;
 
   constructor(props: Props) {
     super(props);
@@ -127,7 +131,7 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
 
   static childContextTypes = {
     drilldownSkin: PropTypes.any.isRequired,
-    RouteSkin: PropTypes.any.isRequired,
+    RouteSkin: PropTypes.any.isRequired
   };
   getChildContext(): Object {
     return {
@@ -150,18 +154,18 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     return this.mounted;
   }
   routeDidMount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    this.setState({
+    setTimeout(() => this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.getPath()]: route
       })
-    });
+    }), 0);
   };
   routeWillUnmount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    this.setState({
+    setTimeout(() => this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.getPath()]: undefined
       })
-    });
+    }), 0);
   };
   doTransition: (nextPath?: string) => boolean = (nextPath = this.props.path) => {
     let {state: {path}} = this;
@@ -194,6 +198,7 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     });
     return true;
   };
+
   selectActiveDepth: (state: State) => number = createSelector(
     state => state.path,
     state => state.routes,
@@ -210,6 +215,7 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     }
   );
   getActiveDepth(): number { return this.selectActiveDepth(this.state); }
+
   selectActivePath: (state: State) => string = createSelector(
     state => state.path,
     state => state.routes,
@@ -226,10 +232,24 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     }
   );
   getActivePath(): string { return this.selectActivePath(this.state); }
+
+  componentWillUpdate(nextProps: Props, nextState: State): void {
+    this.forceUpdateRoutes = nextState.transitioning !== this.state.transitioning ||
+        this.selectActivePath(nextState) !== this.selectActivePath(this.state);
+  }
+
+  componentDidUpdate(): void {
+    if (this.forceUpdateRoutes) {
+      let {routes} = this.state;
+      for (var key in routes) {
+        if (routes[key]) routes[key].forceUpdate();
+      }
+    }
+  }
+
   render(): ReactElement {
-    let {className, style} = this.props;
+    let {className, style, rootRoute} = this.props;
     let {height, mountedPath} = this.state;
-    let Root = this.props.root;
 
     className = classNames(className, 'mf-default-drilldown');
     style = Object.assign({}, style, {height});
@@ -246,7 +266,10 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
              'OTransform': transform,
              transform
            }}>
-        {Root && <Root path='/' subpath={mountedPath}/>}
+        {createOrCloneElement(rootRoute, {
+          path: '/',
+          subpath: mountedPath
+        })}
       </div>
     </div>;
   }
