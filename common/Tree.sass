@@ -66,7 +66,9 @@ $selected-hover-color: black
     border-right-width: 0 !important
 
   .mf-tree-node.selected > .mf-tree-node-cell,
-  .mf-tree-node-cell.selected
+  .mf-tree-node.active > .mf-tree-node-cell,
+  .mf-tree-node-cell.selected,
+  .mf-tree-node-cell.active
     z-index: 150
     color: $selected-color
     border-color: $selected-border
