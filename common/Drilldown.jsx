@@ -97,13 +97,24 @@ export class Route extends Component<void,RouteProps,void> {
     let {drilldownRoute} = this.context;
     return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0;
   }
-  navigateUp(): void {
-    let parentRoute = this.getParentRoute();
-    if (parentRoute) {
-      this.navigateTo(parentRoute.props.path);
-    }
-    else {
-      throw new Error("can't navigate up from the root route");
+  /**
+   * Navigates up the given number of levels (default: 1).  This is *not* necessarily the number of elements in the path
+   * separated by slashes; for instance, a Route at / could have a childRoute at /device/ABCDEFGH with no intermediate
+   * child at /device.  In that case, navigateUp() from the child route would go back to /.
+   * @param levels
+   */
+  navigateUp(levels?: number = 1): void {
+    let parentRoute = this;
+    if (levels > 0) {
+      for (let i = 0; i < levels && parentRoute; i++) {
+        parentRoute = parentRoute.getParentRoute();
+      }
+      if (parentRoute) {
+        this.navigateTo(parentRoute.props.path);
+      }
+      else {
+        throw new Error("can't navigate up beyond the root route");
+      }
     }
   }
   navigateTo(toPath: string): void {
