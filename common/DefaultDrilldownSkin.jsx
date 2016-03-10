@@ -108,7 +108,8 @@ type State = {
 };
 
 type ExtraProps = {
-  style: Object
+  style: Object,
+  transitionHeight: boolean
 };
 
 export default class DefaultDrilldownSkin extends Component<DefaultProps,Props & ExtraProps,State> {
@@ -168,7 +169,8 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     }), 0);
   };
   doTransition: (nextPath?: string) => boolean = (nextPath = this.props.path) => {
-    let {state: {path}} = this;
+    let {props: {transitionHeight}, state: {path}} = this;
+    if (transitionHeight !== false) transitionHeight = true;
 
     if (nextPath === path || this.transitioning) return false;
     this.transitioning = true;
@@ -179,13 +181,13 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
 
     let sequence = [
       cb => ({
-        height: scrollHeight(this.state.routes[path]) + paddingHeight(this.root),
+        height: transitionHeight ? scrollHeight(this.state.routes[path]) + paddingHeight(this.root) : undefined,
         mountedPath: nextPath.startsWith(path) ? nextPath : path
       }),
       cb => ({transitioning: true}),
       cb => ({
         path: nextPath,
-        height: scrollHeight(this.state.routes[nextPath]) + paddingHeight(this.root)
+        height: transitionHeight ? scrollHeight(this.state.routes[nextPath]) + paddingHeight(this.root) : undefined
       }),
       cb => setTimeout(cb, Math.max(TICK, getTimeout(this.viewport) || 0, getTimeout(this.root) || 0)),
       cb => ({transitioning: false}),
