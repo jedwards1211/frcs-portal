@@ -97,6 +97,9 @@ export class Route extends Component<void,RouteProps,void> {
     let {drilldownRoute} = this.context;
     return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0;
   }
+  navigateUp(): void {
+    this.navigateTo(this.getParentRoute().props.path);
+  }
   navigateTo(toPath: string): void {
     let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.context.drilldown.navigateTo(absPath);
