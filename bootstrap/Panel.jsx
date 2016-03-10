@@ -53,16 +53,22 @@ export default class Panel extends Component {
   static defaultProps: {};
   static childContextTypes = {
     BodySkin:       PropTypes.any.isRequired,
-    ViewClassName: PropTypes.string.isRequired,
+    ViewClassName:  PropTypes.string.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
     BodyClassName:  PropTypes.string.isRequired,
     FooterClassName:PropTypes.string.isRequired,
   };
   getChildContext(): Object {
+    let {className} = this.props;
+    let contextClass = getContextClass(this.props) || 'default';
+    let shadeClass = getShadeClass(this.props);
+
+    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
+
     return {
       BodySkin:       PanelBodySkin,
-      ViewClassName:'panel',
+      ViewClassName:  className,
       HeaderClassName:'panel-heading',
       TitleClassName: 'panel-title',
       BodyClassName:  'panel-body',
@@ -82,7 +88,7 @@ export default class Panel extends Component {
     className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
 
     if (skin || (!header && !title && !footer)) {
-      return Children.count(children) === 1 && children ? React.cloneElement(children, {className}) :
+      return Children.count(children) === 1 && children ? children :
         <div {...this.props} className={className}/>;
     }
 
