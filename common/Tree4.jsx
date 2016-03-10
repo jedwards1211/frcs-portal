@@ -79,8 +79,16 @@ export class Node extends Component<void,NodeProps,void> {
     depth = depth || 0;
 
     if (!cell) {
-      cell = <Cell depth={depth} hasChildren={children} expanded={expanded} active={active}
-                   collapseIconProps={collapseIconProps}>{content}</Cell>;
+      cell = <Cell depth={depth} hasChildren={hasChildren} expanded={expanded}
+                   active={active} collapseIconProps={collapseIconProps}>
+        {content}
+      </Cell>;
+    }
+    else {
+      // note: the ordering here allows cell.props to override values from this.props
+      cell = React.cloneElement(cell, Object.assign({
+        depth, hasChildren, expanded, active, collapseIconProps
+      }, cell.props));
     }
 
     className = classNames("mf-tree-node", {'mf-tree-node-branch': hasChildren, active});
