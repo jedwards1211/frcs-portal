@@ -98,7 +98,13 @@ export class Route extends Component<void,RouteProps,void> {
     return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0;
   }
   navigateUp(): void {
-    this.navigateTo(this.getParentRoute().props.path);
+    let parentRoute = this.getParentRoute();
+    if (parentRoute) {
+      this.navigateTo(parentRoute.props.path);
+    }
+    else {
+      throw new Error("can't navigate up from the root route");
+    }
   }
   navigateTo(toPath: string): void {
     let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
