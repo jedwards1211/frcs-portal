@@ -3,6 +3,7 @@
 import React, {Component, PropTypes} from 'react';
 import {createSelector} from 'reselect';
 import classNames from 'classnames';
+import nodepath from 'path';
 
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
 
@@ -30,7 +31,8 @@ export class DefaultDrilldownTitleSkin extends Component {
   render(): ReactElement {
     let {children} = this.props;
     let {drilldownRoute} = this.context;
-    let parentPath = drilldownRoute.getParentPath();
+    let parentRoute = drilldownRoute && drilldownRoute.getParentRoute();
+    let parentPath = parentRoute && parentRoute.props.path;
 
     return <h3 {...this.props}>
       {parentPath && <Link className="up-link" to={parentPath}>
@@ -41,7 +43,11 @@ export class DefaultDrilldownTitleSkin extends Component {
   }
 }
 
-export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
+type ExtraRouteProps = {
+  depth: number
+};
+
+export class DefaultDrilldownRouteSkin extends Component<void,RouteProps & ExtraRouteProps,void> {
   content: ?HTMLElement;
   static contextTypes = {
     drilldownSkin: PropTypes.any.isRequired,
@@ -55,16 +61,6 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
       TitleSkin: DefaultDrilldownTitleSkin
     };
   }
-  getPath(): string {
-    return this.context.drilldownRoute.getPath();
-  }
-  getDepth(): number {
-    return this.context.drilldownRoute.getDepth();
-  }
-  getChildSubpath(): string {
-    let {drilldownSkin: {state: {mountedPath}}, drilldownRoute} = this.context;
-    return mountedPath.substring(drilldownRoute.getChildPath().length);
-  }
   componentDidMount(): void {
     this.context.drilldownSkin.routeDidMount(this);
   }
@@ -72,11 +68,11 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
     this.context.drilldownSkin.routeWillUnmount(this);
   }
   render(): ReactElement {
-    let {className, children, childRoute} = this.props;
-    let {drilldownSkin, drilldownRoute} = this.context;
+    let {path, className, children, childRoute} = this.props;
+    let {drilldownSkin} = this.context;
     let {transitioning} = drilldownSkin.state;
 
-    let visible = transitioning || this.getPath() === drilldownSkin.getActivePath();
+    let visible = transitioning || path === drilldownSkin.getActivePath();
 
     className = classNames(className, 'mf-default-drilldown-route');
     let contentStyle = Object.assign({
@@ -89,11 +85,8 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps,void> {
         {children}
       </div>}
       {childRoute && <div className="mf-default-drilldown-route-child"
-                          key={drilldownRoute.getChildPath()}>
-        {createOrCloneElement(childRoute, {
-          path: drilldownRoute.getChildPath(),
-          subpath: this.getChildSubpath()
-        })}
+                          key={childRoute.props.path}>
+        {childRoute}
       </div>}
     </div>;
   }
@@ -157,14 +150,14 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
   routeDidMount: (route: DefaultDrilldownRouteSkin) => void = route => {
     setTimeout(() => this.setState({
       routes: Object.assign({}, this.state.routes, {
-        [route.getPath()]: route
+        [route.props.path]: route
       })
     }), 0);
   };
   routeWillUnmount: (route: DefaultDrilldownRouteSkin) => void = route => {
     setTimeout(() => this.setState({
       routes: Object.assign({}, this.state.routes, {
-        [route.getPath()]: undefined
+        [route.props.path]: undefined
       })
     }), 0);
   };
@@ -206,11 +199,11 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     state => state.routes,
     (path, routes) => {
       let route = routes[path];
-      if (route) return route.getDepth();
+      if (route) return route.props.depth;
       let depth = 0;
       for (let key in routes) {
         if (routes[key] && path.startsWith(key)) {
-          depth = Math.max(depth, routes[key].getDepth());
+          depth = Math.max(depth, routes[key].props.depth);
         }
       }
       return depth;
@@ -270,7 +263,7 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
            }}>
         {createOrCloneElement(rootRoute, {
           path: '/',
-          subpath: mountedPath
+          subpath: mountedPath === '/' ? undefined : nodepath.relative('/', mountedPath)
         })}
       </div>
     </div>;

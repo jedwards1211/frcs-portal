@@ -2,29 +2,20 @@
 
 import React, {Component, PropTypes} from 'react';
 
-import path from 'path';
+import createOrCloneElement from '../utils/createOrCloneElement';
+
+import nodepath from 'path';
 
 export class Paths {
   static head(path: string): string {
-    if (path[0] === '/') path = path.substring(1);
-    let index = path.indexOf('/');
-    return decodeURI(path.substring(0, index < 0 ? path.length : index));
+    let index = path.indexOf('/', 1);
+    return index < 0 ? path : path.substring(0, index);
   }
   static tail(path: string): string {
-    if (path[0] === '/') path = path.substring(1);
-    let index = path.indexOf('/');
-    return decodeURI(path.substring(index < 0 ? path.length: index + 1));
-  }
-  static last(path: string): string {
-    if (path[0] === '/') path = path.substring(1);
-    let index = path.lastIndexOf('/');
-    return decodeURI(path.substring(index < 0 ? path.length: index + 1));
+    return nodepath.relative(Paths.head(path), path);
   }
   static split(path: string): Array<string> {
-    return path.split('/').filter(e => e.length).map(decodeURI);
-  }
-  static join(path: Array<string>) {
-    return path.map(encodeURI).join('/');
+    return path.split('/').filter(e => e.length);
   }
 }
 
@@ -82,10 +73,12 @@ export class Link extends Component<void,LinkProps,void> {
 }
 
 export type RouteProps = {
+  path: string,
+  subpath?: string,
   className?: string,
   children?: any,      // the contents of this route to display
   childRoute?: any,    // (actually a ReactTag or ReactElement) to render the child route, if any
-  childPath?: string   // the path of the child route, if any (relative to this route's path)
+  childPath?: string  // the path of the child route, if any (relative to this route's path)
 };
 
 export class Route extends Component<void,RouteProps,void> {
@@ -93,49 +86,47 @@ export class Route extends Component<void,RouteProps,void> {
     RouteSkin: PropTypes.any.isRequired,
     drilldown: PropTypes.any.isRequired,
     drilldownRoute: PropTypes.any,
-    drilldownRoutePath: PropTypes.string.isRequired,
-    drilldownRouteDepth: PropTypes.number.isRequired
   };
   static childContextTypes = {
     drilldownRoute: PropTypes.any.isRequired,
-    drilldownRoutePath: PropTypes.string,
-    drilldownRouteDepth: PropTypes.number
   };
+  getParentRoute(): ?Route {
+    return this.context.drilldownRoute;
+  }
   getDepth(): number {
-    return this.context.drilldownRouteDepth;
-  }
-  getPath(): string {
-    return this.context.drilldownRoutePath;
-  }
-  getParentPath(): ?string {
     let {drilldownRoute} = this.context;
-    if (!drilldownRoute) return undefined;
-    if (drilldownRoute.props.children) return drilldownRoute.getPath();
-    return drilldownRoute.getParentPath();
-  }
-  getChildPath(): string {
-    let {childPath} = this.props;
-    if (childPath) {
-      return path.normalize(this.getPath() + '/' + childPath);
-    }
-    throw new Error('getChildPath() is not applicable without a childPath prop');
+    return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0;
   }
   navigateTo(toPath: string): void {
-    let absPath = path.normalize(path.isAbsolute(toPath) ? toPath : this.getPath() + '/' + toPath);
+    let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.context.drilldown.navigateTo(absPath);
   }
   getChildContext(): Object {
-    let {childPath, children} = this.props;
-    let result: Object = {drilldownRoute: this};
-    if (childPath) {
-      result.drilldownRoutePath = this.getChildPath();
-      result.drilldownRouteDepth = this.getDepth() + (children ? 1 : 0);
-    }
-    return result;
+    return {
+      drilldownRoute: this,
+    };
   }
   render(): ReactElement {
+    let {path, subpath, childRoute, childPath} = this.props;
+
+    if (childRoute) {
+      if (subpath) {
+        if (childPath) {
+          childPath = nodepath.resolve(path, childPath);
+          let childSubPath = nodepath.relative(childPath, nodepath.resolve(path, subpath));
+          childRoute = createOrCloneElement(childRoute, {
+            path: childPath,
+            subpath: childSubPath
+          });
+        }
+      }
+      else {
+        childRoute = undefined;
+      }
+    }
+
     let {RouteSkin} = this.context;
-    return <RouteSkin {...this.props}/>;
+    return <RouteSkin {...this.props} childRoute={childRoute} depth={this.getDepth()}/>;
   }
 }
 
@@ -160,19 +151,15 @@ export default class Drilldown extends Component<DefaultProps,Props,void> {
   static childContextTypes = {
     LinkSkin: PropTypes.any.isRequired,
     drilldown: PropTypes.any.isRequired,
-    drilldownRoutePath: PropTypes.string.isRequired,
-    drilldownRouteDepth: PropTypes.number.isRequired
   };
   getChildContext(): Object {
     return {
       LinkSkin: Link,
       drilldown: this,
-      drilldownRoutePath: '/',
-      drilldownRouteDepth: 0
     };
   }
   navigateTo: (toPath: string) => void = (toPath) => {
-    let newPath = path.normalize(path.isAbsolute(toPath) ? toPath : path.join(this.props.path, toPath));
+    let newPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.props.onPathChange(newPath);
   };
   render(): ReactElement {
