@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Collapse from './Collapse';
-import {Link, History} from 'react-router';
+import {Link} from 'react-router';
 import _ from 'lodash';
 
 import addClass from '../wrappers/addClass';
@@ -86,10 +86,12 @@ Navbar.Nav = addClass('ul', 'nav navbar-nav');
 Navbar.Nav.Right = addClass('ul', 'nav navbar-nav navbar-right');
 
 Navbar.Nav.Link = React.createClass({
-  mixins: [History],
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
   render() {
     var {to, params, query, className} = this.props;
-    className = classNames(className, {active: this.history.isActive(to, params, query)});
+    className = classNames(className, {active: this.context.router.isActive(to, params, query)});
     return <li><Link {...this.props} className={className}>{this.props.children}</Link></li>;
   },
 });
