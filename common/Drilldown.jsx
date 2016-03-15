@@ -1,6 +1,8 @@
 /* @flow */
 
 import React, {Component, PropTypes} from 'react';
+import classNames from 'classnames';
+import _ from 'lodash';
 
 import createOrCloneElement from '../utils/createOrCloneElement';
 
@@ -47,7 +49,8 @@ export class Paths {
  */
 
 type LinkProps = {
-  to: string,
+  to?: string,
+  up?: number | boolean,
   disabled?: boolean,
   children?: any,
   onClick?: (e: MouseEvent) => any,
@@ -58,13 +61,22 @@ export class Link extends Component<void,LinkProps,void> {
     drilldownRoute: PropTypes.any.isRequired,
   };
   render(): ReactElement {
-    let {to, children, disabled, onClick} = this.props;
+    let {to, up, children, disabled, onClick} = this.props;
+    if (up === true) {
+      up = 1;
+    }
+
     let {drilldownRoute} = this.context;
     return <a href="" {...this.props} onClick={e => {
       if (onClick) onClick(e);
       e.preventDefault();
       if (!disabled) {
-        drilldownRoute.navigateTo(to);
+        if (to) {
+          drilldownRoute.navigateTo(to);
+        }
+        else if (up) {
+          drilldownRoute.navigateUp(up);
+        }
       }
     }}>
       {children}
@@ -72,13 +84,17 @@ export class Link extends Component<void,LinkProps,void> {
   }
 }
 
+export type OnLeaveCallback = (canLeave?: boolean) => any;
+export type OnLeaveHook = (callback: OnLeaveCallback) => any;
+
 export type RouteProps = {
   path: string,
   subpath?: string,
   className?: string,
   children?: any,      // the contents of this route to display
   childRoute?: any,    // (actually a ReactTag or ReactElement) to render the child route, if any
-  childPath?: string  // the path of the child route, if any (relative to this route's path)
+  childPath?: string,  // the path of the child route, if any (relative to this route's path)
+  onLeave?: OnLeaveHook
 };
 
 export class Route extends Component<void,RouteProps,void> {
@@ -90,6 +106,12 @@ export class Route extends Component<void,RouteProps,void> {
   static childContextTypes = {
     drilldownRoute: PropTypes.any.isRequired,
   };
+  componentDidMount(): void {
+    this.context.drilldown.routeDidMount(this);
+  }
+  componentWillUnmount(): void {
+    this.context.drilldown.routeWillUnmount(this);
+  }
   getParentRoute(): ?Route {
     return this.context.drilldownRoute;
   }
@@ -160,7 +182,14 @@ export type Props = DefaultProps & {
   rootRoute?: any,
 };
 
-export default class Drilldown extends Component<DefaultProps,Props,void> {
+type State = {
+  path: string,
+};
+
+export default class Drilldown extends Component<DefaultProps,Props,State> {
+  mounted: boolean = false;
+  transitioning: boolean = false;
+  routes: {[path: string]: ?Route} = {};
   static defaultProps = {
     path: '/',
     onPathChange() {},
@@ -182,8 +211,74 @@ export default class Drilldown extends Component<DefaultProps,Props,void> {
     let newPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.props.onPathChange(newPath);
   };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      path: props.path,
+    };
+  }
+  componentWillMount(): void {
+    this.mounted = true;
+  }
+  componentWillUnmount(): void {
+    this.mounted = false;
+  }
+  routeDidMount: (route: Route) => void = route => {
+    this.routes[route.props.path] = route;
+  };
+  routeWillUnmount: (route: Route) => void = route => {
+    delete this.routes[route.props.path];
+  };
+  componentWillReceiveProps(nextProps: Props): void {
+    if (nextProps.path !== this.props.path && !this.transitioning) {
+      this.transitioning = true;
+
+      // this is tricky; the requested path could change at any point while we're waiting for a mounted route to
+      // call us back with whether we can leave it or not.  So, for each step of the way, we check with the deepest
+      // route that a) must leave to get to the latest requested path and b) has an onLeave hook (thus might not
+      // let us leave it).
+
+      const step: (canLeave: ?boolean, nextPath: string, firstStep?: boolean) => void = (canLeave, nextPath, firstStep) => {
+        if (this.mounted) {
+          if (canLeave === false) {
+            // the active route won't let us leave; tell the drilldown's owner to change the path back to the
+            // active route
+            this.transitioning = false;
+            this.props.onPathChange(this.state.path);
+          }
+          else {
+            // get deepest route with a leave hook shallower than this.state.path but not shallower than nextPath
+            // on the first step, the current path needs to be checked.
+            // on subsequent steps, the current path has been checked and should not be included.
+            let leaveHookRoutes = _.filter(this.routes, route => route.props.onLeave instanceof Function &&
+              this.state.path.startsWith(route.props.path) && !nextPath.startsWith(route.props.path) &&
+              (firstStep || route.props.path !== this.state.path));
+            let guardingRoute = _.maxBy(leaveHookRoutes, route => route.props.path.length);
+
+            if (guardingRoute) {
+              // go up to guarding route and then run its leave hook.  When its leave hook calls back,
+              // repeat the process with the latest requested path.
+              this.setState({path: guardingRoute.props.path}, () => {
+                if (this.mounted) guardingRoute.props.onLeave(canLeave => step(canLeave, this.props.path));
+              });
+            }
+            else {
+              // no more leave hooks are blocking; go to nextPath and finish
+              this.transitioning = false;
+              this.setState({path: nextPath});
+            }
+          }
+        }
+      };
+
+      step(undefined, nextProps.path, true);
+    }
+  }
   render(): ReactElement {
+    let {className} = this.props;
+    let {path} = this.state;
+    className = classNames(className, 'mf-drilldown');
     let {DrilldownSkin} = this.context;
-    return <DrilldownSkin {...this.props}/>;
+    return <DrilldownSkin {...this.props} className={className} path={path}/>;
   }
 }

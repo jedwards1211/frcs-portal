@@ -13,6 +13,7 @@ import {getTimeout} from '../transition/callOnTransitionEnd';
 
 import {TICK} from '../transition/animConstants';
 
+import {Nav} from './View.jsx';
 import {Link} from './Drilldown.jsx';
 import type {Props, DefaultProps, RouteProps} from './Drilldown.jsx';
 
@@ -35,9 +36,11 @@ export class DefaultDrilldownTitleSkin extends Component {
     let parentPath = parentRoute && parentRoute.props.path;
 
     return <h3 {...this.props}>
-      {parentPath && <Link className="up-link" to={parentPath}>
-        <Glyphicon menuLeft float="left"/>
-      </Link>}
+      {parentPath && <Nav left>
+        <Link className="up-link" up>
+          <Glyphicon menuLeft />
+        </Link>
+      </Nav>}
       {children}
     </h3>;
   }

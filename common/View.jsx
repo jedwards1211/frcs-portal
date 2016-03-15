@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import {createSkinnableComponent} from 'react-skin';
 
+import {getLeftRight} from '../utils/propUtils';
+
 import './View.sass';
 
 const ViewProps = {
@@ -72,7 +74,27 @@ export class Body extends Component {
     let Comp = this.context.BodySkin || BodyProps.defaultComponent;
     let className = classNames(BodyProps.className, this.props.className,
       this.context.BodyClassName || BodyProps.defaultClassName);
-    return <Comp {...this.props} className={className}>{this.props.children}</Comp>;
+    return <Comp {...this.props} className={className}/>;
+  }
+}
+
+const NavProps = {
+  defaultComponent: 'nav',
+  defaultClassName: 'mf-default-nav',
+  className: 'skinnable-nav'
+}
+
+export class Nav extends Component {
+  static contextTypes = {
+    NavSkin: PropTypes.any,
+    NavClassName: PropTypes.string
+  };
+  render() {
+    let side = getLeftRight(this.props);
+    let Comp = this.context.NavSkin || NavProps.defaultComponent;
+    let className = classNames(NavProps.className, this.props.className,
+      this.context.NavClassName || NavProps.defaultClassName, side && 'skinnable-nav-' + side);
+    return <Comp {...this.props} className={className}/>;
   }
 }
 

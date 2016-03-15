@@ -15,7 +15,7 @@ export default function setStateChain(component, callbacks, finalCallback = func
   let canceled = false;
   
   callbacks.reduceRight(
-    (cb, fn, index) => () => {
+    (cb, fn, index) => (err) => {
       function perform() {
         try {
           let nextState = fn(cb);
@@ -32,7 +32,7 @@ export default function setStateChain(component, callbacks, finalCallback = func
         perform();
       } 
       else {
-        setTimeout((err) => {
+        setTimeout(() => {
           if (canceled) return;
           if (err) return cb(err);
           if (component.isMounted()) perform();
