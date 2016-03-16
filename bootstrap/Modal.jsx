@@ -106,8 +106,13 @@ Modal.Backdrop = ModalBackdrop;
 
 class ModalTransitionGroup extends Component {
   render() {
-    let className = classNames(this.props.className, 'modal-transition-group');
+    let {className, autoBackdrop} = this.props;
+    className = classNames(className, 'modal-transition-group');
     let children = React.Children.toArray(this.props.children);
+
+    if (autoBackdrop && children.length) {
+      children.splice(children.length - 1, 0, <ModalBackdrop key="backdrop"/>);
+    }
 
     return <InterruptibleCSSTransitionGroup component="div" {...this.props}
       transitionName="modal" className={className} 
