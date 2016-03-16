@@ -4,6 +4,8 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
+import type {LeaveHook} from '../flowtypes/LeaveHook';
+
 import createOrCloneElement from '../utils/createOrCloneElement';
 
 import nodepath from 'path';
@@ -84,9 +86,6 @@ export class Link extends Component<void,LinkProps,void> {
   }
 }
 
-export type OnLeaveCallback = (canLeave?: boolean) => any;
-export type OnLeaveHook = (callback: OnLeaveCallback) => any;
-
 export type RouteProps = {
   path: string,
   subpath?: string,
@@ -94,18 +93,29 @@ export type RouteProps = {
   children?: any,      // the contents of this route to display
   childRoute?: any,    // (actually a ReactTag or ReactElement) to render the child route, if any
   childPath?: string,  // the path of the child route, if any (relative to this route's path)
-  onLeave?: OnLeaveHook
 };
 
 export class Route extends Component<void,RouteProps,void> {
+  leaveHooks: LeaveHook[] = [];
   static contextTypes = {
     RouteSkin: PropTypes.any.isRequired,
     drilldown: PropTypes.any.isRequired,
-    drilldownRoute: PropTypes.any,
+    drilldownRoute: PropTypes.any
   };
   static childContextTypes = {
     drilldownRoute: PropTypes.any.isRequired,
+    addLeaveHook: PropTypes.func.isRequired,
+    removeLeaveHook: PropTypes.func.isRequired
   };
+  getChildContext(): Object {
+    return {
+      drilldownRoute: this,
+      addLeaveHook: this.addLeaveHook,
+      removeLeaveHook: this.removeLeaveHook
+    };
+  }
+  addLeaveHook:    (hook: LeaveHook) => any = (hook) => this.leaveHooks.push(hook);
+  removeLeaveHook: (hook: LeaveHook) => any = (hook) => this.leaveHooks.splice(this.leaveHooks.indexOf(hook), 1);
   componentDidMount(): void {
     this.context.drilldown.routeDidMount(this);
   }
@@ -142,11 +152,6 @@ export class Route extends Component<void,RouteProps,void> {
   navigateTo(toPath: string): void {
     let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.context.drilldown.navigateTo(absPath);
-  }
-  getChildContext(): Object {
-    return {
-      drilldownRoute: this,
-    };
   }
   render(): ReactElement {
     let {path, subpath, childRoute, childPath} = this.props;
@@ -195,7 +200,9 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
     onPathChange() {},
   };
   static contextTypes = {
-    DrilldownSkin: PropTypes.any.isRequired
+    DrilldownSkin: PropTypes.any.isRequired,
+    addLeaveHook: PropTypes.func,
+    removeLeaveHook: PropTypes.func
   };
   static childContextTypes = {
     LinkSkin: PropTypes.any.isRequired,
@@ -220,8 +227,14 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
   componentWillMount(): void {
     this.mounted = true;
   }
+  componentDidMount(): void {
+    let {addLeaveHook} = this.context;
+    addLeaveHook && addLeaveHook(this.ancestorWillLeave);
+  }
   componentWillUnmount(): void {
     this.mounted = false;
+    let {removeLeaveHook} = this.context;
+    removeLeaveHook && removeLeaveHook(this.ancestorWillLeave);
   }
   routeDidMount: (route: Route) => void = route => {
     this.routes[route.props.path] = route;
@@ -229,49 +242,41 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
   routeWillUnmount: (route: Route) => void = route => {
     delete this.routes[route.props.path];
   };
-  componentWillReceiveProps(nextProps: Props): void {
-    if (nextProps.path !== this.props.path && !this.transitioning) {
-      this.transitioning = true;
+  ancestorWillLeave: (leave: Function) => ?boolean = leave => {
+    let leaveHookRoutes = _.filter(this.routes, route => this.state.path.startsWith(route.props.path))
+      .sort((a, b) => b.props.path.length - a.props.path.length);
 
-      // this is tricky; the requested path could change at any point while we're waiting for a mounted route to
-      // call us back with whether we can leave it or not.  So, for each step of the way, we check with the deepest
-      // route that a) must leave to get to the latest requested path and b) has an onLeave hook (thus might not
-      // let us leave it).
-
-      const step: (canLeave: ?boolean, nextPath: string, firstStep?: boolean) => void = (canLeave, nextPath, firstStep) => {
-        if (this.mounted) {
-          if (canLeave === false) {
-            // the active route won't let us leave; tell the drilldown's owner to change the path back to the
-            // active route
-            this.transitioning = false;
-            this.props.onPathChange(this.state.path);
-          }
-          else {
-            // get deepest route with a leave hook shallower than this.state.path but not shallower than nextPath
-            // on the first step, the current path needs to be checked.
-            // on subsequent steps, the current path has been checked and should not be included.
-            let leaveHookRoutes = _.filter(this.routes, route => route.props.onLeave instanceof Function &&
-              this.state.path.startsWith(route.props.path) && !nextPath.startsWith(route.props.path) &&
-              (firstStep || route.props.path !== this.state.path));
-            let guardingRoute = _.maxBy(leaveHookRoutes, route => route.props.path.length);
-
-            if (guardingRoute) {
-              // go up to guarding route and then run its leave hook.  When its leave hook calls back,
-              // repeat the process with the latest requested path.
-              this.setState({path: guardingRoute.props.path}, () => {
-                if (this.mounted) guardingRoute.props.onLeave(canLeave => step(canLeave, this.props.path));
-              });
-            }
-            else {
-              // no more leave hooks are blocking; go to nextPath and finish
-              this.transitioning = false;
-              this.setState({path: nextPath});
-            }
-          }
+    for (let route of leaveHookRoutes) {
+      for (let leaveHook of route.leaveHooks) {
+        if (leaveHook(leave) === false) {
+          return false;
         }
+      }
+    }
+  };
+  componentWillReceiveProps(nextProps: Props): void {
+    if (nextProps.path !== this.props.path) {
+      let leaveHookRoutes = _.filter(this.routes, route => this.state.path.startsWith(route.props.path) &&
+        !nextProps.path.startsWith(route.props.path))
+        .sort((a, b) => b.props.path.length - a.props.path.length);
+
+      let canceled = false;
+
+      const leave = () => {
+        canceled && this.mounted && this.props.onPathChange(nextProps.path);
       };
 
-      step(undefined, nextProps.path, true);
+      for (let route of leaveHookRoutes) {
+        for (let leaveHook of route.leaveHooks) {
+          if (leaveHook(leave) === false) {
+            canceled = true;
+            nextProps.onPathChange(this.state.path);
+            return;
+          }
+        }
+      }
+
+      this.setState({path: nextProps.path});
     }
   }
   render(): ReactElement {

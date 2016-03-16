@@ -151,14 +151,14 @@ export default class DefaultDrilldownSkin extends Component<DefaultProps,Props &
     return this.mounted;
   }
   routeDidMount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    setTimeout(() => this.setState({
+    setTimeout(() => this.mounted && this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.props.path]: route
       })
     }), 0);
   };
   routeWillUnmount: (route: DefaultDrilldownRouteSkin) => void = route => {
-    setTimeout(() => this.setState({
+    setTimeout(() => this.mounted && this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.props.path]: undefined
       })
