@@ -108,7 +108,7 @@ type ExtraProps = {
   transitionHeight: boolean
 };
 
-export default class DefaultDrilldownSkin extends Component<DefaultProps,Props & ExtraProps,State> {
+export default class DefaultDrilldownSkin extends Component<void,Props & ExtraProps,State> {
   mounted: boolean = false;
   root: ?HTMLElement;
   viewport: ?HTMLElement;
