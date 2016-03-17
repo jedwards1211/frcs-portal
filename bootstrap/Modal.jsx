@@ -30,6 +30,11 @@ export default class Modal extends Component {
     }),
   };
   static childContextTypes = {
+    ViewSkin: PropTypes.any.isRequired,
+    HeaderSkin: PropTypes.any.isRequired,
+    TitleSkin: PropTypes.any.isRequired,
+    BodySkin: PropTypes.any.isRequired,
+    FooterSkin: PropTypes.any.isRequired,
     ViewClassName: PropTypes.string.isRequired,
     HeaderClassName:PropTypes.string.isRequired,
     TitleClassName: PropTypes.string.isRequired,
@@ -42,6 +47,11 @@ export default class Modal extends Component {
   };
   getChildContext() {
     return {
+      ViewSkin: 'div',
+      HeaderSkin: 'div',
+      TitleSkin: 'h3',
+      BodySkin: 'div',
+      FooterSkin: 'div',
       ViewClassName: 'modal-content',
       HeaderClassName:'modal-header',
       TitleClassName: 'modal-title',
