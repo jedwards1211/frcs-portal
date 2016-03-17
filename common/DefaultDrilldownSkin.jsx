@@ -15,7 +15,7 @@ import {TICK} from '../transition/animConstants';
 
 import {Nav} from './View.jsx';
 import {Link} from './Drilldown.jsx';
-import type {Props, DefaultProps, RouteProps} from './Drilldown.jsx';
+import type {Props, RouteProps} from './Drilldown.jsx';
 
 import createOrCloneElement from '../utils/createOrCloneElement';
 
