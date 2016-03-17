@@ -188,7 +188,10 @@ export type Props = DefaultProps & {
 };
 
 type State = {
-  path: string,
+  // this path is updated from props *only when* no leave hooks reject the path change.
+  // Using the path from props, which changes and then changes back momentarily, would trigger unwanted transitions,
+  // but using this path, which doesn't change when leave hooks reject the change, doesn't trigger transitions.
+  path: string
 };
 
 export default class Drilldown extends Component<DefaultProps,Props,State> {
@@ -197,7 +200,7 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
   routes: {[path: string]: ?Route} = {};
   static defaultProps = {
     path: '/',
-    onPathChange() {},
+    onPathChange() {}
   };
   static contextTypes = {
     DrilldownSkin: PropTypes.any.isRequired,
@@ -206,12 +209,12 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
   };
   static childContextTypes = {
     LinkSkin: PropTypes.any.isRequired,
-    drilldown: PropTypes.any.isRequired,
+    drilldown: PropTypes.any.isRequired
   };
   getChildContext(): Object {
     return {
       LinkSkin: Link,
-      drilldown: this,
+      drilldown: this
     };
   }
   navigateTo: (toPath: string) => void = (toPath) => {
@@ -221,7 +224,7 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      path: props.path,
+      path: props.path
     };
   }
   componentWillMount(): void {
