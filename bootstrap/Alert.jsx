@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import addClass from '../wrappers/addClass';
 import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
 
+import './Alert.sass';
+
 import {errorMessage} from '../utils/reactErrorUtils';
 
 type Props = {
