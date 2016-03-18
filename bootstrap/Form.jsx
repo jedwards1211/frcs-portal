@@ -12,6 +12,7 @@ type GroupProps = {
   className?: string,
   labelClass?: string,
   controlClass?: string,
+  formGroupClass?: string,
   staticControl?: boolean,
   label?: any,
   children?: any,
@@ -111,7 +112,7 @@ export default class Form extends Component<void,FormProps,void> {
       if (child && child.props) {
         if (child.props.formGroup) {
           anyChanged = true;
-          return <Group {...child.props} className={undefined}>
+          return <Group {...child.props} className={child.props.formGroupClass}>
             {child}
           </Group>;
         }
