@@ -28,7 +28,8 @@ type Props = {
 
 export default class RestrictedInput extends Component<void,Props,void> {
   static supportsInputGroupInput = true;
-  onChange: (e: {target: {value: ?string}}) => void = e => {
+  onChange: (e: {stopPropagation: Function, target: {value: ?string}}) => void = e => {
+    e.stopPropagation();
     let {value} = e.target;
     value = value || '';
     let {restrictValue, filterPattern, decimalNumber} = this.props;
@@ -39,7 +40,7 @@ export default class RestrictedInput extends Component<void,Props,void> {
             value;
       if (this.props.value !== restrictedValue) {
         e = Object.assign({}, e, {
-          target: Object.assign({}, e.target, {value: restrictedValue}),
+          target: Object.assign({}, e.target, {value: restrictedValue})
         });
         this.props.onChange && this.props.onChange(e);
       }
