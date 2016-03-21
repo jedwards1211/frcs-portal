@@ -6,13 +6,13 @@ import Promise from 'bluebird';
 
 import Button from '../bootstrap/Button.jsx';
 import DeleteButton from '../bootstrap/DeleteButton.jsx';
-import Spinner from './Spinner.jsx';
-import AlertGroup from './AlertGroup';
-import {Nav} from './View.jsx';
+import Spinner from './../common/Spinner.jsx';
+import AlertGroup from './../common/AlertGroup';
+import {Nav} from './../common/View.jsx';
 
 import createOrCloneElement from '../utils/createOrCloneElement';
 
-import CatchUnsavedChangesModal from './CatchUnsavedChangesModal.jsx';
+import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx';
 
 type Props = {
   className?: string,
@@ -245,7 +245,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   render(): ReactElement {
     let {className, askToLeave, saving, deleting, document, validate, actions: {setAskToLeave}} = this.props;
 
-    className = classNames(className, 'mf-edit-document-view');
+    className = classNames(className, 'mf-document-view');
 
     let children: any = this.props.children;
     let {valid} = validate ? validate(document) : {valid: true};
