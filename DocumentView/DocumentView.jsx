@@ -16,9 +16,16 @@ import createOrCloneElement from '../utils/createOrCloneElement';
 
 import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx';
 
+type DefaultProps = {
+  typeDisplayName: string,
+  typeDisplayPronoun: string
+};
+
 type Props = {
   className?: string,
   mode: 'create' | 'edit',
+  typeDisplayName: string,
+  typeDisplayPronoun: string,
   createDocument?: (document: any) => Promise,
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
@@ -56,7 +63,11 @@ type State = {
  * stay here, discard changes, or save changes.
  * This will inject alerts, cancel, apply, and OK buttons into the child component via skins.
  */
-export default class DocumentView extends Component<void,Props,State> {
+export default class DocumentView extends Component<DefaultProps,Props,State> {
+  static defaultProps = {
+    typeDisplayName: 'document',
+    typeDisplayPronoun: 'it'
+  };
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
@@ -92,12 +103,13 @@ export default class DocumentView extends Component<void,Props,State> {
 
   save: () => Promise = () => {
     let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument} = this.props;
+    let {externallyDeleted} = this.state;
 
     setSaving(true);
     setSaveError(undefined);
 
     let promise;
-    if (mode === 'create') {
+    if (mode === 'create' || externallyDeleted) {
       if (createDocument) {
         promise = createDocument(document);
       }
@@ -170,7 +182,7 @@ export default class DocumentView extends Component<void,Props,State> {
     },
 
     Body: (Body:any, props:Props) => {
-      let {actualDocument, setDocument} = this.props;
+      let {actualDocument, setDocument, createDocument, typeDisplayName, typeDisplayPronoun} = this.props;
       let {children} = props;
       let {externallyChanged, externallyDeleted} = this.state;
 
@@ -178,19 +190,20 @@ export default class DocumentView extends Component<void,Props,State> {
       if (externallyChanged && actualDocument) {
         alerts.externallyChanged = {
           warning: <span>
-        <Button warning className="alert-btn-right" onClick={() => {
-          setDocument(actualDocument);
-          this.setState({externallyChanged: false});
-        }}>Load Changes</Button>
-        Someone else changed this document.
-      </span>
+            <Button warning className="alert-btn-right" onClick={() => {
+              setDocument(actualDocument);
+              this.setState({externallyChanged: false});
+            }}>Load Changes</Button>
+            Someone else changed this {typeDisplayName}.
+          </span>
         };
       }
       if (externallyDeleted) {
         alerts.externallyDeleted = {
           warning: <span>
-        Someone else deleted this document.  You may recreate it by pressing the Create button.
-      </span>
+            Someone else deleted this {typeDisplayName}.
+            {createDocument && `  You may recreate ${typeDisplayPronoun} by pressing the Create button.`}
+          </span>
         };
       }
 
@@ -202,13 +215,11 @@ export default class DocumentView extends Component<void,Props,State> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {
-        mode, validate, saveError, saving, deleting,
-        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving
-      } = this.props;
+      let {mode, validate, saveError, saving, deleting, createDocument,
+        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.props;
       let {externallyDeleted} = this.state;
 
-      let footerMode = externallyDeleted ? 'create' : mode;
+      let footerMode = externallyDeleted ? (createDocument ? 'create' : 'none') : mode;
 
       let alerts = {};
       let {valid} = validate ? validate(document) : {valid: true};
@@ -221,12 +232,12 @@ export default class DocumentView extends Component<void,Props,State> {
       return <Footer {...props}>
         <AlertGroup alerts={alerts}/>
         <Button onClick={leaveAfterCancel}>Cancel</Button>
-        {footerMode !== 'create' && <Button key="apply" disabled={!valid || saving || deleting}
+        {footerMode === 'edit' && <Button key="apply" disabled={!valid || saving || deleting}
                                             onClick={this.save}>Apply</Button>}
-        <Button primary key="ok" disabled={!valid || saving || deleting}
+        {footerMode !== 'none' && <Button primary key="ok" disabled={!valid || saving || deleting}
                 onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}>
           {saving ? <span><Spinner/> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
-        </Button>
+        </Button>}
         {children}
       </Footer>;
     }
