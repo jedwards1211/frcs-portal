@@ -54,7 +54,7 @@ type State = {
  * stay here, discard changes, or save changes.
  * This will inject alerts, cancel, apply, and OK buttons into the child component via skins.
  */
-export default class EditDocumentView extends Component<void,Props,State> {
+export default class DocumentView extends Component<void,Props,State> {
   static contextTypes = {
     TitleSkin: PropTypes.any.isRequired,
     BodySkin: PropTypes.any.isRequired,
@@ -170,14 +170,14 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   TitleSkin: (props: Props) => ReactElement = props => {
-    let {saving, deleting, leaveAfterDeleting} = this.props;
+    let {saving, deleting, leaveAfterDeleting, deleteDocument} = this.props;
     let {children} = props;
     let Title = this.context.TitleSkin; // get parent skin
     return <Title {...props}>
-      <Nav right>
+      {deleteDocument && <Nav right>
         <DeleteButton disabled={saving || deleting} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
                       deleting={deleting} deletingText="Deleting..."/>
-      </Nav>
+      </Nav>}
       {children}
     </Title>;
   };

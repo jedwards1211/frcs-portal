@@ -1,6 +1,7 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import Immutable from 'immutable';
 import Promise from 'bluebird';
 import {connect} from 'react-redux';
 
@@ -13,6 +14,7 @@ import * as actions from './DocumentViewActions';
 type InputProps = {
   mode: 'create' | 'edit',
   reduxPath: Array<string | number>,
+  actualDocument?: any, // the document that is actually in effect
   createDocument?: (document: any) => Promise,
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
@@ -26,7 +28,6 @@ type InputProps = {
 };
 
 type ReduxProps = {
-  actualDocument?: any, // the document that is actually in effect
   initDocument?: any,   // what the document was when this view mounted or the user last successfully Applied
   document?: any,       // the document with in-progress edits made by the user
   askToLeave?: boolean,
