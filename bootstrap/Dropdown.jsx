@@ -142,17 +142,27 @@ class Dropdown extends Component {
 
     if (!children.find(child => child.type === DropdownToggle)) {
       let count = children.length;
-      children = [
-        ...children.slice(0, count - 2),
-        children[count - 2] && <DropdownToggle key="dropdown-toggle"
+      if (count === 1) {
+        children = [
+          <DropdownToggle key="dropdown-toggle"
+            {...(children[0].props || {})} disabled={disabled}>
+            {children[0]}
+          </DropdownToggle>
+        ];
+      }
+      else {
+        children = [
+          ...children.slice(0, count - 2),
+          children[count - 2] && <DropdownToggle key="dropdown-toggle"
             {...(children[count - 2].props || {})} disabled={disabled}>
-          {children[count - 2]}
-        </DropdownToggle>,
-        children[count - 1] && <DropdownMenu key="dropdown-menu"
+            {children[count - 2]}
+          </DropdownToggle>,
+          children[count - 1] && <DropdownMenu key="dropdown-menu"
             {...(children[count - 1].props || {})} disabled={disabled}>
-          {children[count - 1]}
-        </DropdownMenu>
-      ];
+            {children[count - 1]}
+          </DropdownMenu>
+        ];
+      }
     }
 
     children = children.map(child => {
