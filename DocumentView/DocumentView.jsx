@@ -126,6 +126,7 @@ export default class DocumentView extends Component<void,Props,State> {
     return promise.then(() => {
       // update initDocument so there are no seemingly unsaved changes
       setDocument(document);
+      this.setState({externallyChanged: false, externallyDeleted: false});
     }).catch(err => {
       setSaveError(err);
       throw err;
