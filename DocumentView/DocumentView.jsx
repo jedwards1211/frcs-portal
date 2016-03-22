@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import classNames from 'classnames';
 import Promise from 'bluebird';
 
@@ -9,6 +9,8 @@ import DeleteButton from '../bootstrap/DeleteButton.jsx';
 import Spinner from './../common/Spinner.jsx';
 import AlertGroup from './../common/AlertGroup';
 import {Nav} from './../common/View.jsx';
+
+import {createSkinDecorator} from 'react-skin';
 
 import createOrCloneElement from '../utils/createOrCloneElement';
 
@@ -55,23 +57,6 @@ type State = {
  * This will inject alerts, cancel, apply, and OK buttons into the child component via skins.
  */
 export default class DocumentView extends Component<void,Props,State> {
-  static contextTypes = {
-    TitleSkin: PropTypes.any.isRequired,
-    BodySkin: PropTypes.any.isRequired,
-    FooterSkin: PropTypes.any.isRequired
-  };
-  
-  static childContextTypes = {
-    TitleSkin: PropTypes.any.isRequired,
-    BodySkin: PropTypes.any.isRequired,
-    FooterSkin: PropTypes.any.isRequired
-  };
-  
-  getChildContext(): Object {
-    let {TitleSkin, BodySkin, FooterSkin} = this;
-    return {TitleSkin, BodySkin, FooterSkin};
-  }
-   
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
@@ -170,76 +155,82 @@ export default class DocumentView extends Component<void,Props,State> {
     }).catch(this.abortLeaving);
   };
 
-  TitleSkin: (props: Props) => ReactElement = props => {
-    let {saving, deleting, leaveAfterDeleting, deleteDocument} = this.props;
-    let {children} = props;
-    let Title = this.context.TitleSkin; // get parent skin
-    return <Title {...props}>
-      {deleteDocument && <Nav right>
-        <DeleteButton disabled={saving || deleting} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
-                      deleting={deleting} deletingText="Deleting..."/>
-      </Nav>}
-      {children}
-    </Title>;
-  };
+  SkinDecorator: any = createSkinDecorator({
+    Title: (Title:any, props:Props) => {
+      let {saving, deleting, leaveAfterDeleting, deleteDocument} = this.props;
+      let {children} = props;
 
-  BodySkin: (props: Props) => ReactElement = props => {
-    let {actualDocument, setDocument} = this.props;
-    let {children} = props;
-    let {externallyChanged, externallyDeleted} = this.state;
-    let Body = this.context.BodySkin; // get parent skin
+      return <Title {...props}>
+        {deleteDocument && <Nav right>
+          <DeleteButton disabled={saving || deleting} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
+                        deleting={deleting} deletingText="Deleting..."/>
+        </Nav>}
+        {children}
+      </Title>;
+    },
 
-    let alerts = {};
-    if (externallyChanged && actualDocument) {
-      alerts.externallyChanged = {warning: <span>
+    Body: (Body:any, props:Props) => {
+      let {actualDocument, setDocument} = this.props;
+      let {children} = props;
+      let {externallyChanged, externallyDeleted} = this.state;
+
+      let alerts = {};
+      if (externallyChanged && actualDocument) {
+        alerts.externallyChanged = {
+          warning: <span>
         <Button warning className="alert-btn-right" onClick={() => {
           setDocument(actualDocument);
           this.setState({externallyChanged: false});
         }}>Load Changes</Button>
         Someone else changed this document.
-      </span>};
-    }
-    if (externallyDeleted) {
-      alerts.externallyDeleted = {warning: <span>
+      </span>
+        };
+      }
+      if (externallyDeleted) {
+        alerts.externallyDeleted = {
+          warning: <span>
         Someone else deleted this document.  You may recreate it by pressing the Create button.
-      </span>};
-    }
+      </span>
+        };
+      }
 
-    return <Body {...props}>
+      return <Body {...props}>
       <AlertGroup alerts={alerts}/>
       {children}
-    </Body>;
-  };
+      </Body>;
+    },
 
-  FooterSkin: (props: Props) => ReactElement = props => {
-    let {children} = props;
-    let {mode, validate, saveError, saving, deleting,
-        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.props;
-    let {externallyDeleted} = this.state;
-    let Footer = this.context.FooterSkin; // get parent skin
-    
-    let footerMode = externallyDeleted ? 'create' : mode;
+    Footer: (Footer:any, props:Props) => {
+      let {children} = props;
+      let {
+        mode, validate, saveError, saving, deleting,
+        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving
+      } = this.props;
+      let {externallyDeleted} = this.state;
 
-    let alerts = {};
-    let {valid} = validate ? validate(document) : {valid: true};
-    if (!valid) {
-      alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
+      let footerMode = externallyDeleted ? 'create' : mode;
+
+      let alerts = {};
+      let {valid} = validate ? validate(document) : {valid: true};
+      if (!valid) {
+        alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
+      }
+      if (saveError) {
+        alerts.saveError = {error: saveError};
+      }
+      return <Footer {...props}>
+        <AlertGroup alerts={alerts}/>
+        <Button onClick={leaveAfterCancel}>Cancel</Button>
+        {footerMode !== 'create' && <Button key="apply" disabled={!valid || saving || deleting}
+                                            onClick={this.save}>Apply</Button>}
+        <Button primary key="ok" disabled={!valid || saving || deleting}
+                onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}>
+          {saving ? <span><Spinner/> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
+        </Button>
+        {children}
+      </Footer>;
     }
-    if (saveError) {
-      alerts.saveError = {error: saveError};
-    }
-    return <Footer {...props}>
-      <AlertGroup alerts={alerts}/>
-      <Button onClick={leaveAfterCancel}>Cancel</Button>
-      {footerMode !== 'create' && <Button key="apply" disabled={!valid || saving || deleting}
-                                          onClick={this.save}>Apply</Button>}
-      <Button primary key="ok" disabled={!valid || saving || deleting}
-              onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}>
-        {saving ? <span><Spinner/> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
-      </Button>
-      {children}
-    </Footer>;
-  };
+  });
 
   render(): ReactElement {
     let {className, askToLeave, saving, deleting, document, validate, setAskToLeave} = this.props;
@@ -249,17 +240,21 @@ export default class DocumentView extends Component<void,Props,State> {
     let children: any = this.props.children;
     let {valid} = validate ? validate(document) : {valid: true};
 
-    return <div {...this.props} className={className}>
-      {createOrCloneElement(children, {
-        document,
-        disabled: saving || deleting
-      })}
-      <CatchUnsavedChangesModal open={askToLeave} saving={saving} valid={valid}
-                                hasUnsavedChanges={this.hasUnsavedChanges()}
-                                onOpenChange={open => setAskToLeave(open)}
-                                onStayHereClick={this.abortLeaving}
-                                onDiscardChangesClick={this.discardChangesAndLeave}
-                                onSaveChangesClick={this.saveChangesAndLeave}/>
-    </div>;
+    let {SkinDecorator} = this;
+
+    return <SkinDecorator>
+      <div {...this.props} className={className}>
+        {createOrCloneElement(children, {
+          document,
+          disabled: saving || deleting
+        })}
+        <CatchUnsavedChangesModal open={askToLeave} saving={saving} valid={valid}
+                                  hasUnsavedChanges={this.hasUnsavedChanges()}
+                                  onOpenChange={open => setAskToLeave(open)}
+                                  onStayHereClick={this.abortLeaving}
+                                  onDiscardChangesClick={this.discardChangesAndLeave}
+                                  onSaveChangesClick={this.saveChangesAndLeave}/>
+      </div>
+    </SkinDecorator>;
   }
 }

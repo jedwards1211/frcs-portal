@@ -6,27 +6,14 @@ import Glyphicon from '../bootstrap/Glyphicon.jsx';
 import {Nav} from './View.jsx';
 import PageSlider from './PageSlider';
 
+import {createSkinDecorator} from 'react-skin';
+
 import './DrilldownRoute.sass';
 
-class TitleInjector extends Component {
-  static contextTypes = {
-    TitleSkin: PropTypes.any.isRequired
-  };
-
-  static childContextTypes = {
-    TitleSkin: PropTypes.any.isRequired
-  };
-
-  getChildContext(): Object {
-    let {TitleSkin} = this;
-    return {TitleSkin};
-  }
-
-  TitleSkin = (props) => {
+const TitleInjector = createSkinDecorator({
+  Title: (Title, props, decorator) => {
     let {children} = props;
-    let {to} = this.props;
-    
-    let Title = this.context.TitleSkin;
+    let {to} = decorator.props;
 
     return <Title {...props}>
       {to && <Nav left>
@@ -34,12 +21,8 @@ class TitleInjector extends Component {
       </Nav>}
       {children}
     </Title>;
-  };
-  
-  render() {
-    return this.props.children;
   }
-}
+});
 
 /**
  * When used as the component for a react-router route with an IndexRoute and
