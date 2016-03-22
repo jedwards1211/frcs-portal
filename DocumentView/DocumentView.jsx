@@ -17,20 +17,18 @@ import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx';
 type Props = {
   className?: string,
   mode: 'create' | 'edit',
-  actions: {
-    createDocument?: (document: any) => Promise,
-    saveDocument: (document: any) => Promise,
-    deleteDocument?: () => Promise,
-    setDocument: (document: any) => any,
-    setSaving: (saving: boolean) => any,
-    setSaveError: (error: ?Error) => any,
-    setDeleting: (deleting: boolean) => any,
-    setAskToLeave: (askToLeave: boolean) => any,
-    leaveAfterCancel?: Function,
-    leaveAfterCreating?: Function,
-    leaveAfterSaving: Function,
-    leaveAfterDeleting?: Function
-  },
+  createDocument?: (document: any) => Promise,
+  saveDocument: (document: any) => Promise,
+  deleteDocument?: () => Promise,
+  setDocument: (document: any) => any,
+  setSaving: (saving: boolean) => any,
+  setSaveError: (error: ?Error) => any,
+  setDeleting: (deleting: boolean) => any,
+  setAskToLeave: (askToLeave: boolean) => any,
+  leaveAfterCancel?: Function,
+  leaveAfterCreating?: Function,
+  leaveAfterSaving: Function,
+  leaveAfterDeleting?: Function,
   actualDocument?: any, // the document that is actually in effect
   initDocument?: any,   // what the document was when this view mounted or the user last successfully Applied
   document?: any,       // the document with in-progress edits made by the user
@@ -77,13 +75,13 @@ export default class EditDocumentView extends Component<void,Props,State> {
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
-      let {actualDocument, actions} = this.props;
-      actions.setDocument(actualDocument);
+      let {actualDocument, setDocument} = this.props;
+      setDocument(actualDocument);
     }
   }
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.actualDocument !== nextProps.actualDocument) {
-      let {document, mode, saving, deleting, actualDocument, actions: {setDocument}} = nextProps;
+      let {document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
       if (mode === 'edit' && !saving && !deleting) {
         if (!actualDocument) {
           this.setState({
@@ -108,7 +106,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   }
 
   save: () => Promise = () => {
-    let {mode, document, actions: {setSaving, setSaveError, createDocument, saveDocument, setDocument}} = this.props;
+    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument} = this.props;
 
     setSaving(true);
     setSaveError(undefined);
@@ -119,7 +117,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
         promise = createDocument(document);
       }
       else {
-        promise = Promise.reject(new Error('missing actions.createDocument'))
+        promise = Promise.reject(new Error('missing createDocument'))
       }
     }
     else {
@@ -135,7 +133,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   delete: () => Promise = () => {
-    let {actions: {setDeleting, setSaveError, deleteDocument}} = this.props;
+    let {setDeleting, setSaveError, deleteDocument} = this.props;
 
     if (deleteDocument) {
       setDeleting(true);
@@ -155,7 +153,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   closeAskToLeaveDialog:  Function = () => {
-    let {askToLeave, actions: {setAskToLeave}} = this.props;
+    let {askToLeave, setAskToLeave} = this.props;
     if (askToLeave) setAskToLeave(false);
   };
 
@@ -172,7 +170,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   TitleSkin: (props: Props) => ReactElement = props => {
-    let {saving, deleting, actions: {leaveAfterDeleting}} = this.props;
+    let {saving, deleting, leaveAfterDeleting} = this.props;
     let {children} = props;
     let Title = this.context.TitleSkin; // get parent skin
     return <Title {...props}>
@@ -185,7 +183,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   BodySkin: (props: Props) => ReactElement = props => {
-    let {actualDocument, actions: {setDocument}} = this.props;
+    let {actualDocument, setDocument} = this.props;
     let {children} = props;
     let {externallyChanged, externallyDeleted} = this.state;
     let Body = this.context.BodySkin; // get parent skin
@@ -215,7 +213,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   FooterSkin: (props: Props) => ReactElement = props => {
     let {children} = props;
     let {mode, validate, saveError, saving, deleting,
-        actions: {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving}} = this.props;
+        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.props;
     let {externallyDeleted} = this.state;
     let Footer = this.context.FooterSkin; // get parent skin
     
@@ -243,7 +241,7 @@ export default class EditDocumentView extends Component<void,Props,State> {
   };
 
   render(): ReactElement {
-    let {className, askToLeave, saving, deleting, document, validate, actions: {setAskToLeave}} = this.props;
+    let {className, askToLeave, saving, deleting, document, validate, setAskToLeave} = this.props;
 
     className = classNames(className, 'mf-document-view');
 
