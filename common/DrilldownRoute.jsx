@@ -10,7 +10,7 @@ import {createSkinDecorator} from 'react-skin';
 
 import './DrilldownRoute.sass';
 
-const TitleInjector = createSkinDecorator({
+const TitleDecorator = createSkinDecorator({
   Title: (Title, props, decorator) => {
     let {children} = props;
     let {to} = decorator.props;
@@ -61,7 +61,7 @@ export default class DrilldownRoute extends Component {
 
     return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
       <IndexComponent {...this.props} route={route.indexRoute}/>
-      {child && <TitleInjector to={route.path} children={child}/>}
+      {child && <TitleDecorator to={route.path} children={child}/>}
     </PageSlider>;
   }
 }

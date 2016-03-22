@@ -155,7 +155,7 @@ export default class DocumentView extends Component<void,Props,State> {
     }).catch(this.abortLeaving);
   };
 
-  SkinDecorator: any = createSkinDecorator({
+  ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
       let {saving, deleting, leaveAfterDeleting, deleteDocument} = this.props;
       let {children} = props;
@@ -240,9 +240,9 @@ export default class DocumentView extends Component<void,Props,State> {
     let children: any = this.props.children;
     let {valid} = validate ? validate(document) : {valid: true};
 
-    let {SkinDecorator} = this;
+    let {ContentDecorator} = this;
 
-    return <SkinDecorator>
+    return <ContentDecorator>
       <div {...this.props} className={className}>
         {createOrCloneElement(children, {
           document,
@@ -255,6 +255,6 @@ export default class DocumentView extends Component<void,Props,State> {
                                   onDiscardChangesClick={this.discardChangesAndLeave}
                                   onSaveChangesClick={this.saveChangesAndLeave}/>
       </div>
-    </SkinDecorator>;
+    </ContentDecorator>;
   }
 }
