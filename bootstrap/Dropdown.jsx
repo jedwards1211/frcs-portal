@@ -46,6 +46,7 @@ class Dropdown extends Component {
      * optional (overrides state.open if used)
      */
     open:               React.PropTypes.bool,
+    closeOnToggleClick: React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
     disabled:           React.PropTypes.bool,
     component:          React.PropTypes.any.isRequired,
@@ -75,7 +76,9 @@ class Dropdown extends Component {
     this.setState({open: false});
   }
   onDropdownToggleClick = () => {
-    this.setState({open: !this.state.open});
+    if (!this.state.open || this.props.closeOnToggleClick !== false) {
+      this.setState({open: !this.state.open});
+    }
   };
   componentWillReceiveProps(nextProps) {
     if (this.props.open !== undefined && nextProps.open === undefined) {
@@ -170,7 +173,7 @@ class Dropdown extends Component {
         if (child.type === DropdownToggle) {
           var onClick = () => {
             if (child.props.onClick) child.props.onClick();
-            if (!disabled) this.onDropdownToggleClick();
+            if (!disabled && this.props.open === undefined) this.onDropdownToggleClick();
           };
 
           let origRef = child.ref;

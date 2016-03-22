@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, {Component, Children} from 'react';
+import React, {Component, Children, PropTypes} from 'react';
 import classNames from 'classnames';
 
 import {getSizingClass} from './bootstrapPropUtils';
@@ -18,6 +18,14 @@ function createAddon(children) {
 }
 
 export default class InputGroup extends Component {
+  static childContextTypes = {
+    insideInputGroup: PropTypes.bool.isRequired
+  };
+  getChildContext() {
+    return {
+      insideInputGroup: true
+    };
+  }
   render(): ReactElement {
     let {className, children} = this.props;
 

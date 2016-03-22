@@ -1,0 +1,53 @@
+.mf-clock-face
+  fill: #eee
+  stroke-width: 0.5
+  stroke: #ddd
+
+.mf-clock-hour
+  dominant-baseline: middle
+  text-anchor: middle
+  cursor: default
+
+.mf-clock-hour-well
+  fill: none
+  pointer-events: fill
+
+.mf-clock--hoverable .mf-clock-hour-group:hover
+  *
+    cursor: pointer
+  .mf-clock-hour-well
+    fill: #ddd
+
+.mf-clock-hour-hand,
+.mf-clock-minute-hand,
+.mf-clock-second-hand
+  stroke-linecap: round
+
+.mf-clock-hour-hand
+  stroke: #333
+  stroke-width: 4
+
+.mf-clock-minute-hand
+  stroke: #333
+  stroke-width: 1.8
+
+.mf-clock-second-hand
+  stroke: #e00
+  stroke-width: 0.8
+
+.mf-clock--inverse
+  .mf-clock-face
+    fill: #333
+  text
+    fill: #f5f5f5
+  .mf-clock-hour-hand,
+  .mf-clock-minute-hand
+    stroke: #f5f5f5
+  .mf-clock-second-hand
+    stroke: #f33
+  &.mf-clock--hoverable .mf-clock-hour-group:hover
+    .mf-clock-hour-well
+      fill: #444
+
+.mf-clock-hand--controlled
+  stroke: #3bf

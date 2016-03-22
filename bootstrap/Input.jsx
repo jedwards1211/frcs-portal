@@ -2,6 +2,7 @@
 
 import React, {Component} from 'react';
 import classNames from 'classnames';
+import {getSizingClass} from './bootstrapPropUtils';
 
 const classNameForType = {
   email:    'form-control',
@@ -17,17 +18,24 @@ const classNameForType = {
 
 type Props = {
   className?: string,
-  type?: string
+  type?: string,
+  lg?: boolean,
+  sm?: boolean,
+  large?: boolean,
+  small?: boolean,
+  size?: 'lg' | 'sm' | 'large' | 'small'
 };
 
 export default class Input extends Component<void,Props,void> {
+  static supportsInputGroupInput = true;
   root: HTMLImageElement;
   focus(): void {
     this.root.focus();
   }
   render(): ReactElement {
     let {className, type} = this.props;
-    className = classNames(className, type && classNameForType[type]);
+    let sizingClass = getSizingClass(this.props);
+    className = classNames(className, type && classNameForType[type], sizingClass && 'input-' + sizingClass);
     return <input {...this.props} className={className} ref={c => this.root = c}/>;
   }
 }
