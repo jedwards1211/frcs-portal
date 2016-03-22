@@ -1,9 +1,45 @@
 import React, {Component, PropTypes} from 'react';
+import {Link} from 'react-router';
 import classNames from 'classnames';
 
+import Glyphicon from '../bootstrap/Glyphicon.jsx';
+import {Nav} from './View.jsx';
 import PageSlider from './PageSlider';
 
 import './DrilldownRoute.sass';
+
+class TitleInjector extends Component {
+  static contextTypes = {
+    TitleSkin: PropTypes.any.isRequired
+  };
+
+  static childContextTypes = {
+    TitleSkin: PropTypes.any.isRequired
+  };
+
+  getChildContext(): Object {
+    let {TitleSkin} = this;
+    return {TitleSkin};
+  }
+
+  TitleSkin = (props) => {
+    let {children} = props;
+    let {to} = this.props;
+    
+    let Title = this.context.TitleSkin;
+
+    return <Title {...props}>
+      {to && <Nav left>
+        <Link to={to}><Glyphicon menuLeft/></Link>
+      </Nav>}
+      {children}
+    </Title>;
+  };
+  
+  render() {
+    return this.props.children;
+  }
+}
 
 /**
  * When used as the component for a react-router route with an IndexRoute and
@@ -22,6 +58,7 @@ export default class DrilldownRoute extends Component {
     this.lastActiveChild = undefined;
     this.forceUpdate();
   };
+
   render() {
     let {className, route, children} = this.props;
     className = classNames(className, 'mf-drilldown-route');
@@ -41,7 +78,7 @@ export default class DrilldownRoute extends Component {
 
     return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
       <IndexComponent {...this.props} route={route.indexRoute}/>
-      {child}
+      {child && <TitleInjector to={route.path} children={child}/>}
     </PageSlider>;
   }
 }
