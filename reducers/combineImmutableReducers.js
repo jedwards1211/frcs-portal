@@ -1,7 +1,7 @@
 import {reduce, forEach, mapValues, keys, identity} from 'lodash';
 import Immutable from 'immutable';
 import {createReducer, composeReducers} from 'mindfront-redux-utils';
-import warning from 'fbjs/lib/warning';
+import warning from 'warning';
 
 function combineImmutableReducersBase(reducers) {
   if (!keys(reducers).length) return identity;
