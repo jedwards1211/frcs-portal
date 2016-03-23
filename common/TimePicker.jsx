@@ -48,6 +48,7 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
     showSeconds: false,
     showAMPM: true
   };
+  
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -123,8 +124,9 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
   onAMPMClick: () => void = () => {
     let {time, onChange} = this.props; 
     if (time && onChange) {
-      time.setHours((time.getHours() + 12) % 24);
-      onChange(time); 
+      let newTime = new Date(time);
+      newTime.setHours((time.getHours() + 12) % 24);
+      onChange(newTime); 
     }
   };
   static validate: (props: Props, state: State) => FormValidation = (props, state) => {
@@ -156,7 +158,7 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
     }
     
     return <div {...this.props} onChange={e => e.stopPropagation()} className={className}>
-      <Dropdown component="div" closeOnInsideClick={false} closeOnToggleClick={false}>
+      <Dropdown component="div" closeOnInsideClick={false} closeOnToggleClick={false} trackFocus>
         {toggle}
         <div>
           <Clock time={time} type={type} hoverable onNumberClick={this.onNumberClick}

@@ -2,6 +2,7 @@ import React, {Component, Children} from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import _ from 'lodash';
+import {element} from '../utils/domTraversal';
 
 class DropdownToggle extends Component {
   static propTypes = {
@@ -48,6 +49,7 @@ class Dropdown extends Component {
     open:               React.PropTypes.bool,
     closeOnToggleClick: React.PropTypes.bool,
     closeOnInsideClick: React.PropTypes.bool,
+    trackFocus:         React.PropTypes.bool,
     disabled:           React.PropTypes.bool,
     component:          React.PropTypes.any.isRequired,
     dropup:             React.PropTypes.any,
@@ -57,6 +59,7 @@ class Dropdown extends Component {
   static defaultProps = {
     closeOnInsideClick: true,
   };
+  refs: any[] = [];
   constructor(props) {
     super(props);
     this.state = {
@@ -84,6 +87,14 @@ class Dropdown extends Component {
     if (this.props.open !== undefined && nextProps.open === undefined) {
       this.setState({open: this.props.open});
     }
+    if (nextProps.trackFocus !== this.props.trackFocus) {
+      if (nextProps.trackFocus) {
+        document.addEventListener('focus', this.onDocumentFocus, true);
+      }
+      else {
+        document.removeEventListener('focus', this.onDocumentFocus, true);
+      }
+    }
   }
   componentDidUpdate() {
     if (this.state.open && !this.isDocumentClickInstalled) {
@@ -102,11 +113,15 @@ class Dropdown extends Component {
       this.props.onClosed();
     }
   }
+  componentWillMount() {
+    if (this.props.trackFocus) {
+      document.addEventListener('focus', this.onDocumentFocus, true);
+    } 
+  }
   componentWillUnmount() {
-    if (this.isDocumentClickInstalled) {
-      document.removeEventListener('click', this.onDocumentClick, true);
-      this.isDocumentClickInstalled = false;
-    }
+    document.removeEventListener('click', this.onDocumentClick, true);
+    this.isDocumentClickInstalled = false;
+    document.removeEventListener('focus', this.onDocumentFocus, true);
   }
   componentWillUpdate(nextProps, nextState) {
     let open = this.props.open !== undefined ? this.props.open : this.state.open;
@@ -115,20 +130,13 @@ class Dropdown extends Component {
     this.justClosed = open && !nextOpen;
   }
   onDocumentClick = (e) => {
-    function isDescendant(el, ancestor) {
-      while (el && el !== document.body.parentElement) {
-        if (el === ancestor) {
-          return true;
-        }
-        el = el.parentElement;
-      }
-      return false;
-    }
-
-    if (this.props.closeOnInsideClick || 
-      (!isDescendant(e.target, ReactDOM.findDOMNode(this.menu))) &&
-      (!isDescendant(e.target, ReactDOM.findDOMNode(this.toggle)))) {
+    if (this.props.closeOnInsideClick || !element(e.target).isDescendantOf(this.refs.dropdown)) {
       this.setState({open: false});
+    }
+  };
+  onDocumentFocus = (e) => {
+    if (this.props.trackFocus) {
+      this.setState({open: element(e.target).isDescendantOf(this.refs.dropdown)});
     }
   };
   render() {
