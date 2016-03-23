@@ -3,7 +3,7 @@
 import {createReducer} from 'mindfront-redux-utils';
 import _ from 'lodash';
 
-import type {Reducer} from '../../../mindfront-react-components/flowtypes/reduxTypes';
+import type {Reducer} from '../flowtypes/reduxTypes';
 
 function createSetter(field: string): Reducer {
   return (state, action) => state.setIn([...action.meta.reduxPath, 'document', field], action.payload);
