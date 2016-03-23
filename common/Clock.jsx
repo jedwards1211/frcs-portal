@@ -29,7 +29,10 @@ type Props = {
 const Hand = (props) => {
   let {angle, radius, className, controlled} = props;
   className = classNames(className, {'mf-clock-hand--controlled': controlled});
-  return <path {...props} className={className} d={`M 0 0 L 0 ${-radius}`} transform={`rotate(${angle * 360})`}/>;
+  return <g {...props} className={className} transform={`rotate(${angle * 360})`}>
+    <circle cx={0} cy={0} r={2}/>
+    <path d={`M 0 ${radius * 0.25} L 0 ${-radius}`}/>
+  </g>;
 };
 
 type State = {
@@ -51,19 +54,24 @@ export default class Clock extends Component<void,Props,State> {
       let hours = date.getHours();
       let minutes = date.getMinutes();
       let seconds = date.getSeconds();
+      let milliseconds = date.getMilliseconds();
+      
+      let fracSeconds = seconds + milliseconds / 1000;
+      let fracMinutes = minutes + fracSeconds / 60;
+      let fracHours = hours + fracMinutes / 60;
 
       hourHand    = showHours   !== false && <Hand className="mf-clock-hour-hand" 
                                                    controlled={controlledHand === 'hour'}
-                                                   angle={(controlledHand === 'hour' && hoveredNumber !== undefined ? hoveredNumber : hours + (minutes + seconds / 60) / 60) /
+                                                   angle={(controlledHand === 'hour' && hoveredNumber !== undefined ? hoveredNumber : fracHours) /
                                                           (type === 60 ? 12 : type)}
                                                    radius={HOUR_HAND_RADIUS}/>;
       minuteHand  = showMinutes !== false && <Hand className="mf-clock-minute-hand"
                                                    controlled={controlledHand === 'minute'}
-                                                   angle={(controlledHand === 'minute' && hoveredNumber !== undefined ? hoveredNumber : minutes + seconds / 60) / 60}
+                                                   angle={(controlledHand === 'minute' && hoveredNumber !== undefined ? hoveredNumber : fracMinutes) / 60}
                                                    radius={MINUTE_HAND_RADIUS}/>;
       secondHand  = showSeconds !== false && <Hand className="mf-clock-second-hand"
                                                    controlled={controlledHand === 'second'}
-                                                   angle={(controlledHand === 'second' && hoveredNumber !== undefined ? hoveredNumber : seconds) / 60} radius={SECOND_HAND_RADIUS}/>;
+                                                   angle={(controlledHand === 'second' && hoveredNumber !== undefined ? hoveredNumber : fracSeconds) / 60} radius={SECOND_HAND_RADIUS}/>;
     }
     
     className = classNames(className, 'mf-clock noselect', {
