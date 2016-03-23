@@ -21,7 +21,7 @@ type DefaultProps = {
   ItemLink: ReactTag
 };
 
-type Props = DefaultProps & NonDefaultProps;
+export type Props = DefaultProps & NonDefaultProps;
 
 export default class DrilldownListView extends Component<DefaultProps,Props,void> {
   static defaultProps = {

@@ -25,7 +25,7 @@ type Props = {
  * Then, if you give any children a "field" property, it will clone those children with
  * value={this.props[field]} (where this is the Autoform), onChange that calls the corresponding
  * handler from this.props with the new value (e.g. for field="fullName", onChange will call
- * this.props.onFullNameChange).  If the child has a static formGroupValueProp property,
+ * this.props.onFullNameChange).  If the child component has a static formGroupValueProp property,
  * that will be used instead of "value".
  * The onChange handler will also call onAutoformFieldChange(field, newValue).
  * If you give the child an "eventName" prop, it will pass the handler for that prop instead of "onChange".

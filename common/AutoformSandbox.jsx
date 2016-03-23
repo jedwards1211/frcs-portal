@@ -6,7 +6,9 @@ export default class AutoformTester extends Component {
     this.state = props.initState || {};
   }
   onAutoformFieldChange = (field, newValue) => {
+    /* eslint-disable no-console */
     console.log('autoform field change: ', field, newValue);
+    /* eslint-enable no-console */
     this.setState({[field]: newValue});
   };
   render() {
