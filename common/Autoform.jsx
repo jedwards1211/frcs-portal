@@ -40,11 +40,11 @@ export default class Autoform extends Component<void,Props,void> {
     let {onAutoformFieldChange, validation, disabled} = this.props;
 
     return mapChildrenRecursive(children, child => {
-      if (child && child.props && child.props.formGroup) {
+      if (child && child.props && (child.props.formGroup || child.props.autoformed)) {
         let {field, staticControl, readOnly, onChange} = child.props;
         if (field && !staticControl && !readOnly) {
           let eventHandler = this.props[child.props.eventName || `on${_.upperFirst(field)}Change`];
-          let valueProp = child.type.formControlValueProp || 'value';
+          let valueProp = child.type.formControlValueProp || child.props.valueProp || 'value';
           
           return React.cloneElement(child, {
             disabled,
@@ -72,6 +72,22 @@ export default class Autoform extends Component<void,Props,void> {
   }
 }
 
+export function bindToggleButton(button: ReactElement, formProps: Props): Object {
+  let {validation, onAutoformFieldChange} = formProps;
+  let {field, onClick} = button.props;
+  let eventHandler = formProps[button.props.eventName || `on${_.upperFirst(field)}Change`];
+  return React.cloneElement(button, {
+    active: formProps[field],
+    validation: validation && validation[field],
+    onClick: (e) => {
+      let newValue = !formProps[field];
+      onClick && onClick(e);
+      eventHandler && eventHandler(newValue);
+      onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+    }
+  });
+}
+
 /**
  * Creates an onAutoformFieldChange callback that dispatches corresponding actions to a redux store.
  *
@@ -81,12 +97,12 @@ export default class Autoform extends Component<void,Props,void> {
  * and option.typePrefix = "EMPLOYEE.", when the fullName field changes this will dispatch an EMPLOYEE.SET_FULL_NAME
  * action.
  */
-export function dispatchAutoformFieldChange(dispatch: Dispatch, options?: {meta?: Object, typePrefix?: string})
+export function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object, typePrefix?: string})
   : (field: string, newValue: any) => void {
   let meta = options && options.meta;
   let typePrefix = (options && options.typePrefix) || '';
   return (field, newValue) => dispatch({
-    type: typePrefix + 'set' + _.kebabCase(field).toUpperCase(),
+    type: typePrefix + 'SET_' + _.kebabCase(field).toUpperCase(),
     payload: newValue,
     meta
   });
