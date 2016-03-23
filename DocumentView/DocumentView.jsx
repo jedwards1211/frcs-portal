@@ -75,7 +75,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
-      let {actualDocument, setDocument, setSaving, setDeleting, setSaveError} = this.props;
+      let {actualDocument, setDocument, setSaving, setDeleting, setSaveError, setAskToLeave} = this.props;
       setSaving(false);
       setDeleting(false);
       setSaveError(undefined);
