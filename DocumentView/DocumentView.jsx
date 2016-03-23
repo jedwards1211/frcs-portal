@@ -23,6 +23,9 @@ type DefaultProps = {
 
 type Props = {
   className?: string,
+  loading?: boolean,
+  loadError?: Error,
+  disabled?: boolean,
   mode: 'create' | 'edit',
   typeDisplayName: string,
   typeDisplayPronoun: string,
@@ -72,7 +75,11 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
-      let {actualDocument, setDocument} = this.props;
+      let {actualDocument, setDocument, setSaving, setDeleting, setSaveError} = this.props;
+      setSaving(false);
+      setDeleting(false);
+      setSaveError(undefined);
+      setAskToLeave(false);
       setDocument(actualDocument);
     }
   }
@@ -89,7 +96,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
         else if (!document) {
           setDocument(actualDocument);
         }
-        else {
+        else if (this.props.actualDocument) {
           this.setState({
             externallyChanged: true,
             externallyDeleted: false
@@ -181,14 +188,16 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
   ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
-      let {saving, deleting, deleteDocument} = this.props;
+      let {disabled, saving, deleting, loading, loadError, deleteDocument} = this.props;
       let {children} = props;
 
       let {leaveAfterDeleting} = this.getLeaveCallbacks();
+      
+      disabled = disabled || saving || deleting || loading || loadError;
 
       return <Title {...props}>
         {deleteDocument && <Nav right>
-          <DeleteButton disabled={saving || deleting} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
+          <DeleteButton disabled={disabled} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
                         deleting={deleting} deletingText="Deleting..."/>
         </Nav>}
         {children}
@@ -196,42 +205,51 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     },
 
     Body: (Body:any, props:Props) => {
-      let {actualDocument, setDocument, createDocument, typeDisplayName, typeDisplayPronoun} = this.props;
+      let {loading, loadError, actualDocument, setDocument, createDocument, 
+          typeDisplayName, typeDisplayPronoun} = this.props;
       let {children} = props;
       let {externallyChanged, externallyDeleted} = this.state;
 
       let alerts = {};
-      if (externallyChanged && actualDocument) {
-        alerts.externallyChanged = {
-          warning: <span>
-            <Button warning className="alert-btn-right" onClick={() => {
-              setDocument(actualDocument);
-              this.setState({externallyChanged: false});
-            }}>Load Changes</Button>
-            Someone else changed this {typeDisplayName}.
-          </span>
-        };
+      if (loading) {
+        alerts.loading = {info: <span><Spinner/> Loading...</span>}
       }
-      if (externallyDeleted) {
-        alerts.externallyDeleted = {
-          warning: <span>
-            Someone else deleted this {typeDisplayName}.
-            {createDocument && `  You may recreate ${typeDisplayPronoun} by pressing the Create button.`}
-          </span>
-        };
+      else if (loadError) {
+        alerts.loadError = {error: loadError};
+      }
+      if (!loading && !loadError) {
+        if (externallyChanged && actualDocument) {
+          alerts.externallyChanged = {
+            warning: <span>
+              <Button warning className="alert-btn-right" onClick={() => {
+                setDocument(actualDocument);
+                this.setState({externallyChanged: false});
+              }}>Load Changes</Button>
+              Someone else changed this {typeDisplayName}.
+            </span>
+          };
+        }
+        if (externallyDeleted) {
+          alerts.externallyDeleted = {
+            warning: <span>
+              Someone else deleted this {typeDisplayName}.
+              {createDocument && `  You may recreate ${typeDisplayPronoun} by pressing the Create button.`}
+            </span>
+          };
+        }
       }
 
       return <Body {...props}>
-      <AlertGroup alerts={alerts}/>
-      {children}
+        <AlertGroup alerts={alerts}/>
+        {!loading && !loadError && children}
       </Body>;
     },
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {mode, validate, saveError, saving, deleting, createDocument} = this.props;
+      let {disabled, loading, loadError, mode, validate, saveError, saving, deleting, createDocument} = this.props;
       let {externallyDeleted} = this.state;
-
+      
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
 
       let footerMode = externallyDeleted ? (createDocument ? 'create' : 'none') : mode;
@@ -244,12 +262,15 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
       if (saveError) {
         alerts.saveError = {error: saveError};
       }
+      
+      disabled = disabled || !valid || saving || deleting || loading || loadError;
+      
       return <Footer {...props}>
         <AlertGroup alerts={alerts}/>
         <Button onClick={leaveAfterCancel}>Cancel</Button>
-        {footerMode === 'edit' && <Button key="apply" disabled={!valid || saving || deleting}
+        {footerMode === 'edit' && <Button key="apply" disabled={disabled}
                                             onClick={this.save}>Apply</Button>}
-        {footerMode !== 'none' && <Button primary key="ok" disabled={!valid || saving || deleting}
+        {footerMode !== 'none' && <Button primary key="ok" disabled={disabled}
                 onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}>
           {saving ? <span><Spinner/> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
         </Button>}
