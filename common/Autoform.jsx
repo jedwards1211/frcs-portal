@@ -34,32 +34,53 @@ type Props = {
  * the appropriate redux actions when a given field changes (e.g. for field="fullName", a SET_FULL_NAME
  * action will be dispatched).  dispatchAutoformFieldChange can be configured with an action type prefix
  * and custom meta as well.
+ *
+ * You may also tag buttons with autoformToggleButton to bind their field to their active and onClick props.
  */
 export default class Autoform extends Component<void,Props,void> {
   bindFields(children: any): any {
     let {onAutoformFieldChange, validation, disabled} = this.props;
 
     return mapChildrenRecursive(children, child => {
-      if (child && child.props && (child.props.formGroup || child.props.autoformed)) {
-        let {field, staticControl, readOnly, onChange} = child.props;
-        if (field && !staticControl && !readOnly) {
+      if (child && child.props) {
+        if (child.props.autoformToggleButton) {
+          let {field, onClick} = child.props;
           let eventHandler = this.props[child.props.eventName || `on${_.upperFirst(field)}Change`];
-          let valueProp = child.type.formControlValueProp || child.props.valueProp || 'value';
-          
+          let valueProp = child.type.formControlValueProp || child.props.valueProp || 'active';
+
           return React.cloneElement(child, {
             disabled,
             [valueProp]: this.props[field],
             validation: validation && validation[field],
-            onChange: (e: any) => {
-              let newValue = e;
-              if (e && e.target && 'value' in e.target) {
-                newValue = e.target.value; 
-              }
-              onChange && onChange(newValue);
+            onClick: (e) => {
+              let newValue = !this.props[field];
+              onClick && onClick(e);
               eventHandler && eventHandler(newValue);
               onAutoformFieldChange && onAutoformFieldChange(field, newValue);
             }
           });
+        }
+        if (child.props.formGroup || child.props.autoformGroup) {
+          let {field, staticControl, readOnly, onChange} = child.props;
+          if (field && !staticControl && !readOnly) {
+            let eventHandler = this.props[child.props.eventName || `on${_.upperFirst(field)}Change`];
+            let valueProp = child.type.formControlValueProp || child.props.valueProp || 'value';
+
+            return React.cloneElement(child, {
+              disabled,
+              [valueProp]: this.props[field],
+              validation: validation && validation[field],
+              onChange: (e:any) => {
+                let newValue = e;
+                if (e && e.target && 'value' in e.target) {
+                  newValue = e.target.value;
+                }
+                onChange && onChange(newValue);
+                eventHandler && eventHandler(newValue);
+                onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+              }
+            });
+          }
         }
       }
       return child;
@@ -70,22 +91,6 @@ export default class Autoform extends Component<void,Props,void> {
       {this.bindFields(this.props.children)}
     </Form>;
   }
-}
-
-export function bindToggleButton(button: ReactElement, formProps: Props): Object {
-  let {validation, onAutoformFieldChange} = formProps;
-  let {field, onClick} = button.props;
-  let eventHandler = formProps[button.props.eventName || `on${_.upperFirst(field)}Change`];
-  return React.cloneElement(button, {
-    active: formProps[field],
-    validation: validation && validation[field],
-    onClick: (e) => {
-      let newValue = !formProps[field];
-      onClick && onClick(e);
-      eventHandler && eventHandler(newValue);
-      onAutoformFieldChange && onAutoformFieldChange(field, newValue);
-    }
-  });
 }
 
 /**
@@ -102,7 +107,7 @@ export function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta
   let meta = options && options.meta;
   let typePrefix = (options && options.typePrefix) || '';
   return (field, newValue) => dispatch({
-    type: typePrefix + 'SET_' + _.kebabCase(field).toUpperCase(),
+    type: typePrefix + 'SET_' + _.snakeCase(field).toUpperCase(),
     payload: newValue,
     meta
   });

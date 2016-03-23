@@ -34,6 +34,7 @@ type Props = {
   setSaveError: (error: ?Error) => any,
   setDeleting: (deleting: boolean) => any,
   setAskToLeave: (askToLeave: boolean) => any,
+  leave?: Function,
   leaveAfterCancel?: Function,
   leaveAfterCreating?: Function,
   leaveAfterSaving: Function,
@@ -100,6 +101,17 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
   componentWillUnmount() {
     this.closeAskToLeaveDialog();
   }
+
+  getLeaveCallbacks: () => Object = () => {
+    let {leave, leaveAfterCancel, leaveAfterSaving, leaveAfterCreating, leaveAfterDeleting} = this.props;
+
+    return {
+      leaveAfterCancel:   leaveAfterCancel || leave,
+      leaveAfterSaving:   leaveAfterSaving || leaveAfterCancel || leave,
+      leaveAfterCreating: leaveAfterCreating || leaveAfterCancel || leave,
+      leaveAfterDeleting: leaveAfterDeleting || leaveAfterCancel || leave
+    };
+  };
 
   save: () => Promise = () => {
     let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument} = this.props;
@@ -169,8 +181,10 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
   ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
-      let {saving, deleting, leaveAfterDeleting, deleteDocument} = this.props;
+      let {saving, deleting, deleteDocument} = this.props;
       let {children} = props;
+
+      let {leaveAfterDeleting} = this.getLeaveCallbacks();
 
       return <Title {...props}>
         {deleteDocument && <Nav right>
@@ -215,9 +229,10 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {mode, validate, saveError, saving, deleting, createDocument,
-        leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.props;
+      let {mode, validate, saveError, saving, deleting, createDocument} = this.props;
       let {externallyDeleted} = this.state;
+
+      let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
 
       let footerMode = externallyDeleted ? (createDocument ? 'create' : 'none') : mode;
 

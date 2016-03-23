@@ -8,6 +8,8 @@ import {errorMessage} from '../utils/reactErrorUtils';
 
 import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx';
 
+import mapChildrenRecursive from '../utils/mapChildrenRecursive';
+
 type GroupProps = {
   className?: string,
   labelClass?: string,
@@ -107,26 +109,14 @@ export default class Form extends Component<void,FormProps,void> {
    * Recursively wraps any descendants with a truthy formGroup prop in a <Group>.
    */
   addFormGroups(children: any): any {
-    let anyChanged = false;
-    let newChildren = Children.map(children, child => {
-      if (child && child.props) {
-        if (child.props.formGroup) {
-          anyChanged = true;
-          return <Group {...child.props} className={child.props.formGroupClass}>
-            {child}
-          </Group>;
-        }
-        else if (child.props.children) {
-          let newGrandchildren = this.addFormGroups(child.props.children);
-          if (newGrandchildren !== child.props.children) {
-            anyChanged = true;
-            return React.cloneElement(child, {children: newGrandchildren});
-          }
-        }
+    return mapChildrenRecursive(children, child => {
+      if (child && child.props && child.props.formGroup) {
+        return <Group {...child.props} className={child.props.formGroupClass}>
+          {child}
+        </Group>;
       }
-      return child;
+      return child;      
     });
-    return anyChanged ? newChildren : children;
   }
   render(): ReactElement {
     let {className, inline, horizontal, children} = this.props;

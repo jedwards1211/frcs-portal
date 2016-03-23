@@ -18,6 +18,7 @@ type InputProps = {
   createDocument?: (document: any) => Promise,
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
+  leave?: Function,
   leaveAfterCancel?: Function,
   leaveAfterCreating?: Function,
   leaveAfterSaving: Function,

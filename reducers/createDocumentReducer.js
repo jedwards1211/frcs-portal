@@ -12,7 +12,7 @@ function createSetter(field: string): Reducer {
 export default function createDocumentReducer(fields: string[], typePrefix?: string): Reducer {
   let actionHandlers = {};
   fields.forEach(field => {
-    actionHandlers[(typePrefix || '') + 'SET_' + _.kebabCase(field).toUpperCase()] = createSetter(field); 
+    actionHandlers[(typePrefix || '') + 'SET_' + _.snakeCase(field).toUpperCase()] = createSetter(field); 
   });
 
   return createReducer(actionHandlers);

@@ -2,6 +2,9 @@
 
 import React, {Children} from 'react';
 
+/**
+ * Like React.Children.map, but works recursively on all descendants.
+ */
 export default function mapChildrenRecursive(children: any, mapper: (child: any, key: any) => any): any {
   let anyChanged = false;
   
