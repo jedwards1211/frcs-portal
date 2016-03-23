@@ -21,7 +21,7 @@ export default class InputGroup extends Component {
   static childContextTypes = {
     insideInputGroup: PropTypes.bool.isRequired
   };
-  getChildContext() {
+  getChildContext(): Object {
     return {
       insideInputGroup: true
     };

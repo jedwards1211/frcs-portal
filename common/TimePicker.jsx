@@ -9,7 +9,6 @@ import Dropdown from '../bootstrap/Dropdown.jsx';
 import Input from '../bootstrap/Input.jsx';
 import InputGroup from '../bootstrap/InputGroup.jsx';
 import Button from '../bootstrap/Button.jsx';
-import AlertGroup from './AlertGroup';
 
 import type {FormValidation} from '../flowtypes/validationTypes';
 
@@ -23,16 +22,15 @@ type DefaultProps = {
 type Props = DefaultProps & {
   className?: string,
   time?: Date,
-  onTimeChange?: (time: Date) => any,
+  onChange?: (time: Date) => any,
 };
 
 type State = {
-  focused: boolean,
   timeString: string,
   controlledHand: 'hour' | 'minute' | 'second'
 };
 
-function parseTimeString(baseTime: Date, timeString: string): Date {
+function parseTimeString(baseTime: ?Date, timeString: string): Date {
   let time = baseTime || new Date();
   let dateString = time.toLocaleDateString();
   let newTime = new Date(dateString + ' ' + timeString);
@@ -45,6 +43,7 @@ function parseTimeString(baseTime: Date, timeString: string): Date {
 }
 
 export default class TimePicker extends Component<DefaultProps,Props,State> {
+  static formControlValueProp = 'time';
   static defaultProps = {
     showSeconds: false,
     showAMPM: true
@@ -79,14 +78,14 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
       }
     }
   }
-  onTimeStringChange: (e: InputEvent) => void = e => {
+  onTimeStringChange: (e: Object) => void = e => {
     let {value} = e.target;
     this.setState({timeString: value}, () => {
       if (value) {
-        let {time, onTimeChange} = this.props;
+        let {time, onChange} = this.props;
         let newTime = parseTimeString(time, value);
-        if (onTimeChange && !isNaN(newTime.getTime())) {
-          onTimeChange(newTime);
+        if (onChange && !isNaN(newTime.getTime())) {
+          onChange(newTime);
         }
       }
     });
@@ -95,7 +94,7 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
     timeString: this.formatTime(this.props.time)
   });
   onNumberClick: (number: number) => void = number => {
-    let {time, onTimeChange, showSeconds} = this.props;
+    let {time, onChange, showSeconds} = this.props;
     time = time || new Date();
     let {controlledHand} = this.state;
     let newTime = new Date(time);
@@ -119,13 +118,13 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
         this.setState({controlledHand: 'hour'});
         break;
     }
-    onTimeChange && onTimeChange(newTime);
+    onChange && onChange(newTime);
   };
   onAMPMClick: () => void = () => {
-    let {time, onTimeChange} = this.props; 
-    if (time && onTimeChange) {
+    let {time, onChange} = this.props; 
+    if (time && onChange) {
       time.setHours((time.getHours() + 12) % 24);
-      onTimeChange(time); 
+      onChange(time); 
     }
   };
   static validate: (props: Props, state: State) => FormValidation = (props, state) => {
@@ -147,16 +146,16 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
     
     let type = controlledHand === 'hour' ? 12 : 60;
     
-    let toggle = <Input lg className="mf-time-picker-time-input" type="text" value={timeString}
-                    onChange={this.onTimeStringChange} onBlur={this.onTimeInputBlur}/>
+    let toggle = <Input className="mf-time-picker-time-input" type="text" value={timeString}
+                    onChange={this.onTimeStringChange} onBlur={this.onTimeInputBlur}/>;
     if (showAMPM) {
-      toggle = <InputGroup lg>
+      toggle = <InputGroup>
         {toggle}
         <Button onClick={this.onAMPMClick}>{time && (time.getHours() < 12 ? 'AM' : 'PM')}</Button>
       </InputGroup>;
     }
     
-    return <div {...this.props} className={className}>
+    return <div {...this.props} onChange={e => e.stopPropagation()} className={className}>
       <Dropdown component="div" closeOnInsideClick={false} closeOnToggleClick={false}>
         {toggle}
         <div>
