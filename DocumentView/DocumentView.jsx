@@ -75,18 +75,21 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
   state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
-      let {actualDocument, setDocument, setSaving, setDeleting, setSaveError, setAskToLeave} = this.props;
+      let {loading, loadError, actualDocument, setDocument, setSaving, setDeleting, setSaveError, 
+        setAskToLeave} = this.props;
       setSaving(false);
       setDeleting(false);
       setSaveError(undefined);
       setAskToLeave(false);
-      setDocument(actualDocument);
+      if (!loading && !loadError) {
+        setDocument(actualDocument);
+      }
     }
   }
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.actualDocument !== nextProps.actualDocument) {
-      let {document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
-      if (mode === 'edit' && !saving && !deleting) {
+      let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
+      if (mode === 'edit' && !saving && !deleting && !loading && !loadError) {
         if (!actualDocument) {
           this.setState({
             externallyChanged: false,
@@ -205,11 +208,11 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     },
 
     Body: (Body:any, props:Props) => {
-      let {loading, loadError, actualDocument, setDocument, createDocument, 
+      let {loading, loadError, actualDocument, document, setDocument, createDocument, 
           typeDisplayName, typeDisplayPronoun} = this.props;
       let {children} = props;
       let {externallyChanged, externallyDeleted} = this.state;
-
+      
       let alerts = {};
       if (loading) {
         alerts.loading = {info: <span><Spinner/> Loading...</span>}
@@ -241,7 +244,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
       return <Body {...props}>
         <AlertGroup alerts={alerts}/>
-        {!loading && !loadError && children}
+        {!loading && !loadError && document && children}
       </Body>;
     },
 
@@ -288,6 +291,8 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     let {valid} = validate ? validate(document) : {valid: true};
 
     let {ContentDecorator} = this;
+    
+    console.log({...this.props, ...this.state});
 
     return <ContentDecorator>
       <div {...this.props} className={className}>
