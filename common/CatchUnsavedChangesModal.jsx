@@ -89,8 +89,7 @@ export default class CatchUnsavedChangesModal extends Component<void,Props,void>
           <Body>{message}</Body>
           <Footer>
             <Button onClick={onStayHereClick}>Stay Here</Button>
-            <Button onClick={() => onDiscardChangesClick && onDiscardChangesClick(leave)}
-                    disabled={saving}>
+            <Button onClick={() => onDiscardChangesClick && onDiscardChangesClick(leave)}>
               Discard Changes
             </Button>
             {valid && <Button primary onClick={() => onSaveChangesClick && onSaveChangesClick(leave)}
