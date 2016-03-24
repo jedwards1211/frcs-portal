@@ -8,6 +8,8 @@ import Form from '../bootstrap/Form.jsx';
 import type {Dispatch} from '../flowtypes/reduxTypes';
 import type {FormValidation} from '../flowtypes/validationTypes';
 
+import {SET_FIELD} from './AutoformConstants';
+
 type AutoformFieldChangeCallback =
   (autoformField: string, newValue: any, options?: {autoformPath?: Array<string | number>}) => any;
 
@@ -94,28 +96,5 @@ export default class Autoform extends Component<void,Props,void> {
     }
 
     return <Form {...this.props}>{boundChildren}</Form>;
-  }
-}
-
-/**
- * Creates an onAutoformFieldChange callback that dispatches corresponding actions to a redux store.
- *
- * dispatch: a redux dispatch function
- * options.meta: meta to add to the actions dispatched
- * options.typePrefix: string to prepend to the generated action types.  For instance for autoformField="fullName"
- * and option.typePrefix = "EMPLOYEE.", when the fullName autoformField changes this will dispatch an EMPLOYEE.SET_FULL_NAME
- * action.
- */
-export function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object, typePrefix?: string})
-  : AutoformFieldChangeCallback {
-  let meta = options && options.meta;
-  let typePrefix = (options && options.typePrefix) || '';
-  return (autoformField, newValue, options) => {
-    let {autoformPath} = options || {};
-    dispatch({
-      type: typePrefix + 'SET_' + _.snakeCase(autoformField).toUpperCase(),
-      payload: newValue,
-      meta: meta && autoformPath ? {...meta, autoformPath} : meta
-    });
   }
 }
