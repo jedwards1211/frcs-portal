@@ -17,8 +17,8 @@ import createOrCloneElement from '../utils/createOrCloneElement';
 import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx';
 
 type DefaultProps = {
-  typeDisplayName: string,
-  typeDisplayPronoun: string
+  documentDisplayName: string,
+  documentDisplayPronoun: string
 };
 
 type Props = {
@@ -27,8 +27,8 @@ type Props = {
   loadError?: Error,
   disabled?: boolean,
   mode: 'create' | 'edit',
-  typeDisplayName: string,
-  typeDisplayPronoun: string,
+  documentDisplayName: string,
+  documentDisplayPronoun: string,
   createDocument?: (document: any) => Promise,
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
@@ -69,8 +69,8 @@ type State = {
  */
 export default class DocumentView extends Component<DefaultProps,Props,State> {
   static defaultProps = {
-    typeDisplayName: 'document',
-    typeDisplayPronoun: 'it'
+    documentDisplayName: 'document',
+    documentDisplayPronoun: 'it'
   };
   state: State = {};
   componentWillMount() {
@@ -87,17 +87,17 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     }
   }
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.actualDocument !== nextProps.actualDocument) {
-      let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
-      if (mode === 'edit' && !saving && !deleting && !loading && !loadError) {
+    let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
+    if (mode === 'edit' && !saving && !deleting && !loading && !loadError) {
+      if (!document && actualDocument) {
+        setDocument(actualDocument);
+      }
+      if (this.props.actualDocument !== actualDocument) {
         if (!actualDocument) {
           this.setState({
             externallyChanged: false,
             externallyDeleted: true
           });
-        }
-        else if (!document) {
-          setDocument(actualDocument);
         }
         else if (this.props.actualDocument) {
           this.setState({
@@ -143,8 +143,14 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
       promise = saveDocument(document);
     }
     return promise.then(() => {
-      // update initDocument so there are no seemingly unsaved changes
-      setDocument(document);
+      if (mode === 'create') {
+        // clear all fields
+        setDocument(undefined);
+      }
+      else {
+        // update initDocument so there are no seemingly unsaved changes
+        setDocument(document);
+      }
       this.setState({externallyChanged: false, externallyDeleted: false});
     }).catch(err => {
       setSaveError(err);
@@ -208,8 +214,8 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     },
 
     Body: (Body:any, props:Props) => {
-      let {loading, loadError, actualDocument, document, setDocument, createDocument, 
-          typeDisplayName, typeDisplayPronoun} = this.props;
+      let {loading, loadError, actualDocument, mode, document, setDocument, createDocument, 
+          documentDisplayName, documentDisplayPronoun} = this.props;
       let {children} = props;
       let {externallyChanged, externallyDeleted} = this.state;
       
@@ -228,15 +234,15 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
                 setDocument(actualDocument);
                 this.setState({externallyChanged: false});
               }}>Load Changes</Button>
-              Someone else changed this {typeDisplayName}.
+              Someone else changed {documentDisplayName}.
             </span>
           };
         }
         if (externallyDeleted) {
           alerts.externallyDeleted = {
             warning: <span>
-              Someone else deleted this {typeDisplayName}.
-              {createDocument && `  You may recreate ${typeDisplayPronoun} by pressing the Create button.`}
+              Someone else deleted {documentDisplayName}.
+              {createDocument && `  You may recreate ${documentDisplayPronoun} by pressing the Create button.`}
             </span>
           };
         }
@@ -244,13 +250,14 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
       return <Body {...props}>
         <AlertGroup alerts={alerts}/>
-        {!loading && !loadError && document && children}
+        {!loading && !loadError && (document || mode === 'create') && children}
       </Body>;
     },
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {disabled, loading, loadError, mode, validate, saveError, saving, deleting, createDocument} = this.props;
+      let {disabled, loading, loadError, mode, validate, document, 
+        saveError, saving, deleting, createDocument} = this.props;
       let {externallyDeleted} = this.state;
       
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
@@ -258,7 +265,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
       let footerMode = externallyDeleted ? (createDocument ? 'create' : 'none') : mode;
 
       let alerts = {};
-      let {valid} = validate ? validate(document) : {valid: true};
+      let {valid} = validate && document ? validate(document) : {valid: true};
       if (!valid) {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
       }
@@ -288,7 +295,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     className = classNames(className, 'mf-document-view');
 
     let children: any = this.props.children;
-    let {valid} = validate ? validate(document) : {valid: true};
+    let {valid} = validate && document ? validate(document) : {valid: true};
 
     let {ContentDecorator} = this;
     

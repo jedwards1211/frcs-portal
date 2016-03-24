@@ -2,6 +2,7 @@
 
 import React, {Component, Children, PropTypes} from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 import {getSizingClass} from './bootstrapPropUtils';
 
@@ -38,6 +39,21 @@ export default class InputGroup extends Component {
     let inputIndex = childArray.findIndex(child => child && child.type &&
       ((child.type === 'input' && child.props.type !== 'checkbox' && child.props.type !== 'radio') ||
       child.type.supportsInputGroupInput));
+
+    let onClick = _.get(childArray, [1, 'props', 'onClick']);
+    
+    let extraInputProps = {};
+
+    if (inputIndex === 0 && !childArray[0].props.onEnterDown && onClick) {
+      extraInputProps.onEnterDown = onClick;
+    }
+    if ('value' in this.props && !('value' in childArray[inputIndex].props)) {
+      extraInputProps.value = this.props.value;
+    }
+    
+    if (_.size(extraInputProps)) {
+      childArray[inputIndex] = React.cloneElement(childArray[inputIndex], extraInputProps);
+    }
 
     return <div {...this.props} className={className}>
       {createAddon(childArray.slice(0, inputIndex))}

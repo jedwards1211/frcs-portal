@@ -11,7 +11,7 @@ import {View, Header, Title, Body, Footer} from '../../mindfront-react-component
 
 export type NonDefaultProps = {
   title: string,
-  typePluralDisplayName: string,
+  itemPluralDisplayName: string,
   loading?: boolean,
   loadError?: boolean,
   children?: Array<any>,
@@ -28,11 +28,11 @@ export default class DrilldownListView extends Component<DefaultProps,Props,void
     ItemLink: 'a'
   };
   render(): ReactElement {
-    let {loading, loadError, title, ItemLink, children, typePluralDisplayName} = this.props;
+    let {loading, loadError, title, ItemLink, children, itemPluralDisplayName} = this.props;
 
     let body;
     if (loading) {
-      body = <Alert info><Spinner/> Loading {typePluralDisplayName}...</Alert>;
+      body = <Alert info><Spinner/> Loading {itemPluralDisplayName}...</Alert>;
     }
     else if (loadError) {
       body = <Alert error={loadError}/>;

@@ -55,7 +55,7 @@ export class Group extends Component<void,GroupProps,void> {
     let contextClass   = getFormGroupContextClass(validation || this.props);
     let contextContent = getContextContent       (validation || this.props);
 
-    className = classNames(className, 'form-group', contextClass && 'has-' + contextClass);
+    className = classNames(className, 'form-group', contextClass);
 
     let labelClass   = classNames(this.context.labelClass,   this.props.labelClass,   'control-label');
     let controlClass = classNames(this.context.controlClass, this.props.controlClass);

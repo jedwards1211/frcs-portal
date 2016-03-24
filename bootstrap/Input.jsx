@@ -23,19 +23,31 @@ type Props = {
   sm?: boolean,
   large?: boolean,
   small?: boolean,
-  size?: 'lg' | 'sm' | 'large' | 'small'
+  size?: 'lg' | 'sm' | 'large' | 'small',
+  onKeyDown?: (e: any) => any,
+  onEnterDown?: (e: any) => any,
 };
 
 export default class Input extends Component<void,Props,void> {
   static supportsInputGroupInput = true;
-  root: HTMLImageElement;
-  focus(): void {
+  root:HTMLImageElement;
+
+  focus():void {
     this.root.focus();
   }
-  render(): ReactElement {
+  
+  onKeyDown: (e: any) => any = e => {
+    let {onKeyDown, onEnterDown} = this.props;
+    onKeyDown && onKeyDown(e);
+    if (e.key === 'Enter') {
+      onEnterDown && onEnterDown(e); 
+    }
+  };
+
+  render():ReactElement {
     let {className, type} = this.props;
     let sizingClass = getSizingClass(this.props);
     className = classNames(className, type && classNameForType[type], sizingClass && 'input-' + sizingClass);
-    return <input {...this.props} className={className} ref={c => this.root = c}/>;
+    return <input {...this.props} className={className} ref={c => this.root = c} onKeyDown={this.onKeyDown}/>;
   }
 }

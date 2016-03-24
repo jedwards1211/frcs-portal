@@ -18,9 +18,9 @@ export const CONTEXT_CLASSES = {
 };
 
 export const FORM_GROUP_CONTEXT_CLASSES = {
-  error:    'error',
-  warning:  'warning',
-  success:  'success',
+  error:    'has-error',
+  warning:  'has-warning',
+  success:  'has-success'
 };
 
 export const SHADE_CLASSES = {
