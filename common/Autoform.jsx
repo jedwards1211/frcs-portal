@@ -1,20 +1,19 @@
 /* @flow */
 
-import React, {Component} from 'react';
+import React, {Component, Children} from 'react';
 import _ from 'lodash';
 
 import Form from '../bootstrap/Form.jsx';
 
-import mapChildrenRecursive from '../utils/mapChildrenRecursive';
-
 import type {Dispatch} from '../flowtypes/reduxTypes';
 import type {FormValidation} from '../flowtypes/validationTypes';
 
+type AutoformFieldChangeCallback =
+  (autoformField: string, newValue: any, options?: {autoformPath?: Array<string | number>}) => any;
+
 type Props = {
-  onAutoformFieldChange?: (autoformField: string, newValue: any) => any | (key: any, autoformField: string, newValue: any) => any,
-  onAutoformEvent?: (event: string) => any | (key: any, event: string) => any,
+  onAutoformFieldChange?: AutoformFieldChangeCallback,
   bare?: boolean,
-  documentId?: any,
   validation?: FormValidation,
   disabled?: boolean,
   children?: any,
@@ -39,75 +38,62 @@ type Props = {
  * and custom meta as well.
  */
 export default class Autoform extends Component<void,Props,void> {
-  bindFields(children: any): any {
-    let {onAutoformFieldChange, onAutoformEvent, validation, disabled, documentId} = this.props;
+  bindFields(children: any, path?: Array<string | number> = []): any {
+    let {onAutoformFieldChange, validation, disabled} = this.props;
 
-    return mapChildrenRecursive(children, child => {
+    return Children.map(children, child => {
       if (child && child.props) {
-        if (child.props.autoformField) {
-          let {autoformField, onChange, autoformEvent, autoformValueProp} = child.props;
+        let {children, autoformPath, autoformField} = child.props;
+        let childPath = autoformPath !== null && autoformPath !== undefined ? path.concat(autoformPath) : path;
+        
+        if (autoformField) {
+          let {onChange, autoformEvent, autoformValueProp} = child.props;
+          
           let eventHandler = this.props[autoformEvent || `on${_.upperFirst(autoformField)}Change`];
           let valueProp = autoformValueProp || child.type.autoformValueProp || 'value';
 
           return React.cloneElement(child, {
             disabled,
-            [valueProp]: this.props[autoformField],
-            validation: validation && validation[autoformField],
+            [valueProp]: _.get(this.props, [...childPath, autoformField]),
+            validation:  _.get(validation, [...childPath, autoformField]),
             onChange: (e:any) => {
               let newValue = e;
               if (e && e.target && 'value' in e.target) {
                 newValue = e.target.value;
               }
-              if (documentId !== undefined && documentId !== null) {
-                onChange && onChange(documentId, newValue);
-                eventHandler && eventHandler(documentId, newValue);
-                onAutoformFieldChange && onAutoformFieldChange(documentId, autoformField, newValue);
+              let options;
+              if (childPath.length) {
+                options = {autoformPath: childPath};
               }
-              else {
-                onChange && onChange(newValue);
-                eventHandler && eventHandler(newValue);
-                onAutoformFieldChange && onAutoformFieldChange(autoformField, newValue);
-              }
-            }
+              onChange && onChange(newValue, options);
+              eventHandler && eventHandler(newValue, options);
+              onAutoformFieldChange && onAutoformFieldChange(autoformField, newValue, options);
+            },
+            children: this.bindFields(children, childPath)
           });
         }
-        else if (child.props.autoformEvent) {
-          let {autoformEvent, onClick} = child.props;
-          let eventHandler = this.props[autoformEvent];
 
-          return React.cloneElement(child, {
-            disabled,
-            onClick: (e: any) => {
-              onClick && onClick(e);
-              if (documentId !== undefined && documentId !== null) {
-                eventHandler && eventHandler(documentId);
-                onAutoformEvent && onAutoformEvent(documentId, autoformEvent);
-              }
-              else {
-                eventHandler && eventHandler();
-                onAutoformEvent && onAutoformEvent(autoformEvent);
-              }
-            }
-          });
+        let newChildren = this.bindFields(children, childPath);
+        if (newChildren !== children) {
+          return React.cloneElement(child, {children: newChildren});
         }
       }
       return child;
-    },
-    child => child.type !== Autoform);
+    });
   }
   render(): ReactElement {
     let {bare, children} = this.props;
 
-    let bound = this.bindFields(children);
+    let boundChildren = this.bindFields(children);
     
     if (bare) {
-      if (bound instanceof Array) {
-        return bound[0];
+      if (boundChildren instanceof Array) {
+        return boundChildren[0];
       }
-      return bound;
+      return boundChildren;
     }
 
-    return <Form {...this.props}>{bound}</Form>;
+    return <Form {...this.props}>{boundChildren}</Form>;
   }
 }
 
@@ -121,12 +107,15 @@ export default class Autoform extends Component<void,Props,void> {
  * action.
  */
 export function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object, typePrefix?: string})
-  : (autoformField: string, newValue: any) => void {
+  : AutoformFieldChangeCallback {
   let meta = options && options.meta;
   let typePrefix = (options && options.typePrefix) || '';
-  return (autoformField, newValue) => dispatch({
-    type: typePrefix + 'SET_' + _.snakeCase(autoformField).toUpperCase(),
-    payload: newValue,
-    meta
-  });
+  return (autoformField, newValue, options) => {
+    let {autoformPath} = options || {};
+    dispatch({
+      type: typePrefix + 'SET_' + _.snakeCase(autoformField).toUpperCase(),
+      payload: newValue,
+      meta: meta && autoformPath ? {...meta, autoformPath} : meta
+    });
+  }
 }

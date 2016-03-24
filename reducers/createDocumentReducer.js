@@ -6,7 +6,8 @@ import _ from 'lodash';
 import type {Reducer} from '../flowtypes/reduxTypes';
 
 function createSetter(field: string): Reducer {
-  return (state, action) => state.setIn([...action.meta.reduxPath, 'document', field], action.payload);
+  return (state, action) => state.setIn([...action.meta.reduxPath, 'document', 
+    ...(action.meta.autoformPath || []), field], action.payload);
 }
 
 export default function createDocumentReducer(fields: string[], typePrefix?: string): Reducer {
