@@ -1,7 +1,7 @@
 .mf-clock-face
   fill: #eee
   stroke-width: 0.5
-  stroke: #ddd
+  stroke: #aaa
 
 .mf-clock-hour
   dominant-baseline: central
@@ -22,6 +22,7 @@
 .mf-clock-hour-hand,
 .mf-clock-minute-hand,
 .mf-clock-second-hand
+  pointer-events: none
   stroke-linecap: round
 
 .mf-clock-hour-hand
@@ -42,6 +43,7 @@
 .mf-clock--inverse
   .mf-clock-face
     fill: #333
+    stroke: #777
   text
     fill: #f5f5f5
   .mf-clock-hour-hand,
@@ -53,6 +55,6 @@
     .mf-clock-hour-well
       fill: #444
 
-.mf-clock-hand--controlled
+.mf-clock .mf-clock-hand--controlled
   stroke: #3bf
   fill: #3bf

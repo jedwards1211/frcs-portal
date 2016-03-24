@@ -11,7 +11,10 @@ import type {Dispatch} from '../flowtypes/reduxTypes';
 import type {FormValidation} from '../flowtypes/validationTypes';
 
 type Props = {
-  onAutoformFieldChange?: (field: string, newValue: any) => any,
+  onAutoformFieldChange?: (field: string, newValue: any) => any | (key: any, field: string, newValue: any) => any,
+  onAutoformEvent?: (event: string) => any | (key: any, event: string) => any,
+  bare?: boolean,
+  documentId?: any,
   validation?: FormValidation,
   disabled?: boolean,
   children?: any,
@@ -39,14 +42,14 @@ type Props = {
  */
 export default class Autoform extends Component<void,Props,void> {
   bindFields(children: any): any {
-    let {onAutoformFieldChange, validation, disabled} = this.props;
+    let {onAutoformFieldChange, onAutoformEvent, validation, disabled, documentId} = this.props;
 
     return mapChildrenRecursive(children, child => {
       if (child && child.props) {
         if (child.props.autoformToggleButton) {
-          let {field, onClick} = child.props;
-          let eventHandler = this.props[child.props.eventName || `on${_.upperFirst(field)}Change`];
-          let valueProp = child.type.formControlValueProp || child.props.valueProp || 'active';
+          let {field, onClick, autoformEvent, valueProp} = child.props;
+          let eventHandler = this.props[autoformEvent || `on${_.upperFirst(field)}Change`];
+          valueProp = valueProp || child.type.formControlValueProp || 'active';
 
           return React.cloneElement(child, {
             disabled,
@@ -55,16 +58,22 @@ export default class Autoform extends Component<void,Props,void> {
             onClick: (e) => {
               let newValue = !this.props[field];
               onClick && onClick(e);
-              eventHandler && eventHandler(newValue);
-              onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+              if (documentId !== undefined && documentId !== null) {
+                eventHandler && eventHandler(documentId, newValue);
+                onAutoformFieldChange && onAutoformFieldChange(documentId, field, newValue);
+              }
+              else {
+                eventHandler && eventHandler(newValue);
+                onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+              }
             }
           });
         }
         if (child.props.formGroup || child.props.autoformGroup) {
-          let {field, staticControl, readOnly, onChange} = child.props;
+          let {field, staticControl, readOnly, onChange, autoformEvent, valueProp} = child.props;
           if (field && !staticControl && !readOnly) {
-            let eventHandler = this.props[child.props.eventName || `on${_.upperFirst(field)}Change`];
-            let valueProp = child.type.formControlValueProp || child.props.valueProp || 'value';
+            let eventHandler = this.props[autoformEvent || `on${_.upperFirst(field)}Change`];
+            valueProp = valueProp || child.type.formControlValueProp || 'value';
 
             return React.cloneElement(child, {
               disabled,
@@ -75,21 +84,57 @@ export default class Autoform extends Component<void,Props,void> {
                 if (e && e.target && 'value' in e.target) {
                   newValue = e.target.value;
                 }
-                onChange && onChange(newValue);
-                eventHandler && eventHandler(newValue);
-                onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+                if (documentId !== undefined && documentId !== null) {
+                  onChange && onChange(documentId, newValue);
+                  eventHandler && eventHandler(documentId, newValue);
+                  onAutoformFieldChange && onAutoformFieldChange(documentId, field, newValue);
+                }
+                else {
+                  onChange && onChange(newValue);
+                  eventHandler && eventHandler(newValue);
+                  onAutoformFieldChange && onAutoformFieldChange(field, newValue);
+                }
               }
             });
           }
         }
+        else if (child.props.autoformEvent) {
+          let {autoformEvent, onClick} = child.props;
+          let eventHandler = this.props[autoformEvent];
+
+          return React.cloneElement(child, {
+            disabled,
+            onClick: (e: any) => {
+              onClick && onClick(e);
+              if (documentId !== undefined && documentId !== null) {
+                eventHandler && eventHandler(documentId);
+                onAutoformEvent && onAutoformEvent(documentId, autoformEvent);
+              }
+              else {
+                eventHandler && eventHandler();
+                onAutoformEvent && onAutoformEvent(autoformEvent);
+              }
+            }
+          });
+        }
       }
       return child;
-    });
+    },
+    child => child.type !== Autoform);
   }
   render(): ReactElement {
-    return <Form {...this.props}>
-      {this.bindFields(this.props.children)}
-    </Form>;
+    let {bare, children} = this.props;
+
+    let bound = this.bindFields(children);
+    
+    if (bare) {
+      if (bound instanceof Array) {
+        return bound[0];
+      }
+      return bound;
+    }
+
+    return <Form {...this.props}>{bound}</Form>;
   }
 }
 

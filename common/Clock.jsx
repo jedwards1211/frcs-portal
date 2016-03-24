@@ -83,7 +83,7 @@ export default class Clock extends Component<void,Props,State> {
     
     return <svg preserveAspectRatio="xMidYMid meet" {...this.props}
                 viewBox={`-${RADIUS} -${RADIUS} ${RADIUS*2} ${RADIUS*2}`} className={className}>
-      <circle className="mf-clock-face" cx={0} cy={0} r={RADIUS}/>
+      <circle className="mf-clock-face" cx={0} cy={0} r={RADIUS - 1}/>
       {range.map(number => {
         let angle = Math.PI * 2 * number / type; 
         let x =  Math.sin(angle) * HOUR_RADIUS;

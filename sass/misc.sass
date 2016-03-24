@@ -1,0 +1,50 @@
+@import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables
+
+.noselect
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -khtml-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+table.table-bubbles
+  thead
+    tr > td
+      font-weight: 500
+      padding: 6px 12px
+      height: 34px
+  tbody
+    tr > td
+      padding: 0
+      &:not(:first-child) > *
+        border-left: none
+      > *
+        border-radius: 0
+
+    tr:first-child
+      > td:first-child > *
+        border-top-left-radius: $border-radius-base
+      > td:last-child > *
+        border-top-right-radius: $border-radius-base
+    tr:not(:first-child)
+      > td > *
+        border-top: none
+    tr:last-child
+      > td:first-child > *
+        border-bottom-left-radius: $border-radius-base
+      > td:last-child > *
+        border-bottom-right-radius: $border-radius-base
+
+    tr
+      > td.has-success > *
+        outline: 3px auto $btn-success-border
+      > td.has-warning > *
+        outline: 3px auto $btn-warning-border
+      > td.has-error > *
+        outline: 3px auto $btn-danger-border
+      > td > *:focus
+        outline: 2px auto #0099E0
+        outline: 3px auto -webkit-focus-ring-color
+      > td > *
+        outline-offset: -2px
