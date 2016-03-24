@@ -7,7 +7,7 @@ import Button from '../bootstrap/Button';
 import './ComboBox.sass';
 
 export default class ComboBox extends Component {
-  static formControlValueProp = 'selectedItem';
+  static autoformValueProp = 'selectedItem';
   static propTypes = {
     items:              PropTypes.arrayOf(PropTypes.any.isRequired),
     selectedItem:       PropTypes.any,

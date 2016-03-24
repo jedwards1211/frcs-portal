@@ -4,7 +4,7 @@ import React, {Component, Children, PropTypes} from 'react';
 import classNames from 'classnames';
 import {getContextClass, getContextContent, getSizingClass} from './bootstrapPropUtils';
 
-type Props = {
+export type Props = {
   a?: boolean,
   input?: boolean,
   submit?: boolean,
@@ -32,7 +32,7 @@ type Props = {
   sizing?: 'sm' | 'small' | 'lg' | 'large' | 'xs' | 'extraSmall',
 };
 
-export default class Button extends Component {
+export default class Button extends Component<void,Props,void> {
   static contextTypes = {
     insideFormGroup: PropTypes.bool,
     insideInputGroup: PropTypes.bool,
@@ -40,8 +40,6 @@ export default class Button extends Component {
     insideButtonToolbar: PropTypes.bool
   };
   static supportsInputGroupBtn = true;
-  props: Props;
-  static defaultProps: {};
   render(): ReactElement {
     let {a, input, submit, caret, active, disabled, block, className, children} = this.props;
     let {insideFormGroup, insideInputGroup, insideButtonGroup, insideButtonToolbar} = this.context;

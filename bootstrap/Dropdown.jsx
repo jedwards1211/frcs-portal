@@ -59,7 +59,7 @@ class Dropdown extends Component {
   static defaultProps = {
     closeOnInsideClick: true,
   };
-  refs: any[] = [];
+  refs = [];
   constructor(props) {
     super(props);
     this.state = {

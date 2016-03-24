@@ -43,7 +43,7 @@ function parseTimeString(baseTime: ?Date, timeString: string): Date {
 }
 
 export default class TimePicker extends Component<DefaultProps,Props,State> {
-  static formControlValueProp = 'time';
+  static autoformValueProp = 'time';
   static defaultProps = {
     showSeconds: false,
     showAMPM: true

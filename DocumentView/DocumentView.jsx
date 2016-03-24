@@ -263,7 +263,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
         alerts.saveError = {error: saveError};
       }
       
-      disabled = disabled || !valid || saving || deleting || loading || loadError;
+      disabled = disabled || !valid || saving || deleting || loading || !!loadError;
       
       return <Footer {...props}>
         <AlertGroup alerts={alerts}/>
