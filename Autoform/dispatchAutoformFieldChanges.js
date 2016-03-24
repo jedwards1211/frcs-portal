@@ -1,3 +1,5 @@
+/* @flow */
+
 import type {Dispatch} from '../flowtypes/reduxTypes';
 import {SET_FIELD} from './AutoformConstants';
 import type {AutoformFieldChangeCallback} from './AutoformTypes';
