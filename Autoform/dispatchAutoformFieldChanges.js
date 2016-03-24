@@ -1,3 +1,7 @@
+import type {Dispatch} from '../flowtypes/reduxTypes';
+import {SET_FIELD} from './AutoformConstants';
+import type {AutoformFieldChangeCallback} from './AutoformTypes';
+
 /**
  * Creates an onAutoformFieldChange callback that dispatches corresponding actions to a redux store.
  *

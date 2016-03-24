@@ -292,8 +292,6 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
     let {ContentDecorator} = this;
     
-    console.log({...this.props, ...this.state});
-
     return <ContentDecorator>
       <div {...this.props} className={className}>
         {createOrCloneElement(children, {

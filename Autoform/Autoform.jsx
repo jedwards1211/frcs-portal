@@ -5,13 +5,8 @@ import _ from 'lodash';
 
 import Form from '../bootstrap/Form.jsx';
 
-import type {Dispatch} from '../flowtypes/reduxTypes';
 import type {FormValidation} from '../flowtypes/validationTypes';
-
-import {SET_FIELD} from './AutoformConstants';
-
-type AutoformFieldChangeCallback =
-  (autoformField: string, newValue: any, options?: {autoformPath?: Array<string | number>}) => any;
+import type {AutoformFieldChangeCallback} from './AutoformTypes';
 
 type Props = {
   onAutoformFieldChange?: AutoformFieldChangeCallback,
