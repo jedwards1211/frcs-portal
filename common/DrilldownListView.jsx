@@ -21,14 +21,24 @@ type DefaultProps = {
   ItemLink: ReactTag
 };
 
-export type Props = DefaultProps & NonDefaultProps;
+// export type Props = DefaultProps & NonDefaultProps;
+
+export type Props = {
+  ItemLink: ReactTag,
+  title: string,
+  itemPluralDisplayName: string,
+  loading?: boolean,
+  loadError?: boolean,
+  children?: Array<any>
+};
 
 export default class DrilldownListView extends Component<DefaultProps,Props,void> {
   static defaultProps = {
     ItemLink: 'a'
   };
   render(): ReactElement {
-    let {loading, loadError, title, ItemLink, children, itemPluralDisplayName} = this.props;
+    let {loading, loadError, title, children, itemPluralDisplayName} = this.props;
+    let ItemLink: any = this.props.ItemLink;
 
     let body;
     if (loading) {

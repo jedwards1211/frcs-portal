@@ -182,7 +182,10 @@ export type DefaultProps = {
   onPathChange: (newPath: string) => any
 };
 
-export type Props = DefaultProps & {
+// export type Props = DefaultProps & {
+export type Props = {
+  path: string,
+  onPathChange: (newPath: string) => any,
   className?: string,
   rootRoute?: any,
 };
