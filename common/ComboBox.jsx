@@ -14,6 +14,7 @@ export default class ComboBox extends Component {
     placeholder:        PropTypes.any,
     noItemsPlaceholder: PropTypes.any,
     render:             PropTypes.func,
+    renderItem:         PropTypes.func,
     renderSelectedItem: PropTypes.func,
     onChange:           PropTypes.func,
     disabled:           PropTypes.bool,
@@ -27,8 +28,9 @@ export default class ComboBox extends Component {
     onChange: function() {},
   };
   render() {
-    let {items, selectedItem, render: renderItem, renderSelectedItem, placeholder, noItemsPlaceholder,
+    let {items, selectedItem, renderSelectedItem, placeholder, noItemsPlaceholder,
         onChange, disabled, className, toggleButtonClassName} = this.props;
+    let renderItem = this.props.renderItem || this.props.render;
     renderSelectedItem = renderSelectedItem || renderItem;
 
     let noSelection = selectedItem === undefined || selectedItem === null;
