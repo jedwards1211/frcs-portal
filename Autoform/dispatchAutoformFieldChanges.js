@@ -10,7 +10,7 @@ import type {AutoformFieldChangeCallback} from './AutoformTypes';
  * dispatch: a redux dispatch function
  * options.meta: meta to add to the actions dispatched action.
  */
-export function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object})
+export default function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object})
 : AutoformFieldChangeCallback {
   let meta = options && options.meta;
   return (autoformField, newValue, options) => {
