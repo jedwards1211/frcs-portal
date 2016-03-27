@@ -7,6 +7,7 @@ import _ from 'lodash';
 type OrderBy = {[field: string]: 'asc' | 'desc'};
 
 type Props = {
+  style?: Object,
   field: string,
   orderBy?: OrderBy,
   orderByMaxSize?: number,
@@ -15,7 +16,7 @@ type Props = {
 };
 
 const SortTh: (props: Props) => ReactElement = props => {
-  let {field, children} = props;
+  let {field, children, style} = props;
   let orderBy = props.orderBy || {};
   
   const onClick = () => {
@@ -57,7 +58,11 @@ const SortTh: (props: Props) => ReactElement = props => {
     case 'desc':  icon = <Glyphicon triangleTop     style={iconStyle}/>; break;
   }
   
-  return <th onClick={onClick}>
+  style = Object.assign(style || {}, {
+    cursor: 'pointer'
+  });
+  
+  return <th onClick={onClick} style={style}>
     {icon} {children}
   </th>;
 };
