@@ -21,7 +21,7 @@ export default function logMeteorSubscribe(name: string, ...args: any[]): Subscr
       console.log(title);
     }
 
-    actualArgs.forEach((arg, index) => console.log(`[${_.padStart(index, 2, '0')}]: `, arg));
+    actualArgs.forEach((arg, index) => console.log(`[${_.padStart(index, 2, '0')}]`, arg));
 
     try {
       console.groupEnd();

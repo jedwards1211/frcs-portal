@@ -14,7 +14,7 @@ export default function logMeteorCall(methodName: string, ...args: any[]): void 
     console.log(title);
   }
   
-  args.slice(0, args.length - 1).forEach((arg, index) => console.log(`[${_.padStart(index, 2, '0')}]: `, arg));
+  args.slice(0, args.length - 1).forEach((arg, index) => console.log(`[${_.padStart(index, 2, '0')}]`, arg));
   
   try {
     console.groupEnd();
