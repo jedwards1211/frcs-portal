@@ -1,10 +1,8 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import shallowEqual from 'fbjs/lib/shallowEqual';
+import React, {Component, PropTypes} from 'react';
+import _ from 'lodash';
 
-import type {Dispatch} from '../flowtypes/reduxTypes';
 import type {SubscriptionHandle} from '../flowtypes/meteorTypes';
 
 import * as actions from './meteorActions';
@@ -12,23 +10,20 @@ import * as actions from './meteorActions';
 type Props = {
   name: string,
   subKey: string | Symbol,
-  args?: any[],
-  dispatch: Dispatch
+  args?: any[]
 };
 
-type DefaultProps = {
-  dispatch: Dispatch
-};
-
-class MeteorSub extends Component<DefaultProps,Props,void> {
-  subscription: ?SubscriptionHandle;
-  static defaultProps = {
-    dispatch() {}
+export default class MeteorSub extends Component<void,Props,void> {
+  static contextTypes = {
+    store: PropTypes.shape({
+      dispatch: PropTypes.func.isRequired   
+    }).isRequired
   };
-  shouldComponentUpdate(nextProps: Props) {
+  subscription: ?SubscriptionHandle;
+  shouldComponentUpdate(nextProps: Props): boolean {
     return this.props.name !== nextProps.name ||
         this.props.subKey !== nextProps.subKey ||
-        !shallowEqual(this.props.args, nextProps.args);
+        !_.isEqual(this.props.args, nextProps.args);
   }
   componentWillMount() {
     this.updateSub();
@@ -37,7 +32,8 @@ class MeteorSub extends Component<DefaultProps,Props,void> {
     this.updateSub();
   }
   updateSub: Function = () => {
-    let {name, subKey, dispatch} = this.props;
+    let {name, subKey} = this.props;
+    let {store: {dispatch}} = this.context;
     let args = this.props.args || [];
     
     if (this.subscription) {
@@ -49,7 +45,8 @@ class MeteorSub extends Component<DefaultProps,Props,void> {
     });
   };
   componentWillUnmount() {
-    let {dispatch, subKey} = this.props;
+    let {subKey} = this.props;
+    let {store: {dispatch}} = this.context;
     if (this.subscription) {
       this.subscription.stop();
       this.subscription = undefined;
@@ -60,5 +57,3 @@ class MeteorSub extends Component<DefaultProps,Props,void> {
     return <span/>;
   }
 }
-
-export default connect(() => ({}))(MeteorSub);
