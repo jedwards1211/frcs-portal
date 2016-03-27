@@ -1,12 +1,12 @@
 /* @flow */
 /* eslint-disable no-console */
 
-const repeat = (str, times) => (new Array(times + 1)).join(str);
-const pad = (num, maxLength) => repeat(`0`, maxLength - num.toString().length) + num;
-const formatTime = (time) => `@ ${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}:${pad(time.getSeconds(), 2)}.${pad(time.getMilliseconds(), 3)}`;
+import _ from 'lodash';
+
+const formatTime = (time) => `@ ${_.padStart(time.getHours(), 2, '0')}:${_.padStart(time.getMinutes(), 2, '0')}:${_.padStart(time.getSeconds(), 2, '0')}.${_.padStart(time.getMilliseconds(), 3, '0')}`;
 
 export default function logMeteorCall(methodName: string, ...args: any[]): void {
-  const title = `meteor call ${formatTime(new Date())} ${methodName}`;
+  const title = `Meteor.call ${formatTime(new Date())} ${methodName}`;
   try {
     console.group(title);
   }
@@ -14,7 +14,7 @@ export default function logMeteorCall(methodName: string, ...args: any[]): void 
     console.log(title);
   }
   
-  args.slice(0, args.length - 1).forEach((arg, index) => console.log(`[${pad(index, 2)}]: `, arg));
+  args.slice(0, args.length - 1).forEach((arg, index) => console.log(`[${_.padStart(index, 2, '0')}]: `, arg));
   
   try {
     console.groupEnd();
