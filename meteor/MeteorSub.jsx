@@ -28,13 +28,13 @@ export default class MeteorSub extends Component<void,Props,void> {
   componentWillMount() {
     this.updateSub();
   }
-  componentWillUpdate() {
-    this.updateSub();
+  componentWillUpdate(nextProps: Props) {
+    this.updateSub(nextProps);
   }
-  updateSub: Function = () => {
-    let {name, subKey} = this.props;
+  updateSub: (props?: Props) => void = (props = this.props) => {
+    let {name, subKey} = props;
     let {store: {dispatch}} = this.context;
-    let args = this.props.args || [];
+    let args = props.args || [];
     
     if (this.subscription) {
       this.subscription.stop();
