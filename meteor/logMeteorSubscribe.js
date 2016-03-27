@@ -32,7 +32,7 @@ export default function logMeteorSubscribe(name: string, ...args: any[]): Subscr
 
   let logCallbacks = {
     onReady: () => log('ready'),
-    onStop: error => log('error: ' + error.message)
+    onStop: error => error ? log('error: ' + error.message) : log('stop')
   };
 
   let callbacks = args[args.length - 1];
