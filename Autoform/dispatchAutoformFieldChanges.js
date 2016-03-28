@@ -1,8 +1,8 @@
 /* @flow */
 
 import type {Dispatch} from '../flowtypes/reduxTypes';
-import {SET_FIELD} from './AutoformConstants';
 import type {AutoformFieldChangeCallback} from './AutoformTypes';
+import _ from 'lodash';
 
 /**
  * Creates an onAutoformFieldChange callback that dispatches corresponding actions to a redux store.
@@ -10,13 +10,16 @@ import type {AutoformFieldChangeCallback} from './AutoformTypes';
  * dispatch: a redux dispatch function
  * options.meta: meta to add to the actions dispatched action.
  */
-export default function dispatchAutoformFieldChanges(dispatch: Dispatch, options?: {meta?: Object})
+export default function dispatchAutoformFieldChanges(dispatch: Dispatch, 
+                                                     options?: {meta?: Object, actionTypePrefix?: string})
 : AutoformFieldChangeCallback {
-  let meta = options && options.meta;
+  let {meta, actionTypePrefix} = options || {};
   return (autoformField, newValue, options) => {
+    let type = 'SET_' + _.snakeCase(autoformField).toUpperCase();
+    if (actionTypePrefix) type = actionTypePrefix + type;
     let {autoformPath} = options || {};
     dispatch({
-      type: SET_FIELD,
+      type,
       payload: newValue,
       meta: {
         ...(meta || {}),

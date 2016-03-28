@@ -1,2 +1,0 @@
-export const AUTOFORM_PREFIX = 'AUTOFORM.';
-export const SET_FIELD = AUTOFORM_PREFIX + 'SET_FIELD';

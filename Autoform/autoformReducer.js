@@ -1,11 +1,7 @@
-/* @flow */
-
-import {SET_FIELD} from './AutoformConstants';
-import {createReducer} from 'mindfront-redux-utils';
-
-export default createReducer({
-  [SET_FIELD]: (state, action) => {
+export default function autoformReducer(state, action) {
+  if (action.meta && action.meta.autoformField) {
     let {payload, meta: {reduxPath, autoformPath, autoformField}} = action;
     return state.setIn([...(reduxPath || []), ...(autoformPath || []), autoformField], payload);
   }
-});
+  return state;
+}
