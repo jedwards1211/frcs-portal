@@ -39,8 +39,6 @@ export default class InputGroup extends Component {
     let inputIndex = childArray.findIndex(child => child && child.type &&
       ((child.type === 'input' && child.props.type !== 'checkbox' && child.props.type !== 'radio') ||
       child.type.supportsInputGroupInput));
-
-    let onClick = _.get(childArray, [1, 'props', 'onClick']);
     
     let extraInputProps = {};
 
