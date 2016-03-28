@@ -50,7 +50,9 @@ class ReduxDocumentView extends Component<void,Props,void> {
             setDeleting={deleting => dispatch(actions.setDeleting(deleting, meta))}
             setAskToLeave={askToLeave => dispatch(actions.setAskToLeave(askToLeave, meta))}
             setDocument={document => dispatch(actions.setDocument(document, meta))}
-            setSaveError={error => dispatch(actions.setSaveError(error, meta))}/>;
+            setSaveError={error => dispatch(actions.setSaveError(error, meta))}
+            setExternallyChanged={externallyChanged => dispatch(actions.setExternallyChanged(externallyChanged, meta))}
+            setExternallyDeleted={externallyDeleted => dispatch(actions.setExternallyDeleted(externallyDeleted, meta))}/>;
   }
 }
 

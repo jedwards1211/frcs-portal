@@ -37,6 +37,8 @@ type Props = {
   setSaveError: (error: ?Error) => any,
   setDeleting: (deleting: boolean) => any,
   setAskToLeave: (askToLeave: boolean) => any,
+  setExternallyChanged: (externallyChanged: boolean) => any,
+  setExternallyDeleted: (externallyDeleted: boolean) => any,
   leave?: Function,
   leaveAfterCancel?: Function,
   leaveAfterCreating?: Function,
@@ -51,12 +53,9 @@ type Props = {
   saving?: boolean,
   deleting?: boolean,
   saveError?: Error,
-  children?: any
-};
-
-type State = {
   externallyChanged?: boolean,
-  externallyDeleted?: boolean
+  externallyDeleted?: boolean,
+  children?: any
 };
 
 /**
@@ -67,43 +66,41 @@ type State = {
  * stay here, discard changes, or save changes.
  * This will inject alerts, cancel, apply, and OK buttons into the child component via skins.
  */
-export default class DocumentView extends Component<DefaultProps,Props,State> {
+export default class DocumentView extends Component<DefaultProps,Props,void> {
   static defaultProps = {
     documentDisplayName: 'document',
     documentDisplayPronoun: 'it'
   };
-  state: State = {};
   componentWillMount() {
     if (this.props.mode === 'edit') {
       let {loading, loadError, actualDocument, setDocument, setSaving, setDeleting, setSaveError, 
-        setAskToLeave} = this.props;
+        setAskToLeave, setExternallyChanged, setExternallyDeleted} = this.props;
       setSaving(false);
       setDeleting(false);
       setSaveError(undefined);
       setAskToLeave(false);
+      setExternallyChanged(false);
+      setExternallyDeleted(false);
       if (!loading && !loadError) {
         setDocument(actualDocument);
       }
     }
   }
   componentWillReceiveProps(nextProps: Props) {
-    let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument} = nextProps;
+    let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument,
+      setExternallyChanged, setExternallyDeleted} = nextProps;
     if (mode === 'edit' && !saving && !deleting && !loading && !loadError) {
       if (!document && actualDocument) {
         setDocument(actualDocument);
       }
       if (this.props.actualDocument !== actualDocument) {
         if (!actualDocument) {
-          this.setState({
-            externallyChanged: false,
-            externallyDeleted: true
-          });
+          setExternallyChanged(false);
+          setExternallyDeleted(true);
         }
         else if (this.props.actualDocument) {
-          this.setState({
-            externallyChanged: true,
-            externallyDeleted: false
-          });
+          setExternallyChanged(true);
+          setExternallyDeleted(false);
         }
       }
     }
@@ -124,8 +121,8 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
   };
 
   save: () => Promise = () => {
-    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument} = this.props;
-    let {externallyDeleted} = this.state;
+    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument,
+      setExternallyChanged, setExternallyDeleted, externallyDeleted} = this.props;
 
     setSaving(true);
     setSaveError(undefined);
@@ -145,7 +142,8 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     return promise.then(() => {
       // update initDocument so there are no seemingly unsaved changes
       setDocument(document);
-      this.setState({externallyChanged: false, externallyDeleted: false});
+      setExternallyChanged(false);
+      setExternallyDeleted(false);
     }).catch(err => {
       setSaveError(err);
       throw err;
@@ -209,9 +207,9 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
 
     Body: (Body:any, props:Props) => {
       let {loading, loadError, actualDocument, mode, document, setDocument, createDocument, 
-          documentDisplayName, documentDisplayPronoun} = this.props;
+          documentDisplayName, documentDisplayPronoun, 
+          externallyChanged, externallyDeleted, setExternallyChanged} = this.props;
       let {children} = props;
-      let {externallyChanged, externallyDeleted} = this.state;
       
       let alerts = {};
       if (loading) {
@@ -226,7 +224,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
             warning: <span>
               <Button warning className="alert-btn-right" onClick={() => {
                 setDocument(actualDocument);
-                this.setState({externallyChanged: false});
+                setExternallyChanged(false);
               }}>Load Changes</Button>
               Someone else changed {documentDisplayName}.
             </span>
@@ -251,8 +249,7 @@ export default class DocumentView extends Component<DefaultProps,Props,State> {
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
       let {disabled, loading, loadError, mode, validate, document, 
-        saveError, saving, deleting, createDocument} = this.props;
-      let {externallyDeleted} = this.state;
+        saveError, saving, deleting, createDocument, externallyDeleted} = this.props;
       
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
 

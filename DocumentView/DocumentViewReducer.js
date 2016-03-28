@@ -14,5 +14,7 @@ export default createReducer({
   [actions.SET_ASK_TO_LEAVE]: createSetter('askToLeave'),
   [actions.SET_DELETING]: createSetter('deleting'),
   [actions.SET_SAVING]: createSetter('saving'),
-  [actions.SET_SAVE_ERROR]: createSetter('saveError')
+  [actions.SET_SAVE_ERROR]: createSetter('saveError'),
+  [actions.SET_EXTERNALLY_CHANGED]: createSetter('externallyChanged'),
+  [actions.SET_EXTERNALLY_DELETED]: createSetter('externallyDeleted')
 });
