@@ -12,3 +12,12 @@ export default function requireUserRoles(userId: string, roles: string | string[
     throw new Meteor.Error(403, 'Forbidden');
   }
 }
+
+export function hasUserRoles(userId: string, roles: string | string[]) : boolean {
+  try {
+    requireUserRoles(userId, roles);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
