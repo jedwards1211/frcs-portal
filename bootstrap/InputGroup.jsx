@@ -44,9 +44,6 @@ export default class InputGroup extends Component {
     
     let extraInputProps = {};
 
-    if (inputIndex === 0 && !childArray[0].props.onEnterDown && onClick) {
-      extraInputProps.onEnterDown = onClick;
-    }
     if ('value' in this.props && !('value' in childArray[inputIndex].props)) {
       extraInputProps.value = this.props.value;
     }
