@@ -22,10 +22,12 @@ export type ObserveChangesCallbacks = {
   removed?: (id: string) => any
 };
 
+export type SortSpecifier = {[field: string]: number} | Array<string | [string, 'asc' | 'desc']>;
+
 export type Transform = (document: Object) => Object;
 export type Selector = Object | Mongo.ObjectID | string;
 export type QueryOptions = {
-  sort?: {[field: string]: number} | Array<string | [string, 'asc' | 'desc']>,
+  sort?: SortSpecifier,
   skip?: number,
   limit?: number,
   fields?: {[field: string]: number},
