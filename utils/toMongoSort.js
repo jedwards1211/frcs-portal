@@ -13,8 +13,8 @@ export default function toMongoSort(sort: SortSpecifier): MongoSortSpecifier {
     }
   }
 
+  let result = {};
   if (sort instanceof Array) {
-    let result = {};
     sort.forEach(field => {
       if (field instanceof Array) {
         result[field[0]] = dirToNumber(field[1]);
@@ -23,10 +23,9 @@ export default function toMongoSort(sort: SortSpecifier): MongoSortSpecifier {
         result[field] = 1;
       }
     });
-    return result;
+  } else {
+    result = sort;
   }
 
-  // if not an array, it's already compatible
-  let result: any = sort;
-  return result;
+  return Object.keys(result).length ? { $sort: result } : null;
 }
