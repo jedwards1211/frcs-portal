@@ -10,6 +10,7 @@ export default class ComboBox extends Component {
   static autoformValueProp = 'selectedItem';
   static propTypes = {
     items:              PropTypes.arrayOf(PropTypes.any.isRequired),
+    value:              PropTypes.any,
     selectedItem:       PropTypes.any,
     placeholder:        PropTypes.any,
     noItemsPlaceholder: PropTypes.any,
@@ -28,8 +29,9 @@ export default class ComboBox extends Component {
     onChange: function() {},
   };
   render() {
-    let {items, selectedItem, renderSelectedItem, placeholder, noItemsPlaceholder,
+    let {items, value, selectedItem, renderSelectedItem, placeholder, noItemsPlaceholder,
         onChange, disabled, className, toggleButtonClassName} = this.props;
+    selectedItem = selectedItem || value;
     let renderItem = this.props.renderItem || this.props.render;
     renderSelectedItem = renderSelectedItem || renderItem;
 
