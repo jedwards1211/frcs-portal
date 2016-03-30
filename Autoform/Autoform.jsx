@@ -42,18 +42,32 @@ export default class Autoform extends Component<void,Props,void> {
       if (child && child.props) {
         let {children, autoformPath, autoformField} = child.props;
         let childPath = autoformPath !== null && autoformPath !== undefined ? path.concat(autoformPath) : path;
-        
-        if (autoformField) {
-          let {onChange, autoformEvent, autoformValueProp} = child.props;
-          
-          let eventHandler = this.props[autoformEvent || `on${_.upperFirst(autoformField)}Change`];
-          let valueProp = autoformValueProp || child.type.autoformValueProp || 'value';
 
-          return React.cloneElement(child, {
-            disabled,
-            [valueProp]: _.get(this.props, [...childPath, autoformField]),
-            validation:  _.get(validation, [...childPath, autoformField]),
-            onChange: (e:any) => {
+        let autoformProps: {[prop: string]: string} = child.props.autoformProps || {};
+        if (autoformField) {
+          autoformProps = {...autoformProps, value: autoformField};
+        }
+
+        let newProps: Object = {
+          disabled: disabled || child.props.disabled,
+          children: this.bindFields(children, childPath)
+        };
+
+        _.forEach(autoformProps, (autoformField, prop) => {
+          let {onChange, autoformEvent} = child.props;
+
+          let callbackProp = prop === 'value' ? 'onChange' : `on${_.upperFirst(autoformField)}Change`;
+          let eventHandler = this.props[autoformEvent || `on${_.upperFirst(autoformField)}Change`];
+
+          let actualProp = prop;
+          if (prop === 'value') {
+            actualProp = child.type.autoformValueProp || 'value';
+            newProps.validation =  _.get(validation, [...childPath, autoformField]);
+          }
+
+          Object.assign(newProps, {
+            [actualProp]: _.get(this.props, [...childPath, autoformField]),
+            [callbackProp]: (e:any) => {
               let newValue = e;
               if (e && e.target && 'value' in e.target) {
                 newValue = e.target.value;
@@ -62,18 +76,14 @@ export default class Autoform extends Component<void,Props,void> {
               if (childPath.length) {
                 options = {autoformPath: childPath};
               }
-              onChange && onChange(newValue, options);
+              prop === 'value' && onChange && onChange(newValue, options);
               eventHandler && eventHandler(newValue, options);
               onAutoformFieldChange && onAutoformFieldChange(autoformField, newValue, options);
-            },
-            children: this.bindFields(children, childPath)
+            }
           });
-        }
+        });
 
-        let newChildren = this.bindFields(children, childPath);
-        if (newChildren !== children) {
-          return React.cloneElement(child, {children: newChildren});
-        }
+        return React.cloneElement(child, newProps);
       }
       return child;
     });
