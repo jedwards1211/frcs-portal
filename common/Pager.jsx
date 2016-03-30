@@ -5,24 +5,24 @@ import classNames from 'classnames';
 
 type DefaultProps = {
   numButtons: number,
-  onChange: (value: number) => any,
+  onPageChange: (value: number) => any,
   onOffsetChange: (offset: number) => any,
 };
 
 type Props = {
   className?: string,
-  value?: number,
-  onChange: (value: number) => any,
+  page?: number,
+  onPageChange: (value: number) => any,
+  offset: number,
   onOffsetChange: (offset: number) => any,
   numPages: number,
-  offset: number,
   numButtons: number
 };
 
 export default class Pager extends Component<DefaultProps,Props,void> {
   static defaultProps = {
     numButtons: 5,
-    onChange() {},
+    onPageChange() {},
     onOffsetChange() {}
   };
   setOffset: (offset: number) => void = offset => {
@@ -30,7 +30,7 @@ export default class Pager extends Component<DefaultProps,Props,void> {
     onOffsetChange(Math.max(0, Math.min(numPages - numButtons, offset)));
   };
   render(): ReactElement {
-    let {className, value, onChange, numPages, offset, numButtons} = this.props;
+    let {className, page, onPageChange, numPages, offset, numButtons} = this.props;
     let {setOffset} = this;
 
     let buttons = [
@@ -41,18 +41,18 @@ export default class Pager extends Component<DefaultProps,Props,void> {
       </li>
     ];
 
-    for (let page = Math.max(0, offset); page < offset + numButtons && page < numPages; page++) {
-      let content = page + 1;
-      if (page === value) {
-        content = <span>{page + 1} <span className="sr-only">(current)</span></span>;
+    for (let otherPage = Math.max(0, offset); otherPage < offset + numButtons && otherPage < numPages; otherPage++) {
+      let content = otherPage + 1;
+      if (otherPage === page) {
+        content = <span>{otherPage + 1} <span className="sr-only">(current)</span></span>;
       }
-      buttons.push(<li key={page} className={page === value ? 'active' : undefined}>
-        <a onClick={() => onChange(page)}>{content}</a>
+      buttons.push(<li key={otherPage} className={otherPage === page ? 'active' : undefined}>
+        <a onClick={() => onPageChange(otherPage)}>{content}</a>
       </li>);
     }
 
     buttons.push(<li key="next" className={offset + numButtons >= numPages ? 'disabled' : undefined}>
-      <a onClick={() => setOffset(offset + numButtons)} arialLabel="Next">
+      <a onClick={() => setOffset(offset + numButtons)} ariaLabel="Next">
         <span ariaHidden="true">&raquo;</span>
       </a>
     </li>);

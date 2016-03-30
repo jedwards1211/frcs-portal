@@ -9,6 +9,7 @@ import type {FormValidation} from '../flowtypes/validationTypes';
 import type {AutoformFieldChangeCallback} from './AutoformTypes';
 
 type Props = {
+  onChange?: (newValue: any) => any,
   onAutoformFieldChange?: AutoformFieldChangeCallback,
   bare?: boolean,
   validation?: FormValidation,
@@ -40,48 +41,49 @@ export default class Autoform extends Component<void,Props,void> {
 
     return Children.map(children, child => {
       if (child && child.props) {
-        let {children, autoformPath, autoformField} = child.props;
+        let {children, autoformPath, autoformField, autoformProps} = child.props;
         let childPath = autoformPath !== null && autoformPath !== undefined ? path.concat(autoformPath) : path;
-
-        let autoformProps: {[prop: string]: string} = child.props.autoformProps || {};
-        if (autoformField) {
-          autoformProps = {...autoformProps, value: autoformField};
-        }
 
         let newProps: Object = {
           disabled: disabled || child.props.disabled,
           children: this.bindFields(children, childPath)
         };
 
-        _.forEach(autoformProps, (autoformField, prop) => {
-          let {onChange, autoformEvent} = child.props;
-
-          let callbackProp = prop === 'value' ? 'onChange' : `on${_.upperFirst(autoformField)}Change`;
-          let eventHandler = this.props[autoformEvent || `on${_.upperFirst(autoformField)}Change`];
-
-          let actualProp = prop;
-          if (prop === 'value') {
-            actualProp = child.type.autoformValueProp || 'value';
-            newProps.validation =  _.get(validation, [...childPath, autoformField]);
+        if (autoformField || autoformProps) {
+          if (autoformField) {
+            autoformProps = Object.assign({}, autoformProps, {value: autoformField});
           }
 
-          Object.assign(newProps, {
-            [actualProp]: _.get(this.props, [...childPath, autoformField]),
-            [callbackProp]: (e:any) => {
-              let newValue = e;
-              if (e && e.target && 'value' in e.target) {
-                newValue = e.target.value;
-              }
-              let options;
-              if (childPath.length) {
-                options = {autoformPath: childPath};
-              }
-              prop === 'value' && onChange && onChange(newValue, options);
-              eventHandler && eventHandler(newValue, options);
-              onAutoformFieldChange && onAutoformFieldChange(autoformField, newValue, options);
+          _.forEach(autoformProps, (autoformField, prop) => {
+            let callbackProp;
+            let actualProp = prop;
+            if (prop === 'value') {
+              callbackProp = 'onChange';
+              actualProp = child.type.autoformValueProp || 'value';
+              newProps.validation =  _.get(validation, [...childPath, autoformField]);
             }
+            else {
+              callbackProp = `on${_.upperFirst(autoformField)}Change`; 
+            }
+            let callback = this.props[callbackProp];
+
+            Object.assign(newProps, {
+              [actualProp]: _.get(this.props, [...childPath, autoformField]),
+              [callbackProp]: (e:any) => {
+                let newValue = e;
+                if (e && e.target && 'value' in e.target) {
+                  newValue = e.target.value;
+                }
+                let options;
+                if (childPath.length) {
+                  options = {autoformPath: childPath};
+                }
+                callback && callback(newValue, options);
+                onAutoformFieldChange && onAutoformFieldChange(autoformField, newValue, options);
+              }
+            });
           });
-        });
+        }
 
         return React.cloneElement(child, newProps);
       }
