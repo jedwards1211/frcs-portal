@@ -57,7 +57,7 @@ export default class Pager extends Component<DefaultProps,Props,void> {
       </a>
     </li>);
 
-    className = classNames(className, 'pagination');
+    className = classNames(className, 'pagination', 'noselect');
 
     return <ul {...this.props} className={className}>
       {buttons}
