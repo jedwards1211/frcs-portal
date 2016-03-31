@@ -39,6 +39,7 @@ export default class MeteorSub extends Component<void,Props,void> {
     if (this.subscription) {
       this.subscription.stop();
     }
+    dispatch(actions.setSubscriptionStatus(subKey, {ready: false, error: undefined}));
     this.subscription = Meteor.subscribe(name, ...args, {
       onStop:   err => dispatch(actions.setSubscriptionStatus(subKey, {ready: false, error: err})),
       onReady:  ()  => dispatch(actions.setSubscriptionStatus(subKey, {ready: true}))
