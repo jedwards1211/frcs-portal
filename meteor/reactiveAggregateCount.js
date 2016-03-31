@@ -22,10 +22,12 @@ export default function reactiveAggregate(sub: PublishHandler, countName: string
   const update = _.throttle(Meteor.bindEnvironment(() => {
     if (initializing) return;
 
-    let count = collection.aggregate([...pipeline, {$group: {
+    let result = collection.aggregate([...pipeline, {$group: {
       _id: null,
       count: {$sum: 1}
-    }}])[0].count;
+    }}]);
+    
+    let count = result.length ? result[0].count : 0;
     
     if (countAdded) {
       sub.changed(clientCollection, countName, {count});
