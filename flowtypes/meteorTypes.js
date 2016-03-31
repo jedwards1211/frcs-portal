@@ -52,3 +52,12 @@ export type SubscriptionHandle = {
   ready(): boolean,
   subscriptionId: string
 };
+
+export type PublishHandler = {
+  [key: string]: any, // hack to support attaching properties to the handler
+  added: (collectionName: string, id: string, fields: Object) => any,
+  changed: (collectionName: string, id: string, fields: Object) => any,
+  removed: (collectionName: string, id: string) => any,
+  ready: () => any,
+  onStop: (callback: (error?: Error) => any) => any
+};

@@ -7,8 +7,20 @@ import type {
   QueryOptions,
   UpdateOptions,
   AllowOptions,
-  SubscriptionHandle
+  SubscriptionHandle,
 } from '../flowtypes/meteorTypes';
+
+import type {
+  AggregationPipeline,
+  AggregationOptions,
+  AggregationCursor,
+} from '../flowtypes/mongoTypes';
+
+declare module NpmGlobal {
+  declare function require(module: string): any;
+}
+
+declare var Npm: $Exports<'NpmGlobal'>;
 
 declare type MatchPattern = any;
 
@@ -64,6 +76,7 @@ declare module MongoGlobal {
     rawCollection(): Object;
     rawDatabase(): Object;
     attachSchema(schema: MatchPattern): void;
+    aggregate(pipeline: AggregationPipeline, options?: AggregationOptions): AggregationCursor;
   }
 }
 
@@ -76,11 +89,13 @@ declare module MeteorGlobal {
   declare var absolutePath: string; // from the ostrio:meteor-root package
   declare var users: Mongo.Collection;
   declare function user() : Object;
-  declare function userId() : Object;
+  declare function userId() : string;
   declare function call(method: string, ...args: any[]): any;
   declare function publish(handle: string, callback: Function): ?Mongo.Cursor | ?Array<Mongo.Cursor>;
   declare function subscribe(handle: string, ...args: any[]): SubscriptionHandle;
   declare function methods(methods: {[methodName: string]: Function}): void;
+  declare function wrapAsync(callback: Function): Function;
+  declare function bindEnvironment(func: Function): Function;
 }
 
 declare var Meteor: $Exports<'MeteorGlobal'>;
