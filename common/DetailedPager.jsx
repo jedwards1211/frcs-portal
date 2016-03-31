@@ -27,7 +27,7 @@ export default class DetailedPager extends Component<void,Props,void> {
     
     let from, to;
     if (page != null) {
-      from = page * itemsPerPage + 1;
+      from = Math.min(page * itemsPerPage + 1, numItems);
       to = Math.min(from + itemsPerPage - 1, numItems);
     }
     let numPages = Math.ceil(numItems / itemsPerPage);

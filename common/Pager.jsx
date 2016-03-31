@@ -33,13 +33,7 @@ export default class Pager extends Component<DefaultProps,Props,void> {
     let {className, page, onPageChange, numPages, offset, numButtons} = this.props;
     let {setOffset} = this;
 
-    let buttons = [
-      <li key="previous" className={offset <= 0 ? 'disabled' : undefined}>
-        <a onClick={() => setOffset(offset - numButtons)} ariaLabel="Previous">
-          <span ariaHidden="true">&laquo;</span>
-        </a>
-      </li>
-    ];
+    let buttons = [];
 
     for (let otherPage = Math.max(0, offset); otherPage < offset + numButtons && otherPage < numPages; otherPage++) {
       let content = otherPage + 1;
@@ -51,11 +45,21 @@ export default class Pager extends Component<DefaultProps,Props,void> {
       </li>);
     }
 
-    buttons.push(<li key="next" className={offset + numButtons >= numPages ? 'disabled' : undefined}>
-      <a onClick={() => setOffset(offset + numButtons)} ariaLabel="Next">
-        <span ariaHidden="true">&raquo;</span>
-      </a>
-    </li>);
+    if (numPages > numButtons) {
+      buttons = [
+        <li key="previous" className={offset <= 0 ? 'disabled' : undefined}>
+          <a onClick={() => setOffset(offset - numButtons)} ariaLabel="Previous">
+            <span ariaHidden="true">&laquo;</span>
+          </a>
+        </li>,
+        ...buttons,
+        <li key="next" className={offset + numButtons >= numPages ? 'disabled' : undefined}>
+          <a onClick={() => setOffset(offset + numButtons)} ariaLabel="Next">
+            <span ariaHidden="true">&raquo;</span>
+          </a>
+        </li>
+      ];
+    }
 
     className = classNames(className, 'pagination', 'noselect');
 
