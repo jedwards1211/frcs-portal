@@ -57,7 +57,7 @@ export default class DrilldownListView extends Component<DefaultProps,Props,void
       </ListGroup>;
     }
 
-    return <View>
+    return <View {...this.props}>
       <Header>
         <Title>{title}</Title>
       </Header>
