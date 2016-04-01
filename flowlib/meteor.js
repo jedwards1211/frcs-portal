@@ -38,7 +38,7 @@ declare var Tracker: $Exports<'TrackerGlobal'>;
 declare module MatchGlobal {
   declare function test(value: any, pattern: MatchPattern): boolean;
   declare function Optional(pattern: MatchPattern): MatchPattern;
-  declare function ObjectContaining(shape: {[key: string]: MatchPattern}): MatchPattern;
+  declare function ObjectIncluding(shape: {[key: string]: MatchPattern}): MatchPattern;
   declare var Any: MatchPattern;
   declare var Integer: MatchPattern;
   declare function OneOf(...patterns: MatchPattern[]): MatchPattern;
@@ -88,6 +88,7 @@ declare module MeteorGlobal {
   declare var rootPath: string; // from the ostrio:meteor-root package
   declare var absolutePath: string; // from the ostrio:meteor-root package
   declare var users: Mongo.Collection;
+  declare var settings: Object;
   declare function user() : Object;
   declare function userId() : string;
   declare function call(method: string, ...args: any[]): any;
