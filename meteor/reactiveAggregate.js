@@ -20,28 +20,35 @@ export default function reactiveAggregate(sub: PublishHandler, collection: Mongo
   sub._ids = {};
   sub._iteration = 1;
 
-  const update = _.throttle(Meteor.bindEnvironment(() => {
-    if (initializing) return;
-
-    let cursor = collection.aggregate(pipeline);
-    cursor.forEach(doc => {
-      if (!sub._ids[doc._id]) {
-        sub.added(clientCollection, doc._id, doc);
-      } else {
-        sub.changed(clientCollection, doc._id, doc);
+  const doUpdate = _.throttle(Meteor.bindEnvironment(() => {
+    try {
+      let cursor = collection.aggregate(pipeline);
+      cursor.forEach(doc => {
+        if (!sub._ids[doc._id]) {
+          sub.added(clientCollection, doc._id, doc);
+        } else {
+          sub.changed(clientCollection, doc._id, doc);
+        }
+        sub._ids[doc._id] = sub._iteration;
+      });
+      // remove documents not in the result anymore
+      for (let k in sub._ids) {
+        let v = sub._ids[k];
+        if (v !== sub._iteration) {
+          delete sub._ids[k];
+          sub.removed(clientCollection, k);
+        }
       }
-      sub._ids[doc._id] = sub._iteration;
-    });
-    // remove documents not in the result anymore
-    for (let k in sub._ids) {
-      let v = sub._ids[k];
-      if (v !== sub._iteration) {
-        delete sub._ids[k];
-        sub.removed(clientCollection, k);
-      }
+      sub._iteration++;
     }
-    sub._iteration++;
+    catch (e) {
+      sub.stop(e);
+    }
   }), throttleWait);
+
+  const update = () => {
+    if (!initializing) doUpdate();
+  };
 
   // track any changes on the collection used for the aggregation
   let query = collection.find(observeSelector);
