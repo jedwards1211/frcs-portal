@@ -42,7 +42,8 @@ export default function reactiveAggregate(sub: PublishHandler, collection: Mongo
       sub._iteration++;
     }
     catch (e) {
-      sub.stop(e);
+      if (handle) handle.stop();
+      sub.error(e);
     }
   }), throttleWait);
 
