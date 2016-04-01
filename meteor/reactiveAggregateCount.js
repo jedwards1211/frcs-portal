@@ -19,24 +19,34 @@ export default function reactiveAggregate(sub: PublishHandler, countName: string
   let initializing = true;
   let countAdded = false;
 
-  const update = _.throttle(Meteor.bindEnvironment(() => {
-    if (initializing) return;
+  const doUpdate = _.throttle(Meteor.bindEnvironment(() => {
+    try {
+      let result = collection.aggregate([...pipeline, {
+        $group: {
+          _id: null,
+          count: {$sum: 1}
+        }
+      }]);
 
-    let result = collection.aggregate([...pipeline, {$group: {
-      _id: null,
-      count: {$sum: 1}
-    }}]);
-    
-    let count = result.length ? result[0].count : 0;
-    
-    if (countAdded) {
-      sub.changed(clientCollection, countName, {count});
+      let count = result.length ? result[0].count : 0;
+
+      if (countAdded) {
+        sub.changed(clientCollection, countName, {count});
+      }
+      else {
+        sub.added(clientCollection, countName, {count});
+        countAdded = true;
+      }
     }
-    else {
-      sub.added(clientCollection, countName, {count});
-      countAdded = true;
+    catch (err) {
+      if (handle) handle.stop();
+      sub.error(err);
     }
   }), throttleWait);
+
+  function update() {
+    if (!initializing) doUpdate();
+  }
 
   // track any changes on the collection used for the aggregation
   let query = collection.find(observeSelector);
