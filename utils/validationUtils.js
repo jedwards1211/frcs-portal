@@ -29,8 +29,38 @@ export function parseNumber(value, regExp) {
   }
 }
 
+export function validateInteger(number, options = {}) {
+  let {required, range, min, max} = options;
+  if (typeof number === 'string') {
+    if (!required) {
+      if (number === '' || number === undefined || number === null) {
+        return;
+      }
+    }
+    if (!integerRegExp.test(number)) {
+      return {error: 'Please enter a valid number'};
+    }
+  }
+  number = parseInt(number);
+  if (isNaN(number)) {
+    return {error: 'Please enter a valid number'};
+  }
+  min = range ? range.min : min;
+  max = range ? range.max : max;
+
+  if (min != null && max != null && (number < min || number > max)) {
+    return {error: `Please enter a number between ${min} and ${max}`} ;
+  }
+  if (number < min) {
+    return {error: `Please enter a number >= ${min}`};
+  }
+  if (number > max) {
+    return {error: `Please enter a number <= ${max}`};
+  }
+}
+
 export function validateNumber(number, options = {}) {
-  let {required, range} = options;
+  let {required, range, min, max} = options;
   if (typeof number === 'string') {
     if (!required) {
       if (number === '' || number === undefined || number === null) {
@@ -45,7 +75,16 @@ export function validateNumber(number, options = {}) {
   if (isNaN(number)) {
     return {error: 'Please enter a valid number'};
   }
-  if (range && number < range.min || number > range.max) {
-    return {error: `Please enter a number between ${range.min} and ${range.max}`} ;
+  min = range ? range.min : min;
+  max = range ? range.max : max;
+
+  if (min != null && max != null && (number < min || number > max)) {
+    return {error: `Please enter a number between ${min} and ${max}`} ;
+  }
+  if (number < min) {
+    return {error: `Please enter a number >= ${min}`};
+  }
+  if (number > max) {
+    return {error: `Please enter a number <= ${max}`};
   }
 }
