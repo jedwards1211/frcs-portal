@@ -1,0 +1,44 @@
+/* @flow */
+
+import React, {Component} from 'react';
+import classNames from 'classnames';
+import moment from 'moment';
+const Moment = moment.fn;
+
+import DatePicker from './DatePicker.jsx';
+import TimePicker from './TimePicker.jsx';
+
+import './DateTimePicker.sass';
+
+type Props = {
+  className?: string,
+  value?: Moment,
+  onChange?: (newValue: Moment) => any
+};
+
+export default class DateTimePicker extends Component<void,Props,void> {
+  onDateChange: (newDate: Moment) => void = newDate => {
+    let {value, onChange} = this.props;
+    if (onChange) {
+      if (!value) onChange(moment(newDate));
+      onChange(moment(value).year(newDate.year()).month(newDate.month()).date(newDate.date()));
+    }
+  };
+  onTimeChange: (newTime: Date) => void = newTime => {
+    let {value, onChange} = this.props;
+    if (onChange) {
+      if (!value) onChange(moment(newTime));
+      onChange(moment(value).hour(newTime.getHours()).minute(newTime.getMinutes()).second(newTime.getSeconds())
+        .millisecond(newTime.getMilliseconds()));
+    }
+  };
+  render(): ReactElement {
+    let {props: {className, value}, onDateChange, onTimeChange} = this;
+    className = classNames(className, 'mf-date-time-picker');
+    
+    return <div {...this.props} className={className}>
+      <DatePicker value={value} onChange={onDateChange}/>
+      <TimePicker value={value && value.toDate()} onChange={onTimeChange}/>
+    </div>;
+  } 
+}
