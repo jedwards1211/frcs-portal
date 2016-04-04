@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 
+import type {Key} from '../flowtypes/commonTypes';
 import type {Action} from '../flowtypes/reduxTypes';
 
 /**
@@ -10,12 +11,12 @@ import type {Action} from '../flowtypes/reduxTypes';
  * dispatch: a redux dispatch function
  * options.meta: meta to add to the actions dispatched action.
  */
-export function setField(autobindField: string | number,
+export function setField(autobindField: Key,
                          newValue: any,
                          options?: {
                            meta?: Object,
                            actionTypePrefix?: string,
-                           autobindPath?: Array<string | number>
+                           autobindPath?: mixed[]
                          } = {}): Action {
   let {meta, actionTypePrefix} = options;
   let type = 'SET_' + _.snakeCase(autobindField).toUpperCase();

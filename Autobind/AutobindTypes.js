@@ -1,4 +1,5 @@
 /* @flow */
 
+import type {Key} from '../flowtypes/commonTypes';
 export type OnAutobindFieldChange =
-  (autobindField: string | number, newValue: any, options?: {autobindPath?: Array<string | number>}) => any;
+  (autobindField: Key, newValue: mixed, options?: {autobindPath?: mixed[]}) => any;
