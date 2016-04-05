@@ -1,10 +1,9 @@
 /* @flow */
 
-import type {SortSpecifier} from '../flowtypes/meteorTypes';
 import type {SortSpecifier as MongoSortSpecifier} from '../flowtypes/mongoTypes';
 
 // converts a Meteor-style sort specifier to a pure Mongo sort specifier
-export default function toMongoSort(sort: SortSpecifier): ?MongoSortSpecifier {
+export default function toMongoSort(sort: mixed): ?MongoSortSpecifier {
   function dirToNumber(direction: number | 'asc' | 'desc'): number {
     switch (direction) {
       case 'asc': return 1;
@@ -23,7 +22,7 @@ export default function toMongoSort(sort: SortSpecifier): ?MongoSortSpecifier {
         result[field] = 1;
       }
     });
-  } else {
+  } else if (sort instanceof Object) {
     result = sort;
   }
 
