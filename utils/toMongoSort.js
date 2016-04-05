@@ -27,5 +27,5 @@ export default function toMongoSort(sort: SortSpecifier): ?MongoSortSpecifier {
     result = sort;
   }
 
-  return Object.keys(result).length ? { $sort: result } : undefined;
+  return Object.keys(result).length ? result : undefined;
 }
