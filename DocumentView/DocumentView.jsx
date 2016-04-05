@@ -120,8 +120,8 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
   };
 
   isExternallyDeleted: () => boolean = () => {
-    let {loading, loadError, effectiveDocument, document} = this.props;
-    return !!(!loading && !loadError && document && !effectiveDocument);
+    let {mode, loading, loadError, effectiveDocument, document} = this.props;
+    return !!(mode === 'edit' && !loading && !loadError && document && !effectiveDocument);
   };
 
   save: () => Promise = () => {
