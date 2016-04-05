@@ -33,19 +33,20 @@ type Props = {
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
   setDocument: (document: any) => any,
+  setUpdatedTimestamp: (timestamp: ?Date) => any,
   setSaving: (saving: boolean) => any,
   setSaveError: (error: ?Error) => any,
   setDeleting: (deleting: boolean) => any,
   setAskToLeave: (askToLeave: boolean) => any,
-  setExternallyChanged: (externallyChanged: boolean) => any,
-  setExternallyDeleted: (externallyDeleted: boolean) => any,
   leave?: Function,
   leaveAfterCancel?: Function,
   leaveAfterCreating?: Function,
   leaveAfterSaving: Function,
   leaveAfterDeleting?: Function,
-  actualDocument?: any, // the document that is actually in effect
-  initDocument?: any,   // what the document was when this view mounted or the user last successfully Applied
+  effectiveDocument?: any, // the document that is in effect
+  effectiveUpdatedTimestamp?: Date, // time that the document in effect was last changed
+  updatedTimestamp?: Date, // time that the document in effect was last changed by this client
+  initDocument?: any,
   document?: any,       // the document with in-progress edits made by the user
   hasUnsavedChanges?: (initDocument: any, document: any) => boolean,
   validate?: (document: any) => {valid: boolean},
@@ -53,8 +54,6 @@ type Props = {
   saving?: boolean,
   deleting?: boolean,
   saveError?: Error,
-  externallyChanged?: boolean,
-  externallyDeleted?: boolean,
   children?: any
 };
 
@@ -73,35 +72,29 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
   };
   componentWillMount() {
     if (this.props.mode === 'edit') {
-      let {loading, loadError, actualDocument, setDocument, setSaving, setDeleting, setSaveError, 
-        setAskToLeave, setExternallyChanged, setExternallyDeleted} = this.props;
+      let {mode, loading, loadError, effectiveDocument, effectiveUpdatedTimestamp,
+        setDocument, setUpdatedTimestamp, setSaving, setDeleting, setSaveError, setAskToLeave} = this.props;
       setSaving(false);
       setDeleting(false);
       setSaveError(undefined);
       setAskToLeave(false);
-      setExternallyChanged(false);
-      setExternallyDeleted(false);
-      if (!loading && !loadError) {
-        setDocument(actualDocument);
+      if (mode === 'edit' && !loading && !loadError && effectiveDocument) {
+        setDocument(effectiveDocument);
+        setUpdatedTimestamp(effectiveUpdatedTimestamp);
+      }
+      else {
+        setDocument(undefined);
+        setUpdatedTimestamp(undefined);
       }
     }
   }
   componentWillReceiveProps(nextProps: Props) {
-    let {loading, loadError, document, mode, saving, deleting, actualDocument, setDocument,
-      setExternallyChanged, setExternallyDeleted} = nextProps;
-    if (mode === 'edit' && !saving && !deleting && !loading && !loadError) {
-      if (!document && actualDocument) {
-        setDocument(actualDocument);
-      }
-      if (this.props.actualDocument !== actualDocument) {
-        if (!actualDocument) {
-          setExternallyChanged(false);
-          setExternallyDeleted(true);
-        }
-        else if (this.props.actualDocument) {
-          setExternallyChanged(true);
-          setExternallyDeleted(false);
-        }
+    let {loading, loadError, document, mode, saving, deleting, effectiveDocument, effectiveUpdatedTimestamp,
+      setDocument, setUpdatedTimestamp} = nextProps;
+    if (mode === 'edit' && !saving && !deleting && !loading && !loadError && effectiveDocument) {
+      if (!document) {
+        setDocument(effectiveDocument);
+        setUpdatedTimestamp(effectiveUpdatedTimestamp);
       }
     }
   }
@@ -119,16 +112,27 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       leaveAfterDeleting: leaveAfterDeleting || leaveAfterCancel || leave
     };
   };
+  
+  isExternallyChanged: () => ?boolean = () => {
+    let {mode, loading, loadError, saving, effectiveUpdatedTimestamp, updatedTimestamp} = this.props;
+    return mode === 'edit' && !loading && !loadError && !saving && effectiveUpdatedTimestamp && updatedTimestamp &&
+        effectiveUpdatedTimestamp.getTime() > updatedTimestamp.getTime();
+  };
+
+  isExternallyDeleted: () => boolean = () => {
+    let {loading, loadError, effectiveDocument, document} = this.props;
+    return !!(!loading && !loadError && document && !effectiveDocument);
+  };
 
   save: () => Promise = () => {
-    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, setDocument,
-      setExternallyChanged, setExternallyDeleted, externallyDeleted} = this.props;
+    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, 
+      setDocument, setUpdatedTimestamp} = this.props;
 
     setSaving(true);
     setSaveError(undefined);
 
     let promise;
-    if (mode === 'create' || externallyDeleted) {
+    if (mode === 'create' || this.isExternallyDeleted()) {
       if (createDocument) {
         promise = createDocument(document);
       }
@@ -139,11 +143,12 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     else {
       promise = saveDocument(document);
     }
-    return promise.then(() => {
-      // update initDocument so there are no seemingly unsaved changes
+    return promise.then(updatedTimestamp => {
+      // update initDocument so that nothing mistakenly thinks there are unsaved changes
       setDocument(document);
-      setExternallyChanged(false);
-      setExternallyDeleted(false);
+      if (updatedTimestamp instanceof Date) {
+        setUpdatedTimestamp(updatedTimestamp);
+      }
     }).catch(err => {
       setSaveError(err);
       throw err;
@@ -206,9 +211,8 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     },
 
     Body: (Body:any, props:Props) => {
-      let {loading, loadError, actualDocument, mode, document, setDocument, createDocument, 
-          documentDisplayName, documentDisplayPronoun, 
-          externallyChanged, externallyDeleted, setExternallyChanged} = this.props;
+      let {loading, loadError, effectiveDocument, effectiveUpdatedTimestamp, mode, document, 
+          setDocument, setUpdatedTimestamp, createDocument, documentDisplayName, documentDisplayPronoun} = this.props;
       let {children} = props;
       
       let alerts = {};
@@ -218,26 +222,24 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       else if (loadError) {
         alerts.loadError = {error: loadError};
       }
-      if (!loading && !loadError) {
-        if (externallyChanged && actualDocument) {
-          alerts.externallyChanged = {
-            warning: <span>
-              <Button warning className="alert-btn-right" onClick={() => {
-                setDocument(actualDocument);
-                setExternallyChanged(false);
-              }}>Load Changes</Button>
-              Someone else changed {documentDisplayName}.
-            </span>
-          };
-        }
-        if (externallyDeleted) {
-          alerts.externallyDeleted = {
-            warning: <span>
-              Someone else deleted {documentDisplayName}.
+      if (this.isExternallyChanged()) {
+        alerts.externallyChanged = {
+          warning: <span>
+          <Button warning className="alert-btn-right" onClick={() => {
+            setDocument(effectiveDocument);
+            setUpdatedTimestamp(effectiveUpdatedTimestamp);
+          }}>Load Changes</Button>
+          Someone else changed {documentDisplayName}.
+        </span>
+        };
+      }
+      if (this.isExternallyDeleted()) {
+        alerts.externallyDeleted = {
+          warning: <span>
+            Someone else deleted {documentDisplayName}.
               {createDocument && `  You may recreate ${documentDisplayPronoun} by pressing the Create button.`}
-            </span>
-          };
-        }
+          </span>
+        };
       }
 
       return <Body {...props}>
@@ -248,12 +250,12 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {disabled, loading, loadError, mode, validate, document, 
-        saveError, saving, deleting, createDocument, externallyDeleted} = this.props;
+      let {disabled, loading, loadError, mode, validate, document,
+        saveError, saving, deleting, createDocument} = this.props;
       
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
 
-      let footerMode = externallyDeleted ? (createDocument ? 'create' : 'none') : mode;
+      let footerMode = this.isExternallyDeleted() ? (createDocument ? 'create' : 'none') : mode;
 
       let alerts = {};
       let {valid} = validate && document ? validate(document) : {valid: true};

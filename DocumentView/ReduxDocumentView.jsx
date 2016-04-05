@@ -14,7 +14,7 @@ import * as actions from './DocumentViewActions';
 type InputProps = {
   mode: 'create' | 'edit',
   reduxPath: Array<string | number>,
-  actualDocument?: any, // the document that is actually in effect
+  effectiveDocument?: any, // the document that is actually in effect
   createDocument?: (document: any) => Promise,
   saveDocument: (document: any) => Promise,
   deleteDocument?: () => Promise,
@@ -51,8 +51,7 @@ class ReduxDocumentView extends Component<void,Props,void> {
             setAskToLeave={askToLeave => dispatch(actions.setAskToLeave(askToLeave, meta))}
             setDocument={document => dispatch(actions.setDocument(document, meta))}
             setSaveError={error => dispatch(actions.setSaveError(error, meta))}
-            setExternallyChanged={externallyChanged => dispatch(actions.setExternallyChanged(externallyChanged, meta))}
-            setExternallyDeleted={externallyDeleted => dispatch(actions.setExternallyDeleted(externallyDeleted, meta))}/>;
+            setUpdatedTimestamp={updatedTimestamp => dispatch(actions.setUpdatedTimestamp(updatedTimestamp, meta))}/>;
   }
 }
 
