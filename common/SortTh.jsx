@@ -54,8 +54,8 @@ const SortTh: (props: Props) => ReactElement = props => {
   
   let icon;
   switch (orderBy[field]) {
-    case 'asc':   icon = <Glyphicon triangleBottom  style={iconStyle}/>; break;
-    case 'desc':  icon = <Glyphicon triangleTop     style={iconStyle}/>; break;
+    case 'asc':  icon = <Glyphicon triangleTop     style={iconStyle}/>; break;
+    case 'desc': icon = <Glyphicon triangleBottom  style={iconStyle}/>; break;
   }
   
   style = Object.assign(style || {}, {
