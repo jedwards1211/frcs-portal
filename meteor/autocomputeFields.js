@@ -170,7 +170,7 @@ export default function autocomputeFields(fields) {
             if (!numberAffected) {
               let doc = {};
               _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value));
-              LocalCollection._modify(doc, modifier, options);
+              LocalCollection._modify(doc, modifier, {...options, isInsert: true});
 
               insertedId = super.upsert(selector, applyFieldsToModifier(modifier, doc), options).insertedId;
             }
