@@ -2,7 +2,6 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 
 import {Side, sides} from './../utils/orient';
 
@@ -11,7 +10,7 @@ require('./Bar.sass');
 function easeOut(f) {
   var r = 1 - f;
   return 1 - r * r;
-};
+}
 
 export default React.createClass({
   propTypes: {
