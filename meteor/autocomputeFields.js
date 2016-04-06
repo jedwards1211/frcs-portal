@@ -81,83 +81,108 @@ export default function autocomputeFields(fields) {
       return super.insert(applyFields(_.cloneDeep(document)), ...args);
     } 
     update(selector, modifier, options, callback) {
+      if (this.callThrough) {
+        // prevent stack overflow; Mongo.Collection.update calls this.upsert()
+        // if options.upsert, which comes back through this method.
+        return super.update(selector, modifier, options, callback);
+      }
+
       if (_.isFunction(options)) {
         callback = options;
         options = undefined;
       }
       options = options || {};
+
       if (options.upsert) {
-        return this.upsert(...arguments);
+        // caution: this.upsert() might call a surrounding decorator's method!
+        return AutocomputeFieldsCollection.prototype.upsert.apply(this, arguments);
       }
-      
-      let findOptions;
-      if (!options.multi) {
-        findOptions = {limit: 1};
+
+      this.callThrough = true;
+      try {
+        let findOptions;
+        if (!options.multi) {
+          findOptions = {limit: 1};
+        }
+        let singleUpdateOptions = {...options, limit: 1};
+
+        return maybeAsync(
+          () => {
+            let numberAffected = 0;
+
+            this.find(selector, findOptions).forEach(doc => {
+              let {_id} = doc;
+              doc = _.cloneDeep(doc);
+              LocalCollection._modify(doc, modifier, options);
+
+              numberAffected += super.update(
+                {...selector, _id},
+                applyFieldsToModifier(modifier, doc),
+                singleUpdateOptions
+              );
+            });
+
+            return numberAffected;
+          },
+          callback
+        );
       }
-      let singleUpdateOptions = {...options, limit: 1};
-
-      return maybeAsync(
-        () => {
-          let numberAffected = 0;
-
-          this.find(selector, findOptions).forEach(doc => {
-            let {_id} = doc;
-            doc = _.cloneDeep(doc);
-            LocalCollection._modify(doc, modifier, options);
-
-            numberAffected += super.update(
-              {...selector, _id},
-              applyFieldsToModifier(modifier, doc),
-              singleUpdateOptions
-            );
-          });
-
-          return numberAffected;
-        },
-        callback
-      );
+      finally {
+        this.callThrough = false;
+      }
     }
     upsert(selector, modifier, options, callback) {
+      if (this.callThrough) {
+        return super.upsert(selector, modifier, options, callback);
+      }
+
       if (_.isFunction(options)) {
         callback = options;
-        options = {};
+        options = undefined;
       }
-      
-      let findOptions;
-      if (!options.multi) {
-        findOptions = {limit: 1};
+      options = options || {};
+
+      this.callThrough = true;
+      try {
+        let findOptions;
+        if (!options.multi) {
+          findOptions = {limit: 1};
+        }
+        let singleUpdateOptions = {...options, limit: 1};
+
+        return maybeAsync(
+          () => {
+            let numberAffected = 0;
+            let insertedId;
+
+            this.find(selector, findOptions).forEach(doc => {
+              let {_id} = doc;
+              doc = _.cloneDeep(doc);
+              LocalCollection._modify(doc, modifier, options);
+
+              numberAffected += super.update(
+                {...selector, _id},
+                applyFieldsToModifier(modifier, doc),
+                singleUpdateOptions
+              );
+            });
+
+            if (!numberAffected) {
+              let doc = {};
+              _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value));
+              LocalCollection._modify(doc, modifier, options);
+
+              insertedId = super.upsert(selector, applyFieldsToModifier(modifier, doc), options).insertedId;
+            }
+
+            return {numberAffected, insertedId};
+          },
+          callback
+        );
       }
-      let singleUpdateOptions = {...options, limit: 1};
-
-      return maybeAsync(
-        () => {
-          let numberAffected = 0;
-          let insertedId;
-
-          this.find(selector, findOptions).forEach(doc => {
-            let {_id} = doc;
-            doc = _.cloneDeep(doc);
-            LocalCollection._modify(doc, modifier, options);
-
-            numberAffected += super.update(
-              {...selector, _id},
-              applyFieldsToModifier(modifier, doc),
-              singleUpdateOptions
-            ).numberAffected;
-          });
-
-          if (!numberAffected) {
-            let doc = {};
-            _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value));
-            LocalCollection._modify(doc, modifier, options);
-
-            insertedId = super.upsert(selector, applyFieldsToModifier(modifier, doc), options).insertedId;
-          }
-
-          return {numberAffected, insertedId};
-        },
-        callback
-      );
+      finally {
+        this.callThrough = false;
+      }
     }
   };
 }
