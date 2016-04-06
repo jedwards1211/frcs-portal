@@ -50,7 +50,7 @@ if (Meteor.isServer) {
       // Filed as issue #5611
       let doc = {};
       _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value));
-      LocalCollection._modify(doc, modifier, {isInsert: true});
+      LocalCollection._modify(doc, modifier, {...options, isInsert: true});
       
       try {
         check(doc, this._checkSchema);
