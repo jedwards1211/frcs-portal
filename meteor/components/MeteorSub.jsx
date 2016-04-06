@@ -3,9 +3,9 @@
 import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
 
-import type {SubscriptionHandle} from '../flowtypes/meteorTypes';
+import type {SubscriptionHandle} from '../../flowtypes/meteorTypes';
 
-import * as actions from './meteorActions';
+import * as actions from './../actions/meteorSubcriptionActions';
 
 type Props = {
   name: string,

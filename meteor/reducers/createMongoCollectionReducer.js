@@ -1,10 +1,10 @@
 /* @flow */
 
 import _ from 'lodash';
-import combineImmutableReducers from '../reducers/combineImmutableReducers';
-import {createPayloadReducer} from '../reducers/commonReducers';
+import combineImmutableReducers from '../../reducers/combineImmutableReducers';
+import {createPayloadReducer} from '../../reducers/commonReducers';
 
-import type {Reducer} from '../flowtypes/reduxTypes';
+import type {Reducer} from '../../flowtypes/reduxTypes';
 
 export default function mongoCollectionReducer(collectionInitialStates: {[name: string]: any}): Reducer {
   let reducers = {};

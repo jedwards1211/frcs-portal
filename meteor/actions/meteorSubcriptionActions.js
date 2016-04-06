@@ -1,7 +1,7 @@
 /* @flow */
 
-import type {SubscriptionHandle} from '../flowtypes/meteorTypes';
-import type {Action} from '../flowtypes/reduxTypes';
+import type {SubscriptionHandle} from '../../flowtypes/meteorTypes';
+import type {Action} from '../../flowtypes/reduxTypes';
 
 export const TYPE_PREFIX = 'METEOR.';
 export const SET_SUBSCRIPTION = TYPE_PREFIX + 'SET_SUBSCRIPTION';

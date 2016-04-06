@@ -14,7 +14,7 @@ export default function applyTimestamps(collection) {
         $set: Object.assign({}, modifier.$set, {
           updatedTimestamp: date
         })
-      }, options.upsert ? {
+      }, options && options.upsert ? {
         $setOnInsert: Object.assign({}, modifier.$setOnInsert, {
           insertedTimestamp: date 
         })

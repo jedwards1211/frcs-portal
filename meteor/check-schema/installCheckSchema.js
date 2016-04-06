@@ -1,30 +1,11 @@
 /* eslint-disable no-inner-declarations */
 /* eslint-disable no-console */
 
+import isOperatorObject from '../isOperatorObject';
+
 const MCp = Mongo.Collection.prototype;
 
 if (Meteor.isServer) {
-  // Copped from Meteor source, it's not part of exported api.
-  // Returns true if this is an object with at least one key and all keys begin
-  // with $.  Unless inconsistentOK is set, throws if some keys begin with $ and
-  // others don't.
-  function isOperatorObject(valueSelector) {
-    if (!LocalCollection._isPlainObject(valueSelector))
-      return false;
-
-    var theseAreOperators = undefined;
-    _.each(valueSelector, function (value, selKey) {
-      var thisIsOperator = selKey.substr(0, 1) === '$';
-      if (theseAreOperators === undefined) {
-        theseAreOperators = thisIsOperator;
-      } else if (theseAreOperators !== thisIsOperator) {
-        throw new Error("Inconsistent operator: " +
-          JSON.stringify(valueSelector));
-      }
-    });
-    return !!theseAreOperators;  // {} has no operators
-  }
-
   MCp.attachSchema = function(checkSchema) {
     this._checkSchema = checkSchema;
   }
@@ -78,6 +59,7 @@ if (Meteor.isServer) {
           console.error('  collection: ' + this._name);
           console.error('  selector: ' + stringify(selector, '  '));
           console.error('  modifier: ' + stringify(modifier, '  '));
+          console.error('  options:  ' + stringify(options, '  '));
           console.error('  document: ' + stringify(doc, '  '));
         }
         throw err;
@@ -98,6 +80,7 @@ if (Meteor.isServer) {
             console.error('  collection: ' + this._name);
             console.error('  selector: ' + stringify(selector, '  '));
             console.error('  modifier: ' + stringify(modifier, '  '));
+            console.error('  options:  ' + stringify(options, '  '));
             console.error('  document: ' + stringify(doc, '  '));
           }
           throw err;          
@@ -133,6 +116,7 @@ if (Meteor.isServer) {
             console.error('  collection: ' + this._name);
             console.error('  selector: ' + stringify(selector, '  '));
             console.error('  modifier: ' + stringify(modifier, '  '));
+            console.error('  options:  ' + stringify(options, '  '));
             console.error('  document: ' + stringify(doc, '  '));
           }
           throw err;          

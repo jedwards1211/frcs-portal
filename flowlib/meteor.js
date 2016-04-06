@@ -82,6 +82,8 @@ declare module MongoGlobal {
 
 declare var Mongo: $Exports<'MongoGlobal'>;
 
+var StandardError = Error;
+
 declare module MeteorGlobal {
   declare class LiveQueryHandle {}
   declare class Error {}
@@ -91,6 +93,10 @@ declare module MeteorGlobal {
   declare var settings: Object;
   declare function user() : Object;
   declare function userId() : string;
+  declare function loggingIn(): boolean;
+  declare function loginWithPassword(user: string, password: string, callback?: (error: ?StandardError) => any): void;
+  declare function logout(callback?: (error: ?StandardError) => any): void;
+  declare function logoutOtherClients(callback?: (error: ?StandardError) => any): void;
   declare function call(method: string, ...args: any[]): any;
   declare function publish(handle: string, callback: Function): ?Mongo.Cursor | ?Array<Mongo.Cursor>;
   declare function subscribe(handle: string, ...args: any[]): SubscriptionHandle;
