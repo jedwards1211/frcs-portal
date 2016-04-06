@@ -10,17 +10,19 @@ import './ElapsedTime.sass';
 type Props = {
   className?: string,
   millis: number,
-  showSeconds?: boolean,
-  showMillis?: boolean,
+  showHours?: boolean | 'auto',
+  showMinutes?: boolean | 'auto',
+  showSeconds?: boolean | 'auto',
+  showMillis?: boolean | 'auto',
   style?: Object
 };
 
 const ElapsedTime: (props: Props) => ReactElement = (props) => {
-  let {className, millis, showMillis, showSeconds} = props;
+  let {className, millis, showHours, showMinutes, showMillis, showSeconds} = props;
   if (showSeconds !== false) showSeconds = true;
   className = classNames(className, 'mf-elapsed-time');
   return <div {...props} className={className}>
-    {formatElapsedTime(millis, {showMillis, showSeconds})}
+    {formatElapsedTime(millis, {showHours, showMinutes, showMillis, showSeconds})}
   </div>;
 };
 

@@ -13,6 +13,7 @@ import './DateTimePicker.sass';
 type Props = {
   className?: string,
   value?: Moment,
+  showSeconds?: boolean,
   onChange?: (newValue: Moment) => any
 };
 
@@ -33,12 +34,12 @@ export default class DateTimePicker extends Component<void,Props,void> {
     }
   };
   render(): ReactElement {
-    let {props: {className, value}, onDateChange, onTimeChange} = this;
+    let {props: {className, value, showSeconds}, onDateChange, onTimeChange} = this;
     className = classNames(className, 'mf-date-time-picker');
     
     return <div {...this.props} className={className}>
       <DatePicker value={value} onChange={onDateChange}/>
-      <TimePicker value={value && value.toDate()} onChange={onTimeChange}/>
+      <TimePicker value={value && value.toDate()} showSeconds={showSeconds} onChange={onTimeChange}/>
     </div>;
   } 
 }
