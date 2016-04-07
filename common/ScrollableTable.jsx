@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
+import shallowEqual from 'fbjs/lib/shallowEqual';
+import shouldPureComponentUpdate from '../utils/shouldPureComponentUpdate';
 
 import './ScrollableTable.sass';
 
@@ -24,6 +26,7 @@ export default class ScrollableTable extends Component {
     scrollTop: PropTypes.number,
     scrollLeft: PropTypes.number,
     THeadSkin: PropTypes.any.isRequired,
+    TRSkin: PropTypes.any.isRequired,
     THSkin: PropTypes.any.isRequired,
     TDSkin: PropTypes.any.isRequired
   };
@@ -33,6 +36,7 @@ export default class ScrollableTable extends Component {
       // to stay at the top/left of the table
       ...this.state,
       THeadSkin,
+      TRSkin,
       THSkin,
       TDSkin
     };
@@ -48,12 +52,25 @@ export default class ScrollableTable extends Component {
   }
 }
 
-class TDSkin extends Component {
+class TRSkin extends Component {
   static contextTypes = {
-    showTD: PropTypes.bool
+    inTHead: PropTypes.bool,
+    scrollLeft: PropTypes.number,
+    scrollTop: PropTypes.number
   };
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return !shallowEqual(this.props, nextProps) ||
+        nextContext.scrollLeft !== this.context.scrollLeft ||
+      (nextContext.inTHead && nextContext.scrollTop !== this.context.scrollTop);
+  }
   render() {
-    if (this.context.showTD === false) return null;
+    return <tr {...this.props}/>;
+  }
+}
+
+class TDSkin extends Component {
+  shouldComponentUpdate = shouldPureComponentUpdate;
+  render() {
     // for some reason Safari doesn't draw a border around empty <td>s.  Adding this span makes it draw a border
     return <td {...this.props} children={this.props.children || <span/>}/>;
   }
@@ -85,6 +102,11 @@ class THSkin extends Component {
 }
 
 class THeadSkin extends Component {
+  shouldComponentUpdate = shouldPureComponentUpdate;
+  static contextTypes = {
+    scrollTop: PropTypes.number,
+    scrollLeft: PropTypes.number
+  };
   static childContextTypes = {
     inTHead: PropTypes.bool
   };
