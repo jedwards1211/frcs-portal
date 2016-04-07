@@ -37,7 +37,7 @@ export default class DateTimePicker extends Component<void,Props,void> {
     let {props: {className, value, showSeconds}, onDateChange, onTimeChange} = this;
     className = classNames(className, 'mf-date-time-picker');
     
-    return <div {...this.props} className={className}>
+    return <div {...this.props} className={className} onChange={e => e.stopPropagation()}>
       <DatePicker value={value} onChange={onDateChange}/>
       <TimePicker value={value && value.toDate()} showSeconds={showSeconds} onChange={onTimeChange}/>
     </div>;
