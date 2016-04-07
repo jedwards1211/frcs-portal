@@ -3,6 +3,13 @@ import {createSkinnableComponent} from 'react-skin';
 
 import './View.sass';
 
+
+/* 
+ * These components all correspond to <table> and its subelements, and render to them by default.
+ * However, they may be skinned to provide bells and whistles, for example wrapping a <Table> in
+ * a <ScrollableTable> skin makes it scroll nicely with fixed column and row headers.
+ */
+
 const TableProps = {
   defaultComponent: 'table',
   className:        'skinnable-table'
