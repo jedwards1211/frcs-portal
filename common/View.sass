@@ -1,3 +1,5 @@
+@import ~sass-flex-mixin/flex
+
 .mf-default-view
   margin: 0 auto
   max-width: 615px
@@ -18,3 +20,20 @@
 
 .mf-default-nav.skinnable-nav-right
   float: right
+
+.mf-default-view.is-absolute
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  @include flexbox
+
+  .mf-default-header,
+  .mf-default-footer
+    @include flex(0 0 auto)
+
+  .mf-default-body
+    overflow: auto
+    @include flex(1 1 auto)
+
