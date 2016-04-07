@@ -54,14 +54,17 @@ export default class ScrollableTable extends Component {
 
 class TRSkin extends Component {
   static contextTypes = {
+    // these are only used by shouldComponentUpdate
     inTHead: PropTypes.bool,
     scrollLeft: PropTypes.number,
     scrollTop: PropTypes.number
   };
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return !shallowEqual(this.props, nextProps) ||
-        nextContext.scrollLeft !== this.context.scrollLeft ||
-      (nextContext.inTHead && nextContext.scrollTop !== this.context.scrollTop);
+      // if scrollLeft changes, we need to update row headers' CSS left
+      nextContext.scrollLeft !== this.context.scrollLeft ||
+      // if scrollTop changes, we need to update column headers' CSS top
+      (!!nextContext.inTHead && nextContext.scrollTop !== this.context.scrollTop);
   }
   render() {
     return <tr {...this.props}/>;
@@ -104,6 +107,7 @@ class THSkin extends Component {
 class THeadSkin extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
   static contextTypes = {
+    // these are only used by shouldComponentUpdate
     scrollTop: PropTypes.number,
     scrollLeft: PropTypes.number
   };
