@@ -1,12 +1,12 @@
 export default function applyTimestamps(collection) {
-  return class TimestampCollection extends collection {
+  return Object.assign(Object.create(collection), {
     insert(document, ...args) {
       let date = new Date();
-      return super.insert(Object.assign({}, document, {
+      return collection.insert(Object.assign({}, document, {
         insertedTimestamp: date,
         updatedTimestamp: date
       }), ...args);
-    }
+    },
     update(selector, modifier, ...args) {
       let options = args[0] || {};
       let date = new Date();
@@ -20,8 +20,8 @@ export default function applyTimestamps(collection) {
         })
       } : undefined);
       
-      return super.update(selector, modifier, ...args);
-    }
+      return collection.update(selector, modifier, ...args);
+    },
     upsert(selector, modifier, ...args) {
       let date = new Date();
       modifier = Object.assign({}, modifier, {
@@ -33,7 +33,7 @@ export default function applyTimestamps(collection) {
         })
       });
       
-      return super.upsert(selector, modifier, ...args);
+      return collection.upsert(selector, modifier, ...args);
     }
-  };
+  });
 }
