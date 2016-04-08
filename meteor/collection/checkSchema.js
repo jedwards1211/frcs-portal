@@ -14,9 +14,9 @@ export default function checkSchema(schema, options = {}) {
     return function(collection) {
       if (monkeypatch) {
         Object.assign(collection, createCheckSchemaMethods({
-          insert: () => collection.insert(...arguments), 
-          update: () => collection.update(...arguments), 
-          upsert: () => collection.upsert(...arguments)
+          insert: collection.insert.bind(collection), 
+          update: collection.update.bind(collection), 
+          upsert: collection.upsert.bind(collection)
         }, schema));
       }
       else {

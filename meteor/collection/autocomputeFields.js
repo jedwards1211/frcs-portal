@@ -89,7 +89,7 @@ export default function autocomputeFields(fields) {
 
       if (options.upsert) {
         // caution: this.upsert() might call a surrounding decorator's method!
-        return this.upsert.apply(this, arguments);
+        return this.upsert(...arguments);
       }
 
       let findOptions;
