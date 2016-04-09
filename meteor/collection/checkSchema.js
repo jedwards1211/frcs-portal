@@ -13,7 +13,7 @@ export default function checkSchema(schema, options = {}) {
     
     return function(collection) {
       if (monkeypatch) {
-        Object.assign(collection, createCheckSchemaMethods({
+        return Object.assign(collection, createCheckSchemaMethods({
           insert: collection.insert.bind(collection), 
           update: collection.update.bind(collection), 
           upsert: collection.upsert.bind(collection)
