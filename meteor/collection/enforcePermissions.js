@@ -1,28 +1,60 @@
 /* @flow */
 
 import _ from 'lodash';
-import requireUserRoles from '../requireUserRoles';
+import {hasUserRoles} from '../requireUserRoles';
 
-const getUserId = {
-  find: (selector, options) => (options && options.userId) || Meteor.userId(),
-  findOne: (selector, options) => (options && options.userId) || Meteor.userId(),
-  insert: (doc, callback, options) => (options && options.userId) || Meteor.userId(),
-  update: (selector, modifier, options) => (options && options.userId) || Meteor.userId(),
-  upsert: (selector, modifier, options) => (options && options.userId) || Meteor.userId(),
-  remove: (selector, callback, options) => (options && options.userId) || Meteor.userId()
+function getUserId(options: Object = {}): ?string { return options.userId || Meteor.userId(); }
+Object.assign(getUserId, {
+  find:     (selector, options)           => getUserId(options),
+  findOne:  (selector, options)           => getUserId(options),
+  insert:   (doc, callback, options)      => getUserId(options),
+  update:   (selector, modifier, options) => getUserId(options),
+  upsert:   (selector, modifier, options) => getUserId(options),
+  remove:   (selector, callback, options) => getUserId(options)
+});
+
+const methodGroups = {
+  read: ['find', 'findOne'],
+  write: ['insert', 'update', 'upsert', 'remove']
 };
 
-type PermitOptions = {
-  never: () => void; 
-  ifHasUserId: (userId: string) => void,
-  ifHasRole: (role: string) => void
-};
+type Condition = (method: string, userId: string, ...args: any[]) => boolean;
 
-type Permit = (...methods: string[]) => PermitOptions;
+class Rule {
+  condition: Condition = () => true;
+  check(method: string, userId: string, ...args: any[]): ?boolean {}
+  ifLoggedIn() { this.condition = (method, userId) => userId != null; }
+  ifHasUserId(...userIds: string[]) {
+    let idMap = {};
+    userIds.forEach(userId => idMap[userId] = true);
+    this.condition = (method, userId) => idMap[userId];
+  }
+  ifHasRoles(...roles: string[]) { this.condition = (method, userId) => hasUserRoles(userId, roles); }
+  where(condition: Condition) { this.condition = condition; }
+}
+
+class AllowRule extends Rule {
+  check(method: string, userId: string, ...args: any[]): ?boolean {
+    return this.condition(method, userId, ...args) || undefined;
+  }
+}
+
+class DenyRule extends Rule {
+  check(method: string, userId: string, ...args: any[]): ?boolean {
+    if (this.condition(method, userId, ...args)) {
+      if (userId) {
+        throw new Meteor.Error(403, 'Forbidden');
+      }
+      else {
+        throw new Meteor.Error(401, 'Unauthorized');
+      }
+    }
+  }
+}
 
 /**
  * Decorates a Mongo.Collection instance to enforce permissions on find, findOne, insert, update,
- * upsert, and remove calls.  The API has mostly the same methods as ongoworks:security but you call it
+ * upsert, and remove calls.  The API has similar methods to ongoworks:security but you call it
  * differently, and rather than having to manually check the permissions, it checks all reads and writes
  * on the collection automatically.  If an operation is not permitted, this decorator will throw a Meteor.Error.
  * 
@@ -36,44 +68,41 @@ type Permit = (...methods: string[]) => PermitOptions;
  * 
  * const Employees = enforcePermissions(permit => {
  *   permit('find', 'findOne'); // allows all authorized users to read
- *   permit('insert', 'update', 'upsert', 'remove').ifHasRole('admin'); // only allows admin users to write
+ *   permit('insert', 'update', 'upsert', 'remove').ifHasRoles('admin'); // only allows admin users to write
  * })(new Mongo.Collection('employees'));
  */
-export default function enforcePermissions(defineRules: (permit: Permit) => void): 
+export default function enforcePermissions(defineRules: (allow: (...methods: string[]) => AllowRule,
+                                                         deny: (...methods: string[]) => DenyRule) => any):
     (target: Mongo.Collection) => Mongo.Collection {
-  const rules: {[method: string]: Array<Function>} = {};
+  const rules: {[method: string]: Rule[]} = _.mapValues(getUserId, () => [new DenyRule()]);
 
-  defineRules(function permit(...methods: string[]): PermitOptions {
-    methods.forEach(method => {
-      if (!getUserId[method]) throw new Error('invalid method: ' + method);
-      rules[method] = [];
-    });
+  function allow(...methods: string[]): AllowRule {
+    methods = _.uniq(_.flatMap(methods, method => methodGroups[method] || method));
+    let rule = new AllowRule();
+    methods.forEach(method => rules[method].push(rule));
+    return rule;
+  }
 
-    function createRules(creator) {
-      methods.forEach(method => rules[method].push(creator(method)));
-    }
+  function deny(...methods: string[]): DenyRule {
+    methods = _.uniq(_.flatMap(methods, method => methodGroups[method] || method));
+    let rule = new DenyRule();
+    methods.forEach(method => rules[method].push(rule));
+    return rule;
+  }
 
-    return {
-      never:       () => createRules(method => () => {throw new Meteor.Error(403, 'Forbidden')}),
-      ifHasUserId: (userId) => createRules(method => (...args) => {
-        if (getUserId[method](...args) !== userId) {
-          throw new Meteor.Error(403, 'Forbidden');
-        }
-      }),
-      ifHasRole:   (role) => createRules(method => (...args) => requireUserRoles(getUserId[method](...args), role))
-    };
-  });
-
+  defineRules(allow, deny);
+  
   return collection => Object.assign(Object.create(collection),
     _.mapValues(getUserId, (getUserId, method) => (...args) => {
+      let userId = getUserId(...args);
+
       let ruleList = rules[method];
-      if (!getUserId(...args)) {
-        throw new Meteor.Error(401, 'Unauthorized');
+      for (let i = ruleList.length - 1; i >= 0; i--) {
+        let verdict = ruleList[i].check(method, userId, ...args);
+        if (verdict === true) break;
+        if (verdict === false) return;
       }
-      if (!ruleList) {
-        throw new Meteor.Error(403, 'Forbidden');
-      }
-      ruleList.forEach(checkRule => checkRule(...args));
+
       return (collection: Object)[method](...args);
     }),
     {insecure: collection}
