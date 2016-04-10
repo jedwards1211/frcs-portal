@@ -15,17 +15,23 @@ export type Condition = (args: {selector?: Selector, options: Object, document?:
                          collection: Mongo.Collection, method: Method}) => boolean;
 
 /**
- * Decorates a Mongo.Collection instance to enforce permissions on find, findOne, insert, update,
- * upsert, and remove calls.  If an operation is denied, this decorator will throw a Meteor.Error.constructor
+ * Wraps a Mongo.Collection instance to enforce permissions on find, findOne, insert, update,
+ * upsert, and remove calls.  If an operation is denied, the wrapper will throw a Meteor.Error.
  * 
  * By default, all operations are allowed.  If you pass deny() as the last argument, it will deny all operations that
  * were not explicitly allowed.
  * 
  * Checking permissions (unless an operation is always allowed) requires a userId.  The checks use Meteor.userId() 
- * by default, but you may override this by passing a userId prop in the `options` of the method (`insert` has
- * no `options` argument in the core `Mongo.Collection` API, but with this you may pass it as the 3rd argument,
- * after the callback.  Since Meteor.userId() throws in publish functions, you must pass in `this.userId` when
+ * by default, but you may override this by passing a userId prop in the `options` of the method (you can pass any
+ * userId, regardless of whether they are logged in; you don't have to pass Meteor.userId()).
+ * In the public Mongo.Collection API, the insert() and remove() methods don't take an options argument, but this
+ * wrapper accepts it as the 3rd argument so that you can pass the userId.
+ * Since Meteor.userId() throws in publish functions, you must pass in `this.userId` in the options when
  * calling a method that isn't always allowed.
+ * 
+ * The wrapper will also have these additonal properties:
+ * - insecure: the wrapped collection.  Methods called on it will not go through enforcePermissions checks.
+ * - checkPermissions(method, ...args): throws a Meteor.Error if the given operation would fail
  *
  * @param{Rule[]} ...rules - a list of rules to enforce.  Rules may be created using allow() and deny(), which are
  * exported from this module.
@@ -37,7 +43,8 @@ export type Condition = (args: {selector?: Selector, options: Object, document?:
  *
  * Example:
  *
- * import enforcePermissions, {allow, deny, userIsLoggedIn, userHasRole} from './enforcePermissions';
+ * import enforcePermissions, {allow, deny} from './enforcePermissions';
+ * import {userIsLoggedIn, userHasRole} from './myConditions';
  * 
  * const Employees = enforcePermissions(
  *   allow('find', 'findOne').where(userIsLoggedIn),                            // allows all authorized users to read
