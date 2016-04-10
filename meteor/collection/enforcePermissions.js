@@ -47,22 +47,31 @@ type Condition = (args: {selector?: Selector, options: Object, document?: Object
  * )(new Mongo.Collection('employees'));
  */
 export default function enforcePermissions(...rules: Rule[]): (collection: Mongo.Collection) => Mongo.Collection {
-  let methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {});
+  const methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {});
+  
+  const ruleChains = _.mapValues(methodsWithRules, (v, method) => 
+    rules.reduceRight((next, rule) => rule.chain(method, next), () => true));
   
   return collection => Object.assign(Object.create(collection),
-    _.mapValues(methodsWithRules, (v, method) => {
-      let ruleChain = rules.reduceRight((next, rule) => rule.chain(method, next), () => true);
-      
-      return (...args) => {
-        ruleChain({
+    _.mapValues(ruleChains, (ruleChain, method) => (...args) => {
+      ruleChain({
+        ...normalizeArgs[method](...args),
+        collection,
+        method
+      });
+      return (collection: Object)[method](...args);
+    }),
+    {
+      insecure: collection,
+      checkPermissions: (method: Method, ...args) => {
+        let ruleChain = ruleChains[method];
+        ruleChain && ruleChain({
           ...normalizeArgs[method](...args),
           collection,
           method
         });
-        return (collection: Object)[method](...args);
-      };
-    }),
-    {insecure: collection}
+      }
+    }
   );
 }
 
