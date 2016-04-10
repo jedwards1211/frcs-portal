@@ -37,11 +37,13 @@ type Condition = (args: {selector?: Selector, options: Object, document?: Object
  * the subsequent rules.
  *
  * Example:
+ *
+ * import enforcePermissions, {allow, deny, userIsLoggedIn, userHasRole} from './enforcePermissions';
  * 
  * const Employees = enforcePermissions(
- *   allow('find', 'findOne').ifLoggedIn(),                             // allows all authorized users to read
- *   allow('insert', 'update', 'upsert', 'remove').ifHasRoles('admin'), // allows admin users to write
- *   deny()                                                             // denies all other operations
+ *   allow('find', 'findOne').where(userIsLoggedIn),                            // allows all authorized users to read
+ *   allow('insert', 'update', 'upsert', 'remove').where(userHasRole('admin')), // allows admin users to write
+ *   deny()                                                                     // denies all other operations
  * )(new Mongo.Collection('employees'));
  */
 export default function enforcePermissions(...rules: Rule[]): (collection: Mongo.Collection) => Mongo.Collection {
