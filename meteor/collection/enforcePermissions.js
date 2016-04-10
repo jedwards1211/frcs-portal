@@ -1,18 +1,17 @@
 /* @flow */
 
 import _ from 'lodash';
-import {hasUserRoles} from '../requireUserRoles';
 
 import type {Selector} from '../../flowtypes/meteorTypes';
 import type {Modifier} from '../../flowtypes/mongoTypes';
 
-type Method = 'find' | 'findOne' | 'insert' | 'update' | 'upsert' | 'remove';
-type MethodOrGroup = Method | 'read' | 'write';
+export type Method = 'find' | 'findOne' | 'insert' | 'update' | 'upsert' | 'remove';
+export type MethodOrGroup = Method | 'read' | 'write';
 
 /**
  * Determines if a rule applies for the given collection, method being attempted, and arguments to the method.
  */
-type Condition = (args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
+export type Condition = (args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
                          collection: Mongo.Collection, method: Method}) => boolean;
 
 /**
@@ -173,45 +172,6 @@ export const always: Condition = () => true;
  * A condition that never applies.
  */
 export const never:  Condition = () => false;
-/**
- * A condition that applies when the user is logged in.
- */
-export const userIsLoggedIn: Condition = ({options}) => getUserId(options) != null;
-/**
- * @returns condition that applies when the user's id is one of the given userIds.
- */
-export function userIn(...userIds: string[]): Condition {
-  const idMap = {};
-  userIds.forEach(userId => idMap[userId] = true);
-  return ({options}) => {
-    const userId = getUserId(options);
-    return !!(userId && idMap[userId]);
-  };
-}
-/**
- * @returns a condition that only applies when the user has the given role.
- */
-export function userHasRole(role: string): Condition {
-  return userHasAnyRole(role);
-}
-/**
- * @returns a condition that applies when the user has any of the given roles.
- */
-export function userHasAnyRole(...roles: string[]): Condition {
-  return ({options}) => {
-    const userId = getUserId(options);
-    return !!userId && _.some(roles, role => hasUserRoles(userId, role));
-  };
-}
-/**
- * @returns a condition that applies when the user has all of the given roles.
- */
-export function userHasAllRoles(...roles: string[]): Condition {
-  return ({options}) => {
-    const userId = getUserId(options);
-    return !!userId && hasUserRoles(userId, roles);
-  };
-}
 
 function getUserId(options: Object): ?string {
   return options.userId || Meteor.userId();
