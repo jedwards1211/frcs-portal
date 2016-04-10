@@ -14,6 +14,7 @@ import type {
   AggregationPipeline,
   AggregationOptions,
   AggregationCursor,
+  Modifier,
 } from '../flowtypes/mongoTypes';
 
 declare module NpmGlobal {
@@ -68,8 +69,8 @@ declare module MongoGlobal {
     find(selector?: Selector, opts?: QueryOptions): Cursor;
     findOne(selector?: Selector, opts?: QueryOptions): ?Object;
     insert(document:Object, callback?: (error: ?Error, id?: string) => any): string;
-    update(selector: Selector, modifier: Object, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
-    upsert(selector: Selector, modifier: Object, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
+    update(selector: Selector, modifier: Modifier, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
+    upsert(selector: Selector, modifier: Modifier, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
     remove(selector: Selector, callback?: (error: ?Error) => any): void;
     allow(options: AllowOptions): void;
     deny(options: AllowOptions): void;

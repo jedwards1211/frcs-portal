@@ -4,6 +4,8 @@ export type SortSpecifier = {[field: string]: Object | number};
 
 export type AggregationPipeline = Array<Object>;
 
+export type Modifier = Object;
+
 export type AggregationOptions = {
   explain?: boolean,
   allowDiskUse?: boolean,
