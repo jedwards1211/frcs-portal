@@ -23,7 +23,8 @@
     "ReactElement": false,
     "ReactClass": false,
     "FunctionalComponent": false,
-    "ReactTag": false
+    "ReactTag": false,
+    "Roles": false
   },
   "plugins": [
     "react"

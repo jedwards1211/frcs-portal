@@ -2,6 +2,7 @@
 
 import React, {Component} from 'react';
 import classNames from 'classnames';
+// $ShutUpFlow
 import moment from 'moment';
 const Moment = moment.fn;
 
