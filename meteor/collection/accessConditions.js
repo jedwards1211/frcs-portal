@@ -1,6 +1,7 @@
 /* @flow */
 
 import type {Condition} from './accessRules';
+import {getUserId} from './accessRules';
 
 /**
  * A condition that applies when the user is logged in.
@@ -16,9 +17,4 @@ export function userIn(...userIds: string[]): Condition {
     const userId = getUserId(options);
     return !!(userId && idMap[userId]);
   };
-}
-
-
-function getUserId(options: Object): ?string {
-  return options.userId || Meteor.userId();
 }
