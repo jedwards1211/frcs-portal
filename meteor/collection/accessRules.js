@@ -30,29 +30,29 @@ export type Condition = (args: {selector?: Selector, options: Object, document?:
  * calling a method that isn't always allowed.
  * 
  * The wrapper will also have these additonal properties:
- * - insecure: the wrapped collection.  Methods called on it will not go through enforcePermissions checks.
+ * - insecure: the wrapped collection.  Methods called on it will not go through accessRules checks.
  * - checkPermissions(method, ...args): throws a Meteor.Error if the given operation would fail
  *
  * @param{Rule[]} ...rules - a list of rules to enforce.  Rules may be created using allow() and deny(), which are
  * exported from this module.
  *
- * enforcePermissions will check the rules in the order returned from createRules and stop on the first rule that
+ * accessRules will check the rules in the order returned from createRules and stop on the first rule that
  * applies.  That means if an allow() rule applies, the operation will immediately proceed without checking any of
  * the subsequent rules, and if a deny() rule applies, the operation will immediately fail without checking any of
  * the subsequent rules.
  *
  * Example:
  *
- * import enforcePermissions, {allow, deny} from './enforcePermissions';
+ * import accessRules, {allow, deny} from './accessRules';
  * import {userIsLoggedIn, userHasRole} from './myConditions';
  * 
- * const Employees = enforcePermissions(
+ * const Employees = accessRules(
  *   allow('find', 'findOne').where(userIsLoggedIn),                            // allows all authorized users to read
  *   allow('insert', 'update', 'upsert', 'remove').where(userHasRole('admin')), // allows admin users to write
  *   deny()                                                                     // denies all other operations
  * )(new Mongo.Collection('employees'));
  */
-export default function enforcePermissions(...rules: Rule[]): (collection: Mongo.Collection) => Mongo.Collection {
+export default function accessRules(...rules: Rule[]): (collection: Mongo.Collection) => Mongo.Collection {
   const methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {});
   
   const ruleChains = _.mapValues(methodsWithRules, (v, method) => 

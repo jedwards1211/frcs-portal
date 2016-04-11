@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import {hasUserRoles} from '../requireUserRoles';
 
-import type {Condition} from './enforcePermissions';
+import type {Condition} from './accessRules';
 
 /**
  * A condition that applies when the user is logged in.
