@@ -13,8 +13,8 @@ export const userIsLoggedIn: Condition = ({options}) => getUserId(options) != nu
 export function userIn(...userIds: string[]): Condition {
   const idMap = {};
   userIds.forEach(userId => idMap[userId] = true);
-  return ({options}) => {
-    const userId = getUserId(options);
+  return (args) => {
+    const userId = getUserId(args);
     return !!(userId && idMap[userId]);
   };
 }
