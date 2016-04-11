@@ -123,7 +123,7 @@ class DenyRule extends Rule {
     if (this.methods[method]) {
       return args => {
         if (this.condition(args)) {
-          if (getUserId(args.options)) {
+          if (getUserId(args)) {
             throw new Meteor.Error(403, 'Forbidden');
           }
           else {
@@ -180,8 +180,9 @@ export const always: Condition = () => true;
  */
 export const never:  Condition = () => false;
 
-function getUserId(options: Object): ?string {
-  return options.userId || Meteor.userId();
+export function getUserId(args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
+  collection: Mongo.Collection, method: Method}): ?string {
+  return args.options.userId || (args.selector && args.selector.userId) || Meteor.userId();
 }
 
 const normalizeArgs = {
