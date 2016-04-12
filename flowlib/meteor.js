@@ -70,8 +70,8 @@ declare module MongoGlobal {
     findOne(selector?: Selector, opts?: QueryOptions): ?Object;
     insert(document:Object, callback?: (error: ?Error, id?: string) => any): string;
     update(selector: Selector, modifier: Modifier, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
-    upsert(selector: Selector, modifier: Modifier, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): number;
-    remove(selector: Selector, callback?: (error: ?Error) => any): void;
+    upsert(selector: Selector, modifier: Modifier, options?: UpdateOptions, callback?: (error: ?Error, numAffected?: number) => any): {numberAffected: ?number, insertedId: ?string};
+    remove(selector: Selector, callback?: (error: ?Error) => any): number;
     allow(options: AllowOptions): void;
     deny(options: AllowOptions): void;
     rawCollection(): Object;
