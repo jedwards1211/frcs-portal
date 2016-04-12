@@ -22,39 +22,39 @@ type Props = {
 };
 
 const ForbiddenDecorator = createSkinDecorator({
-  Title: (Title, props) => <Title>Access Denied</Title>,
-  Body: (Body, props, decorator) => <Body {...props}>
-    <Alert warning>{"You don't have privileges to access the requested content."}</Alert>
-    {props.children}
-  </Body>
+  Title: (Title, props) => <Title {...props}>Access Denied</Title>,
+  Body: (Body, props, decorator) => {
+    let {requiredRoles} = decorator.props;
+    return <Body {...props}>
+      <Alert warning>{`You must be logged in as an ${requiredRoles instanceof Array ? '[' + requiredRoles.join(', ') + ']' : requiredRoles} user to access this page.`}</Alert>
+      {props.children}
+    </Body>
+  }
 });
 
 const UnauthorizedDecorator = createSkinDecorator({
-  Title: (Title, props) => <Title>Please Log In</Title> ,
   Body: (Body, props, decorator) => <Body {...props}>
-    <Alert warning>{"You must be logged in to access the requested content."}</Alert>
+    <Alert warning>{"You must be logged in to access this page."}</Alert>
     {props.children}
   </Body>
 });
 
 class RestrictedView extends Component<void,Props,void> {
   render(): ReactElement {
-    let {loggedIn, isAuthorized, children, ...props} = this.props;
+    let {loggedIn, isAuthorized, requiredRoles, children, ...props} = this.props;
 
     let content;
 
     if (isAuthorized) {
-      content = <div key="allowed">
-        {createOrCloneElement(children, props)}
-      </div>;
+      content = createOrCloneElement(children, {...props, key: 'allowed'});
     }
     else if (loggedIn) {
-      content = <ForbiddenDecorator key="forbidden">
+      content = <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
         <ReduxLoginView/>
       </ForbiddenDecorator>;
     }
     else {
-      return <UnauthorizedDecorator key="unauthorized">
+      content = <UnauthorizedDecorator key="unauthorized">
         <ReduxLoginView/>
       </UnauthorizedDecorator>;
     }
