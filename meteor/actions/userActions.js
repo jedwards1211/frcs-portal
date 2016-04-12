@@ -1,6 +1,7 @@
 /* @flow */
 
 import Immutable from 'immutable';
+// $ShutUpFlow
 import {createAction} from 'redux-actions';
 
 import type {Action} from '../../flowtypes/reduxTypes';
