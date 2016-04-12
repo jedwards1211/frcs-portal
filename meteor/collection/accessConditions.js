@@ -1,7 +1,7 @@
 /* @flow */
 
 import type {Condition} from './accessRules';
-import {getUserId} from './accessRules';
+import {getUserId} from './getUserId';
 
 /**
  * A condition that applies when the user is logged in.

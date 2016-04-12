@@ -3,7 +3,7 @@
 import _ from 'lodash';
 
 import type {Condition} from './accessRules';
-import {getUserId} from './accessRules';
+import {getUserId} from './getUserId';
 
 /**
  * @returns a condition that only applies when the user has the given role.

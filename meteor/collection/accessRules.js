@@ -2,6 +2,8 @@
 
 import _ from 'lodash';
 
+import getUserId from './getUserId';
+
 import type {Selector} from '../../flowtypes/meteorTypes';
 import type {Modifier} from '../../flowtypes/mongoTypes';
 
@@ -180,23 +182,13 @@ export const always: Condition = () => true;
  */
 export const never:  Condition = () => false;
 
-export function getUserId(args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
-  collection: Mongo.Collection, method: Method}): ?string {
-  for (let obj: mixed of [args.options, args.selector, args.document]) {
-    if (obj instanceof Object && 'userId' in obj) {
-      return obj.userId;
-    }
-  }
-  return Meteor.userId();
-}
-
 const normalizeArgs = {
   find:     (selector, options = {})           => ({selector, options}),
   findOne:  (selector, options = {})           => ({selector, options}),
-  insert:   (document, callback, options = {}) => ({document, options}),
+  insert:   (document, callback)               => ({document, options: {}}),
   update:   (selector, modifier, options = {}) => ({selector, modifier, options}),
   upsert:   (selector, modifier, options = {}) => ({selector, modifier, options}),
-  remove:   (selector, callback, options = {}) => ({selector, options})
+  remove:   (selector, callback)               => ({selector, options: {}})
 };
 
 const methodGroups = {
