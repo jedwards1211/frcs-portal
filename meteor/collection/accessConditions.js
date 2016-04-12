@@ -6,7 +6,7 @@ import {getUserId} from './accessRules';
 /**
  * A condition that applies when the user is logged in.
  */
-export const userIsLoggedIn: Condition = ({options}) => getUserId(options) != null;
+export const userIsLoggedIn: Condition = (args) => getUserId(args) != null;
 /**
  * @returns condition that applies when the user's id is one of the given userIds.
  */

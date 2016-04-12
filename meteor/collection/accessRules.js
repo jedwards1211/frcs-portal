@@ -182,8 +182,12 @@ export const never:  Condition = () => false;
 
 export function getUserId(args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
   collection: Mongo.Collection, method: Method}): ?string {
-  return args.options.userId || (args.selector && args.selector.userId) || 
-    (args.document && args.document.userId) || Meteor.userId();
+  for (let obj of [args.options, args.selector, args.document]) {
+    if (obj && 'userId' in obj) {
+      return obj.userId;
+    }
+  }
+  return Meteor.userId();
 }
 
 const normalizeArgs = {
