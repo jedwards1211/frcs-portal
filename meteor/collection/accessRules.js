@@ -13,8 +13,15 @@ export type MethodOrGroup = Method | 'read' | 'write';
 /**
  * Determines if a rule applies for the given collection, method being attempted, and arguments to the method.
  */
-export type Condition = (args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
-                         collection: Mongo.Collection, method: Method}) => boolean;
+export type Condition = (operation: {
+  selector?: Selector,
+  options?: Object,
+  document?: Object,
+  modifier?: Modifier,
+  collection: Mongo.Collection,
+  method: Method,
+  args: Array<any>
+}) => boolean;
 
 /**
  * Wraps a Mongo.Collection instance to enforce permissions on find, findOne, insert, update,
@@ -63,7 +70,7 @@ export default function accessRules(...rules: Rule[]): (collection: Mongo.Collec
   return collection => Object.assign(Object.create(collection),
     _.mapValues(ruleChains, (ruleChain, method) => (...args) => {
       ruleChain({
-        ...normalizeArgs[method](...args),
+        ...normalizeOperation[method](...args),
         collection,
         method
       });
@@ -74,7 +81,7 @@ export default function accessRules(...rules: Rule[]): (collection: Mongo.Collec
       checkPermissions: (method: Method, ...args) => {
         let ruleChain = ruleChains[method];
         ruleChain && ruleChain({
-          ...normalizeArgs[method](...args),
+          ...normalizeOperation[method](...args),
           collection,
           method
         });
@@ -94,7 +101,7 @@ class Rule {
         .forEach(method => this.methods[method] = true);
     }
     else {
-      this.methods = _.mapValues(normalizeArgs, () => true);
+      this.methods = _.mapValues(normalizeOperation, () => true);
     }
   }
 
@@ -114,7 +121,7 @@ class Rule {
 class AllowRule extends Rule {
   chain(method: Method, next: Condition): Condition {
     if (this.methods[method]) {
-      return args => this.condition(args) || next(args);
+      return operation => this.condition(operation) || next(operation);
     }
     return next;
   }
@@ -123,16 +130,16 @@ class AllowRule extends Rule {
 class DenyRule extends Rule {
   chain(method: Method, next: Condition): Condition {
     if (this.methods[method]) {
-      return args => {
-        if (this.condition(args)) {
-          if (getUserId(args)) {
+      return operation => {
+        if (this.condition(operation)) {
+          if (getUserId(operation)) {
             throw new Meteor.Error(403, 'Forbidden');
           }
           else {
             throw new Meteor.Error(401, 'Unauthorized');
           }
         }
-        return next(args);
+        return next(operation);
       };
     }
     return next;
@@ -182,13 +189,13 @@ export const always: Condition = () => true;
  */
 export const never:  Condition = () => false;
 
-const normalizeArgs = {
-  find:     (selector, options = {})           => ({selector, options}),
-  findOne:  (selector, options = {})           => ({selector, options}),
-  insert:   (document, callback)               => ({document, options: {}}),
-  update:   (selector, modifier, options = {}) => ({selector, modifier, options}),
-  upsert:   (selector, modifier, options = {}) => ({selector, modifier, options}),
-  remove:   (selector, callback)               => ({selector, options: {}})
+const normalizeOperation = {
+  find:     (selector, options = {})           => ({selector, options, args: [...arguments]}),
+  findOne:  (selector, options = {})           => ({selector, options, args: [...arguments]}),
+  insert:   (document, callback)               => ({document, options: {}, args: [...arguments]}),
+  update:   (selector, modifier, options = {}) => ({selector, modifier, options, args: [...arguments]}),
+  upsert:   (selector, modifier, options = {}) => ({selector, modifier, options, args: [...arguments]}),
+  remove:   (selector, callback)               => ({selector, options: {}, args: [...arguments]})
 };
 
 const methodGroups = {
