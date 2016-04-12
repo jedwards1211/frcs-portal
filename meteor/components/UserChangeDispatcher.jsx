@@ -24,7 +24,7 @@ export default class UserChangeDispatcher extends Component<void,void,void> {
         dispatch(actions.setLoggingIn(loggingIn));
       });
     });
-  };
+  }
   componentWillUnmount() {
     if (this.autorun) this.autorun.stop();
   }

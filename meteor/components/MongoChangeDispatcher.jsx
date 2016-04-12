@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default class MongoChangeDispatcher extends Component<void,Props,void> {
-  static contextTypes = {
+  static contextTypes: Object = {
     store: PropTypes.shape({
       dispatch: PropTypes.func.isRequired
     }).isRequired

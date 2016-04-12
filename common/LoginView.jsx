@@ -79,7 +79,7 @@ export default class LoginView extends Component<void,Props,void> {
                   omnidata={loggingIn ? {disabled: true} : undefined}>
           <Body>
             <Input type="text" placeholder="Username" autobindField="username"/>
-            <Input type="text" placeholder="Password" autobindField="password"/>
+            <Input type="password" placeholder="Password" autobindField="password"/>
           </Body>
         </Autobind>
         <Footer>

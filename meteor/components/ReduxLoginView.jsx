@@ -10,7 +10,8 @@ import * as userActions from '../actions/userActions';
 class ReduxLoginView extends Component {
   onSubmit: () => void = () => {
     let {username, password, dispatch} = this.props;
-    dispatch(userActions.loginWithPassword(username, password));
+    dispatch(userActions.setLoginError(undefined));
+    Meteor.loginWithPassword(username, password, err => dispatch(userActions.setLoginError(err)));
   };
   render(): ReactElement {
     let {onSubmit} = this;

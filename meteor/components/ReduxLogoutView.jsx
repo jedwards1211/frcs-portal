@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-import Alert from '../../mindfront-react-components/bootstrap/Alert';
-import Spinner from '../../mindfront-react-components/common/Spinner';
+import Alert from '../../bootstrap/Alert';
+import Spinner from '../../common/Spinner';
 
-import {logout} from '../../mindfront-react-components/meteor/actions/rootActions';
+import * as actions from '../actions/userActions';
 
 class ReduxLogoutView extends Component {
   componentWillMount() {
-    this.props.dispatch(logout());
+    let {dispatch} = this.props;
+    dispatch(actions.setLogoutError(undefined));
+    Meteor.logout(err => dispatch(actions.setLogoutError(err)));
   }
   render() {
     let {logoutError} = this.props;
@@ -23,7 +25,7 @@ class ReduxLogoutView extends Component {
 
 function select(state) {
   return {
-    logoutError: state.getIn(['meteorState', 'logoutError']),
+    logoutError: state.getIn(['meteorState', 'logoutError'])
   };
 }
 
