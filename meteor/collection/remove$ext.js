@@ -4,10 +4,10 @@ import _ from 'lodash';
 
 export default function remove$ext(collection: Mongo.Collection): Mongo.Collection {
   return Object.assign(Object.create(collection), {
-    find(selector: Object, ...args): Mongo.Cursor {
+    find(selector?: Object, ...args): Mongo.Cursor {
       return collection.find(_.omit(selector, '$ext'), ...args);
     },
-    findOne(selector: Object, ...args): Object{
+    findOne(selector?: Object, ...args): ?Object {
       return collection.findOne(_.omit(selector, '$ext'), ...args);
     },
     insert(document: Object, ...args): any {
@@ -19,7 +19,7 @@ export default function remove$ext(collection: Mongo.Collection): Mongo.Collecti
     upsert(selector: Object, ...args): {numberAffected: ?number, insertedId: any} {
       return collection.upsert(_.omit(selector, '$ext'), ...args);
     },
-    remove(selector: Object, ...args): number {
+    remove(selector?: Object, ...args): number {
       return collection.remove(_.omit(selector, '$ext'), ...args);
     }
   });
