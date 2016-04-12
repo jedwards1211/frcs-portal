@@ -7,6 +7,7 @@ import {createSelector} from 'reselect';
 
 import createOrCloneElement from '../../utils/createOrCloneElement';
 
+import Glyphicon from '../../bootstrap/Glyphicon.jsx';
 import Fader from '../../common/Fader.jsx';
 import Alert from '../../bootstrap/Alert.jsx';
 
@@ -16,8 +17,10 @@ import {createSkinDecorator} from 'react-skin';
 
 type Props = {
   requiredRoles?: string | string[],
+  requiredRolesToWrite?: string | string[],
   loggedIn: boolean,
   isAuthorized: boolean,
+  isReadOnly: boolean,
   children: any
 };
 
@@ -26,27 +29,42 @@ const ForbiddenDecorator = createSkinDecorator({
   Body: (Body, props, decorator) => {
     let {requiredRoles} = decorator.props;
     return <Body {...props}>
-      <Alert warning>{`You must be logged in as an ${requiredRoles instanceof Array ? '[' + requiredRoles.join(', ') + ']' : requiredRoles} user to access this page.`}</Alert>
+      <Alert warning>{`You must be logged in as an ${requiredRoles instanceof Array ? '[' + requiredRoles.join(', ') + ']' : requiredRoles} user to access this page`}</Alert>
       {props.children}
     </Body>
   }
 });
 
+const ReadOnlyDecorator = createSkinDecorator({
+  Body: (Body, props, decorator) => <Body {...props}>
+    let {requiredRolesToWrite} = decorator.props;
+    <Alert warning><Glyphicon lock/> You must be logged in as an {requiredRolesToWrite instanceof Array ? `[${requiredRolesToWrite.join(', ')}]` : requiredRolesToWrite} user to edit this view</Alert>
+    {props.children}
+  </Body>
+});
+
 const UnauthorizedDecorator = createSkinDecorator({
   Body: (Body, props, decorator) => <Body {...props}>
-    <Alert warning>{"You must be logged in to access this page."}</Alert>
+    <Alert warning>{"You must be logged in to access this page"}</Alert>
     {props.children}
   </Body>
 });
 
 class RestrictedView extends Component<void,Props,void> {
   render(): ReactElement {
-    let {loggedIn, isAuthorized, requiredRoles, children, ...props} = this.props;
+    let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children, ...props} = this.props;
 
     let content;
 
     if (isAuthorized) {
-      content = createOrCloneElement(children, {...props, key: 'allowed'});
+      if (isReadOnly) {
+        content = <ReadOnlyDecorator key="readOnly" requiredRolesToWrite={requiredRolesToWrite}>
+          {createOrCloneElement(children, {...props, readOnly: true})}
+        </ReadOnlyDecorator>;
+      }
+      else {
+        content = createOrCloneElement(children, {...props, key: 'allowed'});
+      }
     }
     else if (loggedIn) {
       content = <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
@@ -65,12 +83,14 @@ class RestrictedView extends Component<void,Props,void> {
 
 const select = createSelector(
   (state, props) => props.requiredRoles || [],
+  (state, props) => props.requiredRolesToWrite || [],
   state => state.get('user'),
-  (requiredRoles, user) => {
+  (requiredRoles, requiredRolesToWrite, user) => {
     if (!(requiredRoles instanceof Array)) requiredRoles = [requiredRoles];
     return {
       loggedIn: !!user,
-      isAuthorized: !!user && _.every(requiredRoles, role => Roles.userIsInRole(user.get('_id'), role))
+      isAuthorized: !!user && _.every(requiredRoles, role => Roles.userIsInRole(user.get('_id'), role)),
+      isReadOnly: !!user && !_.every(requiredRolesToWrite, role => Roles.userIsInRole(user.get('_id'), role))
     };
   }
 );
