@@ -36,7 +36,7 @@ class ReduxChangePasswordView extends Component {
   static contextTypes = {
     router: PropTypes.object
   };
-  onSubmit = (oldPassword, newPassword) => {
+  onSubmit: (oldPassword: string, newPassword: string) => void = (oldPassword, newPassword) => {
     let {dispatch} = this.props;
     dispatch(actions.setChangingPassword(false));
     dispatch(actions.setChangePasswordError(undefined));

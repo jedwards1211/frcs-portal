@@ -92,6 +92,9 @@ declare module MeteorGlobal {
   declare var absolutePath: string; // from the ostrio:meteor-root package
   declare var users: Mongo.Collection;
   declare var settings: Object;
+  declare var isClient: boolean;
+  declare var isServer: boolean;
+  declare var isCordova: boolean;
   declare function user() : Object;
   declare function userId() : string;
   declare function loggingIn(): boolean;
@@ -107,5 +110,11 @@ declare module MeteorGlobal {
 }
 
 declare var Meteor: $Exports<'MeteorGlobal'>;
+
+declare module Accounts {
+  declare function changePassword(oldPassword: string, newPassword: string, callback?: (error: ?Error) => any): void;
+}
+
+declare var Accounts: $Exports<'Accounts'>;
 
 declare var WebApp: Object;

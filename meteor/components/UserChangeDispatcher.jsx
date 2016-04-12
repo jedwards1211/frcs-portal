@@ -6,7 +6,9 @@ import Immutable from 'immutable';
 
 import * as actions from './../actions/userActions';
 
-export default class UserChangeDispatcher extends Component<void,void,void> {
+type Props = {};
+
+export default class UserChangeDispatcher extends Component<void,Props,void> {
   static contextTypes = {
     store: PropTypes.shape({
       dispatch: PropTypes.func.isRequired

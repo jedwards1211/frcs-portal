@@ -182,8 +182,8 @@ export const never:  Condition = () => false;
 
 export function getUserId(args: {selector?: Selector, options: Object, document?: Object, modifier?: Modifier,
   collection: Mongo.Collection, method: Method}): ?string {
-  for (let obj of [args.options, args.selector, args.document]) {
-    if (obj && 'userId' in obj) {
+  for (let obj: mixed of [args.options, args.selector, args.document]) {
+    if (obj instanceof Object && 'userId' in obj) {
       return obj.userId;
     }
   }

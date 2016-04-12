@@ -29,7 +29,7 @@ export type Props = {
   onOldPasswordChange: Function,
   onNewPasswordChange: Function,
   onRetypeNewPasswordChange: Function,
-  onSubmit: Function,
+  onSubmit: (oldPassword: string, newPassword: string) => any,
 };
 
 export default class ChangePasswordView extends Component {
@@ -38,7 +38,7 @@ export default class ChangePasswordView extends Component {
     onOldPasswordChange: () => void,
     onNewPasswordChange: () => void,
     onRetypeNewPasswordChange: () => void,
-    onSubmit: () => void,
+    onSubmit: (oldPassword: string, newPassword: string) => any,
   } = {
     onOldPasswordChange() {},
     onNewPasswordChange() {},
@@ -80,11 +80,13 @@ export default class ChangePasswordView extends Component {
   canSave: () => boolean = () => {
     return this.validate().valid && !this.props.changingPassword;
   };
-  onSubmit: () => void = (e) => {
+  onSubmit: (e: any) => void = (e) => {
     e.preventDefault();
     if (this.canSave()) {
       let {oldPassword, newPassword, onSubmit} = this.props;
-      onSubmit(oldPassword, newPassword);
+      if (oldPassword && newPassword && onSubmit) {
+        onSubmit(oldPassword, newPassword);
+      }
     }
   };
   render(): ?ReactElement {
