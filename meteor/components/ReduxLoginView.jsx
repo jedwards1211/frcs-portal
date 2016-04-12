@@ -5,18 +5,23 @@ import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldCh
 
 import LoginView from '../../common/LoginView';
 
-import * as userActions from '../actions/userActions';
+import * as actions from '../actions/userActions';
 
 class ReduxLoginView extends Component {
   onSubmit: () => void = () => {
     let {username, password, dispatch} = this.props;
-    dispatch(userActions.setLoginError(undefined));
-    Meteor.loginWithPassword(username, password, err => dispatch(userActions.setLoginError(err)));
+    dispatch(actions.setLoginError(undefined));
+    Meteor.loginWithPassword(username, password, err => dispatch(actions.setLoginError(err)));
+  };
+  onLogout: () => void = () => {
+    let {dispatch} = this.props;
+    dispatch(actions.setLogoutError(undefined));
+    Meteor.logout(err => dispatch(actions.setLogoutError(err)));
   };
   render(): ReactElement {
-    let {onSubmit} = this;
-    let {dispatch} = this.props;
+    let {onSubmit, onLogout, props: {dispatch}} = this;
     return <LoginView {...this.props} onSubmit={onSubmit}
+                                      onLogout={onLogout}
                       onAutobindFieldChange={dispatchAutobindFieldChanges(dispatch, 
                         {meta: {reduxPath: ['LoginView']}, actionTypePrefix: 'LOGIN_VIEW.'})}/>;
   }

@@ -3,7 +3,6 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 
-import {Link} from 'react-router';
 import Spinner from './Spinner';
 import AlertGroup from './AlertGroup';
 import Form from '../bootstrap/Form.jsx';
@@ -26,6 +25,7 @@ type Props = {
   username?: string,
   password?: string,
   onSubmit?: (username: string, password: string) => any,
+  onLogout?: () => any,
   onUsernameChange?: (username: string) => any,
   onPasswordChange?: (password: string) => any
 };
@@ -51,7 +51,7 @@ export default class LoginView extends Component<void,Props,void> {
     }
   };
   render(): ReactElement {
-    let {className, user, loggingIn, loginError} = this.props;
+    let {className, user, loggingIn, loginError, onLogout} = this.props;
     className = classNames(className, 'mf-login-view');
 
     let validation = this.validate();
@@ -67,7 +67,7 @@ export default class LoginView extends Component<void,Props,void> {
         <Body>
           <Alert success>
             You are logged in as {user && (user.getIn(['profile', 'name']) || user.get('username'))}.
-            &nbsp;<Link to="/logout" className="alert-link">Log out</Link>
+            &nbsp;<a onClick={onLogout} className="alert-link">Log out</a>
           </Alert>  
         </Body>
         <Footer/>
