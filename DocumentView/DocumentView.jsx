@@ -194,7 +194,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
 
   ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
-      let {disabled, saving, deleting, loading, loadError, deleteDocument} = this.props;
+      let {mode, disabled, saving, deleting, loading, loadError, deleteDocument} = this.props;
       let {children} = props;
 
       let {leaveAfterDeleting} = this.getLeaveCallbacks();
@@ -202,7 +202,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       disabled = disabled || saving || deleting || loading || loadError;
 
       return <Title {...props}>
-        {deleteDocument && <Nav right>
+        {deleteDocument && mode === 'edit' && <Nav right>
           <DeleteButton disabled={disabled} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
                         deleting={deleting} deletingText="Deleting..."/>
         </Nav>}
