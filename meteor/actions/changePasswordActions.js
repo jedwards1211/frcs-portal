@@ -1,5 +1,6 @@
 /* @flow */
 
+// flow-ignore(jcore-portal)
 import {createAction} from 'redux-actions';
 
 import type {Action} from '../../flowtypes/reduxTypes';

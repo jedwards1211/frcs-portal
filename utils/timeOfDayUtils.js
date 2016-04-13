@@ -1,7 +1,6 @@
 /* @flow */
 
 import _ from 'lodash';
-// $ShutUpFlow
 import moment from 'moment';
 const Moment = moment.fn;
 

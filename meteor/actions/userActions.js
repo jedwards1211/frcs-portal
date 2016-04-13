@@ -1,7 +1,7 @@
 /* @flow */
 
 import Immutable from 'immutable';
-// $ShutUpFlow
+// flow-ignore(jcore-portal)
 import {createAction} from 'redux-actions';
 
 import type {Action} from '../../flowtypes/reduxTypes';
