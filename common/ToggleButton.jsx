@@ -13,7 +13,7 @@ type Props = ButtonProps & {
 
 export default class ToggleButton extends Component<void,Props,void> {
   static supportsInputGroupBtn = true;
-  render(): ReactElement {
+  render(): React.Element {
     let {className, value, onChange} = this.props;
     className = classNames(className, {active: value});
     return <Button {...this.props} className={className} onClick={() => onChange && onChange(!value)}/>;

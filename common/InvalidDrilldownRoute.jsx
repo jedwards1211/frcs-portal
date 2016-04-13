@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default class InvalidDrilldownRoute extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {path, title} = this.props;
 
     return <Route path={path}>

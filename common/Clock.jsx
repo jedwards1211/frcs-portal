@@ -41,7 +41,7 @@ type State = {
 
 export default class Clock extends Component<void,Props,State> {
   state: State = {}; 
-  render(): ReactElement {
+  render(): React.Element {
     let {time, showHours, showMinutes, showSeconds, className, hoverable, inverse, onNumberClick,
         controlledHand} = this.props;
     let {hoveredNumber} = this.state;

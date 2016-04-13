@@ -15,7 +15,7 @@ type Props = {
 
 export default class RadioButtonGroup extends Component<void,Props,void> {
   static supportsInputGroupBtn = true;
-  render(): ReactElement {
+  render(): React.Element {
     let {value, children, onChange} = this.props;
     return <ButtonGroup {...this.props}>
       {Children.map(children, (child: mixed) => {

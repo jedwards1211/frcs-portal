@@ -17,7 +17,7 @@ export default class FakeLink extends Component<void,Props,void> {
     let {to} = this.props;
     if (to) this.context.router.push(to);
   };
-  render(): ReactElement {
+  render(): React.Element {
     return this.props.children ? safeCloneElement(this.props.children, {
       onClick: this.onClick,
       style: {

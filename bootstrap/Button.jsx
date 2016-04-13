@@ -40,7 +40,7 @@ export default class Button extends Component<void,Props,void> {
     insideButtonToolbar: PropTypes.bool
   };
   static supportsInputGroupBtn = true;
-  render(): ReactElement {
+  render(): React.Element {
     let {a, input, submit, caret, active, disabled, block, className, children} = this.props;
     let {insideFormGroup, insideInputGroup, insideButtonGroup, insideButtonToolbar} = this.context;
 

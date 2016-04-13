@@ -36,11 +36,15 @@ const ForbiddenDecorator = createSkinDecorator({
 });
 
 const ReadOnlyDecorator = createSkinDecorator({
-  Body: (Body, props, decorator) => <Body {...props}>
+  Body: (Body, props, decorator) => {
     let {requiredRolesToWrite} = decorator.props;
-    <Alert warning><Glyphicon lock/> You must be logged in as an {requiredRolesToWrite instanceof Array ? `[${requiredRolesToWrite.join(', ')}]` : requiredRolesToWrite} user to edit this view</Alert>
-    {props.children}
-  </Body>
+    return <Body {...props}>
+      <Alert warning><Glyphicon lock/>
+        You must be logged in as an {requiredRolesToWrite instanceof Array ? `[${requiredRolesToWrite.join(', ')}]` : requiredRolesToWrite}
+        user to edit this view</Alert>
+      {props.children}
+    </Body>;
+  }
 });
 
 const UnauthorizedDecorator = createSkinDecorator({
@@ -51,7 +55,7 @@ const UnauthorizedDecorator = createSkinDecorator({
 });
 
 class RestrictedView extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children, ...props} = this.props;
 
     let content;
@@ -99,7 +103,7 @@ const ReduxRestrictedView = connect(select)(RestrictedView);
 
 export default ReduxRestrictedView;
 
-export function restrict(requiredRoles?: string | string[]): (content: ReactElement) => (props: Object) => ReactElement {
+export function restrict(requiredRoles?: string | string[]): (content: React.Element) => (props: Object) => React.Element {
   return content => props => <ReduxRestrictedView {...props} requiredRoles={requiredRoles}>
     {content}
   </ReduxRestrictedView>;

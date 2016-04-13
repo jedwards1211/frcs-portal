@@ -21,7 +21,6 @@
     "commonjs": true
   },
   "globals": {
-    "ReactElement": false,
     "ReactClass": false,
     "FunctionalComponent": false,
     "ReactTag": false,

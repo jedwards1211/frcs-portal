@@ -43,6 +43,8 @@ function parseTimeString(baseTime: ?Date, timeString: string): Date {
 }
 
 export default class TimePicker extends Component<DefaultProps,Props,State> {
+  state: State;
+  
   // static autoformValueProp = 'time';
   static defaultProps = {
     showSeconds: false,
@@ -140,7 +142,7 @@ export default class TimePicker extends Component<DefaultProps,Props,State> {
     result.valid = !_.some(result, v => v.error);
     return result;
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {value, className, showSeconds, showAMPM} = this.props;
     let {timeString, controlledHand} = this.state;
 

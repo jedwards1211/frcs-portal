@@ -50,7 +50,7 @@ export default class LoginView extends Component<void,Props,void> {
       onSubmit(username, password);
     }
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {className, user, loggingIn, loginError, onLogout} = this.props;
     className = classNames(className, 'mf-login-view');
 

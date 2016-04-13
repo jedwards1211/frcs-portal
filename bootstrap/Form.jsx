@@ -49,7 +49,7 @@ export class Group extends Component<void,GroupProps,void> {
       insideFormGroup: true
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, staticControl, label, children, validation} = this.props;
 
     let contextClass   = getFormGroupContextClass(validation || this.props);
@@ -118,7 +118,7 @@ export default class Form extends Component<void,FormProps,void> {
       return child;      
     });
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, inline, horizontal, children} = this.props;
     className = classNames(className, {
       'form-inline':      inline,

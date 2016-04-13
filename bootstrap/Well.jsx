@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default class Well extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let sizingClass = getSizingClass(this.props);
     let className = classNames(this.props.className, 'well', sizingClass && 'well-' + sizingClass);
     return <div {...this.props} className={className}/>;

@@ -29,7 +29,7 @@ export class DefaultDrilldownTitleSkin extends Component {
     children?: any,
   };
   static defaultProps: {};
-  render(): ReactElement {
+  render(): React.Element {
     let {children} = this.props;
     let {drilldownRoute} = this.context;
     let parentRoute = drilldownRoute && drilldownRoute.getParentRoute();
@@ -70,7 +70,7 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps & Extra
   componentWillUnmount(): void {
     this.context.drilldownSkin.routeWillUnmount(this);
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {path, className, children, childRoute} = this.props;
     let {drilldownSkin} = this.context;
     let {transitioning} = drilldownSkin.state;
@@ -109,6 +109,7 @@ type ExtraProps = {
 };
 
 export default class DefaultDrilldownSkin extends Component<void,Props & ExtraProps,State> {
+  state: State;
   mounted: boolean = false;
   root: ?HTMLElement;
   viewport: ?HTMLElement;
@@ -245,7 +246,7 @@ export default class DefaultDrilldownSkin extends Component<void,Props & ExtraPr
     }
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     let {className, style, rootRoute} = this.props;
     let {height, mountedPath} = this.state;
 

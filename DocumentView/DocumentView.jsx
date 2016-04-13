@@ -282,7 +282,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     }
   });
 
-  render(): ReactElement {
+  render(): React.Element {
     let {className, askToLeave, saving, deleting, document, validate, setAskToLeave} = this.props;
 
     className = classNames(className, 'mf-document-view');

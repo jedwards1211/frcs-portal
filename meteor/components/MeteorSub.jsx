@@ -54,7 +54,7 @@ export default class MeteorSub extends Component<void,Props,void> {
     }
     dispatch(actions.deleteSubscriptionStatus(subKey));
   }
-  render(): ReactElement {
+  render(): React.Element {
     return <span/>;
   }
 }

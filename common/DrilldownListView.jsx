@@ -36,7 +36,7 @@ export default class DrilldownListView extends Component<DefaultProps,Props,void
   static defaultProps = {
     ItemLink: 'a'
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {loading, loadError, title, children, itemPluralDisplayName} = this.props;
     let ItemLink: any = this.props.ItemLink;
 

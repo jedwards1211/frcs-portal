@@ -49,7 +49,7 @@ export default class RestrictedInput extends Component<void,Props,void> {
       return;
     }
   };
-  render(): ReactElement {
+  render(): React.Element {
     return <Input {...this.props} onChange={this.onChange}/>;
   }
 }

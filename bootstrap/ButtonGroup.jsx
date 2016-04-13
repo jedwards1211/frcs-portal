@@ -43,7 +43,7 @@ export default class ButtonGroup extends Component<void,Props,void> {
       sizing: getSizingClass(this.props)
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, vertical, justified, dropup, dropdown} = this.props;
     let {insideButtonToolbar, insideButtonGroup, insideFormGroup} = this.context;
     let sizingClass = getSizingClass(this.props) || this.context.sizing;

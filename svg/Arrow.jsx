@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default class Arrow extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {className, style,
         shaftWidth, shaftLength, headWidth, headLength,
         unclosed} = this.props;

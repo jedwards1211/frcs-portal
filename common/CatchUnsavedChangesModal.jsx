@@ -66,7 +66,7 @@ export default class CatchUnsavedChangesModal extends Component<void,Props,void>
     }
   };
 
-  render(): ReactElement {
+  render(): React.Element {
     let {open, title, message, valid, saving, onOutsideClick,
         onStayHereClick, onDiscardChangesClick, onSaveChangesClick} = this.props;
 

@@ -44,7 +44,7 @@ export default class Input extends Component<void,Props,void> {
     }
   };
 
-  render():ReactElement {
+  render():React.Element {
     let {className, type} = this.props;
     let sizingClass = getSizingClass(this.props);
     className = classNames(className, type && classNameForType[type], sizingClass && 'input-' + sizingClass);

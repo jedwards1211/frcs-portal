@@ -26,7 +26,7 @@ export class Cell extends Component<void,CellProps,void> {
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {className, children, depth, hasChildren,
       expanded, style, collapseIconProps} = this.props;
 
@@ -72,7 +72,7 @@ type NodeProps = {
 };
 
 export class Node extends Component<void,NodeProps,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {cell, content, depth, className, hasChildren, children,
         expanded, active, collapseIconProps} = this.props;
 
@@ -135,7 +135,7 @@ export default class Tree extends Component<DefaultProps,Props,void> {
     let {itemHeight, indent, collapseIconWidth} = this.props;
     return {itemHeight, indent, collapseIconWidth};
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className} = this.props;
     let {TreeClass} = this.context;
     className = classNames(className, 'mf-tree', TreeClass || 'mf-tree-default');

@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 
-import {LeaveHook} from '../flowtypes/LeaveHook';
+import type {LeaveHook} from '../flowtypes/LeaveHook';
 
 type Props = {
   route: Object,
@@ -58,7 +58,7 @@ export default class RouteLeaveHookSupport extends Component<void,Props,void> {
       }
     }
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {children, ...props} = this.props;
     return React.cloneElement(children, props);
   }

@@ -17,7 +17,7 @@ type Props = {
   style?: Object
 };
 
-const ElapsedTime: (props: Props) => ReactElement = (props) => {
+const ElapsedTime: (props: Props) => React.Element = (props) => {
   let {className, millis, showHours, showMinutes, showMillis, showSeconds} = props;
   if (showSeconds !== false) showSeconds = true;
   className = classNames(className, 'mf-elapsed-time');

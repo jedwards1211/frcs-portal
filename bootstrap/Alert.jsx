@@ -27,7 +27,7 @@ type Props = {
 
 export default class Alert extends Component<void,Props,void> {
   static Link = addClass('a', 'alert-link');
-  render(): ReactElement {
+  render(): React.Element {
     let {className, children} = this.props;
     let contextClass = getContextClass(this.props, 'type');
     let shadeClass = getShadeClass(this.props);

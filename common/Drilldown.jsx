@@ -62,7 +62,7 @@ export class Link extends Component<void,LinkProps,void> {
   static contextTypes = {
     drilldownRoute: PropTypes.any.isRequired,
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {to, up, children, disabled, onClick} = this.props;
     if (up === true) {
       up = 1;
@@ -91,7 +91,7 @@ export type RouteProps = {
   subpath?: string,
   className?: string,
   children?: any,      // the contents of this route to display
-  childRoute?: any,    // (actually a ReactTag or ReactElement) to render the child route, if any
+  childRoute?: any,    // (actually a ReactTag or React.Element) to render the child route, if any
   childPath?: string,  // the path of the child route, if any (relative to this route's path)
 };
 
@@ -153,7 +153,7 @@ export class Route extends Component<void,RouteProps,void> {
     let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
     this.context.drilldown.navigateTo(absPath);
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {path, subpath, childRoute, childPath} = this.props;
 
     if (childRoute) {
@@ -198,6 +198,7 @@ type State = {
 };
 
 export default class Drilldown extends Component<DefaultProps,Props,State> {
+  state: State;
   mounted: boolean = false;
   transitioning: boolean = false;
   routes: {[path: string]: ?Route} = {};
@@ -285,7 +286,7 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
       this.setState({path: nextProps.path});
     }
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className} = this.props;
     let {path} = this.state;
     className = classNames(className, 'mf-drilldown');

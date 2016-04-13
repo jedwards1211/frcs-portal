@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 
 import DocumentView from './DocumentView.jsx';
 
-import {Dispatch} from '../flowtypes/reduxTypes';
+import type {Dispatch} from '../flowtypes/reduxTypes';
 
 import * as actions from './DocumentViewActions';
 
@@ -41,7 +41,7 @@ type ReduxProps = {
 type Props = InputProps & ReduxProps;
 
 class ReduxDocumentView extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {dispatch, reduxPath} = this.props;
     let meta = {reduxPath};
     

@@ -36,7 +36,7 @@ export class TreeCell extends Component<void,TreeCellProps,void> {
     indent:       PropTypes.number.isRequired,
     collapseIconWidth: PropTypes.number.isRequired,
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {node, className, hasChildren, depth, expanded, selected, style, collapseIconProps, children} = this.props;
     collapseIconProps = collapseIconProps || {};
     let {itemHeight, indent, collapseIconWidth} = this.context;
@@ -72,7 +72,7 @@ export class TreeCell extends Component<void,TreeCellProps,void> {
 type TreeNodeProps = {
   node: Node,
   depth: number,
-  renderNode: (node: Node, props: Object) => ReactElement,
+  renderNode: (node: Node, props: Object) => React.Element,
 };
 
 class TreeNode extends Component<void,TreeNodeProps,void> {
@@ -86,7 +86,7 @@ class TreeNode extends Component<void,TreeNodeProps,void> {
     }
     return this.childrenRef && this.childrenRef.getIn(path, index);
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {node, renderNode, depth} = this.props;
 
     let hasChildren = node.hasChildren();
@@ -107,7 +107,7 @@ type TreeChildrenProps = {
   node: Node,
   expanded?: boolean,
   depth: number,
-  renderNode: (node: Node, props: Object) => ReactElement,
+  renderNode: (node: Node, props: Object) => React.Element,
 };
 
 class TreeChildren extends Component<void,TreeChildrenProps,void> {
@@ -119,7 +119,7 @@ class TreeChildren extends Component<void,TreeChildrenProps,void> {
     let child = this.childRefs[path[index]];
     return child && child.getIn(path, index + 1);
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {node, renderNode, expanded, depth} = this.props;
 
     return <Autocollapse>
@@ -137,7 +137,7 @@ type TreeProps = {
   collapseIconWidth: number,
   className: string,
   root?: Node,
-  renderNode: (node: Node, props: Object) => ReactElement,
+  renderNode: (node: Node, props: Object) => React.Element,
 };
 type TreeDefaultProps = {
   itemHeight: number,
@@ -172,7 +172,7 @@ export default class Tree extends Component<TreeDefaultProps,TreeProps,void> {
   getIn(path: Array<string | number>): ?TreeNode {
     return this.childrenRef && this.childrenRef.getIn(path);
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {root, renderNode} = this.props;
 
     return <div {...this.props}>

@@ -11,7 +11,7 @@ import _ from 'lodash';
  * - If props contains className, it will be merged with element.props.className if it exists
  * - If props contains style, it will be assigned to element.props.style if it exists
  */
-export default function safeCloneElement(element: ReactElement, props: Object, children?: any): ReactElement {
+export default function safeCloneElement(element: React.Element, props: Object, children?: any): React.Element {
   props = _.mapValues(props, (value, key) => {
     if (_.isFunction(value)) {
       let origFn = element.props[key];

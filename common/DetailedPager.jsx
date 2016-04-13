@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default class DetailedPager extends Component<void,Props,void> {
-  render(): ReactElement {
+  render(): React.Element {
     let {numItems, page, itemsPerPage, offset} = this.props;
     
     if (!_.isFinite(numItems) || !_.isFinite(page) || !_.isFinite(itemsPerPage) ||

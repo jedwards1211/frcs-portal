@@ -70,7 +70,7 @@ export default class MongoChangeDispatcher extends Component<void,Props,void> {
     if (this.autorun) this.autorun.stop();
     if (this.observer) this.observer.stop();
   }
-  render(): ReactElement {
+  render(): React.Element {
     return <span/>;
   }
 }

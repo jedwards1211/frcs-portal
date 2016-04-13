@@ -103,7 +103,7 @@ export default class Autobind extends Component<DefaultProps,Props,void> {
       return child;
     });
   }
-  render(): ReactElement {
+  render(): React.Element {
     return this.bindFields(this.props.children)[0];
   }
 }

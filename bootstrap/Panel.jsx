@@ -75,7 +75,7 @@ export default class Panel extends Component {
       FooterClassName:'panel-footer',
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, children, header, headerProps, title, footer, collapse, skin} = this.props;
     let contextClass = getContextClass(this.props) || 'default';
     let shadeClass = getShadeClass(this.props);

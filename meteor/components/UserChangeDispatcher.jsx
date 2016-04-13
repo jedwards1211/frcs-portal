@@ -30,7 +30,7 @@ export default class UserChangeDispatcher extends Component<void,Props,void> {
   componentWillUnmount() {
     if (this.autorun) this.autorun.stop();
   }
-  render(): ReactElement {
+  render(): React.Element {
     return <span/>;
   }
 }

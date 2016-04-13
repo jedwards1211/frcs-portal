@@ -23,7 +23,7 @@ export default class ButtonToolbar extends Component<void,Props,void> {
       insideButtonToolbar: true
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className} = this.props;
     let {insideFormGroup} = this.context;
     className = classNames(className, 'btn-toolbar', {

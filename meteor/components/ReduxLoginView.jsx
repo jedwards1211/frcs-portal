@@ -20,7 +20,7 @@ class ReduxLoginView extends Component {
     dispatch(actions.setLogoutError(undefined));
     Meteor.logout(err => dispatch(actions.setLogoutError(err)));
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {onSubmit, onLogout, props: {dispatch}} = this;
     return <LoginView {...this.props} onSubmit={onSubmit}
                                       onLogout={onLogout}

@@ -34,7 +34,7 @@ export default class DateTimePicker extends Component<void,Props,void> {
         .millisecond(newTime.getMilliseconds()));
     }
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {props: {className, value, showSeconds}, onDateChange, onTimeChange} = this;
     className = classNames(className, 'mf-date-time-picker');
     

@@ -29,7 +29,7 @@ export default class Pager extends Component<DefaultProps,Props,void> {
     let {onOffsetChange, numButtons, numPages} = this.props;
     onOffsetChange(Math.max(0, Math.min(numPages - numButtons, offset)));
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {className, page, onPageChange, numPages, offset, numButtons} = this.props;
     let {setOffset} = this;
 

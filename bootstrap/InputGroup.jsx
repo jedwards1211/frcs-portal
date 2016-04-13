@@ -27,7 +27,7 @@ export default class InputGroup extends Component {
       insideInputGroup: true
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, children} = this.props;
 
     let sizingClass = getSizingClass(this.props);

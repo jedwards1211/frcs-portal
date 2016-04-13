@@ -59,7 +59,7 @@ export default class ListGroup extends Component<DefaultProps,Props,void> {
       BodyClassName: "list-group-item-text"
     };
   }
-  cloneChild: (child: ?ReactElement) => ?ReactElement = child => {
+  cloneChild: (child: ?React.Element) => ?React.Element = child => {
     if (!child) {
       return child;
     }
@@ -100,7 +100,7 @@ export default class ListGroup extends Component<DefaultProps,Props,void> {
     }
     return React.cloneElement(child, {className, children});
   };
-  render(): ReactElement {
+  render(): React.Element {
     let {className, children} = this.props;
 
     // any -- because the flow def for createElement is currently wrong

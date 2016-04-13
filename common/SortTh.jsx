@@ -15,7 +15,7 @@ type Props = {
   children: any
 };
 
-const SortTh: (props: Props) => ReactElement = props => {
+const SortTh: (props: Props) => React.Element = props => {
   let {field, children, style} = props;
   let orderBy = props.orderBy || {};
   

@@ -89,7 +89,7 @@ export default class ChangePasswordView extends Component {
       }
     }
   };
-  render(): ?ReactElement {
+  render(): ?React.Element {
     let {disabled, changingPassword, changePasswordError} = this.props;
     let {onSubmit} = this;
 

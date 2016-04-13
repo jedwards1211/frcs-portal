@@ -64,7 +64,7 @@ export default class Popover extends Component {
       FooterClassName:'popover-footer',
     };
   }
-  render(): ReactElement {
+  render(): React.Element {
     let {className, title, children, positioned, skin} = this.props;
 
     let side = getSide(this.props) || 'top';
