@@ -37,6 +37,7 @@ type Props = {
   setSaving: (saving: boolean) => any,
   setSaveError: (error: ?Error) => any,
   setDeleting: (deleting: boolean) => any,
+  setDeleteError: (error: ?Error) => any,
   setAskToLeave: (askToLeave: boolean) => any,
   leave?: Function,
   leaveAfterCancel?: Function,
@@ -54,6 +55,7 @@ type Props = {
   saving?: boolean,
   deleting?: boolean,
   saveError?: Error,
+  deleteError?: Error,
   children?: any
 };
 
@@ -73,10 +75,12 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
   componentWillMount() {
     if (this.props.mode === 'edit') {
       let {mode, loading, loadError, effectiveDocument, effectiveUpdatedTimestamp,
-        setDocument, setUpdatedTimestamp, setSaving, setDeleting, setSaveError, setAskToLeave} = this.props;
+        setDocument, setUpdatedTimestamp, setSaving, setSaveError, setDeleting, setDeleteError,
+        setAskToLeave} = this.props;
       setSaving(false);
-      setDeleting(false);
       setSaveError(undefined);
+      setDeleting(false);
+      setDeleteError(undefined);
       setAskToLeave(false);
       if (mode === 'edit' && !loading && !loadError && effectiveDocument) {
         setDocument(effectiveDocument);
@@ -156,14 +160,14 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
   };
 
   delete: () => Promise = () => {
-    let {setDeleting, setSaveError, deleteDocument} = this.props;
+    let {setDeleting, setDeleteError, deleteDocument} = this.props;
 
     if (deleteDocument) {
       setDeleting(true);
-      setSaveError(undefined);
+      setDeleteError(undefined);
 
       return deleteDocument().catch(err => {
-          setSaveError(err);
+          setDeleteError(err);
           throw err;
         })
         .finally(() => setDeleting(false));
@@ -251,7 +255,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
       let {disabled, loading, loadError, mode, validate, document,
-        saveError, saving, deleting, createDocument} = this.props;
+        saveError, saving, deleteError, deleting, createDocument} = this.props;
       
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
 
@@ -263,7 +267,10 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
       }
       if (saveError) {
-        alerts.saveError = {error: saveError, children: 'Failed to save changes: '};
+        alerts.saveError = {error: saveError, children: `Failed to ${mode === 'create' ? 'create' : 'save changes'}: `};
+      }
+      if (deleteError) {
+        alerts.deleteError = {error: deleteError, children: 'Failed to delete: '};
       }
       
       disabled = disabled || !valid || saving || deleting || loading || !!loadError;

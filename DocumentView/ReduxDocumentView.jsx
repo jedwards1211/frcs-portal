@@ -46,11 +46,12 @@ class ReduxDocumentView extends Component<void,Props,void> {
     let meta = {reduxPath};
     
     return <DocumentView {...this.props}
-            setSaving={saving => dispatch(actions.setSaving(saving, meta))} 
+            setSaving={saving => dispatch(actions.setSaving(saving, meta))}
+            setSaveError={error => dispatch(actions.setSaveError(error, meta))}
             setDeleting={deleting => dispatch(actions.setDeleting(deleting, meta))}
+            setDeleteError={error => dispatch(actions.setDeleteError(error, meta))}
             setAskToLeave={askToLeave => dispatch(actions.setAskToLeave(askToLeave, meta))}
             setDocument={document => dispatch(actions.setDocument(document, meta))}
-            setSaveError={error => dispatch(actions.setSaveError(error, meta))}
             setUpdatedTimestamp={updatedTimestamp => dispatch(actions.setUpdatedTimestamp(updatedTimestamp, meta))}/>;
   }
 }
