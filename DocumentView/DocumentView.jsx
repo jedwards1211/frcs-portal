@@ -263,7 +263,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
       }
       if (saveError) {
-        alerts.saveError = {error: saveError};
+        alerts.saveError = {error: saveError, children: 'Failed to save changes: '};
       }
       
       disabled = disabled || !valid || saving || deleting || loading || !!loadError;
