@@ -112,7 +112,29 @@ declare module MeteorGlobal {
 declare var Meteor: $Exports<'MeteorGlobal'>;
 
 declare module Accounts {
-  declare function changePassword(oldPassword: string, newPassword: string, callback?: (error: ?Error) => any): void;
+  declare function createUser(options: {
+    username?: string,
+    email?: string,
+    password?: string,
+    profile?: Object
+  }, callback?: (err?: Error) => any): string;
+  declare function findUserByUsername(username: string): ?{_id: string};
+  declare function findUserByEmail(email: string): ?{_id: string};
+  declare function setUsername(userId: string, newUsername: string): void;
+  declare function setPassword(userId: string, newPassword: string, options?: {logout?: boolean}): void;
+  declare function forgotPassword(options: {email: string}, callback?: (error?: Error) => any): void;
+  declare function changePassword(oldPassword: string, newPassword: string, callback?: (error?: Error) => any): void;
+  declare function resetPassword(token: string, newPassword: string, callback?: (error?: Error) => any): void;
+  declare function _hashPassword(password: string): mixed; // I haven't actually checked what type it returns
+  declare function sendResetPasswordEmail(userId: string, email?: string): void;
+  declare function sendEnrollmentEmail(userId: string, email?: string): void;
+  declare function sendVerificationEmail(userId: string, email?: string): void;
+  declare function onResetPasswordLink(callback: (token: string, done: Function) => any): void;
+  declare function onEnrollmentLink(callback: (token: string, done: Function) => any): void;
+  declare function onEmailVerificationLink(callback: (token: string, done: Function) => any): void;
+  declare function addEmail(userId: string, newEmail: string, verified?: boolean): void;
+  declare function removeEmail(userId: string, email: string): void;
+  declare function verifyEmail(token: string, callback?: (error?: Error) => any): void;
 }
 
 declare var Accounts: $Exports<'Accounts'>;
