@@ -9,7 +9,7 @@ import * as actions from './../actions/meteorSubcriptionActions';
 
 type Props = {
   name: string,
-  subKey: string | Symbol,
+  subKey?: string | Symbol,
   args?: any[]
 };
 
@@ -32,7 +32,8 @@ export default class MeteorSub extends Component<void,Props,void> {
     this.updateSub(nextProps);
   }
   updateSub: (props?: Props) => void = (props = this.props) => {
-    let {name, subKey} = props;
+    let {name} = props;
+    let subKey = this.props.subKey || name;
     let {store: {dispatch}} = this.context;
     let args = props.args || [];
     
@@ -46,7 +47,8 @@ export default class MeteorSub extends Component<void,Props,void> {
     });
   };
   componentWillUnmount() {
-    let {subKey} = this.props;
+    let {name} = this.props;
+    let subKey = this.props.subKey || name;
     let {store: {dispatch}} = this.context;
     if (this.subscription) {
       this.subscription.stop();
