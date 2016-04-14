@@ -14,21 +14,25 @@ type Props = {
   inject?: boolean,
   banner?: boolean,
   viewSkin?: boolean,
-  skyKey?: string,
-  subKeys?: string[],
+  subKey?: string | Symbol,
+  subKeys?: Array<any>,
+  subDisplayNames?: {[subKey: any]: string},
+  loadingSubKeys: Array<any>,
+  errorSubKeys: Array<any>,
   ready?: boolean,
   error?: Error,
   children?: any
 };
 
 const Banner: (props: Props) => ?React.Element = props => {
-  let {ready, error} = props;
+  let {ready, error, loadingSubKeys, errorSubKeys} = props;
+  let subDisplayNames = props.subDisplayNames || {};
 
   if (ready !== true) {
-    return <Alert info><Spinner/> Loading...</Alert>;
+    return <Alert info><Spinner/> Loading {loadingSubKeys.map(subKey => subDisplayNames[subKey] || subKey)}...</Alert>;
   }
   if (error) {
-    return <Alert error={error}/>;
+    return <Alert error={error}>Failed to load {subDisplayNames[errorSubKeys[0]] || errorSubKeys[0]}: </Alert>;
   }
   return null;
 };
@@ -37,7 +41,7 @@ const ViewSkin = createSkinDecorator({
   Body: (Body, props, decorator) => {
     let {ready, error} = decorator.props;
     return <Body {...props}>
-      {Banner({ready, error})}
+      {Banner(decorator.props)}
       {ready && !error && props.children}
     </Body>;
   },
@@ -51,11 +55,11 @@ const ViewSkin = createSkinDecorator({
 
 class MeteorSubStatus extends Component<void,Props,void> {
   render(): ?React.Element {
-    let {inject, banner, viewSkin, ready, error, children} = this.props;
+    let {inject, banner, viewSkin, ready, error, loadingSubKeys, errorSubKeys, children} = this.props;
     
     if (inject) {
       if (children instanceof Function) {
-        return children({ready, error});
+        return children({ready, error, loadingSubKeys, errorSubKeys});
       }
     }
     else if (banner) {
@@ -78,12 +82,17 @@ const select = createSelector(
   (subscriptions = Immutable.Map(), subKey, subKeys = []) => {
     if (subKey) subKeys.push(subKey);
 
-    return subKeys.reduce((status, subKey) => {
-      return {
-        ready: status.ready && !!subscriptions.getIn([subKey, 'ready']),
-        error: status.error || subscriptions.getIn([subKey, 'error'])
-      };
-    }, {ready: true, error: undefined});
+    let loadingSubKeys  = subKeys.filter(subKey => !subscriptions.getIn([subKey, 'ready']));
+    let errorSubKeys    = subKeys.filter(subKey => subscriptions.getIn([subKey, 'error']));
+    let ready           = !loadingSubKeys.length;
+    let error           = errorSubKeys.length && subscriptions.getIn([errorSubKeys[0], 'error']);
+
+    return {
+      ready,
+      error,
+      loadingSubKeys,
+      errorSubKeys
+    };
   }
 );
 
