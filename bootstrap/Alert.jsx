@@ -40,8 +40,8 @@ export default class Alert extends Component<void,Props,void> {
     className = classNames(className, 'alert', contextClass && ('alert-' + contextClass), shadeClass);
 
     return <div role="alert" {...this.props} className={className}>
-      {content}
       {children}
+      {content}
     </div>;
   }
 }
