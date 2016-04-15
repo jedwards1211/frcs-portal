@@ -1,4 +1,5 @@
 @import ../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables
+@import ~sass-flex-mixin/flex
 
 .absolute
   position: absolute
@@ -19,6 +20,11 @@
   -moz-user-select: none
   -ms-user-select: none
   user-select: none
+
+.centralize
+  @include flexbox
+  @include align-items(center)
+  @include justify-content(center)
 
 a:not([href])
   cursor: pointer
