@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import getUserId from './getUserId';
 
 import type {Condition} from './accessRules';
@@ -37,14 +35,14 @@ const hasACLPermissions: Condition = operation => {
     if (method === 'findOne') {
       let document = collection.findOne(selector, options && {
         ...options,
-        fields: options.fields && _.omit(options.fields, 'acl')
+        fields: options.fields && {...options.fields, acl: 1, owner: 1}
       });
       if (document) checkDocument(document);
     }
     else {
       collection.find(selector, options && {
         ...options,
-        fields: options.fields && _.omit(options.fields, 'acl')
+        fields: options.fields && {...options.fields, acl: 1, owner: 1}
       }).forEach(checkDocument);
     }
   }
