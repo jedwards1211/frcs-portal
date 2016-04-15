@@ -1,5 +1,6 @@
 /* @flow */
 
+import Immutable from 'immutable';
 import _ from 'lodash';
 
 function toMap(list: ?string | ?string[]) {
@@ -19,9 +20,17 @@ export default function createACLChecker(options: {
   user?: User,
   groups?: string | string[],
   roles?: string | string[],
-  permissions: string | string[]
-}): (document: Object) => void {
-  let {user} = options;
+  permissions: string | string[],
+  partition?: string,
+  throws?: boolean
+}): {
+  (document: Object | Immutable.Iterable.Keyed): {
+    allowed: boolean,
+    permissions: {[permission: string]: boolean}
+  };
+  permissions: {[permission: string]: true}
+} {
+  let {user, partition, throws} = options;
 
   if (!options.permissions || !options.permissions.length) {
     throw new Error("you must specify at least one permission");
@@ -33,23 +42,44 @@ export default function createACLChecker(options: {
 
   groups.everyone = true;
 
-  return document => {
-    let {acl} = document;
+  let result = doc => {
+    let document = doc instanceof Immutable.Map ? {
+      owner: doc.get('owner'),
+      acl: doc.get('acl').toJS()
+    } : doc;
+
+    let {acl, owner} = document;
+    let satisfiedPermissions = _.mapValues(permissions, () => false);
+
     if (acl) {
-      let missingPermissions = {...permissions};
-      let missingPermissionCount = _.size(missingPermissions);
+      let missingPermissionCount = _.size(permissions);
+
       for (let entry of acl) {
-        if (entry.user === user || groups[entry.group] || roles[entry.role] ||
-            (document.owner === user && entry.group === 'owner')) {
-          if (missingPermissions[entry.permission]) {
-            missingPermissions[entry.permission] = undefined;
+        if ((entry.partition === partition || !entry.partition) && 
+            (entry.user === user || groups[entry.group] || roles[entry.role] ||
+            (owner === user && entry.group === 'owner'))) {
+          if (!satisfiedPermissions[entry.permission]) {
+            satisfiedPermissions[entry.permission] = true;
             if (--missingPermissionCount === 0) {
-              return;
+              return {
+                allowed: true,
+                permissions: satisfiedPermissions
+              };
             }
           }
         }
       }
-      throw new Meteor.Error(403, `You don't have permission to ${Object.keys(permissions).join(', ')} on this document`);
     }
+    if (throws) {
+      throw new Meteor.Error(403, `You don't have permission to ${
+        Object.keys(_.filter(satisfiedPermissions, satisfied => !satisfied)).join(', ')
+      } on this document`);
+    }
+    return {
+      allowed: false,
+      permissions: satisfiedPermissions
+    };
   };
+  result.permissions = permissions;
+  return result;
 }

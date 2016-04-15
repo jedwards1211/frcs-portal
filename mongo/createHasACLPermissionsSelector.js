@@ -6,7 +6,7 @@ type User = string | {_id: string};
 
 /**
  * Creates a selector that selects all documents that have all of the given permissions for at least one of the
- * given user, groups, and roles.
+ * given user, groups, and roles (and within a specific partition if given).
  * 
  * If a user is given, permissions for the user's roles will also be checked.
  * 
@@ -15,15 +15,19 @@ type User = string | {_id: string};
  * 
  * @param{(string|Object)=}   options.user - a userId or user document
  * @param{(string|string[])=} options.groups - one or more groups
- * @returns {{acl: {$elemMatch: {$or: Array, permissions: {$all}}}}}
+ * @param{(string|string[])}  options.permissions - the permissions
+ * @param{string=}            options.partition - if given, only permission entries in this partition (or the global
+ *                                                partition) count
+ * @returns a Mongo selector.
  */
 export default function createACLSelector(options: {
   user?: User,
   groups?: string | string[],
   roles?: string | string[],
-  permissions: string | string[]
+  permissions: string | string[],
+  partition?: string
 }): Selector {
-  let {user, groups, roles, permissions} = options;
+  let {user, groups, roles, permissions, partition} = options;
   
   if (!permissions || !permissions.length) {
     throw new Error("you must specify at least one permission");
@@ -50,11 +54,14 @@ export default function createACLSelector(options: {
   if (userId) $or.push({user: userId});
   if (groups.length) $or.push({group: groups.length > 1 ? {$in: groups} : groups[0]});
   if (roles.length) $or.push({role: roles.length > 1 ? {$in: roles} : roles[0]});
+  
+  let $elemMatch: Object = {$or};
+  if (partition) $elemMatch.partition = partition;
 
   let selector = {
     acl: {
       // this works even if the permissions are satisfied by a mix of user, groups and/or roles
-      $all: permissions.map(permission => ({$elemMatch: {$or, permission}}))
+      $all: permissions.map(permission => ({$elemMatch: {...$elemMatch, permission}}))
     }
   };
 
@@ -69,8 +76,8 @@ export default function createACLSelector(options: {
             // this works even if the permissions are satisfied by a mix of user, groups and/or roles
             $all: selector.acl.$all.map(s => ({
               $elemMatch: {
+                ...s.$elemMatch,
                 $or: [...s.$elemMatch.$or, {group: 'owner'}],
-                permission: s.$elemMatch.permission
               }  
             }))
           }

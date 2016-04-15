@@ -30,7 +30,8 @@ const hasACLPermissions: Condition = operation => {
 
     let checkDocument = createACLPermissionsChecker({
       user: userId,
-      permissions: PERMISSIONS[method]
+      permissions: PERMISSIONS[method],
+      throws: true
     });
     
     if (method === 'findOne') {

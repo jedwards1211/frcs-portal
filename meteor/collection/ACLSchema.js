@@ -1,12 +1,14 @@
 export const ACLEntry = Match.OneOf({
   user: String,
-  permission: String
+  permission: String,
 }, {
   group: String,
-  permission: String
+  permission: String,
+  partition: Match.Optional(String)
 }, {
   role: String,
-  permission: String
+  permission: String,
+  partition: Match.Optional(String)
 });
 
 export default [ACLEntry];
