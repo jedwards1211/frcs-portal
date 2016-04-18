@@ -262,7 +262,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       let footerMode = this.isExternallyDeleted() ? (createDocument ? 'create' : 'none') : mode;
 
       let alerts = {};
-      let {valid} = validate && document ? validate(document) : {valid: true};
+      let {valid} = validate && document ? validate(document) : {valid: false};
       if (!valid) {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
       }
@@ -295,7 +295,8 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     className = classNames(className, 'mf-document-view');
 
     let children: any = this.props.children;
-    let {valid} = validate && document ? validate(document) : {valid: true};
+    
+    let {valid} = validate && document ? validate(document) : {valid: false};
 
     let {ContentDecorator} = this;
     
