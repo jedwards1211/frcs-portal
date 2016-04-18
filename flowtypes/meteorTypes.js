@@ -61,3 +61,5 @@ export type PublishHandler = {
   ready: () => any,
   onStop: (callback: (error?: Error) => any) => any
 };
+
+export type CollectionWithAccessRules = Mongo.Collection & {insecure: Mongo.Collection};
