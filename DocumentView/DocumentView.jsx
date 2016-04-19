@@ -195,6 +195,11 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       leave();
     }).catch(this.abortLeaving);
   };
+  
+  validate: () => boolean = () => {
+    let {validate, document} = this.props;
+    return validate && document ? validate(document).valid : !validate;
+  };
 
   ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
@@ -254,7 +259,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props;
-      let {disabled, loading, loadError, mode, validate, document,
+      let {disabled, loading, loadError, mode,
         saveError, saving, deleteError, deleting, createDocument} = this.props;
       
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
@@ -262,7 +267,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       let footerMode = this.isExternallyDeleted() ? (createDocument ? 'create' : 'none') : mode;
 
       let alerts = {};
-      let {valid} = validate && document ? validate(document) : {valid: false};
+      let valid = this.validate();
       if (!valid) {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
       }
@@ -290,13 +295,13 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
   });
 
   render(): React.Element {
-    let {className, askToLeave, saving, deleting, document, validate, setAskToLeave} = this.props;
+    let {className, askToLeave, saving, deleting, document, setAskToLeave} = this.props;
 
     className = classNames(className, 'mf-document-view');
 
     let children: any = this.props.children;
     
-    let {valid} = validate && document ? validate(document) : {valid: false};
+    let valid = this.validate();
 
     let {ContentDecorator} = this;
     
