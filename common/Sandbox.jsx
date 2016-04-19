@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Router, Route, Redirect} from 'react-router';
-
-import createHistory from 'history/lib/createHashHistory';
+import {Router, Route, Redirect, hashHistory} from 'react-router';
 
 import SidebarView from './SidebarView';
 import Tree from './Tree';
@@ -9,11 +7,12 @@ import {BasicNode} from './TreeModel';
 
 import './Sandbox.sass';
 
-let history = createHistory();
-
 class Shell extends Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
   static propTypes = {
-    requireContext: PropTypes.func,
+    requireContext: PropTypes.func
   };
   constructor(props) {
     super(props);
@@ -22,7 +21,8 @@ class Shell extends Component {
     };
   }
   renderTreeNode = (node, props) => {
-    return <Tree.Cell {...props} node={node} onClick={() => history.pushState(null, node.data.module.substring(1))}>
+    let {router} = this.context;
+    return <Tree.Cell {...props} node={node} onClick={() => router.push(node.data.module.substring(1))}>
       {node.data.module}
     </Tree.Cell>;
   };
@@ -36,7 +36,6 @@ class Shell extends Component {
         return {
           module,
           selected: module.substring(1) === pathname,
-          //onClick: () => history.pushState(null, key.substring(1)),
         };
       }),
     });
@@ -57,7 +56,7 @@ export default class Sandbox extends Component {
   render() {
     let {requireContext} = this.props;
 
-    return <Router history={history} requireContext={requireContext}>
+    return <Router history={hashHistory} requireContext={requireContext}>
       <Route component={(props) => <Shell {...props} requireContext={requireContext}/>}>
         {requireContext.keys().map(key => {
           let sourceComponent = requireContext(key);
@@ -68,7 +67,7 @@ export default class Sandbox extends Component {
           if (React.isValidElement(sourceComponent)) {
             component = props => React.cloneElement(sourceComponent, {...props, ...sourceComponent.props});
           }
-          return <Route key={key} path={key.substring(1)} 
+          return <Route key={key} path={key.substring(1)}
             component={component}/>;
         })}
         <Route path="/" component="div" />
