@@ -7,10 +7,17 @@ export class ChildWrapper extends Component {
   state = {
     isIn: false,
   };
+  mounted = false;
+  componentWillMount() {
+    this.mounted = true;
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   componentWillAppear(callback) {
     this.enterCallback = this.leaveCallback = undefined;
     this.appearCallback = callback;
-    setTimeout(() => this.setState({
+    setTimeout(() => this.mounted && this.setState({
       isIn: true,
     }),  0);
   }
@@ -23,7 +30,7 @@ export class ChildWrapper extends Component {
     this.enterCallback = callback;
     // we setTimeout so that the component can mount without inClassName first,
     // and then add it a moment later.  Otherwise it may not transition
-    setTimeout(() => this.setState({
+    setTimeout(() => this.mounted && this.setState({
       isIn: true,
     }),  0);
   }
