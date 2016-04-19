@@ -29,6 +29,31 @@
 a:not([href])
   cursor: pointer
 
+table.table-rounded
+  border-collapse: separate
+  > :first-child
+    tr:first-child
+      > :first-child
+        border-top-left-radius: $border-radius-base
+      > :last-child
+        border-top-right-radius: $border-radius-base
+  > :last-child
+    tr:last-child
+      > :first-child
+        border-bottom-left-radius: $border-radius-base
+      > :last-child
+        border-bottom-right-radius: $border-radius-base
+
+table.table-bordered.table-rounded
+  border: none
+
+  tr:not(:last-child) > *,
+  > :not(:last-child) tr > *
+    border-bottom: 0
+
+  tr td:not(:last-child)
+    border-right: 0
+
 table.table-bubbles
   thead
     tr > td
