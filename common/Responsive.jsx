@@ -7,7 +7,7 @@ import _ from 'lodash';
 type Props = {
   domProps?: string[],
   computedStyleProps?: string[],
-  children: (state: Object) => ?React.Element,
+  children: (state: {computedStyle?: Object, [domProp: string]: any}) => ?React.Element,
   component: string
 };
 
@@ -52,8 +52,9 @@ export default class Responsive extends Component<DefaultProps,Props,State> {
         domProps.forEach(prop => nextState[prop] = root[prop]);
       }
       if (computedStyleProps) {
+        nextState.computedStyle = {};
         let computedStyle = getComputedStyle(root);
-        computedStyleProps.forEach(prop => nextState[prop] = computedStyle[prop]);
+        computedStyleProps.forEach(prop => nextState.computedStyle[prop] = computedStyle[prop]);
       }
       this.setState(nextState);
     } 
