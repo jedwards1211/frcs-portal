@@ -89,10 +89,16 @@ Navbar.Nav.Link = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
+  componentWillMount() {
+    this.unlisten = this.context.router.listen(() => this.forceUpdate());
+  },
+  componentWillUnmount() {
+    this.unlisten();
+  },
   render() {
-    var {to, params, query, className} = this.props;
-    className = classNames(className, {active: this.context.router.isActive(to, params, query)});
-    return <li><Link {...this.props} className={className}>{this.props.children}</Link></li>;
+    var {to, className} = this.props;
+    className = classNames(className, {active: this.context.router.isActive(to)});
+    return <li className={className}><Link {...this.props}>{this.props.children}</Link></li>;
   },
 });
 
