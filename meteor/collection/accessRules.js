@@ -190,12 +190,12 @@ export const always: Condition = () => true;
 export const never:  Condition = () => false;
 
 const normalizeOperation = {
-  find:     (selector, options = {})           => ({selector, options, args: [...arguments]}),
-  findOne:  (selector, options = {})           => ({selector, options, args: [...arguments]}),
-  insert:   (document, callback)               => ({document, options: {}, args: [...arguments]}),
-  update:   (selector, modifier, options = {}) => ({selector, modifier, options, args: [...arguments]}),
-  upsert:   (selector, modifier, options = {}) => ({selector, modifier, options, args: [...arguments]}),
-  remove:   (selector, callback)               => ({selector, options: {}, args: [...arguments]})
+  find:     (selector, options = {}, ...args)           => ({selector, options, args: [selector, options, ...args]}),
+  findOne:  (selector, options = {}, ...args)           => ({selector, options, args: [selector, options, ...args]}),
+  insert:   (document, ...args)                         => ({document, options: {}, args: [document, ...args]}),
+  update:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
+  upsert:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
+  remove:   (selector, ...args)                         => ({selector, options: {}, args: [selector, ...args]})
 };
 
 const methodGroups = {
