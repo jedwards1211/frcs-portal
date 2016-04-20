@@ -10,7 +10,7 @@ export default class Redirect extends Component<void,Props,void> {
   static contextTypes = {
     router: PropTypes.object.isRequired
   };
-  componentWillMount() {
+  componentDidMount() {
     this.context.router.push(this.props.to);
   }
   render(): ?React.Element {
