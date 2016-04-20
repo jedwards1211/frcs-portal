@@ -1,14 +1,16 @@
 /* @flow */
 
-import _ from 'lodash';
+import {headers} from './headerSupport';
 
-import type {Selector} from '../../flowtypes/meteorTypes';
-
-export default function getUserId(operation: {selector?: Selector, options?: Object, document?: Object}): ?string {
-  for (let obj: mixed of [operation.selector, operation.document]) {
-    let userId = _.get(obj, ['$ext', 'userId']);
-    if (userId) return userId;
+export default function getUserId(operation: {args: any[]}): ?string {
+  let {args} = operation;
+  if (args[0] && args[0][headers]) {
+    return args[0][headers].userId;
   }
-  if (operation.options && operation.options.userId) return operation.options.userId;
-  return Meteor.userId();
+  try {
+    return Meteor.userId();
+  }
+  catch (e) {
+    throw new Error("unable to use Meteor.userId(); you must provide the userId manually using <collection>.withHeaders({userId}).<method>");
+  }
 }

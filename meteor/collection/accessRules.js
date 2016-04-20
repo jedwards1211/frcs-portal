@@ -61,7 +61,12 @@ export type Condition = (operation: {
  *   deny()                                                                     // denies all other operations
  * )(new Mongo.Collection('employees'));
  */
-export default function accessRules(...rules: Rule[]): (collection: Mongo.Collection) => Mongo.Collection {
+export default function accessRules<X: Mongo.Collection>(...rules: Rule[]): 
+  (collection: X) => X & {
+    insecure: X,
+    checkPermissions: (method: Method, ...args: any[]) => ?boolean
+  } 
+{
   const methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {});
   
   const ruleChains = _.mapValues(methodsWithRules, (v, method) => 

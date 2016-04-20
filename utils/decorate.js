@@ -1,7 +1,7 @@
 /* @flow */
 
-export default function decorate<X>(...decorators: Array<(target: X) => X>): (target: X) => X {
-  return target => decorators.reduceRight(
+export default function decorate<X>(first: (target: any) => X, ...decorators: Array<(target: any) => any>): (target: any) => X {
+  return target => [first, ...decorators].reduceRight(
     (target, decorator) => decorator(target),
     target 
   );
