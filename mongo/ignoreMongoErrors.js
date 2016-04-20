@@ -5,8 +5,7 @@ export default function ignoreMongoError(errorCodes: number | number[], operatio
     return operation();
   } 
   catch (e) {
-    if (!new RegExp(`\\bE?${errorCodes instanceof Array ? `(${errorCodes.join('|')})` : errorCodes}\\b`)
-        .test(e.err || e.errmsg || e.message)) {
+    if (errorCodes instanceof Array ? errorCodes.indexOf(e.code) < 0 : errorCodes !== e.code) {
       throw e;
     }
   }
