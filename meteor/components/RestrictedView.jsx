@@ -8,7 +8,6 @@ import {createSelector} from 'reselect';
 import createOrCloneElement from '../../utils/createOrCloneElement';
 
 import Glyphicon from '../../bootstrap/Glyphicon.jsx';
-import Fader from '../../common/Fader.jsx';
 import Alert from '../../bootstrap/Alert.jsx';
 
 import ReduxLoginView from './ReduxLoginView.jsx';
@@ -55,33 +54,29 @@ const UnauthorizedDecorator = createSkinDecorator({
 });
 
 class RestrictedView extends Component<void,Props,void> {
-  render(): React.Element {
-    let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children, ...props} = this.props;
-
-    let content;
+  render(): ?React.Element {
+    let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children} = this.props;
 
     if (isAuthorized) {
       if (isReadOnly) {
-        content = <ReadOnlyDecorator key="readOnly" requiredRolesToWrite={requiredRolesToWrite}>
-          {createOrCloneElement(children, {...props, readOnly: true})}
+        return <ReadOnlyDecorator key="readOnly" requiredRolesToWrite={requiredRolesToWrite}>
+          {createOrCloneElement(children, {readOnly: true})}
         </ReadOnlyDecorator>;
       }
       else {
-        content = createOrCloneElement(children, {...props, key: 'allowed'});
+        return createOrCloneElement(children, {key: 'allowed'});
       }
     }
     else if (loggedIn) {
-      content = <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
+      return <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
         <ReduxLoginView/>
       </ForbiddenDecorator>;
     }
     else {
-      content = <UnauthorizedDecorator key="unauthorized">
+      return <UnauthorizedDecorator key="unauthorized">
         <ReduxLoginView/>
       </UnauthorizedDecorator>;
     }
-
-    return <Fader>{content}</Fader>;
   }
 }
 
@@ -102,9 +97,3 @@ const select = createSelector(
 const ReduxRestrictedView = connect(select)(RestrictedView);
 
 export default ReduxRestrictedView;
-
-export function restrict(requiredRoles?: string | string[]): (content: React.Element) => (props: Object) => React.Element {
-  return content => props => <ReduxRestrictedView {...props} requiredRoles={requiredRoles}>
-    {content}
-  </ReduxRestrictedView>;
-}

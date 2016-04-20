@@ -34,7 +34,7 @@ const Banner: (props: Props) => ?React.Element = props => {
   if (error) {
     return <Alert error={error}>Failed to load {subDisplayNames[errorSubKeys[0]] || errorSubKeys[0]}: </Alert>;
   }
-  return null;
+  return <span/>;
 };
 
 const ViewSkin = createSkinDecorator({
@@ -71,7 +71,7 @@ class MeteorSubStatus extends Component<void,Props,void> {
       </ViewSkin>;
     }
 
-    return null;
+    return <span/>;
   }
 }
 
