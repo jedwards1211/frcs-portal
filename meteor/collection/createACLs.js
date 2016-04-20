@@ -5,7 +5,7 @@ export default function createACLs(options) {
 
   return collection => Object.assign(Object.create(collection), {
     insert(document: Object, ...args) {
-      let userId = getUserId({document});
+      let userId = getUserId({args: [document, ...args]});
       return collection.insert(Object.assign({
         creator: userId,
         owner: userId,
@@ -14,7 +14,7 @@ export default function createACLs(options) {
     },
     update(selector, modifier, options, ...args) {
       if (options && options.upsert) {
-        let userId = getUserId({selector, options});
+        let userId = getUserId({args: [selector, modifier, options, ...args]});
         modifier = Object.assign({}, modifier, {
           $setOnInsert: Object.assign({
             creator: userId,
@@ -26,7 +26,7 @@ export default function createACLs(options) {
       return collection.update(selector, modifier, options, ...args);
     },
     upsert(selector, modifier, options, ...args) {
-      let userId = getUserId({selector, options});
+      let userId = getUserId({args: [selector, modifier, options, ...args]});
       modifier = Object.assign({
         $setOnInsert: Object.assign({
           creator: userId,
