@@ -252,7 +252,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       }
 
       return <Body {...props}>
-        <AlertGroup alerts={alerts}/>
+        <AlertGroup alerts={alerts} animated={false}/>
         {!loading && !loadError && (document || mode === 'create') && children}
       </Body>;
     },
@@ -281,7 +281,7 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
       disabled = disabled || !valid || saving || deleting || loading || !!loadError;
       
       return <Footer {...props}>
-        <AlertGroup alerts={alerts}/>
+        <AlertGroup alerts={alerts} animated={false}/>
         <Button onClick={leaveAfterCancel}>Cancel</Button>
         {footerMode === 'edit' && <Button key="apply" disabled={disabled}
                                             onClick={this.save}>Apply</Button>}

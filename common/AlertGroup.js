@@ -7,10 +7,11 @@ import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
 
 export default class AlertGroup extends Component {
   static propTypes = {
+    animated: PropTypes.bool,
     alerts: PropTypes.object,
   };
   render() {
-    const {alerts} = this.props;
+    const {animated, alerts} = this.props;
     const children = [];
     if (alerts) {
       for (var key in alerts) {
@@ -25,8 +26,11 @@ export default class AlertGroup extends Component {
         }
       }
     }
-    return <CollapseTransitionGroup component="div" {...this.props}>
-      {children}
-    </CollapseTransitionGroup>;
+    if (animated !== false) {
+      return <CollapseTransitionGroup component="div" {...this.props}>
+        {children}
+      </CollapseTransitionGroup>;
+    }
+    return <div {...this.props}>{children}</div>;
   }
 }
