@@ -1,10 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 import Glyphicon from '../bootstrap/Glyphicon.jsx';
 import {Nav} from './View.jsx';
 import PageSlider from './PageSlider';
+import createPath from '../react-router/createPath';
 
 import {createSkinDecorator} from 'react-skin';
 
@@ -38,30 +40,46 @@ export default class DrilldownRoute extends Component {
     }),
   };
   onTransitionEnd = () => {
-    this.lastActiveChild = undefined;
+    this.lastRoutes = undefined;
+    this.lastParams = undefined;
     this.forceUpdate();
   };
 
   render() {
-    let {className, route, children} = this.props;
+    let {className, history, location, params, route, routes} = this.props;
     className = classNames(className, 'mf-drilldown-route');
-    let child = React.Children.only(children);
 
-    let activeIndex;
-    if (child.props.route.path) {
-      activeIndex = 1;
-      this.lastActiveChild = child;
+    let routeIndex = routes.indexOf(route);
+    if (route.indexRoute && routes[routes.length - 1] === route.indexRoute) {
+      routes = routes.slice(0, routes.length - 1);
     }
-    else {
-      activeIndex = 0;
-      child = this.lastActiveChild;
+    
+    let activeIndex = routes.length - routeIndex - 1;
+    
+    if (!this.lastRoutes || activeIndex >= this.lastActiveIndex ||
+        !_.every(_.range(activeIndex), index => this.lastRoutes[index] === routes[index])) {
+      this.lastParams = params;
+      this.lastRoutes = routes;
     }
+    this.lastActiveIndex = activeIndex;
 
     let IndexComponent = route.indexRoute.component;
 
     return <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
       <IndexComponent {...this.props} route={route.indexRoute}/>
-      {child && <TitleDecorator to={route.path} children={child}/>}
+      {/* {child && <TitleDecorator to={route.path} children={child}/>} */}
+      {this.lastRoutes.slice(routeIndex + 1).map((route, index) => {
+        let Comp = route.component;
+        return <TitleDecorator key={index} 
+                               to={createPath({
+                                  routes: this.lastRoutes, 
+                                  params: this.lastParams, 
+                                  endIndex: routeIndex + 1 + index
+                               })}>
+          <Comp route={route} routes={this.lastRoutes} 
+                history={history} location={location} params={this.lastParams}/>
+        </TitleDecorator>;
+      })}
     </PageSlider>;
   }
 }
