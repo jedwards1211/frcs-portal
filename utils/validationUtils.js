@@ -57,6 +57,7 @@ export function validateInteger(number, options = {}) {
   if (number > max) {
     return {error: `Please enter a number <= ${max}`};
   }
+  return {};
 }
 
 export function validateNumber(number, options = {}) {
@@ -87,4 +88,5 @@ export function validateNumber(number, options = {}) {
   if (number > max) {
     return {error: `Please enter a number <= ${max}`};
   }
+  return {};
 }

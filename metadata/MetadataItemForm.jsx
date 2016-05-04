@@ -6,38 +6,30 @@ import AlertGroup from '../common/AlertGroup.js';
 import Toggle from '../common/Toggle';
 import alarmTypes from './alarmTypes';
 
-import { numberRegExp, numberOrBlankRegExp, unsignedIntegerRegExp } from '../utils/validationUtils';
+import { validateNumber, validateInteger } from '../utils/validationUtils';
 
 import './MetadataItemForm.sass';
-
-function alarmHasErrors(alarm) {
-  if (typeof alarm.setpoint === 'string' && !numberOrBlankRegExp.test(alarm.setpoint)) {
-    return true;
-  }
-  if (!alarm.setpoint && alarm.setpoint !== 0) {
-    return true; 
-  }
-  return false;
-}
-
-export function hasErrors(metadataItem) {
-  return !numberRegExp.test(metadataItem.min) ||
-    !numberRegExp.test(metadataItem.max) ||
-    !unsignedIntegerRegExp.test(metadataItem.precision) ||
-    _.some(metadataItem.alarms, alarmHasErrors);
-}
 
 /**
  * Renders the label, setpoint input, and enabled toggle for one alarm from a metadataItem
  * object (e.g. a High Warning).
  */
-let AlarmRow = React.createClass({
+const AlarmRow = React.createClass({
   propTypes: {
     alarm: React.PropTypes.object.isRequired,
     disabled: React.PropTypes.bool,
     onSetpointChange: React.PropTypes.func,
     onEnabledChange: React.PropTypes.func,
-    beforeAlarms: React.PropTypes.node
+    beforeAlarms: React.PropTypes.node,
+  },
+  statics: {
+    validate(props) {
+      const {alarm} = props;
+      const validation = {};
+      validation.setpoint = validateNumber(alarm.setpoint, {required: true});
+      validation.valid = !_.some(validation, v => v && v.error);
+      return validation;
+    }
   },
   onSetpointChange(event) {
     this.props.onSetpointChange && this.props.onSetpointChange(event.target.value);
@@ -48,8 +40,10 @@ let AlarmRow = React.createClass({
     let humanName = _.startCase(alarm.comparison + ' ' + alarm.severity);
     let disabled = this.props.disabled;
 
+    let validation = AlarmRow.validate(this.props);
+
     return (
-      <div className={classNames('form-group', {'has-error': alarmHasErrors(alarm)})}>
+      <div className={classNames('form-group', {'has-error': validation.setpoint.error})}>
         <div className="label-column">
           <h4 className="control-label">{humanName}</h4>
         </div>
@@ -77,7 +71,7 @@ let alarmOrder = [
 /**
  * Renders the range and alarm settings for a metadataItem object.
  */
-export default React.createClass({
+const MetadataItemForm = React.createClass({
   propTypes: {
     metadataItem: React.PropTypes.object.isRequired,
     disabled: React.PropTypes.bool,
@@ -85,7 +79,21 @@ export default React.createClass({
     onRangeMaxChange: React.PropTypes.func,
     onPrecisionChange: React.PropTypes.func,
     onAlarmSetpointChange: React.PropTypes.func,
-    onAlarmEnabledChange: React.PropTypes.func
+    onAlarmEnabledChange: React.PropTypes.func,
+    maxPrecision: React.PropTypes.number
+  },
+  statics: {
+    validate(props) {
+      let {metadataItem, maxPrecision} = props;
+      if (maxPrecision == null) maxPrecision = 5;
+      const validation = {};
+      validation.min = validateNumber(metadataItem.min, {required: true});
+      validation.max = validateNumber(metadataItem.max, {required: true});
+      validation.precision = validateInteger(metadataItem.precision, {required: true, min: 0, max: maxPrecision});
+      validation.alarms = metadataItem.alarms.map(alarm => AlarmRow.validate({alarm}));
+      validation.valid = !_.some(validation, v => v && v.error) && !_.some(validation.alarms, v => v && !v.valid);
+      return validation;
+    } 
   },
   onRangeMinChange(event) {
     this.props.onRangeMinChange && this.props.onRangeMinChange(event.target.value);
@@ -99,11 +107,13 @@ export default React.createClass({
   renderRange() {
     let metadataItem = this.props.metadataItem;
     let disabled = this.props.disabled;
+    
+    let validation = MetadataItemForm.validate(this.props);
 
     return [
       <h3 key="display-range" className="display-range">Display Range</h3>,
       <div key="range" className="range" style={{margin: 0, padding: 0}}>
-        <div className={classNames('form-group', {'has-error': !numberRegExp.test(metadataItem.max)})}>
+        <div className={classNames('form-group', {'has-error': validation.max.error})}>
           <span className="label-column">
             <h4 className="control-label">Max</h4>
           </span>
@@ -115,7 +125,7 @@ export default React.createClass({
             {metadataItem.units}
           </span>
         </div>
-        <div className={classNames('form-group', {'has-error': !numberRegExp.test(metadataItem.min)})}>
+        <div className={classNames('form-group', {'has-error': validation.min.error})}>
           <span className="label-column">
             <h4 className="control-label">Min</h4>
           </span>
@@ -127,7 +137,7 @@ export default React.createClass({
             {metadataItem.units}
           </span>
         </div>
-        <div className={classNames('form-group', {'has-error': !unsignedIntegerRegExp.test(metadataItem.precision)})}>
+        <div className={classNames('form-group', {'has-error': validation.precision.error})}>
           <span className="label-column">
             <h4 className="control-label">Precision</h4>
           </span>
@@ -137,6 +147,15 @@ export default React.createClass({
           </span>
           <span className="last-column"/>
         </div>
+        {validation.precision.error && <div className="form-group has-error">
+          <span className="label-column"/>
+          <span className="input-column">
+            {validation.precision.error && <div className="control-label error-message">
+              {validation.precision.error}
+            </div>}
+          </span>
+          <span className="last-column"/>
+        </div>}
       </div>
     ];
   },
@@ -174,11 +193,12 @@ export default React.createClass({
     }
   },
   render() {
-    let {className, metadataItem} = this.props;
+    let {className} = this.props;
     className = classNames(className, 'metadata-item-form');
 
     let alerts = {};
-    if (hasErrors(metadataItem)) {
+    let validation = MetadataItemForm.validate(this.props);
+    if (!validation.valid) {
       alerts.invalidInput = {error: 'Please correct invalid input in the fields outlined in red before continuing'};
     }
 
@@ -191,3 +211,5 @@ export default React.createClass({
     );
   }
 });
+
+export default MetadataItemForm;
