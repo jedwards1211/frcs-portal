@@ -6,7 +6,7 @@ import AlertGroup from '../common/AlertGroup.js';
 import Toggle from '../common/Toggle';
 import alarmTypes from './alarmTypes';
 
-import { numberRegExp, numberOrBlankRegExp } from '../utils/validationUtils';
+import { numberRegExp, numberOrBlankRegExp, unsignedIntegerRegExp } from '../utils/validationUtils';
 
 import './MetadataItemForm.sass';
 
@@ -23,6 +23,7 @@ function alarmHasErrors(alarm) {
 export function hasErrors(metadataItem) {
   return !numberRegExp.test(metadataItem.min) ||
     !numberRegExp.test(metadataItem.max) ||
+    !unsignedIntegerRegExp.test(metadataItem.precision) ||
     _.some(metadataItem.alarms, alarmHasErrors);
 }
 
@@ -82,6 +83,7 @@ export default React.createClass({
     disabled: React.PropTypes.bool,
     onRangeMinChange: React.PropTypes.func,
     onRangeMaxChange: React.PropTypes.func,
+    onPrecisionChange: React.PropTypes.func,
     onAlarmSetpointChange: React.PropTypes.func,
     onAlarmEnabledChange: React.PropTypes.func
   },
@@ -90,6 +92,9 @@ export default React.createClass({
   },
   onRangeMaxChange(event) {
     this.props.onRangeMaxChange && this.props.onRangeMaxChange(event.target.value);
+  },
+  onPrecisionChange(event) {
+    this.props.onPrecisionChange && this.props.onPrecisionChange(event.target.value); 
   },
   renderRange() {
     let metadataItem = this.props.metadataItem;
@@ -121,6 +126,16 @@ export default React.createClass({
           <span className="last-column">
             {metadataItem.units}
           </span>
+        </div>
+        <div className={classNames('form-group', {'has-error': !unsignedIntegerRegExp.test(metadataItem.precision)})}>
+          <span className="label-column">
+            <h4 className="control-label">Precision</h4>
+          </span>
+          <span className="input-column">
+            <input name="precision" type="tel" className="form-control" value={metadataItem.precision}
+                   disabled={disabled} onChange={this.onPrecisionChange} />
+          </span>
+          <span className="last-column"/>
         </div>
       </div>
     ];
