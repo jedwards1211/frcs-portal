@@ -8,7 +8,6 @@ import Glyphicon from '../bootstrap/Glyphicon.jsx';
 import {Nav} from './View.jsx';
 import PageSlider from './PageSlider';
 
-import createPath from '../react-router/createPath';
 import splitPrefixes from '../utils/splitPrefixes';
 import {createSkinDecorator} from 'react-skin';
 
@@ -84,6 +83,7 @@ export default class DrilldownRoute extends Component {
     }),
   };
 
+  activeIndex = 0;
   routeComponents = [];
   
   onTransitionEnd = () => {
@@ -126,7 +126,8 @@ export default class DrilldownRoute extends Component {
       for (let prefix of splitPrefixes(pathname, '/')) {
         if (componentMap[prefix]) {
           if (parentPath) {
-            routeComponents[routeComponents.length] = <TitleDecorator key={prefix} to={parentPath}>
+            routeComponents[routeComponents.length] = <TitleDecorator key={prefix} to={parentPath} 
+                                                                      location={componentMap[prefix].props.location}>
               {componentMap[prefix]}
             </TitleDecorator>;
           }
@@ -148,16 +149,22 @@ export default class DrilldownRoute extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
   
   componentWillReceiveProps(nextProps) {
-    if (nextProps.location.pathname !== this.props.location.pathname) {
+    if (nextProps.location.pathname !== this.props.location.pathname &&
+        !this.props.location.pathname.startsWith(nextProps.location.pathname)) {
       this.updateRouteComponents(nextProps);
     }
   }
 
   render() {
-    let {className} = this.props;
+    let {className, location: {pathname}} = this.props;
     className = classNames(className, 'mf-drilldown-route');
-
-    return <PageSlider activeIndex={this.routeComponents.length - 1}
+    
+    let activeIndex = this.routeComponents.findIndex(comp => comp.props.location.pathname === pathname);
+    if (activeIndex >= 0) {
+      this.activeIndex = activeIndex;
+    }
+    
+    return <PageSlider activeIndex={this.activeIndex}
                        onTransitionEnd={this.onTransitionEnd}
                        className={className}>
       {this.routeComponents}
