@@ -22,7 +22,7 @@ const TitleDecorator = createSkinDecorator({
 
     return (
       <Title {...props}>
-        {to && 
+        {to &&
           <Nav left>
             <Link to={to}><Glyphicon menuLeft/></Link>
           </Nav>
@@ -35,20 +35,20 @@ const TitleDecorator = createSkinDecorator({
 
 /**
  * Transforms a react-router Route and its subroutes into a drilldown.
- * 
+ *
  * For instance, for location "/a/b/c", it renders the components for "/a", "/a/b",
  * and "/a/b/c" side by side, and if the location changes, it animates the transition
  * with a horizontal slide effect.
- * 
+ *
  * Subroutes that don't have a component will not be rendered by DrilldownRoute.
- * 
+ *
  * It also injects a link to the parent route (or ancestor route that has a component)
  * into the Header of each route that renders one.
- * 
+ *
  * If you don't want your drilldown views to be rendered as nested components of each
  * other (the usual case), you will need to use index routes, like so:
  * ```
- * <Route path="a">
+ * <Route path="a" component={DrilldownRoute}>
  *   <IndexRoute component={A} />
  *   <Route path="b">
  *     <IndexRoute component={B} />
@@ -56,16 +56,18 @@ const TitleDecorator = createSkinDecorator({
  *   </Route>
  * </Route>
  * ```
- * In this case, for location "/a/b/c", DrilldownRoute will render these children:
+ * In this case, for location "a/b/c", DrilldownRoute will render these children:
  * - <A />
  * - <B />
  * - <C />
- * 
+ *
  * If instead you avoid using index routes...
  * ```
- * <Route path="a" component={A}>
- *   <Route path="b" component={B}>
- *     <Route path="c" component={C} />
+ * <Route component={DrilldownRoute}>
+ *   <Route path="a" component={A}>
+ *     <Route path="b" component={B}>
+ *       <Route path="c" component={C} />
+ *     </Route>
  *   </Route>
  * </Route>
  * ```
@@ -73,19 +75,30 @@ const TitleDecorator = createSkinDecorator({
  * - <A />
  * - <A><B /></A>
  * - <A><B><C /></B></A>
+ *
+ * Note that flat route configurations like the following won't work with DrilldownRoute:
+ * ```
+ * <Route component={DrilldownRoute}>
+ *   <Route path="a/b/c" component={C} />
+ *   <Route path="a/b" component={B} />
+ *   <Route path="a" component={A} />
+ * </Route>
+ * ```
+ * Since the routes are siblings, DrilldownRoute considers them to be at the same level, and it will only render
+ * one at a time, without transitions.
  */
 export default class DrilldownRoute extends Component {
   static contextTypes = {
-    router: PropTypes.object.isRequired   
+    router: PropTypes.object.isRequired
   };
-  
+
   static propTypes = {
     history: PropTypes.object,
     location: PropTypes.object.isRequired,
     route: PropTypes.object.isRequired,
     routes: PropTypes.array.isRequired
   };
-  
+
   state = {
     activeIndex: 0,
     routeComponents: []
@@ -93,13 +106,13 @@ export default class DrilldownRoute extends Component {
 
   // (unmount the child routes that animated out to the right)
   onTransitionEnd = () => this.updateRouteComponents();
-  
+
   updateRouteComponents = (props = this.props) => {
     const {history, location, route, routes} = props;
     const {router} = this.context;
-    
+
     const {pathname} = location;
-    
+
     const componentMap = {};
 
     // find all components that need to be rendered for all subroutes of this DrilldownRoute
@@ -110,7 +123,7 @@ export default class DrilldownRoute extends Component {
         .then(([redirectLocation, renderProps]) => {
           if (redirectLocation != null || renderProps == null) return;
           const {components, location, params, router, routes} = renderProps;
-          
+
           // ignore the route for this prefix if not a descendant of this DrilldownRoute
           const routeIndex = routes.indexOf(route);
           if (routeIndex < 0 || components[components.length - 1] == null) return;
@@ -118,19 +131,19 @@ export default class DrilldownRoute extends Component {
           // create the (potentially nested) component for the route for this prefix
           const LastComp = components[components.length - 1];
           componentMap[prefix] = components.slice(routeIndex + 1, components.length - 1).reduceRight(
-            (children, Comp, index) => 
-              Comp 
-                ? <Comp children={children} location={location} 
-                        history={history} params={params} 
-                        router={router} routes={routes} 
-                        route={routes[routeIndex + 1 + index]}/> 
+            (children, Comp, index) =>
+              Comp
+                ? <Comp children={children} location={location}
+                        history={history} params={params}
+                        router={router} routes={routes}
+                        route={routes[routeIndex + 1 + index]}/>
                 : children,
             <LastComp location={location}
                       history={history} params={params}
                       router={router} routes={routes}/>
           );
         }));
-    
+
     // match is async so we have to wait for all of the match calls to finish
     Promise.join(promises).then(() => {
       const routeComponents = [];
@@ -161,9 +174,9 @@ export default class DrilldownRoute extends Component {
   componentWillMount() {
     this.updateRouteComponents();
   }
-  
+
   shouldComponentUpdate = shouldPureComponentUpdate;
-  
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.location.pathname !== this.props.location.pathname) {
       // only update components if the path changed and it's not an ancestor of the current path
@@ -184,9 +197,9 @@ export default class DrilldownRoute extends Component {
   render() {
     let {className} = this.props;
     className = classNames(className, 'mf-drilldown-route');
-    
+
     const {activeIndex, routeComponents} = this.state;
-    
+
     return (
       <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
         {routeComponents}
