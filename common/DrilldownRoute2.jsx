@@ -75,17 +75,6 @@ const TitleDecorator = createSkinDecorator({
  * - <A />
  * - <A><B /></A>
  * - <A><B><C /></B></A>
- *
- * Note that flat route configurations like the following won't work with DrilldownRoute:
- * ```
- * <Route component={DrilldownRoute}>
- *   <Route path="a/b/c" component={C} />
- *   <Route path="a/b" component={B} />
- *   <Route path="a" component={A} />
- * </Route>
- * ```
- * Since the routes are siblings, DrilldownRoute considers them to be at the same level, and it will only render
- * one at a time, without transitions.
  */
 export default class DrilldownRoute extends Component {
   static contextTypes = {
@@ -195,9 +184,7 @@ export default class DrilldownRoute extends Component {
   }
 
   render() {
-    let {className} = this.props;
-    className = classNames(className, 'mf-drilldown-route');
-
+    const className = classNames(this.props.className, 'mf-drilldown-route');
     const {activeIndex, routeComponents} = this.state;
 
     return (
