@@ -1,6 +1,6 @@
 /* @flow */
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';

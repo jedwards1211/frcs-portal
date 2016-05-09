@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import _ from 'lodash';
 import layoutBlockGrid from './layoutBlockGrid';
 import EventEmitter from 'events';

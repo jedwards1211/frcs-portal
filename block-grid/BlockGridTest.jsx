@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 
 import BlockGrid from './BlockGrid';
 import Block from './Block';

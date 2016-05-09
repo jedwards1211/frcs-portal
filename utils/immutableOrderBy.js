@@ -1,6 +1,6 @@
 /* @flow */
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 
 export default function orderBy(collection: Immutable.Iterable, 
                                 iteratees: Array<any>,

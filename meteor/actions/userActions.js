@@ -1,6 +1,6 @@
 /* @flow */
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 // flow-ignore(jcore-portal)
 import {createAction} from 'redux-actions';
 

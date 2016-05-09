@@ -5,7 +5,7 @@ import {Route} from 'react-router';
 import _ from 'lodash';
 
 import selectPluginRoutes from '../selectors/selectPluginRoutes';
-import {Store} from '../flowtypes/reduxTypes';
+import type {Store} from '../flowtypes/reduxTypes';
 
 /**
  * Creates a <Route> decorator that allows you to use the following props on <Route>s:

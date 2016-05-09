@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 
 import * as actions from './../actions/userActions';
 

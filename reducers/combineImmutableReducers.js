@@ -1,5 +1,5 @@
 import {reduce, forEach, mapValues, keys, identity} from 'lodash';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import {createReducer, composeReducers} from 'mindfront-redux-utils';
 import warning from 'warning';
 
