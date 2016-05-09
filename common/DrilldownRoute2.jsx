@@ -17,15 +17,19 @@ const match = Promise.promisify(unpromisifiedMatch, {multiArgs: true});
 
 const TitleDecorator = createSkinDecorator({
   Title: (Title, props, decorator) => {
-    let {children} = props;
-    let {to} = decorator.props;
+    const {children} = props;
+    const {to} = decorator.props;
 
-    return <Title {...props}>
-      {to && <Nav left>
-        <Link to={to}><Glyphicon menuLeft/></Link>
-      </Nav>}
-      {children}
-    </Title>;
+    return (
+      <Title {...props}>
+        {to && 
+          <Nav left>
+            <Link to={to}><Glyphicon menuLeft/></Link>
+          </Nav>
+        }
+        {children}
+      </Title>
+    );
   }
 });
 
@@ -81,72 +85,76 @@ export default class DrilldownRoute extends Component {
     route: PropTypes.object.isRequired,
     routes: PropTypes.array.isRequired
   };
-
-  activeIndex = 0;
-  routeComponents = [];
   
-  onTransitionEnd = () => {
-    // unmount the child routes that animated out to the right
-    this.updateRouteComponents();
+  state = {
+    activeIndex: 0,
+    routeComponents: []
   };
+
+  // (unmount the child routes that animated out to the right)
+  onTransitionEnd = () => this.updateRouteComponents();
   
   updateRouteComponents = (props = this.props) => {
-    let {history, location, route, routes} = props;
-    let {router} = this.context;
+    const {history, location, route, routes} = props;
+    const {router} = this.context;
     
-    let {pathname} = location;
+    const {pathname} = location;
     
-    let promises = [];
-    let componentMap = {};
+    const componentMap = {};
 
     // find all components that need to be rendered for all subroutes of this DrilldownRoute
-    for (let prefix of splitPrefixes(pathname, '/')) {
+    const promises = [...splitPrefixes(pathname, '/')].map(
       // use match from react-router to figure out what components should be rendered for this
       // prefix of the pathname
-      promises.push(match({routes, location: {pathname: prefix}, router})
+      prefix => match({routes, location: {pathname: prefix}, router})
         .then(([redirectLocation, renderProps]) => {
-          if (renderProps == null) return;
-          let {components, location, params, router, routes} = renderProps;
+          if (redirectLocation != null || renderProps == null) return;
+          const {components, location, params, router, routes} = renderProps;
           
           // ignore the route for this prefix if not a descendant of this DrilldownRoute
           const routeIndex = routes.indexOf(route);
           if (routeIndex < 0 || components[components.length - 1] == null) return;
 
-          // create the (potentially nested) for the route for this prefix
-          let LastComp = components[components.length - 1];
+          // create the (potentially nested) component for the route for this prefix
+          const LastComp = components[components.length - 1];
           componentMap[prefix] = components.slice(routeIndex + 1, components.length - 1).reduceRight(
-            (children, Comp, index) => Comp ? <Comp children={children} location={location}
-                                                    history={history} params={params} 
-                                                    router={router} routes={routes}
-                                                    route={routes[routeIndex + 1 + index]}/> : children,
+            (children, Comp, index) => 
+              Comp 
+                ? <Comp children={children} location={location} 
+                        history={history} params={params} 
+                        router={router} routes={routes} 
+                        route={routes[routeIndex + 1 + index]}/> 
+                : children,
             <LastComp location={location}
                       history={history} params={params}
                       router={router} routes={routes}/>
           );
         }));
-    }
     
     // match is async so we have to wait for all of the match calls to finish
     Promise.join(promises).then(() => {
-      let routeComponents = [];
+      const routeComponents = [];
       let parentPath;
-      for (let prefix of splitPrefixes(pathname, '/')) {
-        if (componentMap[prefix]) {
+      for (const prefix of splitPrefixes(pathname, '/')) {
+        const routeComponent = componentMap[prefix];
+        if (routeComponent) {
           if (parentPath) {
             // inject a link to parentPath in the Title of this component (if it renders one)
-            routeComponents[routeComponents.length] = <TitleDecorator key={prefix} to={parentPath} 
-                                                                      location={componentMap[prefix].props.location}>
-              {componentMap[prefix]}
-            </TitleDecorator>;
+            routeComponents[routeComponents.length] =
+              <TitleDecorator key={prefix} to={parentPath} location={routeComponent.props.location}>
+                {routeComponent}
+              </TitleDecorator>;
           }
           else {
-            routeComponents[routeComponents.length] = React.cloneElement(componentMap[prefix], {key: prefix});
+            routeComponents[routeComponents.length] = React.cloneElement(routeComponent, {key: prefix});
           }
           parentPath = prefix;
         }
       }
-      this.routeComponents = routeComponents;
-      this.forceUpdate();
+      this.setState({
+        routeComponents,
+        activeIndex: routeComponents.findIndex(comp => comp.props.location.pathname === pathname)
+      });
     });
   };
 
@@ -157,29 +165,32 @@ export default class DrilldownRoute extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
   
   componentWillReceiveProps(nextProps) {
-    // only update components if the path changed and it's not an ancestor of the current path
-    // (because in that case we want the components that are animating out to stay mounted until
-    // the transition ends)
-    if (nextProps.location.pathname !== this.props.location.pathname &&
-        !this.props.location.pathname.startsWith(nextProps.location.pathname)) {
-      this.updateRouteComponents(nextProps);
+    if (nextProps.location.pathname !== this.props.location.pathname) {
+      // only update components if the path changed and it's not an ancestor of the current path
+      // (because in that case we want the components that are animating out to stay mounted until
+      // the transition ends)
+      if (!this.props.location.pathname.startsWith(nextProps.location.pathname)) {
+        this.updateRouteComponents(nextProps);
+      }
+      else {
+        // otherwise just update activeIndex
+        const activeIndex = this.state.routeComponents.findIndex(
+          comp => comp.props.location.pathname === nextProps.location.pathname);
+        if (activeIndex >= 0) this.setState({activeIndex});
+      }
     }
   }
 
   render() {
-    let {className, location: {pathname}} = this.props;
+    let {className} = this.props;
     className = classNames(className, 'mf-drilldown-route');
     
-    let activeIndex = this.routeComponents.findIndex(comp => comp.props.location.pathname === pathname);
-    // stay at the current index if updateRouteComponents is not done with its async work
-    if (activeIndex >= 0) {
-      this.activeIndex = activeIndex;
-    }
+    const {activeIndex, routeComponents} = this.state;
     
-    return <PageSlider activeIndex={this.activeIndex}
-                       onTransitionEnd={this.onTransitionEnd}
-                       className={className}>
-      {this.routeComponents}
-    </PageSlider>;
+    return (
+      <PageSlider activeIndex={activeIndex} onTransitionEnd={this.onTransitionEnd} className={className}>
+        {routeComponents}
+      </PageSlider>
+    );
   }
 }
