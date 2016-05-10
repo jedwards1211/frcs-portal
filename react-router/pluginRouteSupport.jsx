@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {Route} from 'react-router';
+import {createRoutes, Route} from 'react-router';
 import _ from 'lodash';
 
 import selectPluginRoutes from '../selectors/selectPluginRoutes';
@@ -23,35 +23,36 @@ import type {Store} from '../flowtypes/reduxTypes';
  * @param store the Redux store to use.
  * @returns {decorateTree} a decorator for a <Route>
  */
-export default function pluginRouteSupport(store: Store): (elem: React.Element) => React.Element {
-  return function decorateTree(element: React.Element): React.Element {
-    if (element.type === Route) {
-      const {children, getChildRoutes, getChildRoutesFromStore, pluginChildRoutesKey} = element.props;
+export default function pluginRouteSupport(store: Store): (routes: any) => any {
+  return function decorateTree(routes: any): any {
+    if (!routes) return routes;
+    return createRoutes(routes).map(route => {
+      if (!route) return route;
+      const {childRoutes, getChildRoutes, getChildRoutesFromStore, pluginChildRoutesKey} = route;
       const newProps = {};
 
       if (getChildRoutes || getChildRoutesFromStore || pluginChildRoutesKey) {
         const selectPluginChildRoutes = pluginChildRoutesKey && selectPluginRoutes(pluginChildRoutesKey);
+        if (childRoutes) newProps.childRoutes = undefined;
         newProps.getChildRoutes = (location, cb) => {
           const chain = [];
           if (getChildRoutes) chain.push(cb => getChildRoutes(location, cb));
           if (getChildRoutesFromStore) chain.push(cb => getChildRoutesFromStore(location, store, cb));
           if (pluginChildRoutesKey) chain.push(cb => cb(null, selectPluginChildRoutes(store.getState())));
-          
+          if (childRoutes) chain.push(cb => cb(null, childRoutes));
+
           chain.reduceRight(
-            (next, getRoutes) =>
-              (err, routes) => err 
-                ? next(err) 
-                : getRoutes((err, moreRoutes) => next(err, [...routes || [], ...moreRoutes || []])),
-            (err, routes) => cb(err, routes && routes.map(decorateTree))
+            (next, getChildRoutes) =>
+              (err, childRoutes) => err
+                ? next(err)
+                : getChildRoutes((err, moreChildRoutes) => 
+                  next(err, [...childRoutes || [], ...createRoutes(moreChildRoutes)])),
+            (err, childRoutes) => cb(err, childRoutes && decorateTree(childRoutes))
           )(null, [/* init routes */]);
         }
+        if (_.size(newProps)) return {...route, ...newProps};
       }
-      if (children) {
-        const newChildren = React.Children.map(children, child => child && decorateTree(child));
-        if (children !== newChildren) newProps.children = newChildren;
-      }
-      if (_.size(newProps)) return React.cloneElement(element, newProps);
-    }
-    return element;
+      return route;
+    }); 
   }
 }
