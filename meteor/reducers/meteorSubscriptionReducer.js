@@ -1,6 +1,6 @@
 /* @flow */
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import {createReducer} from 'mindfront-redux-utils';
 
 import * as actions from './../actions/meteorSubcriptionActions';

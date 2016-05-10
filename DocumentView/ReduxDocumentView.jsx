@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import Promise from 'bluebird';
 import {connect} from 'react-redux';
 

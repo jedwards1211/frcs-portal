@@ -3,7 +3,8 @@ import React, {Component, Children} from 'react';
 import Collapse from '../bootstrap/Collapse';
 
 function anyChildren(children) {
-  return !!Children.toArray(children).length;
+  const childArray = Children.toArray(children);
+  return !!(childArray && childArray.find(c => c != null));
 }
 
 /**

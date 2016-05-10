@@ -1,5 +1,5 @@
 import React from 'react';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import _ from 'lodash';
 
 import {Node} from './TreeModel';

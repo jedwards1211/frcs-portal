@@ -4,7 +4,7 @@ import React, {Component, PropTypes} from 'react';
 
 import _ from 'lodash';
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import ImmutableObserver from 'meteor-immutable-observer';
 
 import type {Action} from '../../flowtypes/reduxTypes';

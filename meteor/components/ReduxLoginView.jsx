@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import {connect} from 'react-redux';
 import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldChanges';
 

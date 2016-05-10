@@ -1,6 +1,6 @@
 /* @flow */
 
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import _ from 'lodash';
 
 function toMap(list: ?string | ?string[]) {
@@ -61,10 +61,16 @@ export default function createACLChecker(options: {
   groups.everyone = true;
 
   let result = doc => {
-    let document = doc instanceof Immutable.Map ? {
-      owner: doc.get('owner'),
-      acl: doc.get('acl').toJS()
-    } : doc;
+    let document: Object = {}; 
+    if (doc instanceof Immutable.Iterable) {
+      document = {
+        owner: doc.get('owner'),
+        acl: doc.get('acl').toJS()
+      }
+    }
+    else if (doc instanceof Object) {
+      document = doc;
+    }
 
     let {acl, owner} = document;
     let permissions = _.mapValues(requiredPermissions, () => false);

@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, {Component, PropTypes} from 'react';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import {connect} from 'react-redux';
 
 import type {Dispatch} from '../../flowtypes/reduxTypes';
