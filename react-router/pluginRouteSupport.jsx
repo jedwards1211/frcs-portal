@@ -35,12 +35,15 @@ export default function pluginRouteSupport(store: Store): (elem: React.Element) 
           const chain = [];
           if (getChildRoutes) chain.push(cb => getChildRoutes(location, cb));
           if (getChildRoutesFromStore) chain.push(cb => getChildRoutesFromStore(location, store, cb));
-          if (pluginChildRoutesKey) chain.push(cb => cb(selectPluginChildRoutes(store.getState())));
+          if (pluginChildRoutesKey) chain.push(cb => cb(null, selectPluginChildRoutes(store.getState())));
           
           chain.reduceRight(
-            (next, getRoutes) => routes => getRoutes(moreRoutes => next([...routes, ...moreRoutes])),
-            routes => cb(routes.map(decorateTree))
-          )([/* init routes */]);
+            (next, getRoutes) =>
+              (err, routes) => err 
+                ? next(err) 
+                : getRoutes((err, moreRoutes) => next(err, [...routes || [], ...moreRoutes || []])),
+            (err, routes) => cb(err, routes && routes.map(decorateTree))
+          )(null, [/* init routes */]);
         }
       }
       if (children) {
