@@ -26,7 +26,9 @@ export default class RelativeLink extends Component<void,Props,State> {
   }
   setLocation: (location: Object) => void = location => this.setState({location});
   render(): React.Element {
-    let {location: {pathname}} = this.state;    
-    return <Link {...this.props} to={path.join(pathname, this.props.to)}/>;
+    let {to} = this.props;
+    let {location} = this.state;    
+    let pathname = location && location.pathname;
+    return <Link {...this.props} to={pathname && to && path.join(pathname, to)}/>;
   }
 }
