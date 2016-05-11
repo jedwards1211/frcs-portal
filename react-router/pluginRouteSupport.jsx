@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {createRoutes, Route} from 'react-router';
+import {createRoutes} from 'react-router';
 import _ from 'lodash';
 
 import selectPluginRoutes from '../selectors/selectPluginRoutes';
@@ -28,25 +28,35 @@ export default function pluginRouteSupport(store: Store): (routes: any) => any {
     if (!routes) return routes;
     return createRoutes(routes).map(route => {
       if (!route) return route;
-      const {childRoutes, getChildRoutes, getChildRoutesFromStore, pluginChildRoutesKey} = route;
+      const {childRoutes, getChildRoutes, getChildRoutesFromStore,
+        getChildRoutesFromPlugins, pluginChildRoutesKey} = route;
       const newProps = {};
 
-      if (getChildRoutes || getChildRoutesFromStore || pluginChildRoutesKey) {
-        const selectPluginChildRoutes = pluginChildRoutesKey && selectPluginRoutes(pluginChildRoutesKey);
+      if (getChildRoutes || getChildRoutesFromPlugins || getChildRoutesFromStore || pluginChildRoutesKey) {
         if (childRoutes) newProps.childRoutes = undefined;
         newProps.getChildRoutes = (location, cb) => {
           const chain = [];
           if (getChildRoutes) chain.push(cb => getChildRoutes(location, cb));
           if (getChildRoutesFromStore) chain.push(cb => getChildRoutesFromStore(location, store, cb));
-          if (pluginChildRoutesKey) chain.push(cb => cb(null, selectPluginChildRoutes(store.getState())));
+          if (getChildRoutesFromPlugins) {
+            chain.push(cb => getChildRoutesFromPlugins(
+              location,
+              (pluginChildRoutesKey, cb) => cb(null, selectPluginRoutes(pluginChildRoutesKey)(store.getState())),
+              cb
+            ));
+          }
+          if (pluginChildRoutesKey) {
+            chain.push(cb => cb(null, selectPluginRoutes(pluginChildRoutesKey)(store.getState())));
+          }
           if (childRoutes) chain.push(cb => cb(null, childRoutes));
 
           chain.reduceRight(
-            (next, getChildRoutes) =>
-              (err, childRoutes) => err
-                ? next(err)
-                : getChildRoutes((err, moreChildRoutes) => 
-                  next(err, [...childRoutes || [], ...createRoutes(moreChildRoutes)])),
+            (next, getChildRoutes) => (err, childRoutes) => {
+              if (err) return next(err);
+              const moreChildRoutes = getChildRoutes((err, moreChildRoutes) =>
+                next(err, [...childRoutes || [], ...createRoutes(moreChildRoutes)]));
+              if (moreChildRoutes) next(err, [...childRoutes || [], ...createRoutes(moreChildRoutes)]);
+            },
             (err, childRoutes) => cb(err, childRoutes && decorateTree(childRoutes))
           )(null, [/* init routes */]);
         }

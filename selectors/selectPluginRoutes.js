@@ -1,10 +1,11 @@
 /* @flow */
 
 import React from 'react';
+import _ from 'lodash';
 import {createSelector} from 'reselect';
 
-export default function selectPluginRoutes(routeKey: string): (state: any) => React.Element[] {
-  return createSelector(
+const selectPluginRoutes: (routeKey: string) => (state: any) => React.Element[] = _.memoize(
+  routeKey => createSelector(
     state => state.get('plugins'),
     plugins => {
       let routes = [];
@@ -14,5 +15,7 @@ export default function selectPluginRoutes(routeKey: string): (state: any) => Re
       });
       return routes;
     }
-  );
-}
+  )
+);
+
+export default selectPluginRoutes;
