@@ -1,9 +1,10 @@
-import React from 'react';
+import React from 'react'
 
-import './CloseButton.sass';
+import './CloseButton.sass'
 
 export default (props) => (<button {...props}
-  onClick={props.disabled ? undefined : props.onClick}
-  type="button" className="close" aria-label="Close">
+    onClick={props.disabled ? undefined : props.onClick}
+    type="button" className="close" aria-label="Close"
+                           >
   <span aria-hidden="true">&times;</span>
-</button>);
+</button>)

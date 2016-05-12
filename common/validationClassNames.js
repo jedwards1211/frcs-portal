@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classNames from 'classnames'
 
 export default function validationClassNames(validation) {
   if (validation) {
@@ -7,7 +7,7 @@ export default function validationClassNames(validation) {
       'has-warning': !!validation.warning,
       'has-info':    !!validation.info,
       'has-success': !!(validation.success || validation.ok),
-    });
+    })
   }
-  return '';
+  return ''
 }

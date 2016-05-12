@@ -6,29 +6,29 @@ export function getEnumProp(
   shortcutProp?: ?string): ?string
 {
   if (props[shortcutProp] && constants[props[shortcutProp]]) {
-    return constants[props[shortcutProp]];
+    return constants[props[shortcutProp]]
   }
   for (let constant in constants) {
-    if (props[constant]) return constants[constant];
+    if (props[constant]) return constants[constant]
   }
 }
 
 export const LEFT_RIGHT = {
   left: 'left',
   right: 'right'
-};
+}
 
 export function getLeftRight(props: Object, shortcutProp?: string = 'side'): ?string {
-  return getEnumProp(props, LEFT_RIGHT, shortcutProp);
+  return getEnumProp(props, LEFT_RIGHT, shortcutProp)
 }
 
 export const TOP_BOTTOM = {
   top: 'top',
   bottom: 'bottom'
-};
+}
 
 export function getTopBottom(props: Object, shortcutProp?: string = 'side'): ?string {
-  return getEnumProp(props, TOP_BOTTOM, shortcutProp);
+  return getEnumProp(props, TOP_BOTTOM, shortcutProp)
 }
 
 export const SIDES = {
@@ -36,10 +36,10 @@ export const SIDES = {
   left: 'left',
   right: 'right',
   bottom: 'bottom'
-};
+}
 
 export function getSide(props: Object, shortcutProp?: string = 'side'): ?string {
-  return getEnumProp(props, SIDES, shortcutProp);
+  return getEnumProp(props, SIDES, shortcutProp)
 }
 
 export const DIRECTIONS = {
@@ -47,8 +47,8 @@ export const DIRECTIONS = {
   down: 'down',
   left: 'left',
   right: 'right'
-};
+}
 
 export function getDirection(props: Object, shortcutProp?: string = 'direction'): ?string {
-  return getEnumProp(props, DIRECTIONS, shortcutProp);
+  return getEnumProp(props, DIRECTIONS, shortcutProp)
 }

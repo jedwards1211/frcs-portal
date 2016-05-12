@@ -1,14 +1,14 @@
 /* @flow */
 
-import * as Immutable from 'immutable';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createSelector} from 'reselect';
+import * as Immutable from 'immutable'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {createSelector} from 'reselect'
 
-import Alert from '../../bootstrap/Alert.jsx';
-import Spinner from '../../common/Spinner.jsx';
+import Alert from '../../bootstrap/Alert.jsx'
+import Spinner from '../../common/Spinner.jsx'
 
-import {createSkinDecorator} from 'react-skin';
+import {createSkinDecorator} from 'react-skin'
 
 type Props = {
   inject?: boolean,
@@ -25,53 +25,53 @@ type Props = {
 };
 
 const Banner: (props: Props) => ?React.Element = props => {
-  let {ready, error, loadingSubKeys, errorSubKeys} = props;
-  let subDisplayNames = props.subDisplayNames || {};
+  let {ready, error, loadingSubKeys, errorSubKeys} = props
+  let subDisplayNames = props.subDisplayNames || {}
 
   if (ready !== true) {
-    return <Alert info><Spinner/> Loading {loadingSubKeys.map(subKey => subDisplayNames[subKey] || subKey)}...</Alert>;
+    return <Alert info><Spinner /> Loading {loadingSubKeys.map(subKey => subDisplayNames[subKey] || subKey)}...</Alert>
   }
   if (error) {
-    return <Alert error={error}>Failed to load {subDisplayNames[errorSubKeys[0]] || errorSubKeys[0]}: </Alert>;
+    return <Alert error={error}>Failed to load {subDisplayNames[errorSubKeys[0]] || errorSubKeys[0]}: </Alert>
   }
-  return <span/>;
-};
+  return <span />
+}
 
 const ViewSkin = createSkinDecorator({
   Body: (Body, props, decorator) => {
-    let {ready, error} = decorator.props;
+    let {ready, error} = decorator.props
     return <Body {...props}>
       {Banner(decorator.props)}
       {ready && !error && props.children}
-    </Body>;
+    </Body>
   },
   Footer: (Footer, props, decorator) => {
-    let {ready, error} = decorator.props;
+    let {ready, error} = decorator.props
     return <Footer {...props}>
       {ready && !error && props.children}
-    </Footer>;
+    </Footer>
   }
-});
+})
 
-class MeteorSubStatus extends Component<void,Props,void> {
+class MeteorSubStatus extends Component<void, Props, void> {
   render(): ?React.Element {
-    let {inject, banner, viewSkin, ready, error, loadingSubKeys, errorSubKeys, children} = this.props;
-    
+    let {inject, banner, viewSkin, ready, error, loadingSubKeys, errorSubKeys, children} = this.props
+
     if (inject) {
       if (children instanceof Function) {
-        return children({ready, error, loadingSubKeys, errorSubKeys});
+        return children({ready, error, loadingSubKeys, errorSubKeys})
       }
     }
     else if (banner) {
-      return Banner(this.props);
+      return Banner(this.props)
     }
     else if (viewSkin) {
       return <ViewSkin {...this.props}>
         {children}
-      </ViewSkin>;
+      </ViewSkin>
     }
 
-    return <span/>;
+    return <span />
   }
 }
 
@@ -80,20 +80,20 @@ const select = createSelector(
   (state, props) => props.subKey,
   (state, props) => props.subKeys,
   (subscriptions = Immutable.Map(), subKey, subKeys = []) => {
-    if (subKey) subKeys.push(subKey);
+    if (subKey) subKeys.push(subKey)
 
-    let loadingSubKeys  = subKeys.filter(subKey => !subscriptions.getIn([subKey, 'ready']));
-    let errorSubKeys    = subKeys.filter(subKey => subscriptions.getIn([subKey, 'error']));
-    let ready           = !loadingSubKeys.length;
-    let error           = errorSubKeys.length && subscriptions.getIn([errorSubKeys[0], 'error']);
+    let loadingSubKeys  = subKeys.filter(subKey => !subscriptions.getIn([subKey, 'ready']))
+    let errorSubKeys    = subKeys.filter(subKey => subscriptions.getIn([subKey, 'error']))
+    let ready           = !loadingSubKeys.length
+    let error           = errorSubKeys.length && subscriptions.getIn([errorSubKeys[0], 'error'])
 
     return {
       ready,
       error,
       loadingSubKeys,
       errorSubKeys
-    };
+    }
   }
-);
+)
 
-export default connect(select)(MeteorSubStatus);
+export default connect(select)(MeteorSubStatus)

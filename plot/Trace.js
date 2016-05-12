@@ -1,19 +1,19 @@
-import React from 'react';
+import React from 'react'
 
-import {Layer} from './Canvas';
+import {Layer} from './Canvas'
 
-import AutoFatTracePlotter from './AutoFatTracePlotter';
-import StepTracePlotter from './StepTracePlotter';
-import CanvasTraceRenderer from './CanvasTraceRenderer';
+import AutoFatTracePlotter from './AutoFatTracePlotter'
+import StepTracePlotter from './StepTracePlotter'
+import CanvasTraceRenderer from './CanvasTraceRenderer'
 
-import {Axis, xAxis, yAxis} from '../utils/orient';
+import {Axis, xAxis, yAxis} from '../utils/orient'
 
-import color from 'css-color-converter';
+import color from 'css-color-converter'
 
 const conversionPropType = React.PropTypes.shape({
   convert: React.PropTypes.func.isRequired,
   invert:  React.PropTypes.func.isRequired,
-});
+})
 
 export default class Trace extends Layer {
   static propTypes = {
@@ -38,44 +38,44 @@ export default class Trace extends Layer {
     domainAxis:       xAxis,
   };
   paint(canvas) {
-    var ctx = canvas.getContext('2d');
-    ctx.save();
+    var ctx = canvas.getContext('2d')
+    ctx.save()
 
-    var {pointGenerator, lineColor, fillColor, domainConversion, valueConversion, 
-        plotter, renderer, domainAxis, currentTime} = this.props;
+    var {pointGenerator, lineColor, fillColor, domainConversion, valueConversion,
+        plotter, renderer, domainAxis, currentTime} = this.props
 
     if (!fillColor) {
-      var rgba = color(lineColor).toRgbaArray();
-      rgba[3] = 0.5;
-      fillColor = color(rgba).toRgbString();
+      var rgba = color(lineColor).toRgbaArray()
+      rgba[3] = 0.5
+      fillColor = color(rgba).toRgbString()
     }
 
     if (domainAxis === yAxis) {
       // swap x and y
-      ctx.setTransform(0,1,1,0,0,0);
+      ctx.setTransform(0, 1, 1, 0, 0, 0)
     }
 
-    renderer        = renderer(ctx);
+    renderer        = renderer(ctx)
 
-    ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 1.3;
-    ctx.fillStyle   = fillColor;
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 1.3
+    ctx.fillStyle   = fillColor
 
-    plotter         = plotter(domainConversion, valueConversion, renderer);
+    plotter         = plotter(domainConversion, valueConversion, renderer)
 
-    var leftDomain  = domainConversion.invert(0);
-    var rightDomain = domainConversion.invert(canvas[domainAxis.span]);
+    var leftDomain  = domainConversion.invert(0)
+    var rightDomain = domainConversion.invert(canvas[domainAxis.span])
 
-    let points = pointGenerator(leftDomain, rightDomain, {surround: true, currentTime});
-    let next;
+    let points = pointGenerator(leftDomain, rightDomain, {surround: true, currentTime})
+    let next
     while (!(next = points.next()).done) {
-      let {t, v} = next.value;
-      plotter.addPoint(t, v);
+      let {t, v} = next.value
+      plotter.addPoint(t, v)
     }
 
     // don't forget to flush, otherwise some of the plotted data might not get drawn.
-    plotter.flush();
+    plotter.flush()
 
-    ctx.restore();
-  } 
+    ctx.restore()
+  }
 }

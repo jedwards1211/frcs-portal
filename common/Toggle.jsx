@@ -1,9 +1,9 @@
-import React from 'react';
-import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin';
-import classNames from 'classnames';
-import _ from 'lodash';
+import React from 'react'
+import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin'
+import classNames from 'classnames'
+import _ from 'lodash'
 
-import './Toggle.sass';
+import './Toggle.sass'
 
 export default React.createClass({
   displayName: 'Toggle',
@@ -24,7 +24,7 @@ export default React.createClass({
   },
 
   getInitialState() {
-    var checked = false;
+    var checked = false
     if ('checked' in this.props) {
       checked = this.props.checked
     } else if ('defaultChecked' in this.props) {
@@ -44,15 +44,15 @@ export default React.createClass({
 
   handleClick(event) {
     if ('disabled' in this.props && !!this.props.disabled) {
-      return; 
+      return
     }
     if (!('checked' in this.props)) {
-      var newChecked = !this.state.checked;
+      var newChecked = !this.state.checked
       this.setState({checked: newChecked})
-      this.props.onChange && this.props.onChange(newChecked);
+      this.props.onChange && this.props.onChange(newChecked)
     }
     else {
-      this.props.onChange && this.props.onChange(!this.state.checked);
+      this.props.onChange && this.props.onChange(!this.state.checked)
     }
   },
 
@@ -74,19 +74,20 @@ export default React.createClass({
       'react-toggle-disabled': this.props.disabled
     }, this.props.className)
 
-    var otherProps = _.clone(this.props);
-    delete otherProps.className;
-    delete otherProps.onClick;
-    delete otherProps.onChange;
+    var otherProps = _.clone(this.props)
+    delete otherProps.className
+    delete otherProps.onClick
+    delete otherProps.onChange
 
     return (
-      <div className={classes} 
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        onClick={this.handleClick}
-        {...otherProps}>
+      <div className={classes}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          onClick={this.handleClick}
+          {...otherProps}
+      >
         <div className="react-toggle-track">
-          <div className="react-toggle-thumb"/>
+          <div className="react-toggle-thumb" />
         </div>
         {this.props.children}
       </div>

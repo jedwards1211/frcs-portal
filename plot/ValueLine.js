@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-import {Layer} from './Canvas';
+import {Layer} from './Canvas'
 
-import Conversion from './Conversion';
-import {Axis, xAxis} from '../utils/orient';
+import Conversion from './Conversion'
+import {Axis, xAxis} from '../utils/orient'
 
 export default class ValueLine extends Layer {
   static propTypes = {
@@ -13,18 +13,18 @@ export default class ValueLine extends Layer {
     axis:       React.PropTypes.instanceOf(Axis),
   };
   static defaultProps = {
-    axis:       xAxis, 
+    axis:       xAxis,
   };
   paint(canvas) {
-    var {color, conversion, value, axis} = this.props;
-    var cValue = conversion.convert(value);
+    var {color, conversion, value, axis} = this.props
+    var cValue = conversion.convert(value)
     if (!isNaN(cValue) && cValue !== null) {
-      var ctx = canvas.getContext('2d');
-      ctx.strokeStyle = color;
-      ctx.beginPath();
-      axis.moveTo(ctx, cValue, 0);
-      axis.lineTo(ctx, cValue, canvas[axis.opposite.span]);
-      ctx.stroke();
+      var ctx = canvas.getContext('2d')
+      ctx.strokeStyle = color
+      ctx.beginPath()
+      axis.moveTo(ctx, cValue, 0)
+      axis.lineTo(ctx, cValue, canvas[axis.opposite.span])
+      ctx.stroke()
     }
-  } 
+  }
 }

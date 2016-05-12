@@ -1,17 +1,17 @@
 /* @flow */
 
-import * as Immutable from 'immutable';
-import _ from 'lodash';
+import * as Immutable from 'immutable'
+import _ from 'lodash'
 
 function toMap(list: ?string | ?string[]) {
-  let result = {};
+  let result = {}
   if (typeof list === 'string') {
-    result[list] = true;
+    result[list] = true
   }
   else if (list instanceof Array) {
-    list.forEach(key => result[key] = true);
+    list.forEach(key => result[key] = true)
   }
-  return result;
+  return result
 }
 
 type User = string | {_id: string};
@@ -47,21 +47,21 @@ export default function createACLChecker(options: {
   };
   permissions: {[permission: string]: true}
 } {
-  let {user, partition, throws, returnAllPermissions} = options;
+  let {user, partition, throws, returnAllPermissions} = options
 
-  let groups = toMap(options.groups);
-  let roles = toMap(options.roles);
-  let requiredPermissions = toMap(options.permissions);
+  let groups = toMap(options.groups)
+  let roles = toMap(options.roles)
+  let requiredPermissions = toMap(options.permissions)
 
   if (user) {
-    let userRoles = Roles.getRolesForUser(user);
-    if (userRoles) userRoles.forEach(role => roles[role] = true);
+    let userRoles = Roles.getRolesForUser(user)
+    if (userRoles) userRoles.forEach(role => roles[role] = true)
   }
-  
-  groups.everyone = true;
+
+  groups.everyone = true
 
   let result = doc => {
-    let document: Object = {}; 
+    let document: Object = {}
     if (doc instanceof Immutable.Iterable) {
       document = {
         owner: doc.get('owner'),
@@ -69,25 +69,25 @@ export default function createACLChecker(options: {
       }
     }
     else if (doc instanceof Object) {
-      document = doc;
+      document = doc
     }
 
-    let {acl, owner} = document;
-    let permissions = _.mapValues(requiredPermissions, () => false);
+    let {acl, owner} = document
+    let permissions = _.mapValues(requiredPermissions, () => false)
 
-    let missingPermissionCount = _.size(requiredPermissions);
+    let missingPermissionCount = _.size(requiredPermissions)
     if (acl) {
       for (let entry of acl) {
-        if ((entry.partition === partition || !entry.partition) && 
+        if ((entry.partition === partition || !entry.partition) &&
             (entry.user === user || groups[entry.group] || roles[entry.role] ||
             (owner === user && entry.group === 'owner'))) {
           if (permissions[entry.permission] === false) {
             if (--missingPermissionCount === 0 && !returnAllPermissions) {
-              permissions[entry.permission] = true;
-              break; 
+              permissions[entry.permission] = true
+              break
             }
           }
-          permissions[entry.permission] = true;
+          permissions[entry.permission] = true
         }
       }
     }
@@ -100,13 +100,13 @@ export default function createACLChecker(options: {
     if (throws) {
       throw new Meteor.Error(403, `You don't have permission to ${
         Object.keys(_.pickBy(permissions, satisfied => !satisfied)).join(', ')
-      } on this document`);
+      } on this document`)
     }
     return {
       allowed: false,
       permissions
-    };
-  };
-  result.permissions = requiredPermissions;
-  return result;
+    }
+  }
+  result.permissions = requiredPermissions
+  return result
 }

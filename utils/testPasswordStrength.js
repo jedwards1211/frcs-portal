@@ -1,7 +1,7 @@
 /* @flow */
 
-import React from 'react';
-import owasp from 'owasp-password-strength-test';
+import React from 'react'
+import owasp from 'owasp-password-strength-test'
 
 owasp.config({
   allowPassphrases       : true,
@@ -9,23 +9,23 @@ owasp.config({
   minLength              : 10,
   minPhraseLength        : 20,
   minOptionalTestsToPass : 4
-});
+})
 
 export function testPasswordStrength(password: string): Object {
-  return owasp.test(password);
+  return owasp.test(password)
 }
 
 export function testPasswordStrengthForUI(password: string): Object {
-  let strength = testPasswordStrength(password);
+  let strength = testPasswordStrength(password)
   if (strength.requiredTestErrors.length) {
     return {error: <ul className="password-strength-errors">
       {strength.requiredTestErrors.map((error, index) => <li key={index}>{error}</li>)}
-    </ul>};
+    </ul>}
   }
   else if (strength.strong) {
-    return {success: <span>Strength: <strong>strong</strong></span>};
+    return {success: <span>Strength: <strong>strong</strong></span>}
   }
   else {
-    return {warning: <span>Strength: <strong>weak</strong></span>};
+    return {warning: <span>Strength: <strong>weak</strong></span>}
   }
 }

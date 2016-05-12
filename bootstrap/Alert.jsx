@@ -1,13 +1,13 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import classNames from 'classnames';
-import addClass from '../wrappers/addClass';
-import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
+import React, {Component} from 'react'
+import classNames from 'classnames'
+import addClass from '../wrappers/addClass'
+import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils'
 
-import './Alert.sass';
+import './Alert.sass'
 
-import {errorMessage} from '../utils/reactErrorUtils';
+import {errorMessage} from '../utils/reactErrorUtils'
 
 type Props = {
   contextClass?: 'alarm' | 'error' | 'danger' | 'warning' | 'info' | 'success' | 'ok',
@@ -25,23 +25,23 @@ type Props = {
   children?: any,
 };
 
-export default class Alert extends Component<void,Props,void> {
+export default class Alert extends Component<void, Props, void> {
   static Link = addClass('a', 'alert-link');
   render(): React.Element {
-    let {className, children} = this.props;
-    let contextClass = getContextClass(this.props, 'type');
-    let shadeClass = getShadeClass(this.props);
-    let content = getContextContent(this.props);
+    let {className, children} = this.props
+    let contextClass = getContextClass(this.props, 'type')
+    let shadeClass = getShadeClass(this.props)
+    let content = getContextContent(this.props)
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
-      content = errorMessage(content);
+      content = errorMessage(content)
     }
 
-    className = classNames(className, 'alert', contextClass && ('alert-' + contextClass), shadeClass);
+    className = classNames(className, 'alert', contextClass && ('alert-' + contextClass), shadeClass)
 
     return <div role="alert" {...this.props} className={className}>
       {children}
       {content}
-    </div>;
+    </div>
   }
 }

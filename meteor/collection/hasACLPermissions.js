@@ -1,8 +1,8 @@
-import getUserId from './getUserId';
+import getUserId from './getUserId'
 
-import type {Condition} from './accessRules';
+import type {Condition} from './accessRules'
 
-import createACLPermissionsChecker from '../../mongo/createACLPermissionsChecker';
+import createACLPermissionsChecker from '../../mongo/createACLPermissionsChecker'
 
 const PERMISSIONS = {
   find: 'read',
@@ -10,7 +10,7 @@ const PERMISSIONS = {
   update: 'write',
   upsert: 'write',
   remove: 'remove'
-};
+}
 
 /**
  * Throws if the given operation is not allowed by the access control list of any document it would read, write, or
@@ -18,35 +18,35 @@ const PERMISSIONS = {
  */
 const hasACLPermissions: Condition = operation => {
   if (Meteor.isServer) {
-    let userId = getUserId(operation);
+    let userId = getUserId(operation)
 
-    let {collection, method, selector, options} = operation;
+    let {collection, method, selector, options} = operation
 
     if (method === 'insert') {
-      return true;
+      return true
     }
 
     let checkDocument = createACLPermissionsChecker({
       user: userId,
       permissions: PERMISSIONS[method],
       throws: true
-    });
-    
+    })
+
     if (method === 'findOne') {
       let document = collection.findOne(selector, options && {
         ...options,
         fields: options.fields && {...options.fields, acl: 1, owner: 1}
-      });
-      if (document) checkDocument(document);
+      })
+      if (document) checkDocument(document)
     }
     else {
       collection.find(selector, options && {
         ...options,
         fields: options.fields && {...options.fields, acl: 1, owner: 1}
-      }).forEach(checkDocument);
+      }).forEach(checkDocument)
     }
   }
-  return true;
-};
+  return true
+}
 
-export default hasACLPermissions;
+export default hasACLPermissions

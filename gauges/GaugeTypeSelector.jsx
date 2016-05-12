@@ -1,16 +1,16 @@
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
-import _ from 'lodash';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
+import _ from 'lodash'
 
-import './GaugeTypeSelector.sass';
+import './GaugeTypeSelector.sass'
 
 var gaugePropType = PropTypes.shape({
   name:       PropTypes.string.isRequired,
   type:       PropTypes.any.isRequired,
   component:  PropTypes.any.isRequired,
-});
+})
 
-export { gaugePropType };
+export { gaugePropType }
 
 export default class GaugeTypeSelector extends Component {
   static propTypes = {
@@ -26,24 +26,25 @@ export default class GaugeTypeSelector extends Component {
     onSelect: function() {},
   };
   render() {
-    var {gaugeTypes, selectedGaugeType, className, gaugeProps, onSelect, ...props} = this.props;
+    var {gaugeTypes, selectedGaugeType, className, gaugeProps, onSelect, ...props} = this.props
 
     return <div {...props} className={classNames('gauge-type-selector', className)}>
       <div role="radiogroup">
-        {_.map(gaugeTypes,gaugeType => {
-          var {name, type} = gaugeType;
-          var Gauge = gaugeType.component;
-          var checked = type === selectedGaugeType;
-          return <div key={type} className={classNames('gauge-radio', {checked})} 
-            role="radio" aria-checked={checked} onClick={() => onSelect(type)}>
+        {_.map(gaugeTypes, gaugeType => {
+          var {name, type} = gaugeType
+          var Gauge = gaugeType.component
+          var checked = type === selectedGaugeType
+          return <div key={type} className={classNames('gauge-radio', {checked})}
+              role="radio" aria-checked={checked} onClick={() => onSelect(type)}
+                 >
             <h4 className="gauge-radio-label" role="label">{name}</h4>
             <div className="gauge-holder">
-              <Gauge {...gaugeProps}/>
-              <div className="checked-overlay"/>
+              <Gauge {...gaugeProps} />
+              <div className="checked-overlay" />
             </div>
-          </div>;
+          </div>
         })}
       </div>
-    </div>;
+    </div>
   }
 }

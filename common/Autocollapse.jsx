@@ -1,10 +1,10 @@
-import React, {Component, Children} from 'react';
+import React, {Component, Children} from 'react'
 
-import Collapse from '../bootstrap/Collapse';
+import Collapse from '../bootstrap/Collapse'
 
 function anyChildren(children) {
-  const childArray = Children.toArray(children);
-  return !!(childArray && childArray.find(c => c != null));
+  const childArray = Children.toArray(children)
+  return !!(childArray && childArray.find(c => c != null))
 }
 
 /**
@@ -12,45 +12,45 @@ function anyChildren(children) {
  */
 export default class Autocollapse extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       open:     anyChildren(props.children),
       children: props.children,
-    };
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.children !== this.props.children && anyChildren(nextProps.children)) {
       this.setState({
         children: nextProps.children,
-      });
+      })
     }
   }
   componentWillMount() {
-    this.mounted = true;
+    this.mounted = true
   }
   componentWillUnmount() {
-    this.mounted = false;
+    this.mounted = false
   }
   componentDidUpdate() {
-    let hasChildren = anyChildren(this.props.children);
+    let hasChildren = anyChildren(this.props.children)
     if (this.state.open !== hasChildren) {
       setTimeout(() => {
         if (this.mounted) {
-          this.setState({open: hasChildren});
+          this.setState({open: hasChildren})
         }
-      }, 0);
+      }, 0)
     }
   }
   onTransitionEnd = () => {
     if (!anyChildren(this.props.children) && this.state.children !== undefined) {
-      this.setState({children: undefined});
+      this.setState({children: undefined})
     }
-    this.props.onTransitionEnd && this.props.onTransitionEnd();
+    this.props.onTransitionEnd && this.props.onTransitionEnd()
   };
   render() {
-    let {open, children} = this.state;
+    let {open, children} = this.state
     return <Collapse {...this.props} open={open} onTransitionEnd={this.onTransitionEnd}>
       {children}
-    </Collapse>;
+    </Collapse>
   }
 }

@@ -1,4 +1,4 @@
-import {floorIndex, ceilingIndex} from './precisebs';
+import {floorIndex, ceilingIndex} from './precisebs'
 
 /**
  * Stores one-dimensional regions and allows you to insert new regions only if they don't
@@ -6,8 +6,8 @@ import {floorIndex, ceilingIndex} from './precisebs';
  */
 export default class OverlapPreventer {
   constructor() {
-    this.mins = [];
-    this.maxes = [];
+    this.mins = []
+    this.maxes = []
   }
 
   /**
@@ -20,29 +20,29 @@ export default class OverlapPreventer {
    */
   insert(min, max, minSpacing = 0) {
     if (min > max) {
-      var swap = min;
-      min = max;
-      max = swap;
-    } 
+      var swap = min
+      min = max
+      max = swap
+    }
 
     if (!this.mins.length && !this.maxes.length) {
-      this.mins[0] = min;
-      this.maxes[0] = max;
-      return true;
+      this.mins[0] = min
+      this.maxes[0] = max
+      return true
     }
 
-    var loIndex = floorIndex  (this.mins , max - minSpacing);
-    var hiIndex = ceilingIndex(this.maxes, min + minSpacing);
+    var loIndex = floorIndex  (this.mins, max - minSpacing)
+    var hiIndex = ceilingIndex(this.maxes, min + minSpacing)
 
     if (loIndex >= 0 && this.maxes[loIndex] + minSpacing >= min) {
-      return false;
+      return false
     }
     if (hiIndex < this.maxes.length && this.mins [hiIndex] - minSpacing <= max) {
-      return false;
+      return false
     }
 
-    this.mins .splice(hiIndex, 0, min);
-    this.maxes.splice(hiIndex, 0, max);
-    return true;
+    this.mins .splice(hiIndex, 0, min)
+    this.maxes.splice(hiIndex, 0, max)
+    return true
   }
 }

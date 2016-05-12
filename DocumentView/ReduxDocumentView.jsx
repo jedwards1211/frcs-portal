@@ -1,15 +1,15 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import * as Immutable from 'immutable';
-import Promise from 'bluebird';
-import {connect} from 'react-redux';
+import React, {Component} from 'react'
+import * as Immutable from 'immutable'
+import Promise from 'bluebird'
+import {connect} from 'react-redux'
 
-import DocumentView from './DocumentView.jsx';
+import DocumentView from './DocumentView.jsx'
 
-import type {Dispatch} from '../flowtypes/reduxTypes';
+import type {Dispatch} from '../flowtypes/reduxTypes'
 
-import * as actions from './DocumentViewActions';
+import * as actions from './DocumentViewActions'
 
 type InputProps = {
   mode: 'create' | 'edit',
@@ -40,24 +40,25 @@ type ReduxProps = {
 
 type Props = InputProps & ReduxProps;
 
-class ReduxDocumentView extends Component<void,Props,void> {
+class ReduxDocumentView extends Component<void, Props, void> {
   render(): React.Element {
-    let {dispatch, reduxPath} = this.props;
-    let meta = {reduxPath};
-    
+    let {dispatch, reduxPath} = this.props
+    let meta = {reduxPath}
+
     return <DocumentView {...this.props}
-            setSaving={saving => dispatch(actions.setSaving(saving, meta))}
-            setSaveError={error => dispatch(actions.setSaveError(error, meta))}
-            setDeleting={deleting => dispatch(actions.setDeleting(deleting, meta))}
-            setDeleteError={error => dispatch(actions.setDeleteError(error, meta))}
-            setAskToLeave={askToLeave => dispatch(actions.setAskToLeave(askToLeave, meta))}
-            setDocument={document => dispatch(actions.setDocument(document, meta))}
-            setUpdatedTimestamp={updatedTimestamp => dispatch(actions.setUpdatedTimestamp(updatedTimestamp, meta))}/>;
+        setSaving={saving => dispatch(actions.setSaving(saving, meta))}
+        setSaveError={error => dispatch(actions.setSaveError(error, meta))}
+        setDeleting={deleting => dispatch(actions.setDeleting(deleting, meta))}
+        setDeleteError={error => dispatch(actions.setDeleteError(error, meta))}
+        setAskToLeave={askToLeave => dispatch(actions.setAskToLeave(askToLeave, meta))}
+        setDocument={document => dispatch(actions.setDocument(document, meta))}
+        setUpdatedTimestamp={updatedTimestamp => dispatch(actions.setUpdatedTimestamp(updatedTimestamp, meta))}
+           />
   }
 }
 
 function select(state: Immutable.Map, props: InputProps): ReduxProps {
-  return (state.getIn(props.reduxPath) || Immutable.Map()).toObject();
+  return (state.getIn(props.reduxPath) || Immutable.Map()).toObject()
 }
 
-export default connect(select)(ReduxDocumentView);
+export default connect(select)(ReduxDocumentView)

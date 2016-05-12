@@ -1,22 +1,22 @@
 /* @flow */
 
-import React, {Component, Children, PropTypes} from 'react';
-import classNames from 'classnames';
-import {getContextClass, getShadeClass} from './bootstrapPropUtils';
-import {Title, Body} from './../common/View.jsx';
-import {getSide} from '../utils/propUtils';
-import Collapse from './Collapse.jsx';
+import React, {Component, Children, PropTypes} from 'react'
+import classNames from 'classnames'
+import {getContextClass, getShadeClass} from './bootstrapPropUtils'
+import {Title, Body} from './../common/View.jsx'
+import {getSide} from '../utils/propUtils'
+import Collapse from './Collapse.jsx'
 
-import './Popover.sass';
+import './Popover.sass'
 
 class PopoverBodySkin extends Component {
   render() {
-    let {collapse} = this.props;
-    let result = <div {...this.props}/>;
+    let {collapse} = this.props
+    let result = <div {...this.props} />
     if (collapse) {
-      result = <Collapse {...this.props} className="popover-collapse">{result}</Collapse>;
+      result = <Collapse {...this.props} className="popover-collapse">{result}</Collapse>
     }
-    return result;
+    return result
   }
 }
 
@@ -62,42 +62,42 @@ export default class Popover extends Component {
       TitleClassName: 'popover-title',
       BodyClassName:  'popover-content',
       FooterClassName:'popover-footer',
-    };
+    }
   }
   render(): React.Element {
-    let {className, title, children, positioned, skin} = this.props;
+    let {className, title, children, positioned, skin} = this.props
 
-    let side = getSide(this.props) || 'top';
-    let contextClass = getContextClass(this.props);
-    let shadeClass = getShadeClass(this.props);
+    let side = getSide(this.props) || 'top'
+    let contextClass = getContextClass(this.props)
+    let shadeClass = getShadeClass(this.props)
 
-    let contentless = !Children.count(children);
+    let contentless = !Children.count(children)
     if (skin) {
       Children.forEach(children, child => {
         if (child.type === Body) {
-          contentless = (child.props.collapse && !child.props.open) || !Children.count(child.props.children);
+          contentless = (child.props.collapse && !child.props.open) || !Children.count(child.props.children)
         }
-      });
+      })
     }
 
     className = classNames(className, 'popover', side, shadeClass, contextClass && ('popover-' + contextClass), {
       'popover-contentless': contentless,
       'popover-positioned': positioned,
-    });
+    })
 
 
     if (skin) {
       return <div {...this.props} className={className}>
-        <div className="arrow"/>
+        <div className="arrow" />
         {children}
-      </div>;
+      </div>
     }
     return <div {...this.props} className={className}>
-      <div className="arrow"/>
+      <div className="arrow" />
       {title && <Title>{title}</Title>}
       <Body>
         {children}
       </Body>
-    </div>;
+    </div>
   }
 }

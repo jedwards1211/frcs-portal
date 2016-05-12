@@ -1,9 +1,9 @@
 /* @flow */
 
-import _ from 'lodash';
+import _ from 'lodash'
 
-import type {Key} from '../flowtypes/commonTypes';
-import type {Action} from '../flowtypes/reduxTypes';
+import type {Key} from '../flowtypes/commonTypes'
+import type {Action} from '../flowtypes/reduxTypes'
 
 /**
  * Creates an onAutobindFieldChange callback that dispatches corresponding actions to a redux store.
@@ -18,10 +18,10 @@ export function setField(autobindField: Key,
                            actionTypePrefix?: string,
                            autobindPath?: mixed[]
                          } = {}): Action {
-  let {meta, actionTypePrefix} = options;
-  let type = 'SET_' + _.snakeCase(autobindField).toUpperCase();
-  if (actionTypePrefix) type = actionTypePrefix + type;
-  let {autobindPath} = options || {};
+  let {meta, actionTypePrefix} = options
+  let type = 'SET_' + _.snakeCase(autobindField).toUpperCase()
+  if (actionTypePrefix) type = actionTypePrefix + type
+  let {autobindPath} = options || {}
   return {
     type,
     payload: newValue,
@@ -29,5 +29,5 @@ export function setField(autobindField: Key,
       autobindField,
       autobindPath
     }, meta)
-  };
+  }
 }

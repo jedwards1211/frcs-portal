@@ -1,7 +1,7 @@
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
 
-import Button from '../bootstrap/Button';
+import Button from '../bootstrap/Button'
 
 export default class ItemCycleButton extends Component {
   static propTypes = {
@@ -19,26 +19,26 @@ export default class ItemCycleButton extends Component {
     noItemsPlaceholder: 'No Items Available',
   };
   onClick = () => {
-    let {items, selectedItem, onChange} = this.props;
+    let {items, selectedItem, onChange} = this.props
     if (items && onChange) {
-      let index = items.indexOf(selectedItem);
-      onChange(items[(index + 1) % items.length]);
+      let index = items.indexOf(selectedItem)
+      onChange(items[(index + 1) % items.length])
     }
   };
   render() {
     let {items, selectedItem, placeholder,
-        noItemsPlaceholder, className} = this.props;
+        noItemsPlaceholder, className} = this.props
 
-    let noSelection = selectedItem === undefined || selectedItem === null;
-    let hasItems = items && items.length;
+    let noSelection = selectedItem === undefined || selectedItem === null
+    let hasItems = items && items.length
 
-    className = classNames(className, 'mf-item-cycle-btn', {'no-selection': noSelection});
+    className = classNames(className, 'mf-item-cycle-btn', {'no-selection': noSelection})
 
     return <Button {...this.props} className={className} onClick={this.onClick}>
-      {this.props.render(noSelection ? 
+      {this.props.render(noSelection ?
         (hasItems ? placeholder : noItemsPlaceholder)
-        : 
+        :
         selectedItem)}
-    </Button>;
+    </Button>
   }
 }

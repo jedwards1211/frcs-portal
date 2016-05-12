@@ -1,23 +1,23 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import _ from 'lodash';
+import React, {Component} from 'react'
+import _ from 'lodash'
 
-import Autobind from '../Autobind/Autobind.jsx';
-import Form from '../bootstrap/Form';
-import Button from '../bootstrap/Button';
-import Input from '../bootstrap/Input';
+import Autobind from '../Autobind/Autobind.jsx'
+import Form from '../bootstrap/Form'
+import Button from '../bootstrap/Button'
+import Input from '../bootstrap/Input'
 
-import Spinner from './Spinner';
-import AlertGroup from './AlertGroup';
+import Spinner from './Spinner'
+import AlertGroup from './AlertGroup'
 
-import {View, Header, Title, Body, Footer} from './View.jsx';
+import {View, Header, Title, Body, Footer} from './View.jsx'
 
-import {testPasswordStrengthForUI} from '../utils/testPasswordStrength';
+import {testPasswordStrengthForUI} from '../utils/testPasswordStrength'
 
-import type {FormValidation} from '../flowtypes/validationTypes';
+import type {FormValidation} from '../flowtypes/validationTypes'
 
-import './ChangePasswordView.sass';
+import './ChangePasswordView.sass'
 
 export type Props = {
   disabled?: boolean,
@@ -48,60 +48,61 @@ export default class ChangePasswordView extends Component {
   oldPasswordInput: any;
   componentDidMount(): void {
     if (this.oldPasswordInput) {
-      this.oldPasswordInput.focus();
+      this.oldPasswordInput.focus()
     }
   }
   validate: () => FormValidation = () => {
-    let {oldPassword, newPassword, retypeNewPassword} = this.props;
+    let {oldPassword, newPassword, retypeNewPassword} = this.props
 
-    let result = {};
+    let result = {}
     if (!oldPassword) {
-      result.valid = false;
+      result.valid = false
     }
     if (!newPassword || !retypeNewPassword) {
-      result.valid = false;
+      result.valid = false
     }
     else if (retypeNewPassword !== newPassword) {
-      result.retypeNewPassword = {error: 'Passwords do not match'};
+      result.retypeNewPassword = {error: 'Passwords do not match'}
     }
 
     if (oldPassword && newPassword && oldPassword === newPassword) {
-      result.newPassword = {error: 'New password must be different from old password'};
+      result.newPassword = {error: 'New password must be different from old password'}
     }
     else if (newPassword) {
-      result.newPassword = testPasswordStrengthForUI(newPassword);
+      result.newPassword = testPasswordStrengthForUI(newPassword)
     }
 
     if (result.valid !== false) {
-      result.valid = !_.some(result, v => v.error);
+      result.valid = !_.some(result, v => v.error)
     }
-    return result;
+    return result
   };
   canSave: () => boolean = () => {
-    return this.validate().valid && !this.props.changingPassword;
+    return this.validate().valid && !this.props.changingPassword
   };
   onSubmit: (e: any) => void = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (this.canSave()) {
-      let {oldPassword, newPassword, onSubmit} = this.props;
+      let {oldPassword, newPassword, onSubmit} = this.props
       if (oldPassword && newPassword && onSubmit) {
-        onSubmit(oldPassword, newPassword);
+        onSubmit(oldPassword, newPassword)
       }
     }
   };
   render(): ?React.Element {
-    let {disabled, changingPassword, changePasswordError} = this.props;
-    let {onSubmit} = this;
+    let {disabled, changingPassword, changePasswordError} = this.props
+    let {onSubmit} = this
 
-    let validation = this.validate();
-    let alerts = {};
-    if (changePasswordError) alerts.changePasswordError = {error: changePasswordError};
+    let validation = this.validate()
+    let alerts = {}
+    if (changePasswordError) alerts.changePasswordError = {error: changePasswordError}
 
-    disabled = disabled || changingPassword;
+    disabled = disabled || changingPassword
 
     return <View className="mf-change-password-view">
       <Autobind data={this.props} callbacks={this.props} metadata={{validation}}
-                omnidata={disabled ? {disabled} : undefined}>
+          omnidata={disabled ? {disabled} : undefined}
+      >
         <Form onSubmit={onSubmit} labelClass="lbl" controlClass="control">
           <Header>
             <Title>Change Password</Title>
@@ -109,24 +110,27 @@ export default class ChangePasswordView extends Component {
           <Body>
             <fieldset disabled={disabled}>
               <Input formGroup label="Old Password" autobindField="oldPassword"
-                     type="password" ref={c => this.oldPasswordInput = c}/>
+                  type="password" ref={c => this.oldPasswordInput = c}
+              />
 
               <Input formGroup label="New Password" autobindField="newPassword"
-                     type="password"/>
+                  type="password"
+              />
 
               <Input formGroup label="Retype New Password" autobindField="retypeNewPassword"
-                     type="password"/>
+                  type="password"
+              />
             </fieldset>
           </Body>
 
           <Footer>
-            <AlertGroup className="alerts" alerts={alerts}/>
+            <AlertGroup className="alerts" alerts={alerts} />
             <Button submit primary disabled={!this.canSave()}>
-              {changingPassword ? <span><Spinner/> Saving...</span> : 'Change Password'}
+              {changingPassword ? <span><Spinner /> Saving...</span> : 'Change Password'}
             </Button>
           </Footer>
         </Form>
       </Autobind>
-    </View>;
+    </View>
   }
 }

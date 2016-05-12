@@ -1,19 +1,19 @@
-import React, {Component, PropTypes} from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import classNames from 'classnames';
-import _ from 'lodash';
+import React, {Component, PropTypes} from 'react'
+import ImmutablePropTypes from 'react-immutable-proptypes'
+import classNames from 'classnames'
+import _ from 'lodash'
 
-import PageSlider from '../common/PageSlider';
+import PageSlider from '../common/PageSlider'
 
-import * as CalibrationSteps from './CalibrationSteps';
-import CalibrationWizardButtons from './CalibrationWizardButtons';
+import * as CalibrationSteps from './CalibrationSteps'
+import CalibrationWizardButtons from './CalibrationWizardButtons'
 
-import './CalibrationWizard.sass';
+import './CalibrationWizard.sass'
 
 const valueAndUnit = ImmutablePropTypes.shape({
   value: PropTypes.number,
   units: PropTypes.string,
-});
+})
 
 export default class CalibrationWizard extends Component {
   static propTypes = {
@@ -45,47 +45,48 @@ export default class CalibrationWizard extends Component {
     // }
   };
   componentDidAppear() {
-    this._pageSlider.componentDidAppear();
+    this._pageSlider.componentDidAppear()
   }
   componentDidEnter() {
-    this._pageSlider.componentDidEnter();
+    this._pageSlider.componentDidEnter()
   }
   componentDidLeave() {
-    this._pageSlider.componentDidLeave();
+    this._pageSlider.componentDidLeave()
   }
   render() {
-    let {className, stepNumber, calibration} = this.props;
-    const points = calibration.get('points');
+    let {className, stepNumber, calibration} = this.props
+    const points = calibration.get('points')
 
-    className = classNames(className, 'mf-calibration-wizard');
+    className = classNames(className, 'mf-calibration-wizard')
 
-    let majorActiveIndex, minorActiveIndex;
+    let majorActiveIndex, minorActiveIndex
     switch (stepNumber) {
-      case 'numPoints':
-        majorActiveIndex = minorActiveIndex = 0;
-        break;
-      case 'confirm':
-        majorActiveIndex = 2;
-        minorActiveIndex = points.size - 1;
-        break;
-      default:
-        majorActiveIndex = 1;
-        minorActiveIndex = stepNumber;
-        break;
+    case 'numPoints':
+      majorActiveIndex = minorActiveIndex = 0
+      break
+    case 'confirm':
+      majorActiveIndex = 2
+      minorActiveIndex = points.size - 1
+      break
+    default:
+      majorActiveIndex = 1
+      minorActiveIndex = stepNumber
+      break
     }
 
     return <div className={className}>
       <PageSlider activeIndex={majorActiveIndex}>
-        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props}/>
+        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props} />
         <PageSlider activeIndex={minorActiveIndex} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
           {_.range(points.size).map(pointIndex => (
             <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
-                                                    key={pointIndex} pointIndex={pointIndex}/>
+                key={pointIndex} pointIndex={pointIndex}
+            />
           ))}
         </PageSlider>
-        <CalibrationSteps.Confirm {...this.props}/>
+        <CalibrationSteps.Confirm {...this.props} />
       </PageSlider>
-      <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c}/>
-    </div>;
+      <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c} />
+    </div>
   }
 }

@@ -1,12 +1,12 @@
 /* @flow */
 
-import React, {Component, PropTypes, Children} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes, Children} from 'react'
+import classNames from 'classnames'
 
-import Autocollapse from './Autocollapse';
-import CollapseIcon from './CollapseIcon';
+import Autocollapse from './Autocollapse'
+import CollapseIcon from './CollapseIcon'
 
-import './Tree.sass';
+import './Tree.sass'
 
 type CellProps = {
   className?: string,
@@ -20,7 +20,7 @@ type CellProps = {
   collapseIconProps?: Object
 };
 
-export class Cell extends Component<void,CellProps,void> {
+export class Cell extends Component<void, CellProps, void> {
   static contextTypes = {
     itemHeight:   PropTypes.number.isRequired,
     indent:       PropTypes.number.isRequired,
@@ -28,22 +28,22 @@ export class Cell extends Component<void,CellProps,void> {
   };
   render(): React.Element {
     let {className, children, depth, hasChildren,
-      expanded, style, collapseIconProps} = this.props;
+      expanded, style, collapseIconProps} = this.props
 
-    depth = depth || 0;
+    depth = depth || 0
 
-    collapseIconProps = collapseIconProps || {};
+    collapseIconProps = collapseIconProps || {}
 
-    let {itemHeight, indent, collapseIconWidth} = this.context;
-    let basePadding = collapseIconWidth - indent;
+    let {itemHeight, indent, collapseIconWidth} = this.context
+    let basePadding = collapseIconWidth - indent
 
-    className = classNames(className, 'mf-tree-node-cell');
+    className = classNames(className, 'mf-tree-node-cell')
 
     style = Object.assign({}, style, {
       paddingLeft: basePadding + depth * indent,
       height: itemHeight,
       lineHeight: itemHeight + 'px'
-    });
+    })
 
     let collapseIconStyle = Object.assign({}, collapseIconProps.style, {
       paddingLeft: basePadding,
@@ -51,11 +51,11 @@ export class Cell extends Component<void,CellProps,void> {
       height: itemHeight,
       lineHeight: itemHeight + 'px',
       width: collapseIconWidth
-    });
+    })
 
     return <div {...this.props} className={className} style={style}>
-      {hasChildren && <CollapseIcon {...collapseIconProps} open={expanded} style={collapseIconStyle}/>}{children}
-    </div>;
+      {hasChildren && <CollapseIcon {...collapseIconProps} open={expanded} style={collapseIconStyle} />}{children}
+    </div>
   }
 }
 
@@ -71,36 +71,37 @@ type NodeProps = {
   collapseIconProps?: Object,
 };
 
-export class Node extends Component<void,NodeProps,void> {
+export class Node extends Component<void, NodeProps, void> {
   render(): React.Element {
     let {cell, content, depth, className, hasChildren, children,
-        expanded, active, collapseIconProps} = this.props;
+        expanded, active, collapseIconProps} = this.props
 
-    depth = depth || 0;
+    depth = depth || 0
 
     if (!cell) {
       cell = <Cell depth={depth} hasChildren={hasChildren} expanded={expanded}
-                   active={active} collapseIconProps={collapseIconProps}>
+          active={active} collapseIconProps={collapseIconProps}
+             >
         {content}
-      </Cell>;
+      </Cell>
     }
     else {
       // note: the ordering here allows cell.props to override values from this.props
       cell = React.cloneElement(cell, Object.assign({
         depth, hasChildren, expanded, active, collapseIconProps
-      }, cell.props));
+      }, cell.props))
     }
 
-    className = classNames("mf-tree-node", {'mf-tree-node-branch': hasChildren, active});
+    className = classNames("mf-tree-node", {'mf-tree-node-branch': hasChildren, active})
 
-    let childDepth = depth + 1;
+    let childDepth = depth + 1
 
     return <div {...this.props} className={className}>
       {cell}
       {hasChildren && <Autocollapse>
         {expanded && Children.map(children, (child, key) => React.cloneElement(child, {depth: childDepth}))}
       </Autocollapse>}
-    </div>;
+    </div>
   }
 }
 
@@ -117,7 +118,7 @@ type DefaultProps = {
   collapseIconWidth: number,
 };
 
-export default class Tree extends Component<DefaultProps,Props,void> {
+export default class Tree extends Component<DefaultProps, Props, void> {
   static contextTypes = {
     TreeClass: PropTypes.string
   };
@@ -132,13 +133,13 @@ export default class Tree extends Component<DefaultProps,Props,void> {
     collapseIconWidth:  PropTypes.number.isRequired
   };
   getChildContext(): Object {
-    let {itemHeight, indent, collapseIconWidth} = this.props;
-    return {itemHeight, indent, collapseIconWidth};
+    let {itemHeight, indent, collapseIconWidth} = this.props
+    return {itemHeight, indent, collapseIconWidth}
   }
   render(): React.Element {
-    let {className} = this.props;
-    let {TreeClass} = this.context;
-    className = classNames(className, 'mf-tree', TreeClass || 'mf-tree-default');
-    return <div {...this.props} className={className}/>;
+    let {className} = this.props
+    let {TreeClass} = this.context
+    className = classNames(className, 'mf-tree', TreeClass || 'mf-tree-default')
+    return <div {...this.props} className={className} />
   }
 }

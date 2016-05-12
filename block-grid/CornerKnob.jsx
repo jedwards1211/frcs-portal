@@ -1,6 +1,6 @@
-import React from 'react';
-import classNames from 'classnames';
+import React from 'react'
+import classNames from 'classnames'
 
-import './CornerKnob.sass';
+import './CornerKnob.sass'
 
-export default props => (<div {...props} className={classNames(props.className, 'corner-knob')}/>);
+export default props => (<div {...props} className={classNames(props.className, 'corner-knob')} />)

@@ -7,24 +7,24 @@
  */
 export default function* splitPrefixes(s: string, sep: string | RegExp): any {
   if (sep instanceof RegExp) {
-    let match = sep.exec(s);  
+    let match = sep.exec(s)
     while (match) {
-      yield s.substring(0, match.index);
-      const nextMatch = sep.exec(s);
-      if (nextMatch && nextMatch.index === match.index) break;
-      match = nextMatch;
+      yield s.substring(0, match.index)
+      const nextMatch = sep.exec(s)
+      if (nextMatch && nextMatch.index === match.index) break
+      match = nextMatch
     }
-    if (s.length > 0) yield s;
+    if (s.length > 0) yield s
   }
   else {
-    let index = s.indexOf(sep);
+    let index = s.indexOf(sep)
     if (index >= 0) {
       while (index < s.length) {
-        yield s.substring(0, index);
-        index = s.indexOf(sep, index + 1);
-        if (index < 0) index = s.length;
+        yield s.substring(0, index)
+        index = s.indexOf(sep, index + 1)
+        if (index < 0) index = s.length
       }
     }
-    if (s.length > 0) yield s;
+    if (s.length > 0) yield s
   }
 }

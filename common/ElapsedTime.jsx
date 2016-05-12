@@ -1,11 +1,11 @@
 /* @flow */
 
-import React from 'react';
-import classNames from 'classnames';
+import React from 'react'
+import classNames from 'classnames'
 
-import formatElapsedTime from '../utils/formatElapsedTime';
+import formatElapsedTime from '../utils/formatElapsedTime'
 
-import './ElapsedTime.sass';
+import './ElapsedTime.sass'
 
 type Props = {
   className?: string,
@@ -18,12 +18,12 @@ type Props = {
 };
 
 const ElapsedTime: (props: Props) => React.Element = (props) => {
-  let {className, millis, showHours, showMinutes, showMillis, showSeconds} = props;
-  if (showSeconds !== false) showSeconds = true;
-  className = classNames(className, 'mf-elapsed-time');
+  let {className, millis, showHours, showMinutes, showMillis, showSeconds} = props
+  if (showSeconds !== false) showSeconds = true
+  className = classNames(className, 'mf-elapsed-time')
   return <div {...props} className={className}>
     {formatElapsedTime(millis, {showHours, showMinutes, showMillis, showSeconds})}
-  </div>;
-};
+  </div>
+}
 
-export default ElapsedTime;
+export default ElapsedTime

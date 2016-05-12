@@ -1,28 +1,30 @@
-import React from 'react';
-import Modal from './Modal';
-import {Header, Title, Body, Footer} from './../common/View';
-import Button from './Button';
-import CloseButton from './CloseButton';
+/* eslint-disable no-console */
+
+import React from 'react'
+import Modal from './Modal'
+import {Header, Title, Body, Footer} from './../common/View'
+import Button from './Button'
+import CloseButton from './CloseButton'
 
 export default class ModalExample extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = {modalVisible: false};
+    super(props)
+    this.state = {modalVisible: false}
   }
   showModal = () => {
-    this.setState({modalVisible: true});
+    this.setState({modalVisible: true})
   };
   hideModal = () => {
-    this.setState({modalVisible: false});
+    this.setState({modalVisible: false})
   };
   onOK = () => {
-    console.log('You clicked OK!');
-    this.hideModal();
+    console.log('You clicked OK!')
+    this.hideModal()
   };
   render() {
-    var {modalVisible} = this.state;
+    var {modalVisible} = this.state
 
-    var modal, backdrop;
+    var modal, backdrop
 
     if (modalVisible) {
       // don't forget to put keys on Modal and Modal.Backdrop!
@@ -32,7 +34,7 @@ export default class ModalExample extends React.Component {
       // note the onClick handler -- you have to set this manually.
       // Modal.Backdrop won't automatically hide any Modal when you
       // click it.
-      backdrop = <Modal.Backdrop key="backdrop" onClick={this.hideModal}/>;
+      backdrop = <Modal.Backdrop key="backdrop" onClick={this.hideModal} />
 
       // note below that again we define onClick handlers for all
       // the buttons manually.  All of the elements inside Modal
@@ -40,7 +42,7 @@ export default class ModalExample extends React.Component {
       modal = <Modal key="modal">
         <Header>
           {/* the CloseButton must come first for correct layout, unfortunately */}
-          <CloseButton onClick={this.hideModal}/>
+          <CloseButton onClick={this.hideModal} />
           <Title>Example Modal</Title>
         </Header>
         <Body>
@@ -50,7 +52,7 @@ export default class ModalExample extends React.Component {
           <Button onClick={this.hideModal}>Cancel</Button>
           <Button primary onClick={this.onOK}>OK</Button>
         </Footer>
-      </Modal>;
+      </Modal>
     }
 
     return <div>
@@ -64,6 +66,6 @@ export default class ModalExample extends React.Component {
         {backdrop}
         {modal}
       </Modal.TransitionGroup>
-    </div>;
+    </div>
   }
 }

@@ -1,12 +1,12 @@
 /* @flow */
 
-import {createReducer, composeReducers} from 'mindfront-redux-utils';
+import {createReducer, composeReducers} from 'mindfront-redux-utils'
 
-import type {Reducer} from '../flowtypes/reduxTypes';
-import * as actions from './DocumentViewActions';
+import type {Reducer} from '../flowtypes/reduxTypes'
+import * as actions from './DocumentViewActions'
 
 function createSetter(field: string): Reducer {
-  return (state, action) => state.setIn([...action.meta.reduxPath, field], action.payload); 
+  return (state, action) => state.setIn([...action.meta.reduxPath, field], action.payload)
 }
 
 export default createReducer({
@@ -17,4 +17,4 @@ export default createReducer({
   [actions.SET_SAVING]: createSetter('saving'),
   [actions.SET_SAVE_ERROR]: createSetter('saveError'),
   [actions.SET_UPDATED_TIMESTAMP]: createSetter('updatedTimestamp')
-});
+})

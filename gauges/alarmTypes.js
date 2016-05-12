@@ -15,4 +15,4 @@ export default {
     comparison: 'low',
     severity: 'alarm',
   },
-};
+}

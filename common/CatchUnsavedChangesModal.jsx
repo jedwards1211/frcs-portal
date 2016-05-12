@@ -1,12 +1,12 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import Portal from 'react-portal';
+import React, {Component, PropTypes} from 'react'
+import Portal from 'react-portal'
 
-import Button from '../bootstrap/Button.jsx';
-import Modal from '../bootstrap/Modal.jsx';
-import Spinner from './Spinner.jsx';
-import {Header, Title, Body, Footer} from './View.jsx';
+import Button from '../bootstrap/Button.jsx'
+import Modal from '../bootstrap/Modal.jsx'
+import Spinner from './Spinner.jsx'
+import {Header, Title, Body, Footer} from './View.jsx'
 
 type Props = {
   open?: boolean,
@@ -23,7 +23,7 @@ type Props = {
   onSaveChangesClick?: (leave: Function) => any
 };
 
-export default class CatchUnsavedChangesModal extends Component<void,Props,void> {
+export default class CatchUnsavedChangesModal extends Component<void, Props, void> {
   leaveCallback: ?Function;
 
   static contextTypes = {
@@ -33,54 +33,54 @@ export default class CatchUnsavedChangesModal extends Component<void,Props,void>
   };
 
   componentDidMount() {
-    let {addLeaveHook} = this.context;
-    addLeaveHook && addLeaveHook(this.onLeave);
-    window.addEventListener('beforeunload', this.onBeforeUnload);
+    let {addLeaveHook} = this.context
+    addLeaveHook && addLeaveHook(this.onLeave)
+    window.addEventListener('beforeunload', this.onBeforeUnload)
   }
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.onBeforeUnload);
-    let {removeLeaveHook} = this.context;
-    removeLeaveHook && removeLeaveHook(this.onLeave);
+    window.removeEventListener('beforeunload', this.onBeforeUnload)
+    let {removeLeaveHook} = this.context
+    removeLeaveHook && removeLeaveHook(this.onLeave)
   }
 
   onBeforeUnload: (e: any) => any = (e) => {
-    let {hasUnsavedChanges} = this.props;
-    let beforeUnloadMessage = this.props.beforeUnloadMessage || 'You have unsaved changes.';
-    e = e || window.event;
+    let {hasUnsavedChanges} = this.props
+    let beforeUnloadMessage = this.props.beforeUnloadMessage || 'You have unsaved changes.'
+    e = e || window.event
     if (hasUnsavedChanges) {
-      e.returnValue = beforeUnloadMessage;
-      return beforeUnloadMessage;
+      e.returnValue = beforeUnloadMessage
+      return beforeUnloadMessage
     }
   };
 
   onLeave: (leave: Function) => ?boolean = leave => {
-    let {hasUnsavedChanges, onOpenChange} = this.props;
+    let {hasUnsavedChanges, onOpenChange} = this.props
     if (hasUnsavedChanges) {
-      onOpenChange(true);
+      onOpenChange(true)
       this.leaveCallback = () => {
-        let {removeLeaveHook} = this.context;
-        removeLeaveHook && removeLeaveHook(this.onLeave);
-        leave();
-      };
-      return false;
+        let {removeLeaveHook} = this.context
+        removeLeaveHook && removeLeaveHook(this.onLeave)
+        leave()
+      }
+      return false
     }
   };
 
   render(): React.Element {
     let {open, title, message, valid, saving, onOutsideClick,
-        onStayHereClick, onDiscardChangesClick, onSaveChangesClick} = this.props;
+        onStayHereClick, onDiscardChangesClick, onSaveChangesClick} = this.props
 
     if (open) {
-      title = title || 'Unsaved Changes';
+      title = title || 'Unsaved Changes'
 
       message = message || <div>
         <p>You are trying to leave but you have unsaved changes.</p>
         {!valid && <p>However, some of the changes are invalid.</p>}
         <p>What do you want to do?</p>
-      </div>;
+      </div>
     }
 
-    const leave = this.leaveCallback || (() => {});
+    const leave = this.leaveCallback || (() => {})
 
     return <Portal isOpened {...this.props}>
       <Modal.TransitionGroup autoBackdrop>
@@ -93,12 +93,13 @@ export default class CatchUnsavedChangesModal extends Component<void,Props,void>
               Discard Changes
             </Button>
             {valid && <Button primary onClick={() => onSaveChangesClick && onSaveChangesClick(leave)}
-                              disabled={saving}>
-              {saving ? <span><Spinner/> Saving...</span> : 'Save Changes'}
+                disabled={saving}
+                      >
+              {saving ? <span><Spinner /> Saving...</span> : 'Save Changes'}
             </Button>}
           </Footer>
         </Modal>}
       </Modal.TransitionGroup>
-    </Portal>;
+    </Portal>
   }
 }

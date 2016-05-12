@@ -1,8 +1,8 @@
 /* @flow */
 
-import React, {Component, Children, PropTypes} from 'react';
-import classNames from 'classnames';
-import {getContextClass, getContextContent, getSizingClass} from './bootstrapPropUtils';
+import React, {Component, Children, PropTypes} from 'react'
+import classNames from 'classnames'
+import {getContextClass, getContextContent, getSizingClass} from './bootstrapPropUtils'
 
 export type Props = {
   a?: boolean,
@@ -32,7 +32,7 @@ export type Props = {
   sizing?: 'sm' | 'small' | 'lg' | 'large' | 'xs' | 'extraSmall',
 };
 
-export default class Button extends Component<void,Props,void> {
+export default class Button extends Component<void, Props, void> {
   static contextTypes = {
     insideFormGroup: PropTypes.bool,
     insideInputGroup: PropTypes.bool,
@@ -41,49 +41,50 @@ export default class Button extends Component<void,Props,void> {
   };
   static supportsInputGroupBtn = true;
   render(): React.Element {
-    let {a, input, submit, caret, active, disabled, block, className, children} = this.props;
-    let {insideFormGroup, insideInputGroup, insideButtonGroup, insideButtonToolbar} = this.context;
+    let {a, input, submit, caret, active, disabled, block, className, children} = this.props
+    let {insideFormGroup, insideInputGroup, insideButtonGroup, insideButtonToolbar} = this.context
 
-    let contextClass = getContextClass(this.props) || 'default';
-    let sizingClass = getSizingClass(this.props);
-    let content = getContextContent(this.props);
+    let contextClass = getContextClass(this.props) || 'default'
+    let sizingClass = getSizingClass(this.props)
+    let content = getContextContent(this.props)
 
     className = classNames(className, 'btn', 'btn-' + contextClass,
       sizingClass && 'btn-' + sizingClass, {
         active,
         'btn-block': block,
         'form-control': insideFormGroup && !insideInputGroup && !insideButtonGroup && !insideButtonToolbar
-      });
+      })
 
     if (caret) {
       if (Children.count(children)) {
         children = [
           ...Children.toArray(children),
           <span key="space"> </span>,
-          <span key="caret" className="caret"/>,
-        ];
+          <span key="caret" className="caret" />,
+        ]
       }
       else {
-        children = <span className="caret"/>;
+        children = <span className="caret" />
       }
     }
 
     if (a) {
-      className = classNames(className, {disabled});
+      className = classNames(className, {disabled})
       return <a role="button" {...this.props} className={className}>
         {content}
         {children}
-      </a>;
+      </a>
     }
 
     if (input) {
       return <input type={submit ? 'submit' : 'button'} value={content || children} {...this.props}
-                    children={undefined} className={className}/>;
+          children={undefined} className={className}
+             />
     }
 
     return <button type={submit ? 'submit' : 'button'} {...this.props} className={className}>
       {content}
       {children}
-    </button>;
+    </button>
   }
 }

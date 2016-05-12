@@ -1,50 +1,50 @@
-import React, {Component} from 'react';
-import _ from 'lodash';
-import classNames from 'classnames';
+import React, {Component} from 'react'
+import _ from 'lodash'
+import classNames from 'classnames'
 
-import Button from '../bootstrap/Button';
+import Button from '../bootstrap/Button'
 
-import AlertGroup from '../common/AlertGroup';
-import validationClassNames from '../common/validationClassNames';
+import AlertGroup from '../common/AlertGroup'
+import validationClassNames from '../common/validationClassNames'
 
-import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue, 
-        addPoint, deletePoint} from './calibrationActions';
+import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue,
+        addPoint, deletePoint} from './calibrationActions'
 
-import {isValidNumPoints, isValidInputValue, isValidOutputValue, 
-  isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation';
-import {isEmptyValue} from '../utils/validationUtils';
+import {isValidNumPoints, isValidInputValue, isValidOutputValue,
+  isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation'
+import {isEmptyValue} from '../utils/validationUtils'
 
-import './CalibrationSteps.sass';
+import './CalibrationSteps.sass'
 
 function autoPrecision(value) {
-  value = Math.abs(value);
+  value = Math.abs(value)
   if (value < 10) {
-    return 3;
+    return 3
   }
   if (value < 100) {
-    return 2;
+    return 2
   }
   if (value < 1000) {
-    return 1;
+    return 1
   }
-  return 0;
+  return 0
 }
 
 function computeInputPrecision(props) {
-  let inputPrecision = props.inputPrecision;
+  let inputPrecision = props.inputPrecision
   if (!_.isNumber(inputPrecision)) {
     // set this for Math.max
-    inputPrecision = null;
+    inputPrecision = null
     for (let point of props.calibration.points) {
       if (_.isNumber(point.x)) {
-        inputPrecision = Math.max(inputPrecision, autoPrecision(point.x));
+        inputPrecision = Math.max(inputPrecision, autoPrecision(point.x))
       }
     }
     if (!_.isNumber(inputPrecision)) {
-      inputPrecision = 3;
+      inputPrecision = 3
     }
   }
-  return inputPrecision;
+  return inputPrecision
 }
 
 export class NumPoints extends Component {
@@ -55,54 +55,55 @@ export class NumPoints extends Component {
     this.props.dispatch({
       type: SET_NUM_POINTS,
       payload: event.target.value
-    });
+    })
   };
   onKeyDown = e => {
     if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
-      this.props.dispatch({type: NEXT});
+      this.props.dispatch({type: NEXT})
     }
   };
   componentDidAppear() {
-    this.componentDidEnter();
+    this.componentDidEnter()
   }
   componentDidEnter() {
-    this._numPoints.focus();
+    this._numPoints.focus()
   }
   static validate(props) {
-    const {calibration, maxNumPoints} = props;
-    const numPoints = calibration.get('numPoints');
+    const {calibration, maxNumPoints} = props
+    const numPoints = calibration.get('numPoints')
 
     if (isEmptyValue(numPoints)) {
-      return {numPoints: {warning: 'Please enter a number to continue'}, valid: false};
+      return {numPoints: {warning: 'Please enter a number to continue'}, valid: false}
     }
     if (!isValidNumPoints(numPoints)) {
-      return {numPoints: {error: `'${numPoints}' is not a valid number`}, valid: false};
+      return {numPoints: {error: `'${numPoints}' is not a valid number`}, valid: false}
     }
-    const value = parseInt(numPoints);
+    const value = parseInt(numPoints)
     if (value < 2) {
-      return {numPoints: {error: 'Number of points must be >= 2.'}, valid: false};
+      return {numPoints: {error: 'Number of points must be >= 2.'}, valid: false}
     }
     if (value > maxNumPoints) {
-      return {numPoints: {error: 'Number of points must be <= ' + maxNumPoints}, valid: false};
+      return {numPoints: {error: 'Number of points must be <= ' + maxNumPoints}, valid: false}
     }
-    return {valid: true};
+    return {valid: true}
   }
   render() {
-    const {calibration, dispatch} = this.props;
-    const numPoints = calibration.get('numPoints');
+    const {calibration, dispatch} = this.props
+    const numPoints = calibration.get('numPoints')
 
-    const validation = NumPoints.validate(this.props);
+    const validation = NumPoints.validate(this.props)
 
     return <div className="mf-calibration-num-points-step">
       <p key="instructions">Enter the number of calibration points you would like to enter:</p>
       <p key="number" className={classNames('form-group', validationClassNames(validation.numPoints))}>
         <label className="control-label">Number of points:&nbsp;</label>
         <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
-               value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}/>
+            value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}
+        />
       </p>
-      <AlertGroup alerts={validation}/>
+      <AlertGroup alerts={validation} />
       <p>or <Button onClick={() => dispatch({type: GO_TO_EDIT_MANUALLY})}>Edit Manually</Button></p>
-    </div>;
+    </div>
   }
 }
 
@@ -111,46 +112,46 @@ export class Point extends Component {
     dispatch: function() {},
   };
   onOutputValueChange = event => {
-    let {dispatch, pointIndex} = this.props;
-    dispatch(setOutputValue(pointIndex, event.target.value));
+    let {dispatch, pointIndex} = this.props
+    dispatch(setOutputValue(pointIndex, event.target.value))
   };
   onKeyDown = e => {
     if (e.key === 'Enter' && Point.validate(this.props).valid) {
-      this.props.dispatch({type: NEXT});
+      this.props.dispatch({type: NEXT})
     }
   };
   componentDidAppear() {
-    this.componentDidEnter();
+    this.componentDidEnter()
   }
   componentDidEnter() {
-    this._outputValue.focus();
+    this._outputValue.focus()
   }
   static validate(props) {
-    const {pointIndex, calibration} = props;
-    const outputValue = calibration.getIn(['points', pointIndex, 'y']);
+    const {pointIndex, calibration} = props
+    const outputValue = calibration.getIn(['points', pointIndex, 'y'])
 
     if (!isValidOutputValueOrBlank(outputValue)) {
-      return {outputValue: {error: `'${outputValue}' is not a valid number`}, valid: false};
+      return {outputValue: {error: `'${outputValue}' is not a valid number`}, valid: false}
     }
-    return {valid: true};
+    return {valid: true}
   }
   render() {
-    const {pointIndex, calibration, calibrationState} = this.props;
-    const points = calibration.get('points');
-    const inputValue = calibrationState.getIn(['input', 'value']);
-    const inputUnits = calibrationState.getIn(['input', 'units']);
-    const outputValue = calibration.getIn(['points', pointIndex, 'y']);
-    const outputUnits = calibrationState.getIn(['output', 'units']);
+    const {pointIndex, calibration, calibrationState} = this.props
+    const points = calibration.get('points')
+    const inputValue = calibrationState.getIn(['input', 'value'])
+    const inputUnits = calibrationState.getIn(['input', 'units'])
+    const outputValue = calibration.getIn(['points', pointIndex, 'y'])
+    const outputUnits = calibrationState.getIn(['output', 'units'])
 
-    const validation = Point.validate(this.props);
+    const validation = Point.validate(this.props)
 
-    let inputPrecision = computeInputPrecision(this.props);
+    let inputPrecision = computeInputPrecision(this.props)
 
-    let stateType = pointIndex === 0 ? 'low' : pointIndex === points.size - 1 ? 'high' : undefined;
+    let stateType = pointIndex === 0 ? 'low' : pointIndex === points.size - 1 ? 'high' : undefined
 
-    let fixedInputValue;
+    let fixedInputValue
     if (_.isNumber(inputValue)) {
-      fixedInputValue = inputValue.toFixed(inputPrecision);
+      fixedInputValue = inputValue.toFixed(inputPrecision)
     }
 
     return <div className="mf-calibration-point-step">
@@ -166,109 +167,114 @@ export class Point extends Component {
         <div key="output" className={classNames("output", "form-group", validationClassNames(validation.outputValue))}>
           <div key="header" className="header control-label">Actual Value</div>
           <div key="value" className="value">
-            <input type="text" ref={c => this._outputValue = c} className="form-control" inputMode="number" 
-              value={outputValue} onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}/> {outputUnits}
+            <input type="text" ref={c => this._outputValue = c} className="form-control" inputMode="number"
+                value={outputValue} onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}
+            /> {outputUnits}
           </div>
         </div>
       </div>
-      <AlertGroup alerts={validation}/>
-    </div>;
+      <AlertGroup alerts={validation} />
+    </div>
   }
 }
 
 function isEmpty(value) {
-  return value === '' || value === undefined || value === null || isNaN(value);
+  return value === '' || value === undefined || value === null || isNaN(value)
 }
 
 export class Confirm extends Component {
   _inputTextfields = [];
   _outputTextfields = [];
-  componentWillMount() { this._mounted = true; }
-  componentWillUnmount() { this._mounted = false; }
+  componentWillMount() { this._mounted = true }
+  componentWillUnmount() { this._mounted = false }
   onBlur = pointIndex => {
     setTimeout(() => {
-      if (!this._mounted) return;
-      const {calibration, dispatch} = this.props;
-      const point = calibration.getIn(['points', pointIndex]);
+      if (!this._mounted) return
+      const {calibration, dispatch} = this.props
+      const point = calibration.getIn(['points', pointIndex])
       if (document.activeElement !== this._inputTextfields [pointIndex] &&
           document.activeElement !== this._outputTextfields[pointIndex] &&
           isEmpty(point.get('x'), point.get('y'))) {
-        dispatch(deletePoint(pointIndex));
+        dispatch(deletePoint(pointIndex))
       }
-    }, 17);
+    }, 17)
   };
   static validate(props) {
-    const {calibration} = props;
-    const points = calibration.get('points');
+    const {calibration} = props
+    const points = calibration.get('points')
 
-    let invalidValue;
+    let invalidValue
     points && points.forEach(point => {
-      const x = point.get('x');
-      const y = point.get('y');
+      const x = point.get('x')
+      const y = point.get('y')
       if (!isValidInputValueOrBlank(x)) {
-        invalidValue = x;
-        return false;
+        invalidValue = x
+        return false
       }
       if (!isValidOutputValueOrBlank(y)) {
-        invalidValue = y;
-        return false;
+        invalidValue = y
+        return false
       }
-    });
+    })
 
     if (invalidValue !== undefined) {
-      return {points: {error: `'${invalidValue}' is not a valid number`}, valid: false};
+      return {points: {error: `'${invalidValue}' is not a valid number`}, valid: false}
     }
 
     const validCount = points.count(point => {
-      const x = point.get('x');
-      const y = point.get('y');
-      return isValidInputValue(x) && isValidOutputValue(y);
-    });
+      const x = point.get('x')
+      const y = point.get('y')
+      return isValidInputValue(x) && isValidOutputValue(y)
+    })
 
     if (validCount < 2) {
-      return {points: {error: 'Please enter values for at least two points'}, valid: false};
+      return {points: {error: 'Please enter values for at least two points'}, valid: false}
     }
 
-    return {valid: true};
+    return {valid: true}
   }
   render() {
-    const {calibration, calibrationState, dispatch} = this.props;
-    const points = calibration.get('points');
-    const inputUnits = calibrationState.getIn(['input', 'units']);
-    const outputUnits = calibrationState.getIn(['output', 'units']);
+    const {calibration, calibrationState, dispatch} = this.props
+    const points = calibration.get('points')
+    const inputUnits = calibrationState.getIn(['input', 'units'])
+    const outputUnits = calibrationState.getIn(['output', 'units'])
 
-    const validation = Confirm.validate(this.props);
+    const validation = Confirm.validate(this.props)
 
     let rows = points && _.compact(points.toArray().map((point, index) => {
-      const x = point.get('x');
-      const y = point.get('y');
-      const inputClass  = classNames('inputValue',  {'has-error': !isValidInputValueOrBlank(x)});
-      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValueOrBlank(y)});
+      const x = point.get('x')
+      const y = point.get('y')
+      const inputClass  = classNames('inputValue',  {'has-error': !isValidInputValueOrBlank(x)})
+      const outputClass = classNames('outputValue', {'has-error': !isValidOutputValueOrBlank(y)})
       return <tr key={index} className="values">
         <td className={inputClass}>
           <input type="text" className="form-control" value={x} ref={c => this._inputTextfields[index] = c}
-            onChange={e => dispatch(setInputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}/>
+              onChange={e => dispatch(setInputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}
+          />
         </td>
         <td className={outputClass}>
           <input type="text" className="form-control" value={y} ref={c => this._outputTextfields[index] = c}
-            onChange={e => dispatch(setOutputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}/>
+              onChange={e => dispatch(setOutputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}
+          />
         </td>
         <td className="delete">
           <Button onClick={e => dispatch(deletePoint(index))} tabIndex={-1}>
-            <i className="glyphicon glyphicon-trash"/>
+            <i className="glyphicon glyphicon-trash" />
           </Button>
         </td>
-      </tr>;
+      </tr>
     })).concat(<tr key={points.size} className="values">
       <td className="inputValue">
         <input type="text" className="form-control" value=""
-          onChange={e => dispatch(addPoint({x: e.target.value}))}/>
+            onChange={e => dispatch(addPoint({x: e.target.value}))}
+        />
       </td>
       <td className="outputValue">
         <input type="text" className="form-control" value=""
-          onChange={e => dispatch(addPoint({y: e.target.value}))}/>
+            onChange={e => dispatch(addPoint({y: e.target.value}))}
+        />
       </td>
-    </tr>);
+    </tr>)
 
     return <div className="mf-calibration-confirm-step">
       <h3 key="header">Confirm Calibration</h3>
@@ -282,7 +288,7 @@ export class Confirm extends Component {
           {rows}
         </tbody>
       </table>
-      <AlertGroup alerts={validation}/>
-    </div>;
+      <AlertGroup alerts={validation} />
+    </div>
   }
 }

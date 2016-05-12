@@ -1,13 +1,13 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
 
-import Dropdown from './Dropdown.jsx';
+import Dropdown from './Dropdown.jsx'
 
-import {getSizingClass} from './bootstrapPropUtils';
+import {getSizingClass} from './bootstrapPropUtils'
 
-import './ButtonGroup.sass';
+import './ButtonGroup.sass'
 
 type Props = {
   children?: any,
@@ -26,7 +26,7 @@ type Props = {
   justified?: boolean,
 };
 
-export default class ButtonGroup extends Component<void,Props,void> {
+export default class ButtonGroup extends Component<void, Props, void> {
   static contextTypes = {
     insideButtonToolbar: PropTypes.bool,
     insideButtonGroup: PropTypes.bool,
@@ -41,25 +41,25 @@ export default class ButtonGroup extends Component<void,Props,void> {
     return {
       insideButtonGroup: true,
       sizing: getSizingClass(this.props)
-    };
+    }
   }
   render(): React.Element {
-    let {className, vertical, justified, dropup, dropdown} = this.props;
-    let {insideButtonToolbar, insideButtonGroup, insideFormGroup} = this.context;
-    let sizingClass = getSizingClass(this.props) || this.context.sizing;
+    let {className, vertical, justified, dropup, dropdown} = this.props
+    let {insideButtonToolbar, insideButtonGroup, insideFormGroup} = this.context
+    let sizingClass = getSizingClass(this.props) || this.context.sizing
     className = classNames(className, sizingClass && 'btn-group-' + sizingClass, {
       'btn-group': !vertical,
       'btn-group-vertical': vertical,
       'btn-group-justified': justified,
       'form-control': insideFormGroup && !insideButtonGroup && !insideButtonToolbar
-    });
+    })
 
     if (insideButtonGroup || dropup || dropdown) {
-      return <Dropdown component="div" role="group" {...this.props} className={className}/>;
+      return <Dropdown component="div" role="group" {...this.props} className={className} />
     }
 
-    let Comp: any = this.props.component || 'div';
+    let Comp: any = this.props.component || 'div'
 
-    return <Comp role="group" {...this.props} className={className}/>;
+    return <Comp role="group" {...this.props} className={className} />
   }
 }

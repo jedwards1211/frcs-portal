@@ -1,11 +1,11 @@
 /* @flow */
 
-import _ from 'lodash';
+import _ from 'lodash'
 
-import getUserId from './getUserId';
+import getUserId from './getUserId'
 
-import type {Selector} from '../../flowtypes/meteorTypes';
-import type {Modifier} from '../../flowtypes/mongoTypes';
+import type {Selector} from '../../flowtypes/meteorTypes'
+import type {Modifier} from '../../flowtypes/mongoTypes'
 
 export type Method = 'find' | 'findOne' | 'insert' | 'update' | 'upsert' | 'remove';
 export type MethodOrGroup = Method | 'read' | 'write';
@@ -26,18 +26,18 @@ export type Condition = (operation: {
 /**
  * Wraps a Mongo.Collection instance to enforce permissions on find, findOne, insert, update,
  * upsert, and remove calls.  If an operation is denied, the wrapper will throw a Meteor.Error.
- * 
+ *
  * By default, all operations are allowed.  If you pass deny() as the last argument, it will deny all operations that
  * were not explicitly allowed.
- * 
- * Checking permissions (unless an operation is always allowed) requires a userId.  The checks use Meteor.userId() 
+ *
+ * Checking permissions (unless an operation is always allowed) requires a userId.  The checks use Meteor.userId()
  * by default, but you may override this by passing a userId prop in the `options` of the method (you can pass any
  * userId, regardless of whether they are logged in; you don't have to pass Meteor.userId()).
  * In the public Mongo.Collection API, the insert() and remove() methods don't take an options argument, but this
  * wrapper accepts it as the 3rd argument so that you can pass the userId.
  * Since Meteor.userId() throws in publish functions, you must pass in `this.userId` in the options when
  * calling a method that isn't always allowed.
- * 
+ *
  * The wrapper will also have these additonal properties:
  * - insecure: the wrapped collection.  Methods called on it will not go through accessRules checks.
  * - checkPermissions(method, ...args): throws a Meteor.Error if the given operation would fail
@@ -54,45 +54,45 @@ export type Condition = (operation: {
  *
  * import accessRules, {allow, deny} from './accessRules';
  * import {userIsLoggedIn, userHasRole} from './myConditions';
- * 
+ *
  * const Employees = accessRules(
  *   allow('find', 'findOne').where(userIsLoggedIn),                            // allows all authorized users to read
  *   allow('insert', 'update', 'upsert', 'remove').where(userHasRole('admin')), // allows admin users to write
  *   deny()                                                                     // denies all other operations
  * )(new Mongo.Collection('employees'));
  */
-export default function accessRules<X: Mongo.Collection>(...rules: Rule[]): 
+export default function accessRules<X: Mongo.Collection>(...rules: Rule[]):
   (collection: X) => X & {
     insecure: X,
     checkPermissions: (method: Method, ...args: any[]) => ?boolean
-  } 
+  }
 {
-  const methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {});
-  
-  const ruleChains = _.mapValues(methodsWithRules, (v, method) => 
-    rules.reduceRight((next, rule) => rule.chain(method, next), () => true));
-  
+  const methodsWithRules = rules.reduce((methods, rule) => Object.assign(methods, rule.methods), {})
+
+  const ruleChains = _.mapValues(methodsWithRules, (v, method) =>
+    rules.reduceRight((next, rule) => rule.chain(method, next), () => true))
+
   return collection => Object.assign(Object.create(collection),
     _.mapValues(ruleChains, (ruleChain, method) => (...args) => {
       ruleChain({
         ...normalizeOperation[method](...args),
         collection,
         method
-      });
-      return (collection: Object)[method](...args);
+      })
+      return (collection: Object)[method](...args)
     }),
     {
       insecure: collection,
       checkPermissions: (method: Method, ...args) => {
-        let ruleChain = ruleChains[method];
+        let ruleChain = ruleChains[method]
         ruleChain && ruleChain({
           ...normalizeOperation[method](...args),
           collection,
           method
-        });
+        })
       }
     }
-  );
+  )
 }
 
 class Rule {
@@ -101,34 +101,34 @@ class Rule {
 
   constructor(...methods: MethodOrGroup[]) {
     if (methods.length) {
-      this.methods = {};
+      this.methods = {}
       _.uniq(_.flatMap(methods, method => methodGroups[method] || method))
-        .forEach(method => this.methods[method] = true);
+        .forEach(method => this.methods[method] = true)
     }
     else {
-      this.methods = _.mapValues(normalizeOperation, () => true);
+      this.methods = _.mapValues(normalizeOperation, () => true)
     }
   }
 
   chain(method: Method, next: Condition): Condition {
-    return next;
+    return next
   }
 
   /**
    * Sets the condition under which this rule applies.
    */
   where(condition: Condition) {
-    this.condition = condition;
-    return this;
+    this.condition = condition
+    return this
   }
 }
 
 class AllowRule extends Rule {
   chain(method: Method, next: Condition): Condition {
     if (this.methods[method]) {
-      return operation => this.condition(operation) || next(operation);
+      return operation => this.condition(operation) || next(operation)
     }
-    return next;
+    return next
   }
 }
 
@@ -138,23 +138,23 @@ class DenyRule extends Rule {
       return operation => {
         if (this.condition(operation)) {
           if (getUserId(operation)) {
-            throw new Meteor.Error(403, 'Forbidden');
+            throw new Meteor.Error(403, 'Forbidden')
           }
           else {
-            throw new Meteor.Error(401, 'Unauthorized');
+            throw new Meteor.Error(401, 'Unauthorized')
           }
         }
-        return next(operation);
-      };
+        return next(operation)
+      }
     }
-    return next;
+    return next
   }
 }
 
 /**
- * Creates a Rule that allows the given operations in all cases.  
+ * Creates a Rule that allows the given operations in all cases.
  * You may change the condition under which it applies by calling .where(condition) on the returned Rule.
- * 
+ *
  * @param{string[]} ...methods - the methods (aka operations) to allow.  May be any of the following:
  * - 'find'
  * - 'findOne'
@@ -166,12 +166,12 @@ class DenyRule extends Rule {
  * - 'write' (equivalent to 'insert', 'update', 'upsert', 'remove')
  * Passing no arguments means the Rule applies to all operations.
  */
-export const allow: (...methods: MethodOrGroup[]) => AllowRule = (...methods) => new AllowRule(...methods);
+export const allow: (...methods: MethodOrGroup[]) => AllowRule = (...methods) => new AllowRule(...methods)
 
 /**
- * Creates a Rule that denies the given operations in all cases.  
+ * Creates a Rule that denies the given operations in all cases.
  * You may change the condition under which it applies by calling .where(condition) on the returned Rule.
- * 
+ *
  * @param{string[]} ...methods - the methods (aka operations) to allow.  May be any of the following:
  * - 'find'
  * - 'findOne'
@@ -183,16 +183,16 @@ export const allow: (...methods: MethodOrGroup[]) => AllowRule = (...methods) =>
  * - 'write' (equivalent to 'insert', 'update', 'upsert', 'remove')
  * Passing no arguments means the Rule applies to all operations.
  */
-export const deny:  (...methods: MethodOrGroup[]) => DenyRule  = (...methods) => new DenyRule (...methods);
+export const deny:  (...methods: MethodOrGroup[]) => DenyRule  = (...methods) => new DenyRule (...methods)
 
 /**
  * A condition that always applies.
  */
-export const always: Condition = () => true;
+export const always: Condition = () => true
 /**
  * A condition that never applies.
  */
-export const never:  Condition = () => false;
+export const never:  Condition = () => false
 
 const normalizeOperation = {
   find:     (selector, options = {}, ...args)           => ({selector, options, args: [selector, options, ...args]}),
@@ -201,9 +201,9 @@ const normalizeOperation = {
   update:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
   upsert:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
   remove:   (selector, ...args)                         => ({selector, options: {}, args: [selector, ...args]})
-};
+}
 
 const methodGroups = {
   read: ['find', 'findOne'],
   write: ['insert', 'update', 'upsert', 'remove']
-};
+}

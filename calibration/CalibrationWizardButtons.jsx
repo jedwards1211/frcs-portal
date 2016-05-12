@@ -1,14 +1,14 @@
-import React, {Component, PropTypes} from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import classNames from 'classnames';
+import React, {Component, PropTypes} from 'react'
+import ImmutablePropTypes from 'react-immutable-proptypes'
+import classNames from 'classnames'
 
-import Button from '../bootstrap/Button';
+import Button from '../bootstrap/Button'
 
-import {stringOrNumber} from './calibrationValidation';
-import * as CalibrationSteps from './CalibrationSteps';
+import {stringOrNumber} from './calibrationValidation'
+import * as CalibrationSteps from './CalibrationSteps'
 
 
-import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions';
+import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions'
 
 /**
  * The Back, Next, and Apply buttons for a CalibrationWizard, separated out because
@@ -35,20 +35,20 @@ export default class CalibrationWizardButtons extends Component {
   };
   focusApply() {
     if (this.refs.apply) {
-      this.refs.apply.focus();
+      this.refs.apply.focus()
     }
   }
   render() {
-    let {className, stepNumber, dispatch} = this.props;
+    let {className, stepNumber, dispatch} = this.props
 
-    let disableNext;
+    let disableNext
     if (stepNumber === 'numPoints') {
-      const validation = CalibrationSteps.NumPoints.validate(this.props);
-      disableNext = !validation.valid;
+      const validation = CalibrationSteps.NumPoints.validate(this.props)
+      disableNext = !validation.valid
     }
     else if (stepNumber !== 'confirm') {
-      const validation = CalibrationSteps.Point.validate(this.props);
-      disableNext = !validation.valid;
+      const validation = CalibrationSteps.Point.validate(this.props)
+      disableNext = !validation.valid
     }
 
     let buttons = [
@@ -58,26 +58,27 @@ export default class CalibrationWizardButtons extends Component {
       <Button key="back" onClick={() => dispatch({type: BACK})}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
-    ];
+    ]
     if (stepNumber === 'confirm') {
-      const validation = CalibrationSteps.Confirm.validate(this.props);
+      const validation = CalibrationSteps.Confirm.validate(this.props)
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-                onClick={() => dispatch({type: APPLY})} disabled={!validation.valid}>
+            onClick={() => dispatch({type: APPLY})} disabled={!validation.valid}
+        >
           Apply
         </button>
-      );
+      )
     }
     else {
       buttons.push(
         <Button primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
           <i className="glyphicon glyphicon-chevron-right" /> Next
         </Button>
-      );
+      )
     }
 
-    className = classNames(className, 'mf-calibration-wizard-buttons');
+    className = classNames(className, 'mf-calibration-wizard-buttons')
 
-    return <span {...this.props} className={className}>{buttons}</span>;
+    return <span {...this.props} className={className}>{buttons}</span>
   }
 }

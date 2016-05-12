@@ -1,17 +1,17 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
 
-import './ButtonToolbar.sass';
+import './ButtonToolbar.sass'
 
 type Props = {
   className?: string,
-  component?: ReactTag,
+  component?: any,
   children?: any
 };
 
-export default class ButtonToolbar extends Component<void,Props,void> {
+export default class ButtonToolbar extends Component<void, Props, void> {
   static contextTypes = {
     insideFormGroup: PropTypes.bool
   };
@@ -21,15 +21,15 @@ export default class ButtonToolbar extends Component<void,Props,void> {
   getChildContext(): Object {
     return {
       insideButtonToolbar: true
-    };
+    }
   }
   render(): React.Element {
-    let {className} = this.props;
-    let {insideFormGroup} = this.context;
+    let {className} = this.props
+    let {insideFormGroup} = this.context
     className = classNames(className, 'btn-toolbar', {
       'form-control': insideFormGroup
-    });
-    let Comp: any = this.props.component || 'div';
-    return <Comp role="toolbar" {...this.props} className={className}/>;
+    })
+    let Comp: any = this.props.component || 'div'
+    return <Comp role="toolbar" {...this.props} className={className} />
   }
 }

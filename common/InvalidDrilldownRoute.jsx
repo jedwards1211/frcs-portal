@@ -1,21 +1,21 @@
 /* @flow */
 
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 
-import {Route} from './Drilldown.jsx';
+import {Route} from './Drilldown.jsx'
 
-import Alert from '../bootstrap/Alert.jsx';
+import Alert from '../bootstrap/Alert.jsx'
 
-import {View, Header, Title, Body} from './View.jsx';
+import {View, Header, Title, Body} from './View.jsx'
 
 type Props = {
   path: string,
   title?: string
 };
 
-export default class InvalidDrilldownRoute extends Component<void,Props,void> {
+export default class InvalidDrilldownRoute extends Component<void, Props, void> {
   render(): React.Element {
-    let {path, title} = this.props;
+    let {path, title} = this.props
 
     return <Route path={path}>
       <View>
@@ -30,6 +30,6 @@ export default class InvalidDrilldownRoute extends Component<void,Props,void> {
           </Alert>
         </Body>
       </View>
-    </Route>;
+    </Route>
   }
 }

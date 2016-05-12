@@ -11,43 +11,43 @@
  */
 export default function layoutBlockGrid(layout, grabbed) {
   var maxWidth    = layout.get('maxWidth'),
-      cellWidth   = layout.get('cellWidth'),
-      cellHeight  = layout.get('cellHeight'),
-      spacing     = layout.get('spacing'),
-      origBlocks  = layout.get('blocks');
+    cellWidth   = layout.get('cellWidth'),
+    cellHeight  = layout.get('cellHeight'),
+    spacing     = layout.get('spacing'),
+    origBlocks  = layout.get('blocks')
 
   // map from cell '{row}-{col}' to block in that cell
-  var cells = {};
+  var cells = {}
 
   // number of available columns
-  var cols = Math.floor((maxWidth - spacing) / cellWidth);
-  var lastRow = 0, lastCol = 0;
+  var cols = Math.floor((maxWidth - spacing) / cellWidth)
+  var lastRow = 0, lastCol = 0
 
-  var row = 0, col = 0;
+  var row = 0, col = 0
 
-  var grabbedRow, grabbedCol, grabbedIndex, grabbedBlock;
+  var grabbedRow, grabbedCol, grabbedIndex, grabbedBlock
 
   if (grabbed) {
-    grabbedIndex = origBlocks.findIndex(block => block.get('key') === grabbed.get('key'));
+    grabbedIndex = origBlocks.findIndex(block => block.get('key') === grabbed.get('key'))
 
     if (grabbedIndex >= 0) {
-      grabbedBlock = origBlocks.get(grabbedIndex);
+      grabbedBlock = origBlocks.get(grabbedIndex)
 
-      grabbedRow = Math.floor((grabbed.get('y') - spacing) / cellHeight);
-      grabbedRow = Math.max(0, grabbedRow);
+      grabbedRow = Math.floor((grabbed.get('y') - spacing) / cellHeight)
+      grabbedRow = Math.max(0, grabbedRow)
 
-      grabbedCol = Math.floor((grabbed.get('x') - spacing) / cellWidth);
-      grabbedCol = Math.max(0, Math.min(cols - grabbedBlock.get('colSpan'), grabbedCol));
+      grabbedCol = Math.floor((grabbed.get('x') - spacing) / cellWidth)
+      grabbedCol = Math.max(0, Math.min(cols - grabbedBlock.get('colSpan'), grabbedCol))
     }
   }
 
   function allEmpty(startrow, startcol, rowSpan, colSpan) {
     for (var row = startrow; row < startrow + rowSpan; row++) {
       for (var col = startcol; col < startcol + colSpan; col++) {
-        if (cells[row + '-' + col]) return false;
+        if (cells[row + '-' + col]) return false
       }
     }
-    return true;
+    return true
   }
 
   /**
@@ -62,17 +62,17 @@ export default function layoutBlockGrid(layout, grabbed) {
    *   could not be placed at or above the given row and column
    */
   function place(block, row, col) {
-    var rowSpan = block.get('rowSpan');
-    var colSpan = block.get('colSpan');
-    if (!allEmpty(row, col, rowSpan, colSpan)) return;
+    var rowSpan = block.get('rowSpan')
+    var colSpan = block.get('colSpan')
+    if (!allEmpty(row, col, rowSpan, colSpan)) return
 
     // don't place the block where it would extend off the right side of the
     // window, unless the window is just to narrow
-    if (col > 0 && col + colSpan > cols) return;
+    if (col > 0 && col + colSpan > cols) return
 
     // move up if possible, to avoid wasting space
     while (row > 0 && allEmpty(row - 1, col, rowSpan, colSpan)) {
-      row--;
+      row--
     }
 
     // okay, now we know where the block can go!
@@ -80,13 +80,13 @@ export default function layoutBlockGrid(layout, grabbed) {
     // mark the cells we've placed the block in occupied
     for (var r = row; r < row + rowSpan; r++) {
       for (var c = col; c < col + colSpan; c++) {
-        cells[r + '-' + c] = true;
+        cells[r + '-' + c] = true
       }
     }
 
     // update lastRow and lastCol
-    lastRow = Math.max(lastRow, row + rowSpan - 1);
-    lastCol = Math.max(lastCol, col + colSpan - 1);
+    lastRow = Math.max(lastRow, row + rowSpan - 1)
+    lastCol = Math.max(lastCol, col + colSpan - 1)
 
     // update the block position
     return block.withMutations(block =>
@@ -95,48 +95,48 @@ export default function layoutBlockGrid(layout, grabbed) {
             .set('x',       spacing + col * cellWidth)
             .set('y',       spacing + row * cellHeight)
             .set('width',   colSpan * cellWidth - spacing)
-            .set('height',  rowSpan * cellHeight - spacing));
+            .set('height',  rowSpan * cellHeight - spacing))
   }
 
   return layout.withMutations(layout => {
     layout.set('blocks', origBlocks.withMutations(blocks => {
-      var nextIndex = 0;
+      var nextIndex = 0
 
-      var placedGrabbedBlock;
+      var placedGrabbedBlock
 
       // for each block...
       for (var i = 0; i < blocks.size; i++) {
-        if (i === grabbedIndex) continue;
+        if (i === grabbedIndex) continue
 
-        var block = origBlocks.get(i);
+        var block = origBlocks.get(i)
 
         // move left-to-right, top-to-bottom until we successfully place it...
         while (true) {
           // always try to place the grabbed block in the cells it's hovering over
           // before anything else
-          if (row >= grabbedRow && 
+          if (row >= grabbedRow &&
               col >= grabbedCol &&
               row <  grabbedRow + grabbedBlock.get('rowSpan') &&
               col <  grabbedCol + grabbedBlock.get('colSpan')) {
 
-            placedGrabbedBlock = place(grabbedBlock, row, col);
+            placedGrabbedBlock = place(grabbedBlock, row, col)
 
             if (placedGrabbedBlock) {
-              blocks.set(nextIndex++, placedGrabbedBlock);
+              blocks.set(nextIndex++, placedGrabbedBlock)
               // by undefining these we ensure that we won't try to place the
               // grabbed block again
-              grabbedRow = grabbedCol = undefined;
+              grabbedRow = grabbedCol = undefined
             }
           }
 
-          var placedBlock = place(block, row, col);
+          var placedBlock = place(block, row, col)
           if (placedBlock) {
-            blocks.set(nextIndex++, placedBlock);
-            break;
+            blocks.set(nextIndex++, placedBlock)
+            break
           }
           if (++col >= cols) {
-            col = 0;
-            row++;
+            col = 0
+            row++
           }
         }
       }
@@ -145,18 +145,18 @@ export default function layoutBlockGrid(layout, grabbed) {
       // place it after everything else
       if (grabbedBlock && !placedGrabbedBlock) {
         while (true) {
-          placedGrabbedBlock = place(grabbedBlock, row, col);
+          placedGrabbedBlock = place(grabbedBlock, row, col)
           if (placedGrabbedBlock) {
-            blocks.set(nextIndex++, placedGrabbedBlock);
-            break;
+            blocks.set(nextIndex++, placedGrabbedBlock)
+            break
           }
           if (++col >= cols) {
-            col = 0;
-            row++;
+            col = 0
+            row++
           }
         }
       }
-    })).set('width' ,  spacing + (lastCol + 1) * cellWidth )
+    })).set('width',  spacing + (lastCol + 1) * cellWidth )
        .set('height',  spacing + (lastRow + 1) * cellHeight)
-  });
+  })
 }

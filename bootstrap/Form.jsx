@@ -1,14 +1,14 @@
 /* @flow */
 
-import React, {Component, Children, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {Component, Children, PropTypes} from 'react'
+import classNames from 'classnames'
 
-import {getFormGroupContextClass, getContextContent} from './bootstrapPropUtils';
-import {errorMessage} from '../utils/reactErrorUtils';
+import {getFormGroupContextClass, getContextContent} from './bootstrapPropUtils'
+import {errorMessage} from '../utils/reactErrorUtils'
 
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx';
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx'
 
-import mapChildrenRecursive from '../utils/mapChildrenRecursive';
+import mapChildrenRecursive from '../utils/mapChildrenRecursive'
 
 type GroupProps = {
   className?: string,
@@ -36,7 +36,7 @@ type GroupProps = {
  * descendants of Form, it will wrap them in a <Group>, so you should rarely
  * need to use this directly.
  */
-export class Group extends Component<void,GroupProps,void> {
+export class Group extends Component<void, GroupProps, void> {
   static contextTypes = {
     labelClass:   PropTypes.string,
     controlClass: PropTypes.string,
@@ -47,23 +47,23 @@ export class Group extends Component<void,GroupProps,void> {
   getChildContext(): Object {
     return {
       insideFormGroup: true
-    };
+    }
   }
   render(): React.Element {
-    let {className, staticControl, label, children, validation} = this.props;
+    let {className, staticControl, label, children, validation} = this.props
 
-    let contextClass   = getFormGroupContextClass(validation || this.props);
-    let contextContent = getContextContent       (validation || this.props);
+    let contextClass   = getFormGroupContextClass(validation || this.props)
+    let contextContent = getContextContent       (validation || this.props)
 
-    className = classNames(className, 'form-group', contextClass);
+    className = classNames(className, 'form-group', contextClass)
 
-    let labelClass   = classNames(this.context.labelClass,   this.props.labelClass,   'control-label');
-    let controlClass = classNames(this.context.controlClass, this.props.controlClass);
+    let labelClass   = classNames(this.context.labelClass,   this.props.labelClass,   'control-label')
+    let controlClass = classNames(this.context.controlClass, this.props.controlClass)
 
     if (staticControl && children) {
       children = Children.map(children, child => child && React.cloneElement(child, {
         className: classNames(child.props.className, 'form-control-static')
-      }));
+      }))
     }
 
     return <div {...this.props} className={className}>
@@ -76,7 +76,7 @@ export class Group extends Component<void,GroupProps,void> {
           </div>}
         </CollapseTransitionGroup>
       </div>}
-    </div>;
+    </div>
   }
 }
 
@@ -90,7 +90,7 @@ type FormProps = {
                           // wrapped in a <Group>
 };
 
-export default class Form extends Component<void,FormProps,void> {
+export default class Form extends Component<void, FormProps, void> {
   static childContextTypes = {
     insideForm:   PropTypes.bool,   // some components add .form-control class
                                     // when they detect this
@@ -98,12 +98,12 @@ export default class Form extends Component<void,FormProps,void> {
     controlClass: PropTypes.string,
   };
   getChildContext(): Object {
-    let {labelClass, controlClass} = this.props;
+    let {labelClass, controlClass} = this.props
     return {
       insideForm: true,
       labelClass,
       controlClass
-    };
+    }
   }
   /**
    * Recursively wraps any descendants with a truthy formGroup prop in a <Group>.
@@ -113,19 +113,19 @@ export default class Form extends Component<void,FormProps,void> {
       if (child && child.props && child.props.formGroup) {
         return <Group {...child.props} className={child.props.formGroupClass}>
           {child}
-        </Group>;
+        </Group>
       }
-      return child;      
-    });
+      return child
+    })
   }
   render(): React.Element {
-    let {className, inline, horizontal, children} = this.props;
+    let {className, inline, horizontal, children} = this.props
     className = classNames(className, {
       'form-inline':      inline,
       'form-horizontal':  horizontal,
-    });
+    })
     return <form {...this.props} className={className}>
       {this.addFormGroups(children)}
-    </form>;
+    </form>
   }
 }

@@ -10,9 +10,9 @@
  * @providesModule ReactTransitionChildMapping
  */
 
-'use strict';
+'use strict'
 
-var React = require('react');
+var React = require('react')
 
 var ReactTransitionChildMapping = {
   /**
@@ -24,15 +24,15 @@ var ReactTransitionChildMapping = {
    */
   getChildMapping: function(children) {
     if (!children) {
-      return children;
+      return children
     }
-    var result = {};
+    var result = {}
     React.Children.toArray(children).forEach(child => {
       if (child && child.hasOwnProperty('key')) {
-        result[child.key] = child;
+        result[child.key] = child
       }
-    });
-    return result;
+    })
+    return result
   },
 
   /**
@@ -53,54 +53,54 @@ var ReactTransitionChildMapping = {
    * in `next` in a reasonable order.
    */
   mergeChildMappings: function(prev, next) {
-    prev = prev || {};
-    next = next || {};
+    prev = prev || {}
+    next = next || {}
 
     function getValueForKey(key) {
       if (next.hasOwnProperty(key)) {
-        return next[key];
+        return next[key]
       } else {
-        return prev[key];
+        return prev[key]
       }
     }
 
     // For each key of `next`, the list of keys to insert before that key in
     // the combined list
-    var nextKeysPending = {};
+    var nextKeysPending = {}
 
-    var pendingKeys = [];
+    var pendingKeys = []
     for (var prevKey in prev) {
       if (next.hasOwnProperty(prevKey)) {
         if (pendingKeys.length) {
-          nextKeysPending[prevKey] = pendingKeys;
-          pendingKeys = [];
+          nextKeysPending[prevKey] = pendingKeys
+          pendingKeys = []
         }
       } else {
-        pendingKeys.push(prevKey);
+        pendingKeys.push(prevKey)
       }
     }
 
-    var i;
-    var childMapping = {};
+    var i
+    var childMapping = {}
     for (var nextKey in next) {
       if (nextKeysPending.hasOwnProperty(nextKey)) {
         for (i = 0; i < nextKeysPending[nextKey].length; i++) {
-          var pendingNextKey = nextKeysPending[nextKey][i];
+          var pendingNextKey = nextKeysPending[nextKey][i]
           childMapping[nextKeysPending[nextKey][i]] = getValueForKey(
             pendingNextKey
-          );
+          )
         }
       }
-      childMapping[nextKey] = getValueForKey(nextKey);
+      childMapping[nextKey] = getValueForKey(nextKey)
     }
 
     // Finally, add the keys which didn't appear before any key in `next`
     for (i = 0; i < pendingKeys.length; i++) {
-      childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i]);
+      childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i])
     }
 
-    return childMapping;
+    return childMapping
   },
-};
+}
 
-module.exports = ReactTransitionChildMapping;
+module.exports = ReactTransitionChildMapping
