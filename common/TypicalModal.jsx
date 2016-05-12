@@ -1,14 +1,14 @@
-import React, {PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {PropTypes} from 'react'
+import classNames from 'classnames'
 
-import Modal from '../bootstrap/Modal';
-import {Header, Title, Body, Footer} from './View.jsx';
-import CloseButton from '../bootstrap/CloseButton';
-import Button from '../bootstrap/Button';
-import Spinner from '../common/Spinner';
-import AlertGroup from './AlertGroup';
+import Modal from '../bootstrap/Modal'
+import {Header, Title, Body, Footer} from './View.jsx'
+import CloseButton from '../bootstrap/CloseButton'
+import Button from '../bootstrap/Button'
+import Spinner from '../common/Spinner'
+import AlertGroup from './AlertGroup'
 
-import './TypicalModal.sass';
+import './TypicalModal.sass'
 
 export default class TypicalModal extends React.Component {
   static propTypes = {
@@ -39,44 +39,44 @@ export default class TypicalModal extends React.Component {
     footerAlerts: {},
   };
   onOK = () => {
-    let {saving, OKdisabled, onOK} = this.props;
+    let {saving, OKdisabled, onOK} = this.props
     if (!saving && !OKdisabled && onOK) {
-      onOK();
+      onOK()
     }
   };
   render() {
     let {title, header, beforeButtons, buttons, afterButtons, disabled, OKdisabled, OKtext,
-        showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel, 
-        saving, error, errors, footerAlerts, className, children} = this.props;
+        showOK, showCancel, cancelText, onCancel, onOutsideClick = onCancel, onCloseButtonClick = onCancel,
+        saving, error, errors, footerAlerts, className, children} = this.props
 
-    footerAlerts = Object.assign({}, footerAlerts);
+    footerAlerts = Object.assign({}, footerAlerts)
 
     if (errors) {
       for (let key in errors) {
-        footerAlerts[key] = {error: errors[key]};
+        footerAlerts[key] = {error: errors[key]}
       }
     }
     if (error) {
-      footerAlerts.error = {error};
+      footerAlerts.error = {error}
     }
 
-    className = classNames(className, 'mf-typical-modal');
+    className = classNames(className, 'mf-typical-modal')
 
     if (!buttons) {
-      buttons = [];
+      buttons = []
       if (showCancel) {
-        buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>{cancelText || 'Cancel'}</Button>);
+        buttons.unshift(<Button key="cancel" onClick={onCancel} disabled={disabled}>{cancelText || 'Cancel'}</Button>)
       }
       if (showOK) {
         buttons.push(<Button primary key="OK" onClick={this.onOK} disabled={saving || disabled || OKdisabled}>
           {saving ? <span><Spinner /> Saving...</span> : OKtext || 'OK'}
-        </Button>);
+        </Button>)
       }
     }
 
     return <Modal {...this.props} className={className} onOutsideClick={onOutsideClick}>
       <Header>
-        <CloseButton onClick={onCloseButtonClick} disabled={disabled}/>
+        <CloseButton onClick={onCloseButtonClick} disabled={disabled} />
         {title && <Title>{title}</Title>}
         {header}
       </Header>
@@ -84,12 +84,12 @@ export default class TypicalModal extends React.Component {
         {children}
       </Body>
       <Footer>
-        <AlertGroup alerts={footerAlerts}/>
+        <AlertGroup alerts={footerAlerts} />
         {beforeButtons}
         {buttons}
         {afterButtons}
       </Footer>
-    </Modal>;
+    </Modal>
   }
 }
 

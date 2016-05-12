@@ -9,6 +9,6 @@ export const ACLEntry = Match.OneOf({
   role: String,
   permission: String,
   partition: Match.Optional(String)
-});
+})
 
-export default [ACLEntry];
+export default [ACLEntry]

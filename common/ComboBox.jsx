@@ -1,10 +1,10 @@
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
 
-import Dropdown from '../bootstrap/Dropdown';
-import Button from '../bootstrap/Button';
+import Dropdown from '../bootstrap/Dropdown'
+import Button from '../bootstrap/Button'
 
-import './ComboBox.sass';
+import './ComboBox.sass'
 
 export default class ComboBox extends Component {
   static autoformValueProp = 'selectedItem';
@@ -30,22 +30,22 @@ export default class ComboBox extends Component {
   };
   render() {
     let {items, value, selectedItem, renderSelectedItem, placeholder, noItemsPlaceholder,
-        onChange, disabled, className, toggleButtonClassName} = this.props;
-    selectedItem = selectedItem || value;
-    let renderItem = this.props.renderItem || this.props.render;
-    renderSelectedItem = renderSelectedItem || renderItem;
+        onChange, disabled, className, toggleButtonClassName} = this.props
+    selectedItem = selectedItem || value
+    let renderItem = this.props.renderItem || this.props.render
+    renderSelectedItem = renderSelectedItem || renderItem
 
-    let noSelection = selectedItem === undefined || selectedItem === null;
-    let hasItems = items && !!items.length;
+    let noSelection = selectedItem === undefined || selectedItem === null
+    let hasItems = items && !!items.length
 
-    className = classNames(className, 'mf-combo-box', {'no-selection': noSelection});
+    className = classNames(className, 'mf-combo-box', {'no-selection': noSelection})
 
     return <Dropdown {...this.props} className={className}>
       <Button caret className={toggleButtonClassName} disabled={disabled || !hasItems}>
         <span ref={c => this.selectedItem = c} className="selected-item">
-          {renderSelectedItem(noSelection ? 
+          {renderSelectedItem(noSelection ?
             (hasItems ? placeholder : noItemsPlaceholder)
-            : 
+            :
             selectedItem)}
         </span>
       </Button>
@@ -54,6 +54,6 @@ export default class ComboBox extends Component {
           <a>{renderItem(item)}</a>
         </li>))}
       </ul>
-    </Dropdown>;
+    </Dropdown>
   }
 }

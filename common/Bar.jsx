@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
-import React from 'react';
-import classNames from 'classnames';
+import React from 'react'
+import classNames from 'classnames'
 
-import {Side, sides} from './../utils/orient';
+import {Side, sides} from './../utils/orient'
 
-require('./Bar.sass');
+require('./Bar.sass')
 
 function easeOut(f) {
-  var r = 1 - f;
-  return 1 - r * r;
+  var r = 1 - f
+  return 1 - r * r
 }
 
 export default React.createClass({
@@ -27,101 +27,102 @@ export default React.createClass({
       minSide: sides.left,
       transitionPeriod: 15,
       transitionDuration: 200
-    };
+    }
   },
   getInitialState() {
     return {
       lastValue: undefined,
       value: this.props.value,
       transitionStartMillis: undefined
-    };
+    }
   },
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.state.value) {
-      var lastValue = this.getTransitionValue();
+      var lastValue = this.getTransitionValue()
       this.setState({
         lastValue: lastValue,
         nextValue: nextProps.value,
         transitionStartMillis: Date.now()
-      }, this.resetTransition);
+      }, this.resetTransition)
     }
   },
   resetTransition() {
     if (!this.interval) {
-      this.interval = setInterval(this.onInterval, this.props.transitionPeriod); 
+      this.interval = setInterval(this.onInterval, this.props.transitionPeriod)
     }
   },
   stopTransition() {
     if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
+      clearInterval(this.interval)
+      this.interval = undefined
     }
   },
   onInterval() {
-    this.forceUpdate();
+    this.forceUpdate()
   },
   getTransitionValue() {
     if (!this.state.transitionStartMillis) {
-      this.stopTransition();
-      return this.props.value;
+      this.stopTransition()
+      return this.props.value
     }
 
-    var lastValue = this.state.lastValue || 0;
-    var nextValue = this.state.nextValue || 0;
+    var lastValue = this.state.lastValue || 0
+    var nextValue = this.state.nextValue || 0
 
-    var elapsed = Date.now() - this.state.transitionStartMillis;
+    var elapsed = Date.now() - this.state.transitionStartMillis
     if (elapsed >= this.props.transitionDuration) {
-      this.stopTransition();
-      return nextValue;
+      this.stopTransition()
+      return nextValue
     }
 
-    var f = easeOut(elapsed / this.props.transitionDuration);
-    return lastValue * (1 - f) + nextValue * f;
+    var f = easeOut(elapsed / this.props.transitionDuration)
+    return lastValue * (1 - f) + nextValue * f
   },
   getTransitionOpacity() {
     if (!this.state.transitionStartMillis) {
-      this.stopTransition();
-      return isNaN(this.props.value) ? 0 : 1;
+      this.stopTransition()
+      return isNaN(this.props.value) ? 0 : 1
     }
 
-    var lastOpacity = isNaN(this.state.lastValue) ? 0 : 1;
-    var nextOpacity = isNaN(this.state.nextValue) ? 0 : 1;
+    var lastOpacity = isNaN(this.state.lastValue) ? 0 : 1
+    var nextOpacity = isNaN(this.state.nextValue) ? 0 : 1
 
-    var elapsed = Date.now() - this.state.transitionStartMillis;
+    var elapsed = Date.now() - this.state.transitionStartMillis
     if (elapsed >= this.props.transitionDuration) {
-      this.stopTransition();
-      return nextOpacity;
+      this.stopTransition()
+      return nextOpacity
     }
 
-    var f = elapsed / this.props.transitionDuration;
-    return lastOpacity * (1 - f) + nextOpacity * f;
+    var f = elapsed / this.props.transitionDuration
+    return lastOpacity * (1 - f) + nextOpacity * f
   },
   componentWillUnmount() {
-    this.stopTransition();
+    this.stopTransition()
   },
   render() {
     var {minSide, min, max, children} = this.props,
-        value = this.getTransitionValue(),
-        opacity = this.getTransitionOpacity();
+      value = this.getTransitionValue(),
+      opacity = this.getTransitionOpacity()
 
-    var zeroPct = -min * 100 / (max - min);
-    var valuePct = (value - min) * 100 / (max - min);
+    var zeroPct = -min * 100 / (max - min)
+    var valuePct = (value - min) * 100 / (max - min)
 
-    var minPct = Math.max(0, Math.min(zeroPct, valuePct));
-    var maxPct = Math.min(100, Math.max(zeroPct, valuePct));
+    var minPct = Math.max(0, Math.min(zeroPct, valuePct))
+    var maxPct = Math.min(100, Math.max(zeroPct, valuePct))
 
     return (
       <div {...this.props} className={classNames('bar', this.props.className)}>
         <div className="fill"
-          style={{
-            opacity: opacity,
-            [minSide.name]: minPct + '%',
-            [minSide.opposite.name]: (100 - maxPct) + '%',
-            [minSide.axis.opposite.loSide.name]: 0,
-            [minSide.axis.opposite.hiSide.name]: 0,
-          }} />
+            style={{
+              opacity: opacity,
+              [minSide.name]: minPct + '%',
+              [minSide.opposite.name]: (100 - maxPct) + '%',
+              [minSide.axis.opposite.loSide.name]: 0,
+              [minSide.axis.opposite.hiSide.name]: 0,
+            }}
+        />
         {children}
       </div>
-    );
+    )
   }
-});
+})

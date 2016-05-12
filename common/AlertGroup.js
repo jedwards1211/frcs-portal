@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react'
 
-import {getContextClass} from '../bootstrap/bootstrapPropUtils';
+import {getContextClass} from '../bootstrap/bootstrapPropUtils'
 
-import Alert from '../bootstrap/Alert';
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup';
+import Alert from '../bootstrap/Alert'
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup'
 
 export default class AlertGroup extends Component {
   static propTypes = {
@@ -11,17 +11,17 @@ export default class AlertGroup extends Component {
     alerts: PropTypes.object,
   };
   render() {
-    const {animated, alerts} = this.props;
-    const children = [];
+    const {animated, alerts} = this.props
+    const children = []
     if (alerts) {
       for (var key in alerts) {
-        let alert = alerts[key];
+        let alert = alerts[key]
         if (alert) {
           if (React.isValidElement(alert)) {
-            children.push(React.cloneElement(alert, {key}));
+            children.push(React.cloneElement(alert, {key}))
           }
           if (getContextClass(alert)) {
-            children.push(<Alert key={key} {...alert}/>);
+            children.push(<Alert key={key} {...alert} />)
           }
         }
       }
@@ -29,8 +29,8 @@ export default class AlertGroup extends Component {
     if (animated !== false) {
       return <CollapseTransitionGroup component="div" {...this.props}>
         {children}
-      </CollapseTransitionGroup>;
+      </CollapseTransitionGroup>
     }
-    return <div {...this.props}>{children}</div>;
+    return <div {...this.props}>{children}</div>
   }
 }

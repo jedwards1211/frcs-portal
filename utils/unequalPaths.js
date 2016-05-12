@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 /**
  * Note: this is intended for testing only.
@@ -14,29 +14,29 @@ export default function unequalPaths(a, b) {
       if (a instanceof Object && b instanceof Object) {
         _.forEach(a, (value, key) => {
           if (!_.has(b, key)) {
-            result.push({path: [...path, key], a: value});
+            result.push({path: [...path, key], a: value})
           }
           else {
-            helper(value, b[key], result, [...path, key]);
+            helper(value, b[key], result, [...path, key])
           }
-        });
+        })
         _.forEach(b, (value, key) => {
           if (!_.has(a, key)) {
-            result.push({path: [...path, key], b: value});
+            result.push({path: [...path, key], b: value})
           }
-        });
+        })
       }
       else {
-        result.push({path, a, b});
+        result.push({path, a, b})
       }
     }
   }
 
   // support immutables
-  if (a && a.toJS instanceof Function) a = a.toJS();
-  if (b && b.toJS instanceof Function) b = b.toJS();
+  if (a && a.toJS instanceof Function) a = a.toJS()
+  if (b && b.toJS instanceof Function) b = b.toJS()
 
-  let result = [];
-  helper(a, b, result, []);
-  return result;
+  let result = []
+  helper(a, b, result, [])
+  return result
 }

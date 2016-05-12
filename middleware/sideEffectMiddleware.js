@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import Promise from 'bluebird';
+import Promise from 'bluebird'
 
 /**
  * Enables reducers to perform side effects by adding a `sideEffect`
@@ -8,31 +8,31 @@ import Promise from 'bluebird';
  * `action.sideEffect(({dispatch, getState}) => {...});`
  */
 export default store => next => action => {
-  let sideEffects = [];
+  let sideEffects = []
   if (action.sideEffect) {
     // don't re-perform side effects of recorded and replayed actions
-    return next(action);
+    return next(action)
   }
 
-  action.sideEffect = callback => sideEffects.push(callback);
-  let result = next(action);
+  action.sideEffect = callback => sideEffects.push(callback)
+  let result = next(action)
   sideEffects = sideEffects.map(sideEffect => {
-    let result;
+    let result
     try {
-      result = sideEffect(store);
+      result = sideEffect(store)
     }
     catch (err) {
-      console.error(err.stack);
-      return undefined;
+      console.error(err.stack)
+      return undefined
     }
 
     if (result instanceof Promise) {
       result.catch(err => {
-        console.error(err.stack);
-        throw err;
-      });
+        console.error(err.stack)
+        throw err
+      })
     }
-    return result;
-  });
-  return sideEffects.length ? sideEffects[sideEffects.length - 1] : result;
-};
+    return result
+  })
+  return sideEffects.length ? sideEffects[sideEffects.length - 1] : result
+}

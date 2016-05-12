@@ -1,9 +1,9 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import classNames from 'classnames';
+import React, {Component} from 'react'
+import classNames from 'classnames'
 
-import {getSizingClass} from './bootstrapPropUtils';
+import {getSizingClass} from './bootstrapPropUtils'
 
 type Props = {
   className?: string,
@@ -15,10 +15,10 @@ type Props = {
   children?: any,
 };
 
-export default class Well extends Component<void,Props,void> {
+export default class Well extends Component<void, Props, void> {
   render(): React.Element {
-    let sizingClass = getSizingClass(this.props);
-    let className = classNames(this.props.className, 'well', sizingClass && 'well-' + sizingClass);
-    return <div {...this.props} className={className}/>;
+    let sizingClass = getSizingClass(this.props)
+    let className = classNames(this.props.className, 'well', sizingClass && 'well-' + sizingClass)
+    return <div {...this.props} className={className} />
   }
 }

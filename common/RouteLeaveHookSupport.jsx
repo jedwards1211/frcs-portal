@@ -1,15 +1,15 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react'
 
-import type {LeaveHook} from '../flowtypes/LeaveHook';
+import type {LeaveHook} from '../flowtypes/LeaveHook'
 
 type Props = {
   route: Object,
   children: any
 };
 
-export default class RouteLeaveHookSupport extends Component<void,Props,void> {
+export default class RouteLeaveHookSupport extends Component<void, Props, void> {
   mounted: boolean = false;
   leaveHooks: LeaveHook[] = [];
   static contextTypes = {
@@ -22,44 +22,44 @@ export default class RouteLeaveHookSupport extends Component<void,Props,void> {
     removeLeaveHook: PropTypes.func.isRequired
   };
   getChildContext(): Object {
-    let {addLeaveHook, removeLeaveHook} = this;
-    return {addLeaveHook, removeLeaveHook};
+    let {addLeaveHook, removeLeaveHook} = this
+    return {addLeaveHook, removeLeaveHook}
   }
   addLeaveHook: (hook: LeaveHook) => any = hook => {
-    this.leaveHooks.push(hook);
+    this.leaveHooks.push(hook)
   };
   removeLeaveHook: (hook: LeaveHook) => any = hook => {
-    this.leaveHooks.splice(this.leaveHooks.indexOf(hook), 1);
+    this.leaveHooks.splice(this.leaveHooks.indexOf(hook), 1)
   };
   componentDidMount(): void {
-    this.mounted = true;
-    let {router, addLeaveHook} = this.context;
-    router.setRouteLeaveHook(this.props.route, this.routerWillLeave);
-    addLeaveHook && addLeaveHook(this.ancestorWillLeave);
+    this.mounted = true
+    let {router, addLeaveHook} = this.context
+    router.setRouteLeaveHook(this.props.route, this.routerWillLeave)
+    addLeaveHook && addLeaveHook(this.ancestorWillLeave)
   }
   componentWillUnmount(): void {
-    this.mounted = false;
-    let {removeLeaveHook} = this.context;
-    removeLeaveHook && removeLeaveHook(this.ancestorWillLeave);
+    this.mounted = false
+    let {removeLeaveHook} = this.context
+    removeLeaveHook && removeLeaveHook(this.ancestorWillLeave)
   }
   routerWillLeave: (nextLocation: string) => ?boolean = nextLocation => {
-    let result;
+    let result
 
     const leave = () => {
-      result === false && this.mounted && this.context.router.push(nextLocation);
-    };
+      result === false && this.mounted && this.context.router.push(nextLocation)
+    }
 
-    return result = this.ancestorWillLeave(leave);
+    return result = this.ancestorWillLeave(leave)
   };
   ancestorWillLeave: (leave: Function) => ?boolean = leave => {
     for (let leaveHook of this.leaveHooks) {
       if (leaveHook(leave) === false) {
-        return false;
+        return false
       }
     }
   };
   render(): React.Element {
-    let {children, ...props} = this.props;
-    return React.cloneElement(children, props);
+    let {children, ...props} = this.props
+    return React.cloneElement(children, props)
   }
 }

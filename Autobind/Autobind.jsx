@@ -1,11 +1,11 @@
 /* @flow */
 
-import React, {Component, Children} from 'react';
-import _ from 'lodash';
-import warning from './warning';
+import React, {Component, Children} from 'react'
+import _ from 'lodash'
+import warning from './warning'
 
-import type {Key, MixedObj} from '../flowtypes/commonTypes';
-import type {OnAutobindFieldChange} from './AutobindTypes';
+import type {Key, MixedObj} from '../flowtypes/commonTypes'
+import type {OnAutobindFieldChange} from './AutobindTypes'
 
 type DefaultProps = {
   data: Object,
@@ -23,87 +23,87 @@ type Props = {
   children?: mixed,
 };
 
-export default class Autobind extends Component<DefaultProps,Props,void> {
+export default class Autobind extends Component<DefaultProps, Props, void> {
   static defaultProps = {
     data: {},
     callbacks: {}
   };
   bindFields(children: any, path?: mixed[] = []): any {
-    let {data, metadata, omnidata, callbacks} = this.props;
-    let onAutobindFieldChange = callbacks.onAutobindFieldChange || _.noop;
+    let {data, metadata, omnidata, callbacks} = this.props
+    let onAutobindFieldChange = callbacks.onAutobindFieldChange || _.noop
 
     return Children.map(children, (child: mixed) => {
       if (child instanceof Object && child.props) {
-        let {children, autobindPath, autobindField, autobindProps} = (child.props: MixedObj);
+        let {children, autobindPath, autobindField, autobindProps} = (child.props: MixedObj)
 
-        warning(autobindField == null || typeof autobindField === 'string' || typeof autobindField === 'number', 
-          "props.autobindField should be a string or number in descendant: ", child);
-        
+        warning(autobindField == null || typeof autobindField === 'string' || typeof autobindField === 'number',
+          "props.autobindField should be a string or number in descendant: ", child)
+
         let childPath = autobindPath instanceof Array || autobindPath != null ?
-          path.concat(autobindPath) : path;
+          path.concat(autobindPath) : path
 
-        let newProps = {};
-        Object.assign(newProps, omnidata);
+        let newProps = {}
+        Object.assign(newProps, omnidata)
 
         if (autobindField || autobindProps) {
           if (autobindField) {
-            autobindProps = Object.assign({}, autobindProps, {value: autobindField});
+            autobindProps = Object.assign({}, autobindProps, {value: autobindField})
           }
 
           if (!(autobindProps instanceof Object)) {
-            warning(true, "props.autobindProps is not an Object in descendant: ", child);
+            warning(true, "props.autobindProps is not an Object in descendant: ", child)
           }
           else {
             for (let prop in autobindProps) {
-              let autobindField = autobindProps[prop];
-              let callbackProp = prop === 'value' ? 'onChange' : `on${_.upperFirst(prop)}Change`;
-              let wrappedCallback = child.props[callbackProp];
-              let rootCallback = callbacks[`on${_.upperFirst(autobindField)}Change`];
+              let autobindField = autobindProps[prop]
+              let callbackProp = prop === 'value' ? 'onChange' : `on${_.upperFirst(prop)}Change`
+              let wrappedCallback = child.props[callbackProp]
+              let rootCallback = callbacks[`on${_.upperFirst(autobindField)}Change`]
 
               warning(typeof autobindField === 'string' || typeof autobindField === 'number',
-                `props.autobindProps[${JSON.stringify(prop)}] is not a string or number in descendant: `, child);
+                `props.autobindProps[${JSON.stringify(prop)}] is not a string or number in descendant: `, child)
               warning(rootCallback == null || rootCallback instanceof Function,
-                `props['${callbackProp}'] is not a Function in descendant: `, child);
+                `props['${callbackProp}'] is not a Function in descendant: `, child)
 
-              wrappedCallback = wrappedCallback || _.noop;
-              rootCallback = rootCallback || _.noop;
+              wrappedCallback = wrappedCallback || _.noop
+              rootCallback = rootCallback || _.noop
 
-              let fieldPath = [...childPath, autobindField];
+              let fieldPath = [...childPath, autobindField]
 
               for (let prop in metadata) {
-                let metadataProp = _.get(metadata[prop], fieldPath);
-                if (metadataProp != null) newProps[prop] = metadataProp;
+                let metadataProp = _.get(metadata[prop], fieldPath)
+                if (metadataProp != null) newProps[prop] = metadataProp
               }
-              newProps[prop] = _.get(data, fieldPath);
+              newProps[prop] = _.get(data, fieldPath)
               newProps[callbackProp] = (e: mixed) => {
-                let newValue = e;
+                let newValue = e
                 if (e && e.target && 'value' in e.target) {
-                  newValue = e.target.value;
+                  newValue = e.target.value
                 }
                 if (childPath.length) {
-                  let options = {autobindPath: childPath};
-                  wrappedCallback(newValue, options);
-                  rootCallback(newValue, options);
-                  onAutobindFieldChange(autobindField, newValue, options);
+                  let options = {autobindPath: childPath}
+                  wrappedCallback(newValue, options)
+                  rootCallback(newValue, options)
+                  onAutobindFieldChange(autobindField, newValue, options)
                 }
                 else {
-                  wrappedCallback(newValue);
-                  rootCallback(newValue);
-                  onAutobindFieldChange(autobindField, newValue);
+                  wrappedCallback(newValue)
+                  rootCallback(newValue)
+                  onAutobindFieldChange(autobindField, newValue)
                 }
-              };
+              }
             }
           }
         }
 
-        newProps.children = this.bindFields(children, childPath);
+        newProps.children = this.bindFields(children, childPath)
 
-        return React.cloneElement(child, newProps);
+        return React.cloneElement(child, newProps)
       }
-      return child;
-    });
+      return child
+    })
   }
   render(): React.Element {
-    return this.bindFields(this.props.children)[0];
+    return this.bindFields(this.props.children)[0]
   }
 }

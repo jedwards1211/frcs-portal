@@ -1,24 +1,24 @@
 /* @flow */
 
-import React, {Component, PropTypes, Children} from 'react';
-import classNames from 'classnames';
-import {Header, Title, Body, Footer} from './../common/View.jsx';
-import Collapse from './Collapse';
-import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils';
-import {errorMessage} from '../utils/reactErrorUtils';
+import React, {Component, PropTypes, Children} from 'react'
+import classNames from 'classnames'
+import {Header, Title, Body, Footer} from './../common/View.jsx'
+import Collapse from './Collapse'
+import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils'
+import {errorMessage} from '../utils/reactErrorUtils'
 
-import './Panel.sass';
+import './Panel.sass'
 
 class PanelBodySkin extends Component {
   render() {
-    let {collapse, children} = this.props;
+    let {collapse, children} = this.props
     let result = <div {...this.props}>
       {children}
-    </div>;
+    </div>
     if (collapse) {
-      result = <Collapse {...this.props} className="panel-collapse">{result}</Collapse>;
+      result = <Collapse {...this.props} className="panel-collapse">{result}</Collapse>
     }
-    return result;
+    return result
   }
 }
 
@@ -60,11 +60,11 @@ export default class Panel extends Component {
     FooterClassName:PropTypes.string.isRequired,
   };
   getChildContext(): Object {
-    let {className} = this.props;
-    let contextClass = getContextClass(this.props) || 'default';
-    let shadeClass = getShadeClass(this.props);
+    let {className} = this.props
+    let contextClass = getContextClass(this.props) || 'default'
+    let shadeClass = getShadeClass(this.props)
 
-    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
+    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass)
 
     return {
       BodySkin:       PanelBodySkin,
@@ -73,40 +73,40 @@ export default class Panel extends Component {
       TitleClassName: 'panel-title',
       BodyClassName:  'panel-body',
       FooterClassName:'panel-footer',
-    };
+    }
   }
   render(): React.Element {
-    let {className, children, header, headerProps, title, footer, collapse, skin} = this.props;
-    let contextClass = getContextClass(this.props) || 'default';
-    let shadeClass = getShadeClass(this.props);
-    let content = getContextContent(this.props);
+    let {className, children, header, headerProps, title, footer, collapse, skin} = this.props
+    let contextClass = getContextClass(this.props) || 'default'
+    let shadeClass = getShadeClass(this.props)
+    let content = getContextContent(this.props)
 
     if (content && (contextClass === 'danger' || contextClass === 'warning' || content instanceof Error)) {
-      content = errorMessage(content);
+      content = errorMessage(content)
     }
 
-    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass);
+    className = classNames(className, 'panel', 'panel-' + contextClass, shadeClass)
 
     if (skin || (!header && !title && !footer)) {
       return Children.count(children) === 1 && children ? children :
-        <div {...this.props} className={className}/>;
+        <div {...this.props} className={className} />
     }
 
-    let bodyProps = {};
+    let bodyProps = {}
     if (collapse) {
-      let {collapseProps, open, onTransitionEnd} = this.props;
+      let {collapseProps, open, onTransitionEnd} = this.props
       bodyProps = {
         collapse: true,
         ...(collapseProps || {}),
         open,
         onTransitionEnd,
-      };
+      }
     }
 
     let body = (content || children) && <Body {...bodyProps}>
       {content}
       {children}
-    </Body>;
+    </Body>
 
     return <div {...this.props} className={className}>
       {(header || title) && <Header {...(headerProps || {})}>
@@ -115,6 +115,6 @@ export default class Panel extends Component {
       </Header>}
       {body}
       {footer && <Footer>{footer}</Footer>}
-    </div>;
+    </div>
   }
 }

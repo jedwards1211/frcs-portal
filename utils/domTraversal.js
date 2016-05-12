@@ -1,24 +1,24 @@
 function makePredicate(ancestorOrPredicate) {
   if (ancestorOrPredicate instanceof Element) {
-    return ancestor => ancestor === ancestorOrPredicate;
+    return ancestor => ancestor === ancestorOrPredicate
   }
-  return ancestorOrPredicate;
+  return ancestorOrPredicate
 }
 
 export function element(el) {
   return {
     isProperDescendantOf(ancestorOrPredicate) {
-      let predicate = makePredicate(ancestorOrPredicate);
-      let parent = el.parentElement;
+      let predicate = makePredicate(ancestorOrPredicate)
+      let parent = el.parentElement
       while (parent) {
-        if (predicate(parent)) return true;
-        parent = parent.parentElement;
+        if (predicate(parent)) return true
+        parent = parent.parentElement
       }
-      return false;
+      return false
     },
     isDescendantOf(ancestorOrPredicate) {
-      let predicate = makePredicate(ancestorOrPredicate);
-      return predicate(el) || this.isProperDescendantOf(predicate);
+      let predicate = makePredicate(ancestorOrPredicate)
+      return predicate(el) || this.isProperDescendantOf(predicate)
     }
-  };
+  }
 }

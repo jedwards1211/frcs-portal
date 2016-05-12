@@ -1,4 +1,4 @@
-var canvas = document.createElement('canvas');
-canvas.width = canvas.height = 1;
+var canvas = document.createElement('canvas')
+canvas.width = canvas.height = 1
 
-export default canvas;
+export default canvas

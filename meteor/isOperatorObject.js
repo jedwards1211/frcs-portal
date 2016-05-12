@@ -4,17 +4,17 @@
 // others don't.
 export default function isOperatorObject(valueSelector) {
   if (!LocalCollection._isPlainObject(valueSelector))
-    return false;
+    return false
 
-  var theseAreOperators = undefined;
+  var theseAreOperators = undefined
   _.each(valueSelector, function (value, selKey) {
-    var thisIsOperator = selKey.substr(0, 1) === '$';
+    var thisIsOperator = selKey.substr(0, 1) === '$'
     if (theseAreOperators === undefined) {
-      theseAreOperators = thisIsOperator;
+      theseAreOperators = thisIsOperator
     } else if (theseAreOperators !== thisIsOperator) {
       throw new Error("Inconsistent operator: " +
-        JSON.stringify(valueSelector));
+        JSON.stringify(valueSelector))
     }
-  });
-  return !!theseAreOperators;  // {} has no operators
+  })
+  return !!theseAreOperators  // {} has no operators
 }

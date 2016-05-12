@@ -1,17 +1,17 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import * as Immutable from 'immutable';
-import {connect} from 'react-redux';
+import React, {Component, PropTypes} from 'react'
+import * as Immutable from 'immutable'
+import {connect} from 'react-redux'
 
-import type {Dispatch} from '../../flowtypes/reduxTypes';
+import type {Dispatch} from '../../flowtypes/reduxTypes'
 
-import * as actions from '../actions/changePasswordActions';
-import {setField} from '../../Autobind/AutobindActions';
+import * as actions from '../actions/changePasswordActions'
+import {setField} from '../../Autobind/AutobindActions'
 
-import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldChanges';
+import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldChanges'
 
-import ChangePasswordView from '../../common/ChangePasswordView';
+import ChangePasswordView from '../../common/ChangePasswordView'
 
 type Props = {
   disabled?: boolean,
@@ -25,10 +25,10 @@ type Props = {
 
 const meta = {
   reduxPath: ['ChangePasswordView']
-};
-const actionTypePrefix = 'CHANGE_PASSWORD_VIEW.';
+}
+const actionTypePrefix = 'CHANGE_PASSWORD_VIEW.'
 
-const dispatchOptions = {meta, actionTypePrefix};
+const dispatchOptions = {meta, actionTypePrefix}
 
 class ReduxChangePasswordView extends Component {
   props: Props;
@@ -37,39 +37,40 @@ class ReduxChangePasswordView extends Component {
     router: PropTypes.object
   };
   onSubmit: (oldPassword: string, newPassword: string) => void = (oldPassword, newPassword) => {
-    let {dispatch} = this.props;
-    dispatch(actions.setChangingPassword(false));
-    dispatch(actions.setChangePasswordError(undefined));
+    let {dispatch} = this.props
+    dispatch(actions.setChangingPassword(false))
+    dispatch(actions.setChangePasswordError(undefined))
     Accounts.changePassword(oldPassword, newPassword, (err) => {
-      dispatch(actions.setChangePasswordError(err));
-      dispatch(actions.setChangingPassword(false));
+      dispatch(actions.setChangePasswordError(err))
+      dispatch(actions.setChangingPassword(false))
       if (!err) {
-        let {router} = this.context;
-        router && router.goBack();
+        let {router} = this.context
+        router && router.goBack()
       }
-    });
+    })
   };
   componentWillMount() {
-    let {dispatch} = this.props;
-    dispatch(setField("oldPassword", undefined, dispatchOptions));
-    dispatch(setField("newPassword", undefined, dispatchOptions));
-    dispatch(setField("retypeNewPassword", undefined, dispatchOptions));
+    let {dispatch} = this.props
+    dispatch(setField("oldPassword", undefined, dispatchOptions))
+    dispatch(setField("newPassword", undefined, dispatchOptions))
+    dispatch(setField("retypeNewPassword", undefined, dispatchOptions))
   }
   render() {
-    let {onSubmit, props: {dispatch}} = this;
+    let {onSubmit, props: {dispatch}} = this
     return <ChangePasswordView  {...this.props} onSubmit={onSubmit}
-                                                onAutobindFieldChange={dispatchAutobindFieldChanges(dispatch,
-                                                  dispatchOptions)}/>;
+        onAutobindFieldChange={dispatchAutobindFieldChanges(dispatch,
+                                                  dispatchOptions)}
+           />
   }
 }
 
 function select(state) {
-  let viewState = state.get('ChangePasswordView') || Immutable.Map();
+  let viewState = state.get('ChangePasswordView') || Immutable.Map()
   return {
     ...viewState.toObject(),
     changingPassword: state.get('changingPassword'),
     changePasswordError: state.get('changePasswordError')
-  };
+  }
 }
 
-export default connect(select)(ReduxChangePasswordView);
+export default connect(select)(ReduxChangePasswordView)

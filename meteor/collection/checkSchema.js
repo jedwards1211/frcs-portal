@@ -6,25 +6,25 @@
 // with $.  Unless inconsistentOK is set, throws if some keys begin with $ and
 // others don't.
 export default function checkSchema(schema, options = {}) {
-  let {monkeypatch} = options;
-  
+  let {monkeypatch} = options
+
   if (Meteor.isServer) {
-    const createCheckSchemaMethods = require('./createCheckSchemaMethods').default;
-    
+    const createCheckSchemaMethods = require('./createCheckSchemaMethods').default
+
     return function(collection) {
       if (monkeypatch) {
         return Object.assign(collection, createCheckSchemaMethods({
-          insert: collection.insert.bind(collection), 
-          update: collection.update.bind(collection), 
+          insert: collection.insert.bind(collection),
+          update: collection.update.bind(collection),
           upsert: collection.upsert.bind(collection)
-        }, schema));
+        }, schema))
       }
       else {
-        return Object.assign(Object.create(collection), createCheckSchemaMethods(collection, schema));
+        return Object.assign(Object.create(collection), createCheckSchemaMethods(collection, schema))
       }
     }
   }
   else {
-    return collection => collection;
+    return collection => collection
   }
 }

@@ -1,44 +1,44 @@
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
-import {createSkinnableComponent} from 'react-skin';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
+import {createSkinnableComponent} from 'react-skin'
 
-import {getLeftRight} from '../utils/propUtils';
+import {getLeftRight} from '../utils/propUtils'
 
-import './View.sass';
+import './View.sass'
 
 const ViewProps = {
   defaultComponent: 'div',
   defaultClassName: 'mf-default-view',
   className:        'skinnable-view',
-};
-export const View = createSkinnableComponent('View', ViewProps);
+}
+export const View = createSkinnableComponent('View', ViewProps)
 
 const HeaderProps = {
   defaultComponent: 'div',
   defaultClassName: 'mf-default-header',
   className:        'skinnable-header',
-};
-export const Header = createSkinnableComponent('Header', HeaderProps);
+}
+export const Header = createSkinnableComponent('Header', HeaderProps)
 
 const TitleProps = {
   defaultComponent: 'h3',
   defaultClassName: 'mf-default-title',
   className:        'skinnable-title',
-};
-export const Title  = createSkinnableComponent('Title', TitleProps);
+}
+export const Title  = createSkinnableComponent('Title', TitleProps)
 
 const FooterProps = {
   defaultComponent: 'div',
   defaultClassName: 'mf-default-footer',
   className:        'skinnable-footer',
-};
-export const Footer = createSkinnableComponent('Footer', FooterProps);
+}
+export const Footer = createSkinnableComponent('Footer', FooterProps)
 
 const BodyProps = {
   defaultComponent: 'div',
   defaultClassName: 'mf-default-body',
   className:        'skinnable-body',
-};
+}
 export class Body extends Component {
   static contextTypes = {
     BodySkin: PropTypes.any,
@@ -68,13 +68,13 @@ export class Body extends Component {
       BodyClassName: BodyProps.defaultClassName,
       FooterSkin: FooterProps.defaultComponent,
       FooterClassName: FooterProps.defaultClassName,
-    };
+    }
   }
   render() {
-    let Comp = this.context.BodySkin || BodyProps.defaultComponent;
+    let Comp = this.context.BodySkin || BodyProps.defaultComponent
     let className = classNames(BodyProps.className, this.props.className,
-      this.context.BodyClassName || BodyProps.defaultClassName);
-    return <Comp {...this.props} className={className}/>;
+      this.context.BodyClassName || BodyProps.defaultClassName)
+    return <Comp {...this.props} className={className} />
   }
 }
 
@@ -90,14 +90,14 @@ export class Nav extends Component {
     NavClassName: PropTypes.string
   };
   render() {
-    let side = getLeftRight(this.props);
-    let Comp = this.context.NavSkin || NavProps.defaultComponent;
+    let side = getLeftRight(this.props)
+    let Comp = this.context.NavSkin || NavProps.defaultComponent
     let className = classNames(NavProps.className, this.props.className,
-      this.context.NavClassName || NavProps.defaultClassName, side && 'skinnable-nav-' + side);
-    return <Comp {...this.props} className={className}/>;
+      this.context.NavClassName || NavProps.defaultClassName, side && 'skinnable-nav-' + side)
+    return <Comp {...this.props} className={className} />
   }
 }
 
 export const Link   = createSkinnableComponent('Link', {
   defaultComponent: 'a',
-});
+})

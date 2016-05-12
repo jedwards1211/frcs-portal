@@ -1,25 +1,25 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
-import _ from 'lodash';
+import React, {Component, PropTypes} from 'react'
+import classNames from 'classnames'
+import _ from 'lodash'
 
-import type {LeaveHook} from '../flowtypes/LeaveHook';
+import type {LeaveHook} from '../flowtypes/LeaveHook'
 
-import createOrCloneElement from '../utils/createOrCloneElement';
+import createOrCloneElement from '../utils/createOrCloneElement'
 
-import nodepath from 'path';
+import nodepath from 'path'
 
 export class Paths {
   static head(path: string): string {
-    let index = path.indexOf('/', 1);
-    return index < 0 ? path : path.substring(0, index);
+    let index = path.indexOf('/', 1)
+    return index < 0 ? path : path.substring(0, index)
   }
   static tail(path: string): string {
-    return nodepath.relative(Paths.head(path), path);
+    return nodepath.relative(Paths.head(path), path)
   }
   static split(path: string): Array<string> {
-    return path.split('/').filter(e => e.length);
+    return path.split('/').filter(e => e.length)
   }
 }
 
@@ -58,31 +58,32 @@ type LinkProps = {
   onClick?: (e: MouseEvent) => any,
 };
 
-export class Link extends Component<void,LinkProps,void> {
+export class Link extends Component<void, LinkProps, void> {
   static contextTypes = {
     drilldownRoute: PropTypes.any.isRequired,
   };
   render(): React.Element {
-    let {to, up, children, disabled, onClick} = this.props;
+    let {to, up, children, disabled, onClick} = this.props
     if (up === true) {
-      up = 1;
+      up = 1
     }
 
-    let {drilldownRoute} = this.context;
+    let {drilldownRoute} = this.context
     return <a href="" {...this.props} onClick={e => {
-      if (onClick) onClick(e);
-      e.preventDefault();
+      if (onClick) onClick(e)
+      e.preventDefault()
       if (!disabled) {
         if (to) {
-          drilldownRoute.navigateTo(to);
+          drilldownRoute.navigateTo(to)
         }
         else if (up) {
-          drilldownRoute.navigateUp(up);
+          drilldownRoute.navigateUp(up)
         }
       }
-    }}>
+    }}
+           >
       {children}
-    </a>;
+    </a>
   }
 }
 
@@ -95,7 +96,7 @@ export type RouteProps = {
   childPath?: string,  // the path of the child route, if any (relative to this route's path)
 };
 
-export class Route extends Component<void,RouteProps,void> {
+export class Route extends Component<void, RouteProps, void> {
   leaveHooks: LeaveHook[] = [];
   static contextTypes = {
     RouteSkin: PropTypes.any.isRequired,
@@ -112,22 +113,22 @@ export class Route extends Component<void,RouteProps,void> {
       drilldownRoute: this,
       addLeaveHook: this.addLeaveHook,
       removeLeaveHook: this.removeLeaveHook
-    };
+    }
   }
   addLeaveHook:    (hook: LeaveHook) => any = (hook) => this.leaveHooks.push(hook);
   removeLeaveHook: (hook: LeaveHook) => any = (hook) => this.leaveHooks.splice(this.leaveHooks.indexOf(hook), 1);
   componentDidMount(): void {
-    this.context.drilldown.routeDidMount(this);
+    this.context.drilldown.routeDidMount(this)
   }
   componentWillUnmount(): void {
-    this.context.drilldown.routeWillUnmount(this);
+    this.context.drilldown.routeWillUnmount(this)
   }
   getParentRoute(): ?Route {
-    return this.context.drilldownRoute;
+    return this.context.drilldownRoute
   }
   getDepth(): number {
-    let {drilldownRoute} = this.context;
-    return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0;
+    let {drilldownRoute} = this.context
+    return drilldownRoute ? drilldownRoute.getDepth() + 1 : 0
   }
   /**
    * Navigates up the given number of levels (default: 1).  This is *not* necessarily the number of elements in the path
@@ -136,44 +137,44 @@ export class Route extends Component<void,RouteProps,void> {
    * @param levels
    */
   navigateUp(levels?: number = 1): void {
-    let parentRoute = this;
+    let parentRoute = this
     if (levels > 0) {
       for (let i = 0; i < levels && parentRoute; i++) {
-        parentRoute = parentRoute.getParentRoute();
+        parentRoute = parentRoute.getParentRoute()
       }
       if (parentRoute) {
-        this.navigateTo(parentRoute.props.path);
+        this.navigateTo(parentRoute.props.path)
       }
       else {
-        throw new Error("can't navigate up beyond the root route");
+        throw new Error("can't navigate up beyond the root route")
       }
     }
   }
   navigateTo(toPath: string): void {
-    let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
-    this.context.drilldown.navigateTo(absPath);
+    let absPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath))
+    this.context.drilldown.navigateTo(absPath)
   }
   render(): React.Element {
-    let {path, subpath, childRoute, childPath} = this.props;
+    let {path, subpath, childRoute, childPath} = this.props
 
     if (childRoute) {
       if (subpath) {
         if (childPath) {
-          childPath = nodepath.resolve(path, childPath);
-          let childSubPath = nodepath.relative(childPath, nodepath.resolve(path, subpath));
+          childPath = nodepath.resolve(path, childPath)
+          let childSubPath = nodepath.relative(childPath, nodepath.resolve(path, subpath))
           childRoute = createOrCloneElement(childRoute, {
             path: childPath,
             subpath: childSubPath
-          });
+          })
         }
       }
       else {
-        childRoute = undefined;
+        childRoute = undefined
       }
     }
 
-    let {RouteSkin} = this.context;
-    return <RouteSkin {...this.props} childRoute={childRoute} depth={this.getDepth()}/>;
+    let {RouteSkin} = this.context
+    return <RouteSkin {...this.props} childRoute={childRoute} depth={this.getDepth()} />
   }
 }
 
@@ -197,7 +198,7 @@ type State = {
   path: string
 };
 
-export default class Drilldown extends Component<DefaultProps,Props,State> {
+export default class Drilldown extends Component<DefaultProps, Props, State> {
   state: State;
   mounted: boolean = false;
   transitioning: boolean = false;
@@ -219,44 +220,44 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
     return {
       LinkSkin: Link,
       drilldown: this
-    };
+    }
   }
   navigateTo: (toPath: string) => void = (toPath) => {
-    let newPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath));
-    this.props.onPathChange(newPath);
+    let newPath = nodepath.normalize(nodepath.isAbsolute(toPath) ? toPath : nodepath.resolve(this.props.path, toPath))
+    this.props.onPathChange(newPath)
   };
   constructor(props: Props) {
-    super(props);
+    super(props)
     this.state = {
       path: props.path
-    };
+    }
   }
   componentWillMount(): void {
-    this.mounted = true;
+    this.mounted = true
   }
   componentDidMount(): void {
-    let {addLeaveHook} = this.context;
-    addLeaveHook && addLeaveHook(this.ancestorWillLeave);
+    let {addLeaveHook} = this.context
+    addLeaveHook && addLeaveHook(this.ancestorWillLeave)
   }
   componentWillUnmount(): void {
-    this.mounted = false;
-    let {removeLeaveHook} = this.context;
-    removeLeaveHook && removeLeaveHook(this.ancestorWillLeave);
+    this.mounted = false
+    let {removeLeaveHook} = this.context
+    removeLeaveHook && removeLeaveHook(this.ancestorWillLeave)
   }
   routeDidMount: (route: Route) => void = route => {
-    this.routes[route.props.path] = route;
+    this.routes[route.props.path] = route
   };
   routeWillUnmount: (route: Route) => void = route => {
-    delete this.routes[route.props.path];
+    delete this.routes[route.props.path]
   };
   ancestorWillLeave: (leave: Function) => ?boolean = leave => {
     let leaveHookRoutes = _.filter(this.routes, route => this.state.path.startsWith(route.props.path))
-      .sort((a, b) => b.props.path.length - a.props.path.length);
+      .sort((a, b) => b.props.path.length - a.props.path.length)
 
     for (let route of leaveHookRoutes) {
       for (let leaveHook of route.leaveHooks) {
         if (leaveHook(leave) === false) {
-          return false;
+          return false
         }
       }
     }
@@ -265,32 +266,32 @@ export default class Drilldown extends Component<DefaultProps,Props,State> {
     if (nextProps.path !== this.props.path) {
       let leaveHookRoutes = _.filter(this.routes, route => this.state.path.startsWith(route.props.path) &&
         !nextProps.path.startsWith(route.props.path))
-        .sort((a, b) => b.props.path.length - a.props.path.length);
+        .sort((a, b) => b.props.path.length - a.props.path.length)
 
-      let canceled = false;
+      let canceled = false
 
       const leave = () => {
-        canceled && this.mounted && this.props.onPathChange(nextProps.path);
-      };
+        canceled && this.mounted && this.props.onPathChange(nextProps.path)
+      }
 
       for (let route of leaveHookRoutes) {
         for (let leaveHook of route.leaveHooks) {
           if (leaveHook(leave) === false) {
-            canceled = true;
-            nextProps.onPathChange(this.state.path);
-            return;
+            canceled = true
+            nextProps.onPathChange(this.state.path)
+            return
           }
         }
       }
 
-      this.setState({path: nextProps.path});
+      this.setState({path: nextProps.path})
     }
   }
   render(): React.Element {
-    let {className} = this.props;
-    let {path} = this.state;
-    className = classNames(className, 'mf-drilldown');
-    let {DrilldownSkin} = this.context;
-    return <DrilldownSkin {...this.props} className={className} path={path}/>;
+    let {className} = this.props
+    let {path} = this.state
+    className = classNames(className, 'mf-drilldown')
+    let {DrilldownSkin} = this.context
+    return <DrilldownSkin {...this.props} className={className} path={path} />
   }
 }

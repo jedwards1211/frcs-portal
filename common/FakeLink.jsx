@@ -1,7 +1,7 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import safeCloneElement from '../utils/safeCloneElement';
+import React, {Component, PropTypes} from 'react'
+import safeCloneElement from '../utils/safeCloneElement'
 
 type Props = {
   onClick?: Function,
@@ -9,13 +9,13 @@ type Props = {
   children?: any
 };
 
-export default class FakeLink extends Component<void,Props,void> {
+export default class FakeLink extends Component<void, Props, void> {
   static contextTypes = {
     router: PropTypes.object.isRequired
   };
   onClick: Function = () => {
-    let {to} = this.props;
-    if (to) this.context.router.push(to);
+    let {to} = this.props
+    if (to) this.context.router.push(to)
   };
   render(): React.Element {
     return this.props.children ? safeCloneElement(this.props.children, {
@@ -23,7 +23,7 @@ export default class FakeLink extends Component<void,Props,void> {
       style: {
         cursor: 'pointer'
       }
-    }) : 
-      <span {...this.props}/>;
-  } 
+    }) :
+      <span {...this.props} />
+  }
 }

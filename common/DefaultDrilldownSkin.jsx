@@ -1,25 +1,25 @@
 /* @flow */
 
-import React, {Component, PropTypes} from 'react';
-import {createSelector} from 'reselect';
-import classNames from 'classnames';
-import nodepath from 'path';
+import React, {Component, PropTypes} from 'react'
+import {createSelector} from 'reselect'
+import classNames from 'classnames'
+import nodepath from 'path'
 
-import Glyphicon from '../bootstrap/Glyphicon.jsx';
+import Glyphicon from '../bootstrap/Glyphicon.jsx'
 
-import setStateChain from '../utils/setStateChain';
-import paddingHeight from '../utils/paddingHeight';
-import {getTimeout} from '../transition/callOnTransitionEnd';
+import setStateChain from '../utils/setStateChain'
+import paddingHeight from '../utils/paddingHeight'
+import {getTimeout} from '../transition/callOnTransitionEnd'
 
-import {TICK} from '../transition/animConstants';
+import {TICK} from '../transition/animConstants'
 
-import {Nav} from './View.jsx';
-import {Link} from './Drilldown.jsx';
-import type {Props, RouteProps} from './Drilldown.jsx';
+import {Nav} from './View.jsx'
+import {Link} from './Drilldown.jsx'
+import type {Props, RouteProps} from './Drilldown.jsx'
 
-import createOrCloneElement from '../utils/createOrCloneElement';
+import createOrCloneElement from '../utils/createOrCloneElement'
 
-import './DefaultDrilldownSkin.sass';
+import './DefaultDrilldownSkin.sass'
 
 export class DefaultDrilldownTitleSkin extends Component {
   static contextTypes = {
@@ -30,10 +30,10 @@ export class DefaultDrilldownTitleSkin extends Component {
   };
   static defaultProps: {};
   render(): React.Element {
-    let {children} = this.props;
-    let {drilldownRoute} = this.context;
-    let parentRoute = drilldownRoute && drilldownRoute.getParentRoute();
-    let parentPath = parentRoute && parentRoute.props.path;
+    let {children} = this.props
+    let {drilldownRoute} = this.context
+    let parentRoute = drilldownRoute && drilldownRoute.getParentRoute()
+    let parentPath = parentRoute && parentRoute.props.path
 
     return <h3 {...this.props}>
       {parentPath && <Nav left>
@@ -42,7 +42,7 @@ export class DefaultDrilldownTitleSkin extends Component {
         </Link>
       </Nav>}
       {children}
-    </h3>;
+    </h3>
   }
 }
 
@@ -50,7 +50,7 @@ type ExtraRouteProps = {
   depth: number
 };
 
-export class DefaultDrilldownRouteSkin extends Component<void,RouteProps & ExtraRouteProps,void> {
+export class DefaultDrilldownRouteSkin extends Component<void, RouteProps & ExtraRouteProps, void> {
   content: ?HTMLElement;
   static contextTypes = {
     drilldownSkin: PropTypes.any.isRequired,
@@ -62,36 +62,37 @@ export class DefaultDrilldownRouteSkin extends Component<void,RouteProps & Extra
   getChildContext(): Object {
     return {
       TitleSkin: DefaultDrilldownTitleSkin
-    };
+    }
   }
   componentDidMount(): void {
-    this.context.drilldownSkin.routeDidMount(this);
+    this.context.drilldownSkin.routeDidMount(this)
   }
   componentWillUnmount(): void {
-    this.context.drilldownSkin.routeWillUnmount(this);
+    this.context.drilldownSkin.routeWillUnmount(this)
   }
   render(): React.Element {
-    let {path, className, children, childRoute} = this.props;
-    let {drilldownSkin} = this.context;
-    let {transitioning} = drilldownSkin.state;
+    let {path, className, children, childRoute} = this.props
+    let {drilldownSkin} = this.context
+    let {transitioning} = drilldownSkin.state
 
-    let visible = transitioning || path === drilldownSkin.getActivePath();
+    let visible = transitioning || path === drilldownSkin.getActivePath()
 
-    className = classNames(className, 'mf-default-drilldown-route');
+    className = classNames(className, 'mf-default-drilldown-route')
     let contentStyle = Object.assign({
       visibility: visible ? 'visible' : 'hidden',
       height: visible ? undefined : 0
-    });
+    })
 
     return <div {...this.props} className={className}>
       {children && <div className="mf-default-drilldown-route-content" ref={c => this.content = c} style={contentStyle}>
         {children}
       </div>}
       {childRoute && <div className="mf-default-drilldown-route-child"
-                          key={childRoute.props.path}>
+          key={childRoute.props.path}
+                     >
         {childRoute}
       </div>}
-    </div>;
+    </div>
   }
 }
 
@@ -108,7 +109,7 @@ type ExtraProps = {
   transitionHeight: boolean
 };
 
-export default class DefaultDrilldownSkin extends Component<void,Props & ExtraProps,State> {
+export default class DefaultDrilldownSkin extends Component<void, Props & ExtraProps, State> {
   state: State;
   mounted: boolean = false;
   root: ?HTMLElement;
@@ -117,14 +118,14 @@ export default class DefaultDrilldownSkin extends Component<void,Props & ExtraPr
   forceUpdateRoutes: boolean = false;
 
   constructor(props: Props) {
-    super(props);
+    super(props)
     this.state = {
       path: props.path,
       mountedPath: props.path,
       transitioning: false,
       height: undefined,
       routes: {}
-    };
+    }
   }
 
   static childContextTypes = {
@@ -135,45 +136,45 @@ export default class DefaultDrilldownSkin extends Component<void,Props & ExtraPr
     return {
       drilldownSkin: this,
       RouteSkin: DefaultDrilldownRouteSkin,
-    };
+    }
   }
   componentWillReceiveProps(nextProps: Props): void {
     if (this.props.path !== nextProps.path) {
-      this.doTransition(nextProps.path);
+      this.doTransition(nextProps.path)
     }
   }
   componentWillMount(): void {
-    this.mounted = true;
+    this.mounted = true
   }
   componentWillUnmount(): void {
-    this.mounted = false;
+    this.mounted = false
   }
   isMounted(): boolean {
-    return this.mounted;
+    return this.mounted
   }
   routeDidMount: (route: DefaultDrilldownRouteSkin) => void = route => {
     setTimeout(() => this.mounted && this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.props.path]: route
       })
-    }), 0);
+    }), 0)
   };
   routeWillUnmount: (route: DefaultDrilldownRouteSkin) => void = route => {
     setTimeout(() => this.mounted && this.setState({
       routes: Object.assign({}, this.state.routes, {
         [route.props.path]: undefined
       })
-    }), 0);
+    }), 0)
   };
   doTransition: (nextPath?: string) => boolean = (nextPath = this.props.path) => {
-    let {props: {transitionHeight}, state: {path}} = this;
-    if (transitionHeight !== false) transitionHeight = true;
+    let {props: {transitionHeight}, state: {path}} = this
+    if (transitionHeight !== false) transitionHeight = true
 
-    if (nextPath === path || this.transitioning) return false;
-    this.transitioning = true;
+    if (nextPath === path || this.transitioning) return false
+    this.transitioning = true
 
     function scrollHeight(route: ?DefaultDrilldownRouteSkin): number {
-      return route && route.content ? route.content.scrollHeight : 0;
+      return route && route.content ? route.content.scrollHeight : 0
     }
 
     let sequence = [
@@ -189,87 +190,88 @@ export default class DefaultDrilldownSkin extends Component<void,Props & ExtraPr
       cb => setTimeout(cb, Math.max(TICK, getTimeout(this.viewport) || 0, getTimeout(this.root) || 0)),
       cb => ({transitioning: false}),
       cb => ({height: undefined, mountedPath: nextPath})
-    ];
+    ]
 
     setStateChain(this, sequence, err => {
-      this.transitioning = false;
-      this.doTransition();
-    });
-    return true;
+      this.transitioning = false
+      this.doTransition()
+    })
+    return true
   };
 
   selectActiveDepth: (state: State) => number = createSelector(
     state => state.path,
     state => state.routes,
     (path, routes) => {
-      let route = routes[path];
-      if (route) return route.props.depth;
-      let depth = 0;
+      let route = routes[path]
+      if (route) return route.props.depth
+      let depth = 0
       for (let key in routes) {
         if (routes[key] && path.startsWith(key)) {
-          depth = Math.max(depth, routes[key].props.depth);
+          depth = Math.max(depth, routes[key].props.depth)
         }
       }
-      return depth;
+      return depth
     }
   );
-  getActiveDepth(): number { return this.selectActiveDepth(this.state); }
+  getActiveDepth(): number { return this.selectActiveDepth(this.state) }
 
   selectActivePath: (state: State) => string = createSelector(
     state => state.path,
     state => state.routes,
     (path, routes) => {
-      let route = routes[path];
-      if (route) return path;
-      let activePath = '';
+      let route = routes[path]
+      if (route) return path
+      let activePath = ''
       for (let key in routes) {
         if (routes[key] && path.startsWith(key)) {
-          activePath = key.length > activePath.length ? key : activePath;
+          activePath = key.length > activePath.length ? key : activePath
         }
       }
-      return activePath;
+      return activePath
     }
   );
-  getActivePath(): string { return this.selectActivePath(this.state); }
+  getActivePath(): string { return this.selectActivePath(this.state) }
 
   componentWillUpdate(nextProps: Props, nextState: State): void {
     this.forceUpdateRoutes = nextState.transitioning !== this.state.transitioning ||
-        this.selectActivePath(nextState) !== this.selectActivePath(this.state);
+        this.selectActivePath(nextState) !== this.selectActivePath(this.state)
   }
 
   componentDidUpdate(): void {
     if (this.forceUpdateRoutes) {
-      let {routes} = this.state;
+      let {routes} = this.state
       for (var key in routes) {
-        if (routes[key]) routes[key].forceUpdate();
+        if (routes[key]) routes[key].forceUpdate()
       }
     }
   }
 
   render(): React.Element {
-    let {className, style, rootRoute} = this.props;
-    let {height, mountedPath} = this.state;
+    let {className, style, rootRoute} = this.props
+    let {height, mountedPath} = this.state
 
-    className = classNames(className, 'mf-default-drilldown');
-    style = Object.assign({}, style, {height});
+    className = classNames(className, 'mf-default-drilldown')
+    style = Object.assign({}, style, {height})
 
-    let transform = `translateX(${this.getActiveDepth() * -100}%)`;
+    let transform = `translateX(${this.getActiveDepth() * -100}%)`
 
     return <div {...this.props} className={className} style={style} ref={c => this.root = c}>
       <div className="mf-default-drilldown-viewport" ref={c => this.viewport = c}
-           style={{
-             'WebkitTransform': transform,
-             'KhtmlTransform': transform,
-             'MozTransform': transform,
-             'msTransform': transform,
-             'OTransform': transform,
-             transform
-           }}>
+          style={{
+            'WebkitTransform': transform,
+            'KhtmlTransform': transform,
+            'MozTransform': transform,
+            'msTransform': transform,
+            'OTransform': transform,
+            transform
+          }}
+      >
         {createOrCloneElement(rootRoute, {
           path: '/',
           subpath: mountedPath === '/' ? undefined : nodepath.relative('/', mountedPath)
         })}
       </div>
-    </div>;
+    </div>
   }
 }

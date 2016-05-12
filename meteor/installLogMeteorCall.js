@@ -1,4 +1,4 @@
-import {install} from './logMeteorCall';
+import {install} from './logMeteorCall'
 if ('production' !== process.env.NODE_ENV) {
-  install();
+  install()
 }

@@ -10,7 +10,7 @@ export default class Conversion {
    * as those for set().
    */
   constructor(...args) {
-      this.set(...args);
+    this.set(...args)
   }
 
   /**
@@ -18,21 +18,21 @@ export default class Conversion {
    * @returns the display position for d, in pixels.
    */
   convert(d) {
-    return NaN;
+    return NaN
   }
   /**
    * @param d a display position, in px.
    * @returns the value at d
    */
   invert(d) {
-    return NaN;
+    return NaN
   }
 
   /**
    * @returns a copy of this conversion.
    */
   clone() {
-    return new Conversion();
+    return new Conversion()
   }
 
   /**
@@ -43,7 +43,7 @@ export default class Conversion {
    * conversion into a non-monotonic function
    */
   set(a, b, c, d) {
-    return this;
+    return this
   }
 
   /**
@@ -53,8 +53,8 @@ export default class Conversion {
    * @param{factor} the zoom factor.  If convert() converts from data coordinates to
    * screen coordinates, < 1 means zoom in, > 1 means zoom out.
    */
-  zoom( center , factor ) {
-    return this;
+  zoom( center, factor ) {
+    return this
   }
 
   /**
@@ -62,6 +62,6 @@ export default class Conversion {
    * minTickSpacingPixels apart, and is divisible by subIncrement, if given.
    */
   chooseNiceIncrement(minTickSpacingPixels, subIncrement) {
-    return NaN;
+    return NaN
   }
 }

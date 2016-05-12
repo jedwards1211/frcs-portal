@@ -9,13 +9,13 @@
  * @providesModule ExecutionEnvironment
  */
 
-'use strict';
+'use strict'
 
 var canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&
   window.document.createElement
-);
+)
 
 /**
  * Simple, lightweight module assisting with the detection and context of
@@ -36,6 +36,6 @@ var ExecutionEnvironment = {
 
   isInWorker: !canUseDOM // For now, this is true - might change in the future.
 
-};
+}
 
-module.exports = ExecutionEnvironment;
+module.exports = ExecutionEnvironment

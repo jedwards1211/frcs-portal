@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 /**
  * Creates a function that returns the same object as it last returned if its last return value and
@@ -9,12 +9,12 @@ import _ from 'lodash';
  * @return{function} the memoized version of func.
  */
 export default function memoizeByOutput(func, equalityCheck = _.isEqual) {
-  let lastOutput;  
+  let lastOutput
   return function(...args) {
-    let output = func(...args);
+    let output = func(...args)
     if (!equalityCheck(lastOutput, output)) {
-      lastOutput = output;
+      lastOutput = output
     }
-    return lastOutput;
-  };
+    return lastOutput
+  }
 }

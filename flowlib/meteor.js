@@ -10,14 +10,14 @@ import type {
   UpdateOptions,
   AllowOptions,
   SubscriptionHandle,
-} from '../flowtypes/meteorTypes';
+} from '../flowtypes/meteorTypes'
 
 import type {
   AggregationPipeline,
   AggregationOptions,
   AggregationCursor,
   Modifier,
-} from '../flowtypes/mongoTypes';
+} from '../flowtypes/mongoTypes'
 
 declare module NpmGlobal {
   declare function require(module: string): any;
@@ -31,7 +31,7 @@ declare module TrackerGlobal {
   declare class Computation {
     stop(): void;
   }
-  declare function autorun(runFunc: (comp: Computation) => any, 
+  declare function autorun(runFunc: (comp: Computation) => any,
                            options?: {onError: (error: Error) => any}): Computation;
   declare function nonreactive(func: Function): void;
 }
@@ -55,14 +55,14 @@ declare function check(value: any, pattern: MatchPattern): void;
 declare module MongoGlobal {
   declare class Cursor {
     count(): number;
-    fetch(): Object[]; 
+    fetch(): Object[];
     forEach(callback: (doc: Object, index: number, cursor: Cursor) => any, thisArg?: any): void;
     map(callback: (doc: Object, index: number, cursor: Cursor) => any, thisArg?: any): Object[];
     observe(callbacks: ObserveCallbacks): QueryHandle;
     observeChanges(callbacks: ObserveChangesCallbacks): QueryHandle;
   }
   declare class ObjectID {
-    constructor(hexString: string): void; 
+    constructor(hexString: string): void;
   }
   declare class Collection {
     _name: string;
@@ -85,7 +85,7 @@ declare module MongoGlobal {
 
 declare var Mongo: $Exports<'MongoGlobal'>;
 
-var StandardError = Error;
+var StandardError = Error
 
 declare module MeteorGlobal {
   declare class LiveQueryHandle {}

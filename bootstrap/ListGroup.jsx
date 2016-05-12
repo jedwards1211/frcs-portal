@@ -1,12 +1,12 @@
 /* @flow */
 
-import React, {Component, PropTypes, Children} from 'react';
-import classNames from 'classnames';
+import React, {Component, PropTypes, Children} from 'react'
+import classNames from 'classnames'
 
-import Badge from './Badge.jsx';
-import {getContextClass} from './bootstrapPropUtils';
+import Badge from './Badge.jsx'
+import {getContextClass} from './bootstrapPropUtils'
 
-import {Header, Title, Body} from '../common/View.jsx';
+import {Header, Title, Body} from '../common/View.jsx'
 
 type DefaultProps = {
   component: any
@@ -39,7 +39,7 @@ type Props = {
  *
  * The root component will default to 'div'.  You may override it by passing a `component` prop.
  */
-export default class ListGroup extends Component<DefaultProps,Props,void> {
+export default class ListGroup extends Component<DefaultProps, Props, void> {
   static defaultProps = {
     component: 'div'
   };
@@ -57,58 +57,58 @@ export default class ListGroup extends Component<DefaultProps,Props,void> {
       HeaderSkin: 'h4',
       HeaderClassName: "list-group-item-heading",
       BodyClassName: "list-group-item-text"
-    };
+    }
   }
   cloneChild: (child: ?React.Element) => ?React.Element = child => {
     if (!child) {
-      return child;
+      return child
     }
-    let {className, children, header, title, active, disabled, badge} = child.props;
+    let {className, children, header, title, active, disabled, badge} = child.props
 
-    let contextClass = getContextClass(child.props);
+    let contextClass = getContextClass(child.props)
     className = classNames(className, 'list-group-item',
-      contextClass && 'list-group-item-' + contextClass, {active, disabled});
+      contextClass && 'list-group-item-' + contextClass, {active, disabled})
 
     if (title) {
       if (header instanceof Array) {
         header = [
           <Title key="title">{title}</Title>,
           ...header
-        ];
+        ]
       }
       else if (header) {
         header = [
           <Title key="title">{title}</Title>,
           header
-        ];
+        ]
       }
       else {
-        header = <Title>{title}</Title>;
+        header = <Title>{title}</Title>
       }
     }
     if (header) {
       children = [
         <Header key="header">{header}</Header>,
         <Body key="body">{children}</Body>
-      ];
+      ]
     }
     if (badge) {
       children = [
         <Badge key="badge">{badge}</Badge>,
         ...Children.toArray(children)
-      ];
+      ]
     }
-    return React.cloneElement(child, {className, children});
+    return React.cloneElement(child, {className, children})
   };
   render(): React.Element {
-    let {className, children} = this.props;
+    let {className, children} = this.props
 
     // any -- because the flow def for createElement is currently wrong
-    let Comp: any = this.props.component;
-    className = classNames(className, 'list-group');
+    let Comp: any = this.props.component
+    className = classNames(className, 'list-group')
 
     return <Comp {...this.props} className={className}>
       {Children.map(children, this.cloneChild)}
-    </Comp>;
+    </Comp>
   }
 }

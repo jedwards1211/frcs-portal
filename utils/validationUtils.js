@@ -1,17 +1,17 @@
-export const numberRegExp = /^\s*[-+]?(\d+(\.\d*)?|\.\d+)\s*$/;
-export const numberOrBlankRegExp = /^\s*([-+]?(\d+(\.\d*)?|\.\d+))?\s*$/;
+export const numberRegExp = /^\s*[-+]?(\d+(\.\d*)?|\.\d+)\s*$/
+export const numberOrBlankRegExp = /^\s*([-+]?(\d+(\.\d*)?|\.\d+))?\s*$/
 
-export const unsignedNumberRegExp = /^\s*(\d+(\.\d*)?|\.\d+)\s*$/;
-export const unsignedNumberOrBlankRegExp = /^\s*(\d+(\.\d*)?|\.\d+)?\s*$/;
+export const unsignedNumberRegExp = /^\s*(\d+(\.\d*)?|\.\d+)\s*$/
+export const unsignedNumberOrBlankRegExp = /^\s*(\d+(\.\d*)?|\.\d+)?\s*$/
 
-export const integerRegExp = /^\s*[-+]?\d+\s*$/;
-export const integerOrBlankRegExp = /^\s*([-+]?\d+)?\s*$/;
+export const integerRegExp = /^\s*[-+]?\d+\s*$/
+export const integerOrBlankRegExp = /^\s*([-+]?\d+)?\s*$/
 
-export const unsignedIntegerRegExp = /^\s*\d+\s*$/;
-export const unsignedIntegerOrBlankRegExp = /^\s*\d*\s*$/;
+export const unsignedIntegerRegExp = /^\s*\d+\s*$/
+export const unsignedIntegerOrBlankRegExp = /^\s*\d*\s*$/
 
 export function isEmptyValue(value) {
-  return value === '' || value === undefined || value === null;
+  return value === '' || value === undefined || value === null
 }
 
 /**
@@ -22,71 +22,71 @@ export function isEmptyValue(value) {
  */
 export function parseNumber(value, regExp) {
   if (typeof value === 'string' && regExp.test(value)) {
-    return parseFloat(value);
+    return parseFloat(value)
   }
   else if (typeof value === 'number' && !isNaN(value)) {
-    return value;
+    return value
   }
 }
 
 export function validateInteger(number, options = {}) {
-  let {required, range, min, max} = options;
+  let {required, range, min, max} = options
   if (typeof number === 'string') {
     if (!required) {
       if (number === '' || number === undefined || number === null) {
-        return;
+        return
       }
     }
     if (!integerRegExp.test(number)) {
-      return {error: 'Please enter a valid number'};
+      return {error: 'Please enter a valid number'}
     }
   }
-  number = parseInt(number);
+  number = parseInt(number)
   if (isNaN(number)) {
-    return {error: 'Please enter a valid number'};
+    return {error: 'Please enter a valid number'}
   }
-  min = range ? range.min : min;
-  max = range ? range.max : max;
+  min = range ? range.min : min
+  max = range ? range.max : max
 
   if (min != null && max != null && (number < min || number > max)) {
-    return {error: `Please enter a number between ${min} and ${max}`} ;
+    return {error: `Please enter a number between ${min} and ${max}`}
   }
   if (number < min) {
-    return {error: `Please enter a number >= ${min}`};
+    return {error: `Please enter a number >= ${min}`}
   }
   if (number > max) {
-    return {error: `Please enter a number <= ${max}`};
+    return {error: `Please enter a number <= ${max}`}
   }
-  return {};
+  return {}
 }
 
 export function validateNumber(number, options = {}) {
-  let {required, range, min, max} = options;
+  let {required, range, min, max} = options
   if (typeof number === 'string') {
     if (!required) {
       if (number === '' || number === undefined || number === null) {
-        return;
+        return
       }
     }
     if (!numberRegExp.test(number)) {
-      return {error: 'Please enter a valid number'};
+      return {error: 'Please enter a valid number'}
     }
   }
-  number = parseFloat(number);
+  number = parseFloat(number)
   if (isNaN(number)) {
-    return {error: 'Please enter a valid number'};
+    return {error: 'Please enter a valid number'}
   }
-  min = range ? range.min : min;
-  max = range ? range.max : max;
+  min = range ? range.min : min
+  max = range ? range.max : max
 
   if (min != null && max != null && (number < min || number > max)) {
-    return {error: `Please enter a number between ${min} and ${max}`} ;
+    return {error: `Please enter a number between ${min} and ${max}`}
   }
   if (number < min) {
-    return {error: `Please enter a number >= ${min}`};
+    return {error: `Please enter a number >= ${min}`}
   }
   if (number > max) {
-    return {error: `Please enter a number <= ${max}`};
+    return {error: `Please enter a number <= ${max}`}
   }
-  return {};
+  return {}
 }

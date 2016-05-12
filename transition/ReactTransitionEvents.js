@@ -9,9 +9,9 @@
  * @providesModule ReactTransitionEvents
  */
 
-'use strict';
+'use strict'
 
-var ExecutionEnvironment = require('../utils/ExecutionEnvironment');
+var ExecutionEnvironment = require('../utils/ExecutionEnvironment')
 
 /**
  * EVENT_NAME_MAP is used to determine which event fired when a
@@ -34,13 +34,13 @@ var EVENT_NAME_MAP = {
     'OAnimation': 'oAnimationEnd',
     'msAnimation': 'MSAnimationEnd',
   },
-};
+}
 
-var endEvents = [];
+var endEvents = []
 
 function detectEvents() {
-  var testEl = document.createElement('div');
-  var style = testEl.style;
+  var testEl = document.createElement('div')
+  var style = testEl.style
 
   // On some platforms, in particular some releases of Android 4.x,
   // the un-prefixed "animation" and "transition" properties are defined on the
@@ -48,26 +48,26 @@ function detectEvents() {
   // to check if the un-prefixed events are useable, and if not remove them
   // from the map
   if (!('AnimationEvent' in window)) {
-    delete EVENT_NAME_MAP.animationend.animation;
+    delete EVENT_NAME_MAP.animationend.animation
   }
 
   if (!('TransitionEvent' in window)) {
-    delete EVENT_NAME_MAP.transitionend.transition;
+    delete EVENT_NAME_MAP.transitionend.transition
   }
 
   for (var baseEventName in EVENT_NAME_MAP) {
-    var baseEvents = EVENT_NAME_MAP[baseEventName];
+    var baseEvents = EVENT_NAME_MAP[baseEventName]
     for (var styleName in baseEvents) {
       if (styleName in style) {
-        endEvents.push(baseEvents[styleName]);
-        break;
+        endEvents.push(baseEvents[styleName])
+        break
       }
     }
   }
 }
 
 if (ExecutionEnvironment.canUseDOM) {
-  detectEvents();
+  detectEvents()
 }
 
 // We use the raw {add|remove}EventListener() call because EventListener
@@ -76,11 +76,11 @@ if (ExecutionEnvironment.canUseDOM) {
 // so we should be A-OK here.
 
 function addEventListener(node, eventName, eventListener) {
-  node.addEventListener(eventName, eventListener, false);
+  node.addEventListener(eventName, eventListener, false)
 }
 
 function removeEventListener(node, eventName, eventListener) {
-  node.removeEventListener(eventName, eventListener, false);
+  node.removeEventListener(eventName, eventListener, false)
 }
 
 var ReactTransitionEvents = {
@@ -88,22 +88,22 @@ var ReactTransitionEvents = {
     if (endEvents.length === 0) {
       // If CSS transitions are not supported, trigger an "end animation"
       // event immediately.
-      window.setTimeout(eventListener, 0);
-      return;
+      window.setTimeout(eventListener, 0)
+      return
     }
     endEvents.forEach(function(endEvent) {
-      addEventListener(node, endEvent, eventListener);
-    });
+      addEventListener(node, endEvent, eventListener)
+    })
   },
 
   removeEndEventListener: function(node, eventListener) {
     if (endEvents.length === 0) {
-      return;
+      return
     }
     endEvents.forEach(function(endEvent) {
-      removeEventListener(node, endEvent, eventListener);
-    });
+      removeEventListener(node, endEvent, eventListener)
+    })
   },
-};
+}
 
-module.exports = ReactTransitionEvents;
+module.exports = ReactTransitionEvents

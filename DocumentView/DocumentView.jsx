@@ -1,20 +1,20 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import classNames from 'classnames';
-import Promise from 'bluebird';
+import React, {Component} from 'react'
+import classNames from 'classnames'
+import Promise from 'bluebird'
 
-import Button from '../bootstrap/Button.jsx';
-import DeleteButton from '../bootstrap/DeleteButton.jsx';
-import Spinner from './../common/Spinner.jsx';
-import AlertGroup from './../common/AlertGroup';
-import {Nav} from './../common/View.jsx';
+import Button from '../bootstrap/Button.jsx'
+import DeleteButton from '../bootstrap/DeleteButton.jsx'
+import Spinner from './../common/Spinner.jsx'
+import AlertGroup from './../common/AlertGroup'
+import {Nav} from './../common/View.jsx'
 
-import {createSkinDecorator} from 'react-skin';
+import {createSkinDecorator} from 'react-skin'
 
-import createOrCloneElement from '../utils/createOrCloneElement';
+import createOrCloneElement from '../utils/createOrCloneElement'
 
-import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx';
+import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx'
 
 type DefaultProps = {
   documentDisplayName: string,
@@ -67,7 +67,7 @@ type Props = {
  * stay here, discard changes, or save changes.
  * This will inject alerts, cancel, apply, and OK buttons into the child component via skins.
  */
-export default class DocumentView extends Component<DefaultProps,Props,void> {
+export default class DocumentView extends Component<DefaultProps, Props, void> {
   static defaultProps = {
     documentDisplayName: 'document',
     documentDisplayPronoun: 'it'
@@ -76,171 +76,173 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
     if (this.props.mode === 'edit') {
       let {mode, loading, loadError, effectiveDocument, effectiveUpdatedTimestamp,
         setDocument, setUpdatedTimestamp, setSaving, setSaveError, setDeleting, setDeleteError,
-        setAskToLeave} = this.props;
-      setSaving(false);
-      setSaveError(undefined);
-      setDeleting(false);
-      setDeleteError(undefined);
-      setAskToLeave(false);
+        setAskToLeave} = this.props
+      setSaving(false)
+      setSaveError(undefined)
+      setDeleting(false)
+      setDeleteError(undefined)
+      setAskToLeave(false)
       if (mode === 'edit' && !loading && !loadError && effectiveDocument) {
-        setDocument(effectiveDocument);
-        setUpdatedTimestamp(effectiveUpdatedTimestamp);
+        setDocument(effectiveDocument)
+        setUpdatedTimestamp(effectiveUpdatedTimestamp)
       }
       else {
-        setDocument(undefined);
-        setUpdatedTimestamp(undefined);
+        setDocument(undefined)
+        setUpdatedTimestamp(undefined)
       }
     }
   }
   componentWillReceiveProps(nextProps: Props) {
     let {loading, loadError, document, mode, saving, deleting, effectiveDocument, effectiveUpdatedTimestamp,
-      setDocument, setUpdatedTimestamp} = nextProps;
+      setDocument, setUpdatedTimestamp} = nextProps
     if (mode === 'edit' && !saving && !deleting && !loading && !loadError && effectiveDocument) {
       if (!document) {
-        setDocument(effectiveDocument);
-        setUpdatedTimestamp(effectiveUpdatedTimestamp);
+        setDocument(effectiveDocument)
+        setUpdatedTimestamp(effectiveUpdatedTimestamp)
       }
     }
   }
   componentWillUnmount() {
-    this.closeAskToLeaveDialog();
+    this.closeAskToLeaveDialog()
   }
 
   getLeaveCallbacks: () => Object = () => {
-    let {leave, leaveAfterCancel, leaveAfterSaving, leaveAfterCreating, leaveAfterDeleting} = this.props;
+    let {leave, leaveAfterCancel, leaveAfterSaving, leaveAfterCreating, leaveAfterDeleting} = this.props
 
     return {
       leaveAfterCancel:   leaveAfterCancel || leave,
       leaveAfterSaving:   leaveAfterSaving || leaveAfterCancel || leave,
       leaveAfterCreating: leaveAfterCreating || leaveAfterCancel || leave,
       leaveAfterDeleting: leaveAfterDeleting || leaveAfterCancel || leave
-    };
+    }
   };
-  
+
   isExternallyChanged: () => ?boolean = () => {
-    let {mode, loading, loadError, saving, effectiveUpdatedTimestamp, updatedTimestamp} = this.props;
+    let {mode, loading, loadError, saving, effectiveUpdatedTimestamp, updatedTimestamp} = this.props
     return mode === 'edit' && !loading && !loadError && !saving && effectiveUpdatedTimestamp && updatedTimestamp &&
-        effectiveUpdatedTimestamp.getTime() > updatedTimestamp.getTime();
+        effectiveUpdatedTimestamp.getTime() > updatedTimestamp.getTime()
   };
 
   isExternallyDeleted: () => boolean = () => {
-    let {mode, loading, loadError, effectiveDocument, document} = this.props;
-    return !!(mode === 'edit' && !loading && !loadError && document && !effectiveDocument);
+    let {mode, loading, loadError, effectiveDocument, document} = this.props
+    return !!(mode === 'edit' && !loading && !loadError && document && !effectiveDocument)
   };
 
   save: () => Promise = () => {
-    let {mode, document, setSaving, setSaveError, createDocument, saveDocument, 
-      setDocument, setUpdatedTimestamp} = this.props;
+    let {mode, document, setSaving, setSaveError, createDocument, saveDocument,
+      setDocument, setUpdatedTimestamp} = this.props
 
-    setSaving(true);
-    setSaveError(undefined);
+    setSaving(true)
+    setSaveError(undefined)
 
-    let promise;
+    let promise
     if (mode === 'create' || this.isExternallyDeleted()) {
       if (createDocument) {
-        promise = createDocument(document);
+        promise = createDocument(document)
       }
       else {
         promise = Promise.reject(new Error('missing createDocument'))
       }
     }
     else {
-      promise = saveDocument(document);
+      promise = saveDocument(document)
     }
     return promise.then(updatedTimestamp => {
       // update initDocument so that nothing mistakenly thinks there are unsaved changes
-      setDocument(document);
+      setDocument(document)
       if (updatedTimestamp instanceof Date) {
-        setUpdatedTimestamp(updatedTimestamp);
+        setUpdatedTimestamp(updatedTimestamp)
       }
     }).catch(err => {
-      setSaveError(err);
-      throw err;
-    }).finally(() => setSaving(false));
+      setSaveError(err)
+      throw err
+    }).finally(() => setSaving(false))
   };
 
   delete: () => Promise = () => {
-    let {setDeleting, setDeleteError, deleteDocument} = this.props;
+    let {setDeleting, setDeleteError, deleteDocument} = this.props
 
     if (deleteDocument) {
-      setDeleting(true);
-      setDeleteError(undefined);
+      setDeleting(true)
+      setDeleteError(undefined)
 
       return deleteDocument().catch(err => {
-          setDeleteError(err);
-          throw err;
-        })
-        .finally(() => setDeleting(false));
+        setDeleteError(err)
+        throw err
+      })
+        .finally(() => setDeleting(false))
     }
   };
 
   hasUnsavedChanges: () => ?boolean = () => {
-    let {mode, document, initDocument, hasUnsavedChanges} = this.props;
-    return mode === 'edit' && document && hasUnsavedChanges && !hasUnsavedChanges(initDocument, document);
+    let {mode, document, initDocument, hasUnsavedChanges} = this.props
+    return mode === 'edit' && document && hasUnsavedChanges && !hasUnsavedChanges(initDocument, document)
   };
 
   closeAskToLeaveDialog:  Function = () => {
-    let {askToLeave, setAskToLeave} = this.props;
-    if (askToLeave) setAskToLeave(false);
+    let {askToLeave, setAskToLeave} = this.props
+    if (askToLeave) setAskToLeave(false)
   };
 
   abortLeaving:           Function = () => this.closeAskToLeaveDialog();
   discardChangesAndLeave: (leave: Function) => void = (leave) => {
-    this.closeAskToLeaveDialog();
-    leave();
+    this.closeAskToLeaveDialog()
+    leave()
   };
   saveChangesAndLeave:    (leave: Function) => void = (leave) => {
     this.save().then(() => {
-      this.closeAskToLeaveDialog();
-      leave();
-    }).catch(this.abortLeaving);
+      this.closeAskToLeaveDialog()
+      leave()
+    }).catch(this.abortLeaving)
   };
-  
+
   validate: () => boolean = () => {
-    let {validate, document} = this.props;
-    return validate && document ? validate(document).valid : !validate;
+    let {validate, document} = this.props
+    return validate && document ? validate(document).valid : !validate
   };
 
   ContentDecorator: any = createSkinDecorator({
     Title: (Title:any, props:Props) => {
-      let {mode, disabled, saving, deleting, loading, loadError, deleteDocument} = this.props;
-      let {children} = props;
+      let {mode, disabled, saving, deleting, loading, loadError, deleteDocument} = this.props
+      let {children} = props
 
-      let {leaveAfterDeleting} = this.getLeaveCallbacks();
-      
-      disabled = disabled || saving || deleting || loading || loadError;
+      let {leaveAfterDeleting} = this.getLeaveCallbacks()
+
+      disabled = disabled || saving || deleting || loading || loadError
 
       return <Title {...props}>
         {deleteDocument && mode === 'edit' && <Nav right>
           <DeleteButton disabled={disabled} onArmedClick={() => this.delete().then(leaveAfterDeleting)}
-                        deleting={deleting} deletingText="Deleting..."/>
+              deleting={deleting} deletingText="Deleting..."
+          />
         </Nav>}
         {children}
-      </Title>;
+      </Title>
     },
 
     Body: (Body:any, props:Props) => {
-      let {loading, loadError, effectiveDocument, effectiveUpdatedTimestamp, mode, document, 
-          setDocument, setUpdatedTimestamp, createDocument, documentDisplayName, documentDisplayPronoun} = this.props;
-      let {children} = props;
-      
-      let alerts = {};
+      let {loading, loadError, effectiveDocument, effectiveUpdatedTimestamp, mode, document,
+          setDocument, setUpdatedTimestamp, createDocument, documentDisplayName, documentDisplayPronoun} = this.props
+      let {children} = props
+
+      let alerts = {}
       if (loading) {
-        alerts.loading = {info: <span><Spinner/> Loading...</span>}
+        alerts.loading = {info: <span><Spinner /> Loading...</span>}
       }
       else if (loadError) {
-        alerts.loadError = {error: loadError};
+        alerts.loadError = {error: loadError}
       }
       if (this.isExternallyChanged()) {
         alerts.externallyChanged = {
           warning: <span>
           <Button warning className="alert-btn-right" onClick={() => {
-            setDocument(effectiveDocument);
-            setUpdatedTimestamp(effectiveUpdatedTimestamp);
-          }}>Load Changes</Button>
+            setDocument(effectiveDocument)
+            setUpdatedTimestamp(effectiveUpdatedTimestamp)
+          }}
+          >Load Changes</Button>
           Someone else changed {documentDisplayName}.
         </span>
-        };
+        }
       }
       if (this.isExternallyDeleted()) {
         alerts.externallyDeleted = {
@@ -248,63 +250,65 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
             Someone else deleted {documentDisplayName}.
               {createDocument && `  You may recreate ${documentDisplayPronoun} by pressing the Create button.`}
           </span>
-        };
+        }
       }
 
       return <Body {...props}>
-        <AlertGroup alerts={alerts} animated={false}/>
+        <AlertGroup alerts={alerts} animated={false} />
         {!loading && !loadError && (document || mode === 'create') && children}
-      </Body>;
+      </Body>
     },
 
     Footer: (Footer:any, props:Props) => {
-      let {children} = props;
+      let {children} = props
       let {disabled, loading, loadError, mode,
-        saveError, saving, deleteError, deleting, createDocument} = this.props;
-      
-      let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks();
+        saveError, saving, deleteError, deleting, createDocument} = this.props
 
-      let footerMode = this.isExternallyDeleted() ? (createDocument ? 'create' : 'none') : mode;
+      let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks()
 
-      let alerts = {};
-      let valid = this.validate();
+      let footerMode = this.isExternallyDeleted() ? (createDocument ? 'create' : 'none') : mode
+
+      let alerts = {}
+      let valid = this.validate()
       if (!valid) {
-        alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'};
+        alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'}
       }
       if (saveError) {
-        alerts.saveError = {error: saveError, children: `Failed to ${mode === 'create' ? 'create' : 'save changes'}: `};
+        alerts.saveError = {error: saveError, children: `Failed to ${mode === 'create' ? 'create' : 'save changes'}: `}
       }
       if (deleteError) {
-        alerts.deleteError = {error: deleteError, children: 'Failed to delete: '};
+        alerts.deleteError = {error: deleteError, children: 'Failed to delete: '}
       }
-      
-      disabled = disabled || !valid || saving || deleting || loading || !!loadError;
-      
+
+      disabled = disabled || !valid || saving || deleting || loading || !!loadError
+
       return <Footer {...props}>
-        <AlertGroup alerts={alerts} animated={false}/>
+        <AlertGroup alerts={alerts} animated={false} />
         <Button onClick={leaveAfterCancel}>Cancel</Button>
         {footerMode === 'edit' && <Button key="apply" disabled={disabled}
-                                            onClick={this.save}>Apply</Button>}
+            onClick={this.save}
+                                  >Apply</Button>}
         {footerMode !== 'none' && <Button primary key="ok" disabled={disabled}
-                onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}>
-          {saving ? <span><Spinner/> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
+            onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}
+                                  >
+          {saving ? <span><Spinner /> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
         </Button>}
         {children}
-      </Footer>;
+      </Footer>
     }
   });
 
   render(): React.Element {
-    let {className, askToLeave, saving, deleting, document, setAskToLeave} = this.props;
+    let {className, askToLeave, saving, deleting, document, setAskToLeave} = this.props
 
-    className = classNames(className, 'mf-document-view');
+    className = classNames(className, 'mf-document-view')
 
-    let children: any = this.props.children;
-    
-    let valid = this.validate();
+    let children: any = this.props.children
 
-    let {ContentDecorator} = this;
-    
+    let valid = this.validate()
+
+    let {ContentDecorator} = this
+
     return <ContentDecorator>
       <div {...this.props} className={className}>
         {createOrCloneElement(children, {
@@ -312,12 +316,13 @@ export default class DocumentView extends Component<DefaultProps,Props,void> {
           disabled: saving || deleting
         })}
         <CatchUnsavedChangesModal open={askToLeave} saving={saving} valid={valid}
-                                  hasUnsavedChanges={this.hasUnsavedChanges()}
-                                  onOpenChange={open => setAskToLeave(open)}
-                                  onStayHereClick={this.abortLeaving}
-                                  onDiscardChangesClick={this.discardChangesAndLeave}
-                                  onSaveChangesClick={this.saveChangesAndLeave}/>
+            hasUnsavedChanges={this.hasUnsavedChanges()}
+            onOpenChange={open => setAskToLeave(open)}
+            onStayHereClick={this.abortLeaving}
+            onDiscardChangesClick={this.discardChangesAndLeave}
+            onSaveChangesClick={this.saveChangesAndLeave}
+        />
       </div>
-    </ContentDecorator>;
+    </ContentDecorator>
   }
 }

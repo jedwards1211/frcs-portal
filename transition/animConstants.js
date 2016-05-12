@@ -1,1 +1,1 @@
-export const TICK = 17;
+export const TICK = 17

@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
-import isOperatorObject from '../isOperatorObject';
+import isOperatorObject from '../isOperatorObject'
 
 /**
  * Decorates a Mongo.Collection class to autocompute the given fields when a document is
@@ -21,146 +21,146 @@ export default function autocomputeFields(fields) {
     if (_.isArray(fields)) {
       fields.forEach(computeValue => {
         if (_.isFunction(computeValue)) {
-          _.forEach(computeValue(doc), (value, field) => _.set(doc, field, value));
+          _.forEach(computeValue(doc), (value, field) => _.set(doc, field, value))
         }
         else {
-          _.forEach(computeValue, (computeValue, field) => _.set(doc, field, computeValue(doc)));
+          _.forEach(computeValue, (computeValue, field) => _.set(doc, field, computeValue(doc)))
         }
-      });
+      })
     }
     else {
-      _.forEach(fields, (computeValue, field) => _.set(doc, field, computeValue(doc)));
+      _.forEach(fields, (computeValue, field) => _.set(doc, field, computeValue(doc)))
     }
-    return doc;
+    return doc
   }
-  
+
   function applyFieldsToModifier(modifier, doc) {
-    let $set = {};
+    let $set = {}
     if (_.isArray(fields)) {
       fields.forEach(computeValue => {
         if (_.isFunction(computeValue)) {
           _.forEach(computeValue(doc), (value, field) => {
-            _.set(doc, field, value);
-            $set[field] = value;
-          });
+            _.set(doc, field, value)
+            $set[field] = value
+          })
         }
         else {
           Object.assign($set, _.mapValues(computeValue, (computeValue, field) => {
-            let value = computeValue(doc);
-            _.set(doc, field, value);
-            return value;
-          }));
+            let value = computeValue(doc)
+            _.set(doc, field, value)
+            return value
+          }))
         }
-      });
+      })
     }
 
     return {
       ...modifier,
       $set: Object.assign({}, modifier.$set, $set)
-    };
+    }
   }
 
   function maybeAsync(func, callback) {
     if (_.isFunction(callback)) {
       Meteor.setTimeout(() => {
         try {
-          callback(undefined, func());
+          callback(undefined, func())
         }
         catch (err) {
-          callback(err);
+          callback(err)
         }
-      }, 0);
+      }, 0)
     }
     else {
-      return func();
+      return func()
     }
   }
-  
+
   return collection => Object.assign(Object.create(collection), {
     insert(document, ...args) {
-      return collection.insert(applyFields(_.cloneDeep(document)), ...args);
+      return collection.insert(applyFields(_.cloneDeep(document)), ...args)
     },
     update(selector, modifier, options, callback) {
       if (_.isFunction(options)) {
-        callback = options;
-        options = undefined;
+        callback = options
+        options = undefined
       }
-      options = options || {};
+      options = options || {}
 
       if (options.upsert) {
         // caution: this.upsert() might call a surrounding decorator's method!
-        return this.upsert(...arguments);
+        return this.upsert(...arguments)
       }
 
-      let findOptions;
+      let findOptions
       if (!options.multi) {
-        findOptions = {limit: 1};
+        findOptions = {limit: 1}
       }
-      let singleUpdateOptions = {...options, limit: 1};
+      let singleUpdateOptions = {...options, limit: 1}
 
       return maybeAsync(
         () => {
-          let numberAffected = 0;
+          let numberAffected = 0
 
           this.find(selector, findOptions).forEach(doc => {
-            let {_id} = doc;
-            doc = _.cloneDeep(doc);
-            LocalCollection._modify(doc, modifier, options);
+            let {_id} = doc
+            doc = _.cloneDeep(doc)
+            LocalCollection._modify(doc, modifier, options)
 
             numberAffected += collection.update(
               {...selector, _id},
               applyFieldsToModifier(modifier, doc),
               singleUpdateOptions
-            );
-          });
+            )
+          })
 
-          return numberAffected;
+          return numberAffected
         },
         callback
-      );
+      )
     },
     upsert(selector, modifier, options, callback) {
       if (_.isFunction(options)) {
-        callback = options;
-        options = undefined;
+        callback = options
+        options = undefined
       }
-      options = options || {};
+      options = options || {}
 
-      let findOptions;
+      let findOptions
       if (!options.multi) {
-        findOptions = {limit: 1};
+        findOptions = {limit: 1}
       }
-      let singleUpdateOptions = {...options, limit: 1};
+      let singleUpdateOptions = {...options, limit: 1}
 
       return maybeAsync(
         () => {
-          let numberAffected = 0;
-          let insertedId;
+          let numberAffected = 0
+          let insertedId
 
           this.find(selector, findOptions).forEach(doc => {
-            let {_id} = doc;
-            doc = _.cloneDeep(doc);
-            LocalCollection._modify(doc, modifier, options);
+            let {_id} = doc
+            doc = _.cloneDeep(doc)
+            LocalCollection._modify(doc, modifier, options)
 
             numberAffected += collection.update(
               {...selector, _id},
               applyFieldsToModifier(modifier, doc),
               singleUpdateOptions
-            );
-          });
+            )
+          })
 
           if (!numberAffected) {
-            let doc = {};
-            _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value));
-            LocalCollection._modify(doc, modifier, {...options, isInsert: true});
+            let doc = {}
+            _.forEach(selector, (value, field) => isOperatorObject(value) || _.set(doc, field, value))
+            LocalCollection._modify(doc, modifier, {...options, isInsert: true})
 
-            insertedId = collection.upsert(selector, applyFieldsToModifier(modifier, doc), options).insertedId;
+            insertedId = collection.upsert(selector, applyFieldsToModifier(modifier, doc), options).insertedId
           }
 
-          return {numberAffected, insertedId};
+          return {numberAffected, insertedId}
         },
         callback
-      );
+      )
     }
-  });
+  })
 }

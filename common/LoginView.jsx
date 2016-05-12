@@ -1,25 +1,25 @@
 /* @flow */
 
-import React, {Component} from 'react';
-import classNames from 'classnames';
+import React, {Component} from 'react'
+import classNames from 'classnames'
 
-import Spinner from './Spinner';
-import AlertGroup from './AlertGroup';
-import Form from '../bootstrap/Form.jsx';
-import Input from '../bootstrap/Input.jsx';
-import Button from '../bootstrap/Button.jsx';
-import Alert from '../bootstrap/Alert.jsx';
-import Autobind from '../Autobind/Autobind.jsx';
-import Fader from './Fader.jsx';
-import {View, Header, Title, Body, Footer} from './View.jsx';
+import Spinner from './Spinner'
+import AlertGroup from './AlertGroup'
+import Form from '../bootstrap/Form.jsx'
+import Input from '../bootstrap/Input.jsx'
+import Button from '../bootstrap/Button.jsx'
+import Alert from '../bootstrap/Alert.jsx'
+import Autobind from '../Autobind/Autobind.jsx'
+import Fader from './Fader.jsx'
+import {View, Header, Title, Body, Footer} from './View.jsx'
 
-import type {FormValidation} from '../flowtypes/validationTypes';
+import type {FormValidation} from '../flowtypes/validationTypes'
 
-import './LoginView.sass';
+import './LoginView.sass'
 
 type Props = {
   className?: string,
-  user?: any,  
+  user?: any,
   loggingIn?: boolean,
   loginError?: Error,
   username?: string,
@@ -30,65 +30,66 @@ type Props = {
   onPasswordChange?: (password: string) => any
 };
 
-export default class LoginView extends Component<void,Props,void> {
+export default class LoginView extends Component<void, Props, void> {
   validate: () => FormValidation = () => {
-    let {username, password} = this.props;
-    let result = {};
+    let {username, password} = this.props
+    let result = {}
     if (!username) {
-      result.username = {error: 'Please enter a username'};
+      result.username = {error: 'Please enter a username'}
     }
     if (!password) {
-      result.password = {error: 'Please enter a password'};
+      result.password = {error: 'Please enter a password'}
     }
-    result.valid = !Object.keys(result).length;
-    return result;
+    result.valid = !Object.keys(result).length
+    return result
   };
   onSubmit: (e: any) => void = e => {
-    e.preventDefault();
-    let {username, password, onSubmit} = this.props; 
+    e.preventDefault()
+    let {username, password, onSubmit} = this.props
     if (username && password && onSubmit && this.validate().valid) {
-      onSubmit(username, password);
+      onSubmit(username, password)
     }
   };
   render(): React.Element {
-    let {className, user, loggingIn, loginError, onLogout} = this.props;
-    className = classNames(className, 'mf-login-view');
+    let {className, user, loggingIn, loginError, onLogout} = this.props
+    className = classNames(className, 'mf-login-view')
 
-    let validation = this.validate();
+    let validation = this.validate()
 
-    let alerts = {};
+    let alerts = {}
     if (loginError) {
-      alerts.loginError = {error: loginError};
+      alerts.loginError = {error: loginError}
     }
-    
-    let content;
+
+    let content
     if (user) {
       content = <span key="loggedIn">
         <Body>
           <Alert success>
             You are logged in as {user && (user.getIn(['profile', 'name']) || user.get('username'))}.
             &nbsp;<a onClick={onLogout} className="alert-link">Log out</a>
-          </Alert>  
+          </Alert>
         </Body>
-        <Footer/>
-      </span>;
+        <Footer />
+      </span>
     }
     else {
       content = <Form key="login" onSubmit={this.onSubmit}>
         <Autobind data={this.props} callbacks={this.props} metadata={{validation}}
-                  omnidata={loggingIn ? {disabled: true} : undefined}>
+            omnidata={loggingIn ? {disabled: true} : undefined}
+        >
           <Body>
-            <Input type="text" placeholder="Username" autobindField="username"/>
-            <Input type="password" placeholder="Password" autobindField="password"/>
+            <Input type="text" placeholder="Username" autobindField="username" />
+            <Input type="password" placeholder="Password" autobindField="password" />
           </Body>
         </Autobind>
         <Footer>
           <Button submit primary disabled={loggingIn || !validation.valid}>
             {loggingIn ? <span><Spinner /> Logging in...</span> : 'Log in'}
           </Button>
-          <AlertGroup alerts={alerts}/>
+          <AlertGroup alerts={alerts} />
         </Footer>
-      </Form>;
+      </Form>
     }
 
     return <View {...this.props} className={className}>
@@ -96,6 +97,6 @@ export default class LoginView extends Component<void,Props,void> {
         <Title>Log In</Title>
       </Header>
       <Fader>{content}</Fader>
-    </View>;
+    </View>
   }
 }

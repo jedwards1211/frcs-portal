@@ -8,7 +8,7 @@ export default class TraceRenderer {
 
   /**
    * Draws a fill.
-   * @param {fill} the boundary of the fill to draw, a flat 
+   * @param {fill} the boundary of the fill to draw, a flat
    * array of alternating x and y coordinates.
    */
   drawFill(fill) {}
