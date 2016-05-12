@@ -37,6 +37,12 @@ export default class RouteLeaveHookSupport extends Component<void,Props,void> {
     router.setRouteLeaveHook(this.props.route, this.routerWillLeave);
     addLeaveHook && addLeaveHook(this.ancestorWillLeave);
   }
+  componentWillReceiveProps(nextProps: Props): void {
+    let {router} = this.context;
+    if (nextProps.route !== this.props.route) {
+      router.setRouteLeaveHook(nextProps.route, this.routerWillLeave);
+    }
+  }
   componentWillUnmount(): void {
     this.mounted = false;
     let {removeLeaveHook} = this.context;

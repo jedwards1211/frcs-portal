@@ -98,9 +98,11 @@ export default class DrilldownRoute extends Component {
 
   updateRouteComponents = (props = this.props) => {
     const {history, location, route, routes} = props;
-    const {router} = this.context;
-
     const {pathname} = location;
+    const {router} = this.context;
+    
+    const routeIndex = routes.indexOf(route);
+    const drilldownPath = routes.slice(0, routeIndex + 1).join('/');
 
     const componentMap = {};
 
@@ -113,9 +115,9 @@ export default class DrilldownRoute extends Component {
           if (redirectLocation != null || renderProps == null) return;
           const {components, location, params, router, routes} = renderProps;
 
+          const routePath = routes.slice(0, routeIndex + 1).join('/');
           // ignore the route for this prefix if not a descendant of this DrilldownRoute
-          const routeIndex = routes.indexOf(route);
-          if (routeIndex < 0 || components[components.length - 1] == null) return;
+          if (routePath !== drilldownPath || components[components.length - 1] == null) return;
 
           // create the (potentially nested) component for the route for this prefix
           const LastComp = components[components.length - 1];
@@ -129,28 +131,28 @@ export default class DrilldownRoute extends Component {
                 : children,
             <LastComp location={location}
                       history={history} params={params}
-                      router={router} routes={routes}/>
+                      router={router} routes={routes} route={routes[routes.length - 1]}/>
           );
         }));
 
     // match is async so we have to wait for all of the match calls to finish
     Promise.join(promises).then(() => {
       const routeComponents = [];
-      let parentPath;
+      let parentPathname;
       for (const prefix of splitPrefixes(pathname, '/')) {
         const routeComponent = componentMap[prefix];
         if (routeComponent) {
-          if (parentPath) {
+          if (parentPathname) {
             // inject a link to parentPath in the Title of this component (if it renders one)
             routeComponents[routeComponents.length] =
-              <TitleDecorator key={prefix} to={parentPath} location={routeComponent.props.location}>
-                {routeComponent}
+              <TitleDecorator key={prefix} to={parentPathname} location={routeComponent.props.location}>
+                {React.cloneElement(routeComponent, {parentPathname})}
               </TitleDecorator>;
           }
           else {
             routeComponents[routeComponents.length] = React.cloneElement(routeComponent, {key: prefix});
           }
-          parentPath = prefix;
+          parentPathname = prefix;
         }
       }
       this.setState({

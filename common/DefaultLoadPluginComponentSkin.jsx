@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default class DefaultLoadPluginComponentSkin extends Component<void,Props,void> {
-  render(): React.Element {
+  render(): ?React.Element {
     let {pluginName, loading, loadError, children} = this.props;
     
     if (loading || loadError) {
