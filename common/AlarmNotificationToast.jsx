@@ -45,7 +45,7 @@ export default class AlarmNotificationToast extends Component {
               let icon = `glyphicon-${severity === 'alarm' ? 'exclamation-sign' : 'warning-sign'}`;
               return <tr key={alarmId} className={severity}>
                 <td className="icon"><i className={`glyphicon ${icon}`}/>&nbsp;</td>
-                <td className="message" className="message">{message}</td>
+                <td className="message">{message}</td>
                 {index === 0 && <td className="acknowledge" rowSpan={alarmNotifications ? alarmNotifications.length : 1}>
                   <button type="button" className={classNames('btn', 'ack-btn', {
                       'btn-warning': !isAlarm,

@@ -9,11 +9,11 @@ import {getContextClass} from './bootstrapPropUtils';
 import {Header, Title, Body} from '../common/View.jsx';
 
 type DefaultProps = {
-  component: ReactTag
+  component: any
 };
 
 type Props = {
-  component: ReactTag,
+  component: any,
   className?: string,
   children?: any,
 };

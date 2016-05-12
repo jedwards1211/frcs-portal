@@ -19,14 +19,14 @@ export type NonDefaultProps = {
 };
 
 type DefaultProps = {
-  ItemLink: ReactTag,
+  ItemLink: any,
   direction: 'left' | 'right'
 };
 
 // export type Props = DefaultProps & NonDefaultProps;
 
 export type Props = {
-  ItemLink: ReactTag,
+  ItemLink: any,
   title: string,
   itemPluralDisplayName: string,
   loading?: boolean,

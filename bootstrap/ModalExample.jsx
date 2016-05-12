@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import React from 'react';
 import Modal from './Modal';
 import {Header, Title, Body, Footer} from './../common/View';

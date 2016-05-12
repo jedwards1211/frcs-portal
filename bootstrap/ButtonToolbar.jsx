@@ -7,7 +7,7 @@ import './ButtonToolbar.sass';
 
 type Props = {
   className?: string,
-  component?: ReactTag,
+  component?: any,
   children?: any
 };
 

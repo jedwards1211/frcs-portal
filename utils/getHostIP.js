@@ -24,6 +24,8 @@ function getHostIP(interfaces) {
 module.exports = getHostIP;
 module.exports.defaultInterfaces = defaultInterfaces;
 
+/* eslint-disable no-console */
+
 if (!module.parent) {
   console.log(getHostIP());
 }

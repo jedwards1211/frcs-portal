@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import type {
   QueryHandle,
   ObserveCallbacks,
@@ -23,7 +25,7 @@ declare module NpmGlobal {
 
 declare var Npm: $Exports<'NpmGlobal'>;
 
-declare type MatchPattern = any;
+type MatchPattern = any;
 
 declare module TrackerGlobal {
   declare class Computation {
@@ -111,7 +113,7 @@ declare module MeteorGlobal {
 
 declare var Meteor: $Exports<'MeteorGlobal'>;
 
-declare module Accounts {
+declare module AccountsGlobal {
   declare function createUser(options: {
     username?: string,
     email?: string,
@@ -137,6 +139,6 @@ declare module Accounts {
   declare function verifyEmail(token: string, callback?: (error?: Error) => any): void;
 }
 
-declare var Accounts: $Exports<'Accounts'>;
+declare var Accounts: $Exports<'AccountsGlobal'>;
 
 declare var WebApp: Object;

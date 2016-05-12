@@ -1,17 +1,18 @@
 {
   "parser": "babel-eslint",
-  "extends": "eslint:recommended",
-  "ecmaFeatures": {
-    "jsx": true,
-    "modules": true,
-    "experimentalObjectRestSpread": true
-  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
   "rules": {
     "comma-dangle": 0,
     "strict": 0,
     "no-unused-vars": [1, {"args": "none", "varsIgnorePattern": "React"}],
     "no-console": 1,
-    "react/react-in-jsx-scope": 1
+    "react/display-name": 0,
+    "react/no-unknown-property": 0,
+    "react/no-did-mount-set-state": 0,
+    "react/prop-types": 0
   },
   "env": {
     "meteor": true,
@@ -21,9 +22,6 @@
     "commonjs": true
   },
   "globals": {
-    "ReactClass": false,
-    "FunctionalComponent": false,
-    "ReactTag": false,
     "Roles": false
   },
   "plugins": [

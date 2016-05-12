@@ -48,9 +48,7 @@ export default {
     }
   },
   onInterval() {
-    if (this.isMounted()) {
-      this.forceUpdate();
-    }
+    this.forceUpdate();
   },
   getTransitionValue() {
     if (!this.state.transitionStartMillis) {

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 type User = string | {_id: string};
 
 declare module RolesGlobal {

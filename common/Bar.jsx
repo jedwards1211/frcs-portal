@@ -58,9 +58,7 @@ export default React.createClass({
     }
   },
   onInterval() {
-    if (this.isMounted()) {
-      this.forceUpdate();
-    }
+    this.forceUpdate();
   },
   getTransitionValue() {
     if (!this.state.transitionStartMillis) {

@@ -39,23 +39,17 @@ export default React.createClass({
     };
   },
   getCurrentSize() {
-    if (this.isMounted()) {
-      var gauge = this.root;
-      var {fontFamily, fontWeight} = window.getComputedStyle(gauge);
-      if (this.refs.name) {
-        var {fontWeight: nameFontWeight} = window.getComputedStyle(this.refs.name);
-      }
-      return {
-        fontFamily,
-        fontWeight,
-        nameFontWeight,
-        width: gauge.offsetWidth,
-        height: gauge.offsetHeight,
-      };
+    var gauge = this.root;
+    var {fontFamily, fontWeight} = window.getComputedStyle(gauge);
+    if (this.refs.name) {
+      var {fontWeight: nameFontWeight} = window.getComputedStyle(this.refs.name);
     }
     return {
-      width: 0,
-      height: 0,
+      fontFamily,
+      fontWeight,
+      nameFontWeight,
+      width: gauge.offsetWidth,
+      height: gauge.offsetHeight,
     };
   },
   componentDidMount() {

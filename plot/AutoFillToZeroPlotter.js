@@ -2,14 +2,13 @@ import AutoFatTracePlotter from './AutoFatTracePlotter';
 
 export default class AutoFillToZeroPlotter extends AutoFatTracePlotter {
     constructor(domainConversion, valueConversion, traceRenderer) {
-        super();
         super(domainConversion, valueConversion, traceRenderer);
         this.columnMin = [NaN, 0];
         this.columnMax = [NaN, 0];
     }
 
     _resetColumn() {
-        super_resetColumn();
+        super._resetColumn();
         this.columnMin[1] = 0;
         this.columnMax[1] = 0;
         this.columnIsMonotonic = false;
@@ -69,7 +68,6 @@ export default class AutoFillToZeroPlotter extends AutoFatTracePlotter {
 
     _advanceColumn( forceFlush )
     {
-        var lastX = this.domainConversion.convert( this.prevColumnEnd[0] );
         var lastY = this.valueConversion.convert( this.prevColumnEnd[1] );
         
         var minX = this.domainConversion.convert( this.columnMin[0] );
