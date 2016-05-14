@@ -131,6 +131,7 @@ export default class DrilldownRoute extends Component {
             <LastComp location={location}
                 history={history} params={params}
                 router={router} routes={routes}
+                route={routes[routes.length - 1]}
             />
           )
         }))
