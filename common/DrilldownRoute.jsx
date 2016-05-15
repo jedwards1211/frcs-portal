@@ -97,19 +97,12 @@ export default class DrilldownRoute extends Component {
   onTransitionEnd = () => this.updateRouteComponents();
 
   updateRouteComponents = (props = this.props) => {
-<<<<<<< HEAD
-    const {history, location, route, routes} = props;
-    const {pathname} = location;
-    const {router} = this.context;
-    
-    const routeIndex = routes.indexOf(route);
-    const drilldownPath = routes.slice(0, routeIndex + 1).join('/');
-=======
     const {history, location, route, routes} = props
+    const {pathname} = location
     const {router} = this.context
 
-    const {pathname} = location
->>>>>>> develop
+    const routeIndex = routes.indexOf(route)
+    const drilldownPath = routes.slice(0, routeIndex + 1).join('/')
 
     const componentMap = {}
 
@@ -122,14 +115,9 @@ export default class DrilldownRoute extends Component {
           if (redirectLocation != null || renderProps == null) return
           const {components, location, params, router, routes} = renderProps
 
-          const routePath = routes.slice(0, routeIndex + 1).join('/');
+          const routePath = routes.slice(0, routeIndex + 1).join('/')
           // ignore the route for this prefix if not a descendant of this DrilldownRoute
-<<<<<<< HEAD
-          if (routePath !== drilldownPath || components[components.length - 1] == null) return;
-=======
-          const routeIndex = routes.indexOf(route)
-          if (routeIndex < 0 || components[components.length - 1] == null) return
->>>>>>> develop
+          if (routePath !== drilldownPath || components[components.length - 1] == null) return
 
           // create the (potentially nested) component for the route for this prefix
           const LastComp = components[components.length - 1]
@@ -143,19 +131,8 @@ export default class DrilldownRoute extends Component {
                   />
                 : children,
             <LastComp location={location}
-<<<<<<< HEAD
-                      history={history} params={params}
-                      router={router} routes={routes} route={routes[routes.length - 1]}/>
-          );
-        }));
-
-    // match is async so we have to wait for all of the match calls to finish
-    Promise.join(promises).then(() => {
-      const routeComponents = [];
-      let parentPathname;
-=======
                 history={history} params={params}
-                router={router} routes={routes}
+                router={router} routes={routes} route={routes[routes.length - 1]}
             />
           )
         }))
@@ -163,32 +140,21 @@ export default class DrilldownRoute extends Component {
     // match is async so we have to wait for all of the match calls to finish
     Promise.join(promises).then(() => {
       const routeComponents = []
-      let parentPath
->>>>>>> develop
+      let parentPathname
       for (const prefix of splitPrefixes(pathname, '/')) {
         const routeComponent = componentMap[prefix]
         if (routeComponent) {
           if (parentPathname) {
             // inject a link to parentPath in the Title of this component (if it renders one)
             routeComponents[routeComponents.length] =
-<<<<<<< HEAD
               <TitleDecorator key={prefix} to={parentPathname} location={routeComponent.props.location}>
                 {React.cloneElement(routeComponent, {parentPathname})}
-              </TitleDecorator>;
-=======
-              <TitleDecorator key={prefix} to={parentPath} location={routeComponent.props.location}>
-                {routeComponent}
               </TitleDecorator>
->>>>>>> develop
           }
           else {
             routeComponents[routeComponents.length] = React.cloneElement(routeComponent, {key: prefix})
           }
-<<<<<<< HEAD
-          parentPathname = prefix;
-=======
-          parentPath = prefix
->>>>>>> develop
+          parentPathname = prefix
         }
       }
       this.setState({
