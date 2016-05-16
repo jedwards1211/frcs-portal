@@ -142,14 +142,14 @@ export default class DrilldownRoute extends Component {
                   Comp
                     ? _createElement(Comp, {
                     children, location, history, params, router, routes,
-                    parentPathnames,
+                    parentPathnames, parentPathname,
                     route: routes[routeIndex + 1 + index]
                   })
                     : children
                 ),
                 _createElement(components[components.length - 1], {
                   location, history, params, router, routes,
-                  parentPathnames,
+                  parentPathnames, parentPathname,
                   route: routes[routes.length - 1]
                 })
               ),
