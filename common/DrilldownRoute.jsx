@@ -1,7 +1,6 @@
-import Promise from 'bluebird'
 import React, {Component, PropTypes} from 'react'
 import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin'
-import {Link, match as unpromisifiedMatch} from 'react-router'
+import {Link, match} from 'react-router'
 import classNames from 'classnames'
 
 import Glyphicon from '../bootstrap/Glyphicon.jsx'
@@ -12,8 +11,6 @@ import splitPrefixes from '../utils/splitPrefixes'
 import {createSkinDecorator} from 'react-skin'
 
 import './DrilldownRoute.sass'
-
-const match = Promise.promisify(unpromisifiedMatch, {multiArgs: true})
 
 const TitleDecorator = createSkinDecorator({
   Title: (Title, props, decorator) => {
@@ -78,7 +75,8 @@ const TitleDecorator = createSkinDecorator({
  */
 export default class DrilldownRoute extends Component {
   static contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    createRouteElement: PropTypes.func,
   };
 
   static propTypes = {
@@ -100,68 +98,73 @@ export default class DrilldownRoute extends Component {
     const {history, location, route, routes} = props
     const {pathname} = location
     const {router} = this.context
+    const createElement = this.context.createRouteElement || React.createElement
 
     const routeIndex = routes.indexOf(route)
     const drilldownPath = routes.slice(0, routeIndex + 1).join('/')
 
-    const componentMap = {}
+    const routeComponents = []
+    let activeIndex = -1
 
     // find all components that need to be rendered for all subroutes of this DrilldownRoute
-    const promises = [...splitPrefixes(pathname, '/')].map(
+    ;[...splitPrefixes(pathname, '/')].reduceRight(
       // use match from react-router to figure out what components should be rendered for this
       // prefix of the pathname
-      prefix => match({routes, location: {pathname: prefix}, router})
-        .then(([redirectLocation, renderProps]) => {
-          if (redirectLocation != null || renderProps == null) return
+      (next, prefix) => (error, parentPathnames) => {
+        if (error) return next(error)
+
+        match({routes, location: {pathname: prefix}, router}, (error, redirectLocation, renderProps) => {
+          if (redirectLocation != null || renderProps == null) return next(null, parentPathnames)
+
           const {components, location, params, router, routes} = renderProps
 
           const routePath = routes.slice(0, routeIndex + 1).join('/')
           // ignore the route for this prefix if not a descendant of this DrilldownRoute
-          if (routePath !== drilldownPath || components[components.length - 1] == null) return
+          if (routePath !== drilldownPath || components[components.length - 1] == null) {
+            return next(null, parentPathnames)
+          }
+
+          if (pathname === prefix) activeIndex = routeComponents.length
+
+          const parentPathname = parentPathnames[parentPathnames.length - 1]
+          const _createElement = parentPathname
+            ? (component, props) => <TitleDecorator to={parentPathname}
+                children={createElement(component, props)}
+                                    />
+            : createElement
 
           // create the (potentially nested) component for the route for this prefix
-          const LastComp = components[components.length - 1]
-          componentMap[prefix] = components.slice(routeIndex + 1, components.length - 1).reduceRight(
-            (children, Comp, index) =>
-              Comp
-                ? <Comp children={children} location={location}
-                    history={history} params={params}
-                    router={router} routes={routes}
-                    route={routes[routeIndex + 1 + index]}
-                  />
-                : children,
-            <LastComp location={location}
-                history={history} params={params}
-                router={router} routes={routes} route={routes[routes.length - 1]}
-            />
-          )
-        }))
+          routeComponents.push(React.cloneElement(
+            components
+              .slice(routeIndex + 1, components.length - 1)
+              .reduceRight(
+                (children, Comp, index) => (
+                  Comp
+                    ? _createElement(Comp, {
+                    children, location, history, params, router, routes,
+                    parentPathnames,
+                    route: routes[routeIndex + 1 + index]
+                  })
+                    : children
+                ),
+                _createElement(components[components.length - 1], {
+                  location, history, params, router, routes,
+                  parentPathnames,
+                  route: routes[routes.length - 1]
+                })
+              ),
+            {
+              key: prefix
+            }
+          ))
 
-    // match is async so we have to wait for all of the match calls to finish
-    Promise.join(promises).then(() => {
-      const routeComponents = []
-      let parentPathname
-      for (const prefix of splitPrefixes(pathname, '/')) {
-        const routeComponent = componentMap[prefix]
-        if (routeComponent) {
-          if (parentPathname) {
-            // inject a link to parentPath in the Title of this component (if it renders one)
-            routeComponents[routeComponents.length] =
-              <TitleDecorator key={prefix} to={parentPathname} location={routeComponent.props.location}>
-                {React.cloneElement(routeComponent, {parentPathname})}
-              </TitleDecorator>
-          }
-          else {
-            routeComponents[routeComponents.length] = React.cloneElement(routeComponent, {key: prefix})
-          }
-          parentPathname = prefix
-        }
+          next(null, [...parentPathnames, prefix])
+        })
+      },
+      (error, parentPathnames) => {
+        if (!error) this.setState({routeComponents, activeIndex, parentPathnames})
       }
-      this.setState({
-        routeComponents,
-        activeIndex: routeComponents.findIndex(comp => comp.props.location.pathname === pathname)
-      })
-    })
+    )(null, [])
   };
 
   componentWillMount() {
@@ -171,19 +174,19 @@ export default class DrilldownRoute extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.location.pathname !== this.props.location.pathname) {
-      // only update components if the path changed and it's not an ancestor of the current path
-      // (because in that case we want the components that are animating out to stay mounted until
-      // the transition ends)
-      if (!this.props.location.pathname.startsWith(nextProps.location.pathname)) {
-        this.updateRouteComponents(nextProps)
-      }
-      else {
-        // otherwise just update activeIndex
-        const activeIndex = this.state.routeComponents.findIndex(
-          comp => comp.props.location.pathname === nextProps.location.pathname)
-        if (activeIndex >= 0) this.setState({activeIndex})
-      }
+    // only update components if the path changed and it's not an ancestor of the current path
+    // (because in that case we want the components that are animating out to stay mounted until
+    // the transition ends)
+    // or update the components if there are new routes on same level/deeper; this supports dynamic routing
+    if (!this.props.location.pathname.startsWith(nextProps.location.pathname) ||
+      (nextProps.location.pathname.startsWith(this.props.location.pathname) &&
+        this.props.routes !== nextProps.routes)) {
+      this.updateRouteComponents(nextProps)
+    }
+    else if (this.props.location.pathname !== nextProps.location.pathname) {
+      // otherwise just update activeIndex
+      const activeIndex = this.state.parentPathnames.indexOf(nextProps.location.pathname)
+      if (activeIndex >= 0) this.setState({activeIndex})
     }
   }
 
