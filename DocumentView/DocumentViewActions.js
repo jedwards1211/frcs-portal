@@ -1,6 +1,6 @@
 /* @flow */
 
-import type {Action} from '../../mindfront-react-components/flowtypes/reduxTypes'
+import type {Action} from '../flowtypes/reduxTypes'
 
 export const DOCUMENT_VIEW = 'DOCUMENT_VIEW'
 export const SET_ASK_TO_LEAVE = DOCUMENT_VIEW + '.SET_ASK_TO_LEAVE'

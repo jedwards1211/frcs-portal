@@ -2,13 +2,13 @@
 
 import React, {Component} from 'react'
 
-import Alert from '../../mindfront-react-components/bootstrap/Alert.jsx'
-import Well from '../../mindfront-react-components/bootstrap/Well.jsx'
-import ListGroup from '../../mindfront-react-components/bootstrap/ListGroup.jsx'
-import Glyphicon from '../../mindfront-react-components/bootstrap/Glyphicon.jsx'
-import Spinner from '../../mindfront-react-components/common/Spinner.jsx'
+import Alert from '../bootstrap/Alert.jsx'
+import Well from '../bootstrap/Well.jsx'
+import ListGroup from '../bootstrap/ListGroup.jsx'
+import Glyphicon from '../bootstrap/Glyphicon.jsx'
+import Spinner from './Spinner.jsx'
 
-import {View, Header, Title, Body, Footer} from '../../mindfront-react-components/common/View.jsx'
+import {View, Header, Title, Body, Footer} from '../common/View.jsx'
 
 export type NonDefaultProps = {
   title: string,

@@ -72,7 +72,7 @@ export default class RouteLeaveHookSupport extends Component<void, Props, void> 
 
 export const useRouteLeaveHookSupport: () => Object = () => ({
   renderContainer: (Component, props) => (
-    <RouteLeaveHookSupport route={props.route}>
+    <RouteLeaveHookSupport route={props.route} children="flow bug">
       <Component {...props} />
     </RouteLeaveHookSupport>
   )
