@@ -4,8 +4,8 @@ import {Link, match} from 'react-router'
 import classNames from 'classnames'
 
 import Glyphicon from '../bootstrap/Glyphicon.jsx'
-import {Nav} from './View.jsx'
-import PageSlider from './PageSlider'
+import {Nav} from './../common/View.jsx'
+import PageSlider from './../common/PageSlider'
 
 import splitPrefixes from '../utils/splitPrefixes'
 import {createSkinDecorator} from 'react-skin'
@@ -191,7 +191,7 @@ export default class DrilldownRoute extends Component {
   }
 
   render() {
-    const className = classNames(this.props.className, 'mf-drilldown-route')
+    const className = classNames(this.props.className, 'mf-DrilldownRoute')
     const {activeIndex, routeComponents} = this.state
 
     return (

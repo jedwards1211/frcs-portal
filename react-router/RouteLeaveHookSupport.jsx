@@ -69,3 +69,11 @@ export default class RouteLeaveHookSupport extends Component<void, Props, void> 
     return React.cloneElement(children, props)
   }
 }
+
+export const useRouteLeaveHookSupport: () => Object = () => ({
+  renderContainer: (Component, props) => (
+    <RouteLeaveHookSupport route={props.route}>
+      <Component {...props} />
+    </RouteLeaveHookSupport>
+  )
+})
