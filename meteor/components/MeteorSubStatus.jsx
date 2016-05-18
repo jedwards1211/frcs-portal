@@ -17,18 +17,20 @@ type Props = {
   subKey?: string | Symbol,
   subKeys?: Array<any>,
   subDisplayNames?: {[subKey: any]: string},
+  readySubKeys: Array<any>,
   loadingSubKeys: Array<any>,
   errorSubKeys: Array<any>,
+  loading?: boolean,
   ready?: boolean,
   error?: Error,
   children?: any
 };
 
 const Banner: (props: Props) => ?React.Element = props => {
-  let {ready, error, loadingSubKeys, errorSubKeys} = props
+  let {loading, error, loadingSubKeys, errorSubKeys} = props
   let subDisplayNames = props.subDisplayNames || {}
 
-  if (ready !== true) {
+  if (loading) {
     return <Alert info><Spinner /> Loading {loadingSubKeys.map(subKey => subDisplayNames[subKey] || subKey)}...</Alert>
   }
   if (error) {
@@ -55,11 +57,12 @@ const ViewSkin = createSkinDecorator({
 
 class MeteorSubStatus extends Component<void, Props, void> {
   render(): ?React.Element {
-    let {inject, banner, viewSkin, ready, error, loadingSubKeys, errorSubKeys, children} = this.props
+    let {inject, banner, viewSkin, ready, loading, error,
+      readySubKeys, loadingSubKeys, errorSubKeys, children} = this.props
 
     if (inject) {
       if (children instanceof Function) {
-        return children({ready, error, loadingSubKeys, errorSubKeys})
+        return children({ready, loading, error, readySubKeys, loadingSubKeys, errorSubKeys})
       }
     }
     else if (banner) {
@@ -82,14 +85,18 @@ const select = createSelector(
   (subscriptions = Immutable.Map(), subKey, subKeys = []) => {
     if (subKey) subKeys.push(subKey)
 
+    let readySubKeys    = subKeys.filter(subKey => subscriptions.getIn([subKey, 'ready']))
     let loadingSubKeys  = subKeys.filter(subKey => !subscriptions.getIn([subKey, 'ready']))
     let errorSubKeys    = subKeys.filter(subKey => subscriptions.getIn([subKey, 'error']))
-    let ready           = !loadingSubKeys.length
-    let error           = errorSubKeys.length && subscriptions.getIn([errorSubKeys[0], 'error'])
+    let ready           = !!readySubKeys.length
+    let loading         = !ready
+    let error           = errorSubKeys.length ? subscriptions.getIn([errorSubKeys[0], 'error']) : undefined
 
     return {
+      loading,
       ready,
       error,
+      readySubKeys,
       loadingSubKeys,
       errorSubKeys
     }
