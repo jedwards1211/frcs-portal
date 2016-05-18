@@ -51,7 +51,7 @@ export default class ButtonGroup extends Component<void, Props, void> {
       'btn-group': !vertical,
       'btn-group-vertical': vertical,
       'btn-group-justified': justified,
-      'form-control': insideFormGroup && !insideButtonGroup && !insideButtonToolbar
+      'form-control': insideFormGroup && !vertical && !insideButtonGroup && !insideButtonToolbar
     })
 
     if (insideButtonGroup || dropup || dropdown) {
