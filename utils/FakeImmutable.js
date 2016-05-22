@@ -14,6 +14,7 @@ class _FakeImmutable {
   constructor(obj: Object) {
     this.obj = obj
   }
+  /* flow-issue(jcore-portal) */
   get size(): number {
     return _.size(this.obj)
   }
