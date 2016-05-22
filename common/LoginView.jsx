@@ -9,7 +9,7 @@ import Form from '../bootstrap/Form.jsx'
 import Input from '../bootstrap/Input.jsx'
 import Button from '../bootstrap/Button.jsx'
 import Alert from '../bootstrap/Alert.jsx'
-import Autobind from '../Autobind/Autobind.jsx'
+import BindData from 'react-bind-data'
 import Fader from './Fader.jsx'
 import {View, Header, Title, Body, Footer} from './View.jsx'
 
@@ -26,8 +26,7 @@ type Props = {
   password?: string,
   onSubmit?: (username: string, password: string) => any,
   onLogout?: () => any,
-  onUsernameChange?: (username: string) => any,
-  onPasswordChange?: (password: string) => any
+  onFieldChange?: (path: any[], newValue: any) => any
 };
 
 export default class LoginView extends Component<void, Props, void> {
@@ -51,7 +50,7 @@ export default class LoginView extends Component<void, Props, void> {
     }
   };
   render(): React.Element {
-    let {className, user, loggingIn, loginError, onLogout} = this.props
+    let {className, user, loggingIn, loginError, onLogout, onFieldChange} = this.props
     className = classNames(className, 'mf-login-view')
 
     let validation = this.validate()
@@ -75,14 +74,14 @@ export default class LoginView extends Component<void, Props, void> {
     }
     else {
       content = <Form key="login" onSubmit={this.onSubmit}>
-        <Autobind data={this.props} callbacks={this.props} metadata={{validation}}
+        <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
             omnidata={loggingIn ? {disabled: true} : undefined}
         >
           <Body>
-            <Input type="text" placeholder="Username" autobindField="username" />
-            <Input type="password" placeholder="Password" autobindField="password" />
+            <Input type="text" placeholder="Username" name="username" />
+            <Input type="password" placeholder="Password" name="password" />
           </Body>
-        </Autobind>
+        </BindData>
         <Footer>
           <Button submit primary disabled={loggingIn || !validation.valid}>
             {loggingIn ? <span><Spinner /> Logging in...</span> : 'Log in'}
@@ -93,9 +92,11 @@ export default class LoginView extends Component<void, Props, void> {
     }
 
     return <View {...this.props} className={className}>
-      <Header>
-        <Title>Log In</Title>
-      </Header>
+      {!user &&
+        <Header>
+          <Title>Log In</Title>
+        </Header>
+      }
       <Fader>{content}</Fader>
     </View>
   }

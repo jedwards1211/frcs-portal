@@ -1,7 +1,6 @@
 /* @flow */
 
 import * as Immutable from 'immutable'
-// flow-ignore(jcore-portal)
 import {createAction} from 'redux-actions'
 
 import type {Action} from '../../flowtypes/reduxTypes'

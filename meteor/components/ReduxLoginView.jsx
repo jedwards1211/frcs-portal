@@ -3,11 +3,18 @@
 import React, {Component} from 'react'
 import * as Immutable from 'immutable'
 import {connect} from 'react-redux'
-import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldChanges'
+import {dispatchFieldChanges} from 'react-bind-data-redux'
 
 import LoginView from '../../common/LoginView'
 
 import * as actions from '../actions/userActions'
+
+const dispatchOptions = {
+  meta: {
+    reduxPath: ['LoginView']
+  },
+  actionTypePrefix: 'LOGIN_VIEW.'
+}
 
 class ReduxLoginView extends Component {
   onSubmit: () => void = () => {
@@ -24,8 +31,7 @@ class ReduxLoginView extends Component {
     let {onSubmit, onLogout, props: {dispatch}} = this
     return <LoginView {...this.props} onSubmit={onSubmit}
         onLogout={onLogout}
-        onAutobindFieldChange={dispatchAutobindFieldChanges(dispatch,
-                        {meta: {reduxPath: ['LoginView']}, actionTypePrefix: 'LOGIN_VIEW.'})}
+        onFieldChange={dispatchFieldChanges(dispatch, dispatchOptions)}
            />
   }
 }
