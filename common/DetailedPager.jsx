@@ -35,10 +35,10 @@ export default class DetailedPager extends Component<void, Props, void> {
 
     const content = []
     if (page != null) content.push(
-      <span className="mf-detailed-pager-items">{`Showing ${from}-${to} of ${numItems}`}</span>
+      <span key="info" className="mf-detailed-pager-items">{`Showing ${from}-${to} of ${numItems}`}</span>
     )
     if (numPages > 1) content.push(
-      <Pager {...this.props} numPages={numPages} />
+      <Pager key="pager" {...this.props} numPages={numPages} />
     )
 
     if (children) return children(content)
