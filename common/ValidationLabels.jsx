@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 
-import {getFormGroupContextClass, getContextContent} from './bootstrapPropUtils'
+import {getFormGroupContextClass, getContextContent} from '../bootstrap/bootstrapPropUtils'
 import {errorMessage} from '../utils/reactErrorUtils'
 
 import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx'
