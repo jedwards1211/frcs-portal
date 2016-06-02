@@ -7,9 +7,6 @@ import Button from '../bootstrap/Button'
 import AlertGroup from '../common/AlertGroup'
 import validationClassNames from '../common/validationClassNames'
 
-import {NEXT, SET_NUM_POINTS, GO_TO_EDIT_MANUALLY, setInputValue, setOutputValue,
-        addPoint, deletePoint} from './calibrationActions'
-
 import {isValidNumPoints, isValidInputValue, isValidOutputValue,
   isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation'
 import {isEmptyValue} from '../utils/validationUtils'
@@ -49,17 +46,13 @@ function computeInputPrecision(props) {
 
 export class NumPoints extends Component {
   static defaultProps = {
-    dispatch: function() {},
+    onNext() {},
+    onNumPointsChange() {}
   };
-  onNumPointsChange = event => {
-    this.props.dispatch({
-      type: SET_NUM_POINTS,
-      payload: event.target.value
-    })
-  };
+  onNumPointsChange = event => this.props.onNumPointsChange(event.target.value);
   onKeyDown = e => {
     if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
-      this.props.dispatch({type: NEXT})
+      this.props.onNext()
     }
   };
   componentDidAppear() {
@@ -88,7 +81,7 @@ export class NumPoints extends Component {
     return {valid: true}
   }
   render() {
-    const {calibration, dispatch} = this.props
+    const {calibration, onNumPointsChange, onEditManuallyClick} = this.props
     const numPoints = calibration.get('numPoints')
 
     const validation = NumPoints.validate(this.props)
@@ -98,26 +91,27 @@ export class NumPoints extends Component {
       <p key="number" className={classNames('form-group', validationClassNames(validation.numPoints))}>
         <label className="control-label">Number of points:&nbsp;</label>
         <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
-            value={numPoints} onChange={this.onNumPointsChange} onKeyDown={this.onKeyDown}
+            value={numPoints} onChange={onNumPointsChange} onKeyDown={this.onKeyDown}
         />
       </p>
       <AlertGroup alerts={validation} />
-      <p>or <Button onClick={() => dispatch({type: GO_TO_EDIT_MANUALLY})}>Edit Manually</Button></p>
+      <p>or <Button onClick={onEditManuallyClick}>Edit Manually</Button></p>
     </div>
   }
 }
 
 export class Point extends Component {
   static defaultProps = {
-    dispatch: function() {},
+    onOutputValueChange() {},
+    onNext() {}
   };
   onOutputValueChange = event => {
-    let {dispatch, pointIndex} = this.props
-    dispatch(setOutputValue(pointIndex, event.target.value))
+    let {pointIndex, onOutputValueChange} = this.props
+    onOutputValueChange(pointIndex, event.target.value)
   };
   onKeyDown = e => {
     if (e.key === 'Enter' && Point.validate(this.props).valid) {
-      this.props.dispatch({type: NEXT})
+      this.props.onNext()
     }
   };
   componentDidAppear() {
@@ -183,6 +177,12 @@ function isEmpty(value) {
 }
 
 export class Confirm extends Component {
+  static defaultProps = {
+    onInputValueChange() {},
+    onOutputValueChange() {},
+    onAddPoint() {},
+    onDeletePoint() {}
+  };
   _inputTextfields = [];
   _outputTextfields = [];
   componentWillMount() { this._mounted = true }
@@ -190,12 +190,12 @@ export class Confirm extends Component {
   onBlur = pointIndex => {
     setTimeout(() => {
       if (!this._mounted) return
-      const {calibration, dispatch} = this.props
+      const {calibration, onDeletePoint} = this.props
       const point = calibration.getIn(['points', pointIndex])
       if (document.activeElement !== this._inputTextfields [pointIndex] &&
           document.activeElement !== this._outputTextfields[pointIndex] &&
           isEmpty(point.get('x'), point.get('y'))) {
-        dispatch(deletePoint(pointIndex))
+        onDeletePoint(pointIndex)
       }
     }, 17)
   };
@@ -234,7 +234,8 @@ export class Confirm extends Component {
     return {valid: true}
   }
   render() {
-    const {calibration, calibrationState, dispatch} = this.props
+    const {calibration, calibrationState, onInputValueChange, onOutputValueChange,
+      onDeletePoint, onAddPoint} = this.props
     const points = calibration.get('points')
     const inputUnits = calibrationState.getIn(['input', 'units'])
     const outputUnits = calibrationState.getIn(['output', 'units'])
@@ -249,16 +250,16 @@ export class Confirm extends Component {
       return <tr key={index} className="values">
         <td className={inputClass}>
           <input type="text" className="form-control" value={x} ref={c => this._inputTextfields[index] = c}
-              onChange={e => dispatch(setInputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}
+              onChange={e => onInputValueChange(index, e.target.value)} onBlur={() => this.onBlur(index)}
           />
         </td>
         <td className={outputClass}>
           <input type="text" className="form-control" value={y} ref={c => this._outputTextfields[index] = c}
-              onChange={e => dispatch(setOutputValue(index, e.target.value))} onBlur={() => this.onBlur(index)}
+              onChange={e => onOutputValueChange(index, e.target.value)} onBlur={() => this.onBlur(index)}
           />
         </td>
         <td className="delete">
-          <Button onClick={e => dispatch(deletePoint(index))} tabIndex={-1}>
+          <Button onClick={e => onDeletePoint(index)} tabIndex={-1}>
             <i className="glyphicon glyphicon-trash" />
           </Button>
         </td>
@@ -266,12 +267,12 @@ export class Confirm extends Component {
     })).concat(<tr key={points.size} className="values">
       <td className="inputValue">
         <input type="text" className="form-control" value=""
-            onChange={e => dispatch(addPoint({x: e.target.value}))}
+            onChange={e => onAddPoint({x: e.target.value})}
         />
       </td>
       <td className="outputValue">
         <input type="text" className="form-control" value=""
-            onChange={e => dispatch(addPoint({y: e.target.value}))}
+            onChange={e => onAddPoint({y: e.target.value})}
         />
       </td>
     </tr>)

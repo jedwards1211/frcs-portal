@@ -7,9 +7,6 @@ import Button from '../bootstrap/Button'
 import {stringOrNumber} from './calibrationValidation'
 import * as CalibrationSteps from './CalibrationSteps'
 
-
-import {BACK, NEXT, APPLY, CANCEL} from './calibrationActions'
-
 /**
  * The Back, Next, and Apply buttons for a CalibrationWizard, separated out because
  * if the wizard is in a modal, the buttons go in a footer, rather than being a
@@ -28,10 +25,10 @@ export default class CalibrationWizardButtons extends Component {
         y: stringOrNumber,
       })),
     }).isRequired,
-    dispatch: PropTypes.func,
-  };
-  static defaultProps = {
-    dispatch: function() {},
+    onCancelClick: PropTypes.func,
+    onBackClick: PropTypes.func,
+    onNextClick: PropTypes.func,
+    onApplyClick: PropTypes.func
   };
   focusApply() {
     if (this.refs.apply) {
@@ -39,7 +36,7 @@ export default class CalibrationWizardButtons extends Component {
     }
   }
   render() {
-    let {className, stepNumber, dispatch} = this.props
+    let {className, stepNumber, onCancelClick, onBackClick, onNextClick, onApplyClick} = this.props
 
     let disableNext
     if (stepNumber === 'numPoints') {
@@ -52,10 +49,10 @@ export default class CalibrationWizardButtons extends Component {
     }
 
     let buttons = [
-      <Button key="cancel" onClick={() => dispatch({type: CANCEL})}>
+      <Button key="cancel" onClick={onCancelClick}>
         Cancel
       </Button>,
-      <Button key="back" onClick={() => dispatch({type: BACK})}>
+      <Button key="back" onClick={onBackClick}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
     ]
@@ -63,7 +60,7 @@ export default class CalibrationWizardButtons extends Component {
       const validation = CalibrationSteps.Confirm.validate(this.props)
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-            onClick={() => dispatch({type: APPLY})} disabled={!validation.valid}
+            onClick={onApplyClick} disabled={!validation.valid}
         >
           Apply
         </button>
@@ -71,7 +68,7 @@ export default class CalibrationWizardButtons extends Component {
     }
     else {
       buttons.push(
-        <Button primary key="next" onClick={() => dispatch({type: NEXT})} disabled={disableNext}>
+        <Button primary key="next" onClick={onNextClick} disabled={disableNext}>
           <i className="glyphicon glyphicon-chevron-right" /> Next
         </Button>
       )
