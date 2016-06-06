@@ -1,42 +1,29 @@
-import React, {Component, PropTypes} from 'react'
-import ImmutablePropTypes from 'react-immutable-proptypes'
+/* @flow */
+
+import React, {Component} from 'react'
 import classNames from 'classnames'
 
 import Button from '../bootstrap/Button'
 
-import {stringOrNumber} from './calibrationValidation'
 import * as CalibrationSteps from './CalibrationSteps'
+
+import type {DefaultProps, Props} from './calibrationTypes'
+import {defaultProps} from './calibrationTypes'
 
 /**
  * The Back, Next, and Apply buttons for a CalibrationWizard, separated out because
  * if the wizard is in a modal, the buttons go in a footer, rather than being a
  * sibling of the wizard in the content.
  */
-export default class CalibrationWizardButtons extends Component {
-  static propTypes = {
-    stepNumber: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.oneOf(['numPoints', 'confirm']),
-    ]),
-    calibration: ImmutablePropTypes.shape({
-      numPoints: stringOrNumber,
-      points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
-        x: stringOrNumber,
-        y: stringOrNumber,
-      })),
-    }).isRequired,
-    onCancelClick: PropTypes.func,
-    onBackClick: PropTypes.func,
-    onNextClick: PropTypes.func,
-    onApplyClick: PropTypes.func
-  };
+export default class CalibrationWizardButtons extends Component<DefaultProps, Props, void> {
+  static defaultProps = defaultProps;
   focusApply() {
     if (this.refs.apply) {
       this.refs.apply.focus()
     }
   }
   render() {
-    let {className, stepNumber, onCancelClick, onBackClick, onNextClick, onApplyClick} = this.props
+    let {className, stepNumber, onCancel, onBack, onNext, onApply} = this.props
 
     let disableNext
     if (stepNumber === 'numPoints') {
@@ -44,15 +31,16 @@ export default class CalibrationWizardButtons extends Component {
       disableNext = !validation.valid
     }
     else if (stepNumber !== 'confirm') {
-      const validation = CalibrationSteps.Point.validate(this.props)
+      // flow-issue(jcore-portal)
+      const validation = CalibrationSteps.Point.validate({...this.props, pointIndex: stepNumber})
       disableNext = !validation.valid
     }
 
     let buttons = [
-      <Button key="cancel" onClick={onCancelClick}>
+      <Button key="cancel" onClick={onCancel}>
         Cancel
       </Button>,
-      <Button key="back" onClick={onBackClick}>
+      <Button key="back" onClick={onBack}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
     ]
@@ -60,7 +48,7 @@ export default class CalibrationWizardButtons extends Component {
       const validation = CalibrationSteps.Confirm.validate(this.props)
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-            onClick={onApplyClick} disabled={!validation.valid}
+            onClick={onApply} disabled={!validation.valid}
         >
           Apply
         </button>
@@ -68,7 +56,7 @@ export default class CalibrationWizardButtons extends Component {
     }
     else {
       buttons.push(
-        <Button primary key="next" onClick={onNextClick} disabled={disableNext}>
+        <Button primary key="next" onClick={onNext} disabled={disableNext}>
           <i className="glyphicon glyphicon-chevron-right" /> Next
         </Button>
       )

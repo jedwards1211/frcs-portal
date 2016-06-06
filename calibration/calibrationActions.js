@@ -1,4 +1,8 @@
-export const ACTION_TYPE_PREFIX = 'CALIBRATION_WIZARD'
+/* @flow */
+
+import type {Action} from '../flowtypes/reduxTypes'
+
+export const ACTION_TYPE_PREFIX = 'CALIBRATION_WIZARD.'
 export const SET_NUM_POINTS = ACTION_TYPE_PREFIX + 'SET_NUM_POINTS'
 export const SET_INPUT_VALUE = ACTION_TYPE_PREFIX + 'SET_INPUT_VALUE'
 export const SET_OUTPUT_VALUE = ACTION_TYPE_PREFIX + 'SET_OUTPUT_VALUE'
@@ -10,62 +14,75 @@ export const NEXT = ACTION_TYPE_PREFIX + 'NEXT'
 export const APPLY = ACTION_TYPE_PREFIX + 'APPLY'
 export const CANCEL = ACTION_TYPE_PREFIX + 'CANCEL'
 
-export function setNumPoints(value, reduxPath) {
-  return {
-    type: SET_NUM_POINTS,
-    payload: value,
-    meta: {reduxPath}
+type Meta = {
+  reduxPaths: {
+    viewState: any[],
+    calibrationState: any[]
   }
 }
 
-export function setInputValue(pointIndex, value, reduxPath) {
+export default function calibrationActions(meta: Meta): {
+  setNumPoints: (numPoints: string) => Action,
+  setInputValue: (pointIndex: number, inputValue: string) => Action,
+  setOutputValue: (pointIndex: number, outputValue: string) => Action,
+  deletePoint: (pointIndex: number) => Action,
+  goToEditManually: () => Action,
+  addPoint: (point: {x?: string, y?: string}) => Action,
+  back: () => Action,
+  next: () => Action,
+} {
   return {
-    type: SET_INPUT_VALUE,
-    payload: value,
-    meta: {pointIndex, reduxPath}
-  }
-}
-
-export function setOutputValue(pointIndex, value, reduxPath) {
-  return {
-    type: SET_OUTPUT_VALUE,
-    payload: value,
-    meta: {pointIndex, reduxPath}
-  }
-}
-
-export function deletePoint(pointIndex, reduxPath) {
-  return {
-    type: DELETE_POINT,
-    meta: {pointIndex, reduxPath}
-  }
-}
-
-export function goToEditManually(reduxPath) {
-  return {
-    type: GO_TO_EDIT_MANUALLY,
-    meta: {reduxPath}
-  }
-}
-
-export function addPoint({x, y}, reduxPath) {
-  return {
-    type: ADD_POINT,
-    payload: {x, y},
-    meta: {reduxPath}
-  }
-}
-
-export function back(reduxPath) {
-  return {
-    type: BACK,
-    meta: {reduxPath}
-  }
-}
-
-export function next(reduxPath) {
-  return {
-    type: NEXT,
-    meta: {reduxPath}
+    setNumPoints(numPoints) {
+      return {
+        type: SET_NUM_POINTS,
+        payload: numPoints,
+        meta
+      }
+    },
+    setInputValue(pointIndex, inputValue) {
+      return {
+        type: SET_INPUT_VALUE,
+        payload: inputValue,
+        meta: {...meta, pointIndex}
+      }
+    },
+    setOutputValue(pointIndex, outputValue) {
+      return {
+        type: SET_OUTPUT_VALUE,
+        payload: outputValue,
+        meta: {...meta, pointIndex}
+      }
+    },
+    deletePoint(pointIndex) {
+      return {
+        type: DELETE_POINT,
+        meta: {...meta, pointIndex}
+      }
+    },
+    goToEditManually() {
+      return {
+        type: GO_TO_EDIT_MANUALLY,
+        meta
+      }
+    },
+    addPoint({x, y}) {
+      return {
+        type: ADD_POINT,
+        payload: {x, y},
+        meta
+      }
+    },
+    back() {
+      return {
+        type: BACK,
+        meta
+      }
+    },
+    next() {
+      return {
+        type: NEXT,
+        meta
+      }
+    }
   }
 }

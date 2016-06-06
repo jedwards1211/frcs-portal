@@ -1,3 +1,5 @@
+/* @flow */
+
 import React, {Component} from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
@@ -11,9 +13,14 @@ import {isValidNumPoints, isValidInputValue, isValidOutputValue,
   isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation'
 import {isEmptyValue} from '../utils/validationUtils'
 
+import type {DefaultProps, Props} from './calibrationTypes'
+import {defaultProps} from './calibrationTypes'
+
+import type {FormValidation} from '../flowtypes/validationTypes'
+
 import './CalibrationSteps.sass'
 
-function autoPrecision(value) {
+function autoPrecision(value: number): number {
   value = Math.abs(value)
   if (value < 10) {
     return 3
@@ -27,30 +34,29 @@ function autoPrecision(value) {
   return 0
 }
 
-function computeInputPrecision(props) {
+function computeInputPrecision(props: Object): number {
   let inputPrecision = props.inputPrecision
   if (!_.isNumber(inputPrecision)) {
     // set this for Math.max
     inputPrecision = null
-    for (let point of props.calibration.points) {
+    for (let point of props.calibration.get('points')) {
       if (_.isNumber(point.x)) {
-        inputPrecision = Math.max(inputPrecision, autoPrecision(point.x))
+        const pointPrecision = autoPrecision(point.x)
+        if (inputPrecision == null || pointPrecision > inputPrecision) inputPrecision = pointPrecision
       }
     }
     if (!_.isNumber(inputPrecision)) {
       inputPrecision = 3
     }
   }
-  return inputPrecision
+  return inputPrecision || 0
 }
 
-export class NumPoints extends Component {
-  static defaultProps = {
-    onNext() {},
-    onNumPointsChange() {}
-  };
-  onNumPointsChange = event => this.props.onNumPointsChange(event.target.value);
-  onKeyDown = e => {
+export class NumPoints extends Component<DefaultProps, Props, void> {
+  static defaultProps = defaultProps;
+  _numPoints: HTMLElement;
+  onNumPointsChange: Function = event => this.props.onNumPointsChange(event.target.value);
+  onKeyDown: Function = e => {
     if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
       this.props.onNext()
     }
@@ -61,7 +67,7 @@ export class NumPoints extends Component {
   componentDidEnter() {
     this._numPoints.focus()
   }
-  static validate(props) {
+  static validate(props: Props): FormValidation {
     const {calibration, maxNumPoints} = props
     const numPoints = calibration.get('numPoints')
 
@@ -81,14 +87,15 @@ export class NumPoints extends Component {
     return {valid: true}
   }
   render() {
-    const {calibration, onNumPointsChange, onEditManuallyClick} = this.props
+    const {onNumPointsChange} = this
+    const {calibration, onEditManuallyClick} = this.props
     const numPoints = calibration.get('numPoints')
 
     const validation = NumPoints.validate(this.props)
 
     return <div className="mf-calibration-num-points-step">
-      <p key="instructions">Enter the number of calibration points you would like to enter:</p>
-      <p key="number" className={classNames('form-group', validationClassNames(validation.numPoints))}>
+      <p>Enter the number of calibration points you would like to enter:</p>
+      <p className={classNames('form-group', validationClassNames(validation.numPoints))}>
         <label className="control-label">Number of points:&nbsp;</label>
         <input type="text" ref={c => this._numPoints = c} className="form-control" inputMode="number"
             value={numPoints} onChange={onNumPointsChange} onKeyDown={this.onKeyDown}
@@ -100,16 +107,18 @@ export class NumPoints extends Component {
   }
 }
 
-export class Point extends Component {
-  static defaultProps = {
-    onOutputValueChange() {},
-    onNext() {}
-  };
-  onOutputValueChange = event => {
+type PointProps = Props & {
+  pointIndex: number,
+}
+
+export class Point extends Component<DefaultProps, PointProps, void> {
+  static defaultProps = defaultProps;
+  _outputValue: ?HTMLElement;
+  onOutputValueChange: Function = event => {
     let {pointIndex, onOutputValueChange} = this.props
     onOutputValueChange(pointIndex, event.target.value)
   };
-  onKeyDown = e => {
+  onKeyDown: Function = e => {
     if (e.key === 'Enter' && Point.validate(this.props).valid) {
       this.props.onNext()
     }
@@ -118,9 +127,9 @@ export class Point extends Component {
     this.componentDidEnter()
   }
   componentDidEnter() {
-    this._outputValue.focus()
+    this._outputValue && this._outputValue.focus()
   }
-  static validate(props) {
+  static validate(props: PointProps): FormValidation {
     const {pointIndex, calibration} = props
     const outputValue = calibration.getIn(['points', pointIndex, 'y'])
 
@@ -149,18 +158,18 @@ export class Point extends Component {
     }
 
     return <div className="mf-calibration-point-step">
-      <h3 key="header">Step {pointIndex + 1}</h3>
-      <p key="instructions">Go to a known {stateType} state, and enter the actual value.</p>
-      <div key="table" className="table">
-        <div key="input" className="input">
-          <div key="header" className="header">Raw Value</div>
-          <div key="value" className="value">
+      <h3>Step {pointIndex + 1}</h3>
+      <p>Go to a known {stateType} state, and enter the actual value.</p>
+      <div className="table">
+        <div className="input">
+          <div className="header">Raw Value</div>
+          <div className="value">
             <input type="text" className="form-control" value={fixedInputValue} readOnly /> {inputUnits}
           </div>
         </div>
-        <div key="output" className={classNames("output", "form-group", validationClassNames(validation.outputValue))}>
-          <div key="header" className="header control-label">Actual Value</div>
-          <div key="value" className="value">
+        <div className={classNames("output", "form-group", validationClassNames(validation.outputValue))}>
+          <div className="header control-label">Actual Value</div>
+          <div className="value">
             <input type="text" ref={c => this._outputValue = c} className="form-control" inputMode="number"
                 value={outputValue} onChange={this.onOutputValueChange} onKeyDown={this.onKeyDown}
             /> {outputUnits}
@@ -176,20 +185,14 @@ function isEmpty(value) {
   return value === '' || value === undefined || value === null || isNaN(value)
 }
 
-export class Confirm extends Component {
-  static defaultProps = {
-    onInputValueChange() {},
-    onOutputValueChange() {},
-    onAddPoint() {},
-    onDeletePoint() {}
-  };
-  _inputTextfields = [];
-  _outputTextfields = [];
-  componentWillMount() { this._mounted = true }
-  componentWillUnmount() { this._mounted = false }
-  onBlur = pointIndex => {
-    setTimeout(() => {
-      if (!this._mounted) return
+export class Confirm extends Component<DefaultProps, Props, void> {
+  static defaultProps = defaultProps;
+  _inputTextfields: HTMLElement[] = [];
+  _outputTextfields: HTMLElement[] = [];
+  timeout: ?number;
+  componentWillUnmount() { clearTimeout(this.timeout) }
+  onBlur: (pointIndex: number) => void = pointIndex => {
+    this.timeout = setTimeout(() => {
       const {calibration, onDeletePoint} = this.props
       const point = calibration.getIn(['points', pointIndex])
       if (document.activeElement !== this._inputTextfields [pointIndex] &&
@@ -278,13 +281,13 @@ export class Confirm extends Component {
     </tr>)
 
     return <div className="mf-calibration-confirm-step">
-      <h3 key="header">Confirm Calibration</h3>
-      <p key="instructions">You may edit the values below:</p>
-      <table key="table">
+      <h3>Confirm Calibration</h3>
+      <p>You may edit the values below:</p>
+      <table>
         <tbody>
-          <tr key="header" className="header">
-            <td key="input" className="inputValue">Raw Value ({inputUnits})</td>
-            <td key="output" className="outputValue">Actual Value ({outputUnits})</td>
+          <tr className="header">
+            <td className="inputValue">Raw Value ({inputUnits})</td>
+            <td className="outputValue">Actual Value ({outputUnits})</td>
           </tr>
           {rows}
         </tbody>

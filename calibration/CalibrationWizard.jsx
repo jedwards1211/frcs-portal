@@ -1,5 +1,6 @@
-import React, {Component, PropTypes} from 'react'
-import ImmutablePropTypes from 'react-immutable-proptypes'
+/* @flow */
+
+import React, {Component} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 
@@ -8,37 +9,17 @@ import PageSlider from '../common/PageSlider'
 import * as CalibrationSteps from './CalibrationSteps'
 import CalibrationWizardButtons from './CalibrationWizardButtons'
 
+import type {DefaultProps, Props} from './calibrationTypes'
+import {defaultProps} from './calibrationTypes'
+
 import './CalibrationWizard.sass'
 
-const valueAndUnit = ImmutablePropTypes.shape({
-  value: PropTypes.number,
-  units: PropTypes.string,
-})
-
-export default class CalibrationWizard extends Component {
-  static propTypes = {
-    isFocused: PropTypes.bool,
-    stepNumber: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.oneOf(['numPoints', 'confirm']),
-    ]),
-    calibration: ImmutablePropTypes.shape({
-      numPoints: CalibrationSteps.stringOrNumber,
-      points: ImmutablePropTypes.listOf(ImmutablePropTypes.shape({
-        x: CalibrationSteps.stringOrNumber,
-        y: CalibrationSteps.stringOrNumber,
-      })).isRequired,
-    }),
-    calibrationState: ImmutablePropTypes.shape({
-      input: valueAndUnit,
-      output: valueAndUnit,
-    }).isRequired,
-    inputPrecision: PropTypes.number,
-    outputPrecision: PropTypes.number,
-    dispatch: PropTypes.func,
-  };
-  _pointSteps = [];
-  updateFocus = () => {
+export default class CalibrationWizard extends Component<DefaultProps, Props, void> {
+  static defaultProps = defaultProps;
+  _pointSteps: React.Component[] = [];
+  _pageSlider: PageSlider;
+  _buttons: CalibrationWizardButtons;
+  updateFocus: Function = () => {
     // let {stepNumber, calibration} = this.props;
     // if (stepNumber === calibration.get('points').size + 1) {
     //   this._buttons.focusApply();
@@ -53,7 +34,7 @@ export default class CalibrationWizard extends Component {
   componentDidLeave() {
     this._pageSlider.componentDidLeave()
   }
-  render() {
+  render(): React.Element {
     let {className, stepNumber, calibration} = this.props
     const points = calibration.get('points')
 
@@ -76,7 +57,7 @@ export default class CalibrationWizard extends Component {
 
     return <div className={className}>
       <PageSlider activeIndex={majorActiveIndex}>
-        <CalibrationSteps.NumPoints ref={c => this._numPointsStep = c} {...this.props} />
+        <CalibrationSteps.NumPoints {...this.props} />
         <PageSlider activeIndex={minorActiveIndex} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
           {_.range(points.size).map(pointIndex => (
             <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
@@ -86,6 +67,7 @@ export default class CalibrationWizard extends Component {
         </PageSlider>
         <CalibrationSteps.Confirm {...this.props} />
       </PageSlider>
+      {/* flow-issue(jcore-portal) */}
       <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c} />
     </div>
   }
