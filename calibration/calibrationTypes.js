@@ -15,6 +15,8 @@ export type DefaultProps = {
   onEditManuallyClick: Function,
   maxNumPoints: number,
   calibrationState: Immutable.Map,
+  applying?: boolean,
+  applyError?: Error,
 }
 
 export type Props = DefaultProps & {

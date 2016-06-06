@@ -3,7 +3,8 @@
 import React, {Component} from 'react'
 import classNames from 'classnames'
 
-import Button from '../bootstrap/Button'
+import Button from '../bootstrap/Button.jsx'
+import Spinner from '../common/Spinner.jsx'
 
 import * as CalibrationSteps from './CalibrationSteps'
 
@@ -23,7 +24,7 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
     }
   }
   render() {
-    let {className, stepNumber, onCancel, onBack, onNext, onApply} = this.props
+    let {className, stepNumber, onCancel, onBack, onNext, onApply, applying} = this.props
 
     let disableNext
     if (stepNumber === 'numPoints') {
@@ -40,7 +41,7 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
       <Button key="cancel" onClick={onCancel}>
         Cancel
       </Button>,
-      <Button key="back" onClick={onBack}>
+      <Button key="back" onClick={stepNumber === 'numPoints' ? onCancel : onBack} disabled={applying}>
         <i className="glyphicon glyphicon-chevron-left" /> Back
       </Button>
     ]
@@ -48,15 +49,18 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
       const validation = CalibrationSteps.Confirm.validate(this.props)
       buttons.push(
         <button type="button" className="btn btn-primary" ref="apply" key="apply"
-            onClick={onApply} disabled={!validation.valid}
+            onClick={onApply} disabled={!validation.valid || applying}
         >
-          Apply
+          {applying
+            ? <span><Spinner /> Applying...</span>
+            : 'Apply'
+          }
         </button>
       )
     }
     else {
       buttons.push(
-        <Button primary key="next" onClick={onNext} disabled={disableNext}>
+        <Button primary key="next" onClick={onNext} disabled={disableNext || applying}>
           <i className="glyphicon glyphicon-chevron-right" /> Next
         </Button>
       )

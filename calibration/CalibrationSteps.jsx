@@ -238,12 +238,15 @@ export class Confirm extends Component<DefaultProps, Props, void> {
   }
   render() {
     const {calibration, calibrationState, onInputValueChange, onOutputValueChange,
-      onDeletePoint, onAddPoint} = this.props
+      onDeletePoint, onAddPoint, applying, applyError} = this.props
     const points = calibration.get('points')
     const inputUnits = calibrationState.getIn(['input', 'units'])
     const outputUnits = calibrationState.getIn(['output', 'units'])
 
     const validation = Confirm.validate(this.props)
+
+    const alerts = {...validation}
+    if (applyError) alerts.applyError = {error: applyError}
 
     let rows = points && _.compact(points.toArray().map((point, index) => {
       const x = point.get('x')
@@ -253,28 +256,30 @@ export class Confirm extends Component<DefaultProps, Props, void> {
       return <tr key={index} className="values">
         <td className={inputClass}>
           <input type="text" className="form-control" value={x} ref={c => this._inputTextfields[index] = c}
+              disabled={applying}
               onChange={e => onInputValueChange(index, e.target.value)} onBlur={() => this.onBlur(index)}
           />
         </td>
         <td className={outputClass}>
           <input type="text" className="form-control" value={y} ref={c => this._outputTextfields[index] = c}
+              disabled={applying}
               onChange={e => onOutputValueChange(index, e.target.value)} onBlur={() => this.onBlur(index)}
           />
         </td>
         <td className="delete">
-          <Button onClick={e => onDeletePoint(index)} tabIndex={-1}>
+          <Button onClick={e => onDeletePoint(index)} tabIndex={-1} disabled={applying}>
             <i className="glyphicon glyphicon-trash" />
           </Button>
         </td>
       </tr>
     })).concat(<tr key={points.size} className="values">
       <td className="inputValue">
-        <input type="text" className="form-control" value=""
+        <input type="text" className="form-control" value="" disabled={applying}
             onChange={e => onAddPoint({x: e.target.value})}
         />
       </td>
       <td className="outputValue">
-        <input type="text" className="form-control" value=""
+        <input type="text" className="form-control" value="" disabled={applying}
             onChange={e => onAddPoint({y: e.target.value})}
         />
       </td>
@@ -292,7 +297,7 @@ export class Confirm extends Component<DefaultProps, Props, void> {
           {rows}
         </tbody>
       </table>
-      <AlertGroup alerts={validation} />
+      <AlertGroup alerts={alerts} />
     </div>
   }
 }
