@@ -16,24 +16,6 @@ import './CalibrationWizard.sass'
 
 export default class CalibrationWizard extends Component<DefaultProps, Props, void> {
   static defaultProps = defaultProps;
-  _pointSteps: React.Component[] = [];
-  _pageSlider: PageSlider;
-  _buttons: CalibrationWizardButtons;
-  updateFocus: Function = () => {
-    // let {stepNumber, calibration} = this.props;
-    // if (stepNumber === calibration.get('points').size + 1) {
-    //   this._buttons.focusApply();
-    // }
-  };
-  componentDidAppear() {
-    this._pageSlider.componentDidAppear()
-  }
-  componentDidEnter() {
-    this._pageSlider.componentDidEnter()
-  }
-  componentDidLeave() {
-    this._pageSlider.componentDidLeave()
-  }
   render(): React.Element {
     let {className, stepNumber, calibration} = this.props
     const points = calibration.get('points')
@@ -58,17 +40,15 @@ export default class CalibrationWizard extends Component<DefaultProps, Props, vo
     return <div className={className}>
       <PageSlider activeIndex={majorActiveIndex}>
         <CalibrationSteps.NumPoints {...this.props} />
-        <PageSlider activeIndex={minorActiveIndex} onTransitionEnd={this.updateFocus} ref={c => this._pageSlider = c}>
+        <PageSlider activeIndex={minorActiveIndex}>
           {_.range(points.size).map(pointIndex => (
-            <CalibrationSteps.Point {...this.props} ref={c => this._pointSteps[pointIndex] = c}
-                key={pointIndex} pointIndex={pointIndex}
-            />
+            <CalibrationSteps.Point {...this.props} key={pointIndex} pointIndex={pointIndex} />
           ))}
         </PageSlider>
         <CalibrationSteps.Confirm {...this.props} />
       </PageSlider>
       {/* flow-issue(jcore-portal) */}
-      <CalibrationWizardButtons {...this.props} ref={c => this._buttons = c} />
+      <CalibrationWizardButtons {...this.props} />
     </div>
   }
 }

@@ -3,6 +3,7 @@
 import React, {Component} from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
+import {TransitionListener} from 'react-transition-context'
 
 import Button from '../bootstrap/Button'
 
@@ -54,18 +55,18 @@ function computeInputPrecision(props: Object): number {
 
 export class NumPoints extends Component<DefaultProps, Props, void> {
   static defaultProps = defaultProps;
-  _numPoints: HTMLElement;
+  _numPoints: ?HTMLInputElement;
   onNumPointsChange: Function = event => this.props.onNumPointsChange(event.target.value);
   onKeyDown: Function = e => {
     if (e.key === 'Enter' && NumPoints.validate(this.props).valid) {
       this.props.onNext()
     }
   };
-  componentDidAppear() {
-    this.componentDidEnter()
-  }
-  componentDidEnter() {
-    this._numPoints.focus()
+  didComeIn: Function = () => {
+    if (this._numPoints) {
+      this._numPoints.focus()
+      this._numPoints.select()
+    }
   }
   static validate(props: Props): FormValidation {
     const {calibration, maxNumPoints} = props
@@ -103,6 +104,7 @@ export class NumPoints extends Component<DefaultProps, Props, void> {
       </p>
       <AlertGroup alerts={validation} />
       <p>or <Button onClick={onEditManuallyClick}>Edit Manually</Button></p>
+      <TransitionListener didComeIn={this.didComeIn} />
     </div>
   }
 }
@@ -113,7 +115,7 @@ type PointProps = Props & {
 
 export class Point extends Component<DefaultProps, PointProps, void> {
   static defaultProps = defaultProps;
-  _outputValue: ?HTMLElement;
+  _outputValue: ?HTMLInputElement;
   onOutputValueChange: Function = event => {
     let {pointIndex, onOutputValueChange} = this.props
     onOutputValueChange(pointIndex, event.target.value)
@@ -123,11 +125,11 @@ export class Point extends Component<DefaultProps, PointProps, void> {
       this.props.onNext()
     }
   };
-  componentDidAppear() {
-    this.componentDidEnter()
-  }
-  componentDidEnter() {
-    this._outputValue && this._outputValue.focus()
+  didComeIn: Function = () => {
+    if (this._outputValue) {
+      this._outputValue.focus()
+      this._outputValue.select()
+    }
   }
   static validate(props: PointProps): FormValidation {
     const {pointIndex, calibration} = props
@@ -177,6 +179,7 @@ export class Point extends Component<DefaultProps, PointProps, void> {
         </div>
       </div>
       <AlertGroup alerts={validation} />
+      <TransitionListener didComeIn={this.didComeIn} />
     </div>
   }
 }

@@ -1,7 +1,8 @@
 /* @flow */
 
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import classNames from 'classnames'
+import {TransitionListener} from 'react-transition-context'
 
 import Button from '../bootstrap/Button.jsx'
 import Spinner from '../common/Spinner.jsx'
@@ -18,11 +19,24 @@ import {defaultProps} from './calibrationTypes'
  */
 export default class CalibrationWizardButtons extends Component<DefaultProps, Props, void> {
   static defaultProps = defaultProps;
-  focusApply() {
-    if (this.refs.apply) {
+  static contextTypes = {
+    transitionContext: PropTypes.object
+  };
+
+  focusApplyIfNecessary: (props?: Props, context?: any) => void = (props = this.props, context = this.context) => {
+    const {transitionContext} = context
+    const {stepNumber} = props
+
+    if (!transitionContext || transitionContext.getState() === 'in' && stepNumber === 'confirm' && this.refs.apply) {
       this.refs.apply.focus()
     }
+  };
+  didComeIn: Function = () => this.focusApplyIfNecessary();
+
+  componentWillReceiveProps(nextProps: Props, nextContext: any) {
+    this.focusApplyIfNecessary(nextProps, nextContext)
   }
+
   render() {
     let {className, stepNumber, onCancel, onBack, onNext, onApply, applying} = this.props
 
@@ -32,7 +46,6 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
       disableNext = !validation.valid
     }
     else if (stepNumber !== 'confirm') {
-      // flow-issue(jcore-portal)
       const validation = CalibrationSteps.Point.validate({...this.props, pointIndex: stepNumber})
       disableNext = !validation.valid
     }
@@ -68,6 +81,9 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
 
     className = classNames(className, 'mf-calibration-wizard-buttons')
 
-    return <span {...this.props} className={className}>{buttons}</span>
+    return <span {...this.props} className={className}>
+      {buttons}
+      <TransitionListener didComeIn={this.didComeIn} />
+    </span>
   }
 }
