@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react'
-import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-pure-render-mixin'
 import _ from 'lodash'
+import TransitionContext from 'react-transition-context'
 
 import propAssign from '../utils/propAssign'
 import setStateChain from '../utils/setStateChain'
@@ -79,6 +79,7 @@ export default class PageSlider extends Component {
     let {state: {activeIndex}, props: {transitionHeight}} = this
 
     if (nextActiveIndex === activeIndex || this._transitioning) return false
+    this._lastActiveIndex = activeIndex
     this._transitioning = true
 
     const leavingChild = this._childRefs[activeIndex]
@@ -132,9 +133,23 @@ export default class PageSlider extends Component {
       this._childRefs[index] = c
     }
 
-    return <div key={index} ref={c => this._wrappers[index] = c} style={style}>
-      {React.cloneElement(child, {ref})}
-    </div>
+    let transitionState
+    if (transitioning) {
+      if (index === activeIndex) transitionState = 'entering'
+      else if (index === this._lastActiveIndex) transitionState = 'leaving'
+      else transitionState = 'out'
+    }
+    else {
+      transitionState = index === activeIndex ? 'in' : 'out'
+    }
+
+    return (
+      <TransitionContext transitionState={transitionState}>
+        <div key={index} ref={c => this._wrappers[index] = c} style={style}>
+          {React.cloneElement(child, {ref})}
+        </div>
+      </TransitionContext>
+    )
   };
   render() {
     var {className, style} = this.props
