@@ -92,11 +92,9 @@ export default class LoginView extends Component<void, Props, void> {
     }
 
     return <View {...this.props} className={className}>
-      {!user &&
-        <Header>
-          <Title>Log In</Title>
-        </Header>
-      }
+      <Header>
+        <Title>{user ? 'Account' : 'Log In'}</Title>
+      </Header>
       <Fader>{content}</Fader>
     </View>
   }
