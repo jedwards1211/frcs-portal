@@ -8,6 +8,7 @@ import {createSelector} from 'reselect'
 import createOrCloneElement from '../../utils/createOrCloneElement'
 
 import Glyphicon from '../../bootstrap/Glyphicon.jsx'
+import Fader from '../../common/Fader.jsx'
 import Alert from '../../bootstrap/Alert.jsx'
 
 import ReduxLoginView from './ReduxLoginView.jsx'
@@ -28,8 +29,8 @@ const ForbiddenDecorator = createSkinDecorator({
   Body: (Body, props, decorator) => {
     let {requiredRoles} = decorator.props
     return <Body {...props}>
-      <Alert warning>{`You must be logged in as an ${requiredRoles instanceof Array ? '[' + requiredRoles.join(', ') + ']' : requiredRoles} user to access this page`}</Alert>
-      {props.children}
+    <Alert warning>{`You must be logged in as an ${requiredRoles instanceof Array ? '[' + requiredRoles.join(', ') + ']' : requiredRoles} user to access this page`}</Alert>
+    {props.children}
     </Body>
   }
 })
@@ -38,45 +39,49 @@ const ReadOnlyDecorator = createSkinDecorator({
   Body: (Body, props, decorator) => {
     let {requiredRolesToWrite} = decorator.props
     return <Body {...props}>
-      <Alert warning><Glyphicon lock />
-        You must be logged in as an {requiredRolesToWrite instanceof Array ? `[${requiredRolesToWrite.join(', ')}]` : requiredRolesToWrite}
-        user to edit this view</Alert>
-      {props.children}
+    <Alert warning><Glyphicon lock />
+      You must be logged in as an {requiredRolesToWrite instanceof Array ? `[${requiredRolesToWrite.join(', ')}]` : requiredRolesToWrite}
+      user to edit this view</Alert>
+    {props.children}
     </Body>
   }
 })
 
 const UnauthorizedDecorator = createSkinDecorator({
   Body: (Body, props, decorator) => <Body {...props}>
-    <Alert warning>{"You must be logged in to access this page"}</Alert>
-    {props.children}
+  <Alert warning>{"You must be logged in to access this page"}</Alert>
+  {props.children}
   </Body>
 })
 
 class RestrictedView extends Component<void, Props, void> {
-  render(): ?React.Element {
-    let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children} = this.props
+  render(): React.Element {
+    let {loggedIn, isAuthorized, isReadOnly, requiredRoles, requiredRolesToWrite, children, ...props} = this.props
+
+    let content
 
     if (isAuthorized) {
       if (isReadOnly) {
-        return <ReadOnlyDecorator key="readOnly" requiredRolesToWrite={requiredRolesToWrite}>
-          {createOrCloneElement(children, {readOnly: true})}
+        content = <ReadOnlyDecorator key="readOnly" requiredRolesToWrite={requiredRolesToWrite}>
+          {createOrCloneElement(children, {...props, readOnly: true})}
         </ReadOnlyDecorator>
       }
       else {
-        return createOrCloneElement(children, {key: 'allowed'})
+        content = createOrCloneElement(children, {...props, key: 'allowed'})
       }
     }
     else if (loggedIn) {
-      return <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
+      content = <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
         <ReduxLoginView />
       </ForbiddenDecorator>
     }
     else {
-      return <UnauthorizedDecorator key="unauthorized">
+      content = <UnauthorizedDecorator key="unauthorized">
         <ReduxLoginView />
       </UnauthorizedDecorator>
     }
+
+    return <Fader>{content}</Fader>
   }
 }
 
