@@ -1,5 +1,6 @@
 import React, {Component, PropTypes, Children} from 'react'
 import classNames from 'classnames'
+import _ from 'lodash'
 
 import setStateChain from '../utils/setStateChain'
 import {getTimeout} from '../transition/callOnTransitionEnd'
@@ -12,6 +13,7 @@ export default class Fader extends Component {
   static propTypes = {
     children:         PropTypes.any,
     onTransitionEnd:  PropTypes.func,
+    transitionHeight: PropTypes.bool,
   };
   static defaultProps = {
     onTransitionEnd() {},
@@ -49,6 +51,7 @@ export default class Fader extends Component {
   }
 
   doTransition = (props = this.props) => {
+    const {transitionHeight} = props
     let {state: {curChild: prevChild}} = this
     let nextChild = Children.only(props.children)
 
@@ -77,7 +80,7 @@ export default class Fader extends Component {
     let heightTransitionEnd
 
     let sequence = [
-      cb => ({height: this._root.scrollHeight, curChild: nextChild}),
+      transitionHeight && (cb => ({height: this._root.scrollHeight, curChild: nextChild}),
       cb => {
         let nextChild = getNextChild()
         return {
@@ -90,12 +93,12 @@ export default class Fader extends Component {
             </div>,
           ],
         }
-      },
+      }),
       cb => {
         let nextChild = getNextChild()
         heightTransitionEnd = Date.now() + Math.max(TICK, getTimeout(this._root) || 0)
         return {
-          height:           this._nextChild.scrollHeight,
+          height:           transitionHeight ? this._nextChild.scrollHeight : undefined,
           curChild:         nextChild,
           wrappedChildren:  [
             <div key={prevChild.key} className="fade leaving"
@@ -117,8 +120,8 @@ export default class Fader extends Component {
           ],
         }
       },
-      cb => setTimeout(cb,
-        Math.max(TICK, heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0)),
+      transitionHeight && (cb => setTimeout(cb,
+        Math.max(TICK, heightTransitionEnd - Date.now(), getTimeout(this._nextChild) || 0))),
       cb => {
         let nextChild = getNextChild()
         return {
@@ -128,7 +131,7 @@ export default class Fader extends Component {
           ],
         }
       },
-      cb => {
+      transitionHeight && (cb => {
         let nextChild = getNextChild()
         return {
           height:           undefined,
@@ -136,10 +139,10 @@ export default class Fader extends Component {
             <div key={nextChild.key} className="fade in">{nextChild}</div>,
           ],
         }
-      },
+      }),
     ]
 
-    setStateChain(this, sequence, err => {
+    setStateChain(this, _.compact(sequence), err => {
       this._transitioning = false
       if (!this.doTransition()) {
         let nextChild = getNextChild()
