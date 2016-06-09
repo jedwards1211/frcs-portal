@@ -21,7 +21,7 @@ const TitleDecorator = createSkinDecorator({
       <Title {...props}>
         {to &&
           <Nav left>
-            <Link to={to}><Glyphicon menuLeft /></Link>
+            <Link to={to}><Glyphicon menuLeft style={{margin: -5, padding: 5}} /></Link>
           </Nav>
         }
         {children}
