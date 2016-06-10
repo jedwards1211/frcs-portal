@@ -14,7 +14,6 @@ type GroupProps = {
   className?: string,
   labelClass?: string,
   controlClass?: string,
-  formGroupClass?: string,
   staticControl?: boolean,
   label?: any,
   children?: any,
@@ -111,9 +110,14 @@ export default class Form extends Component<void, FormProps, void> {
   addFormGroups(children: any): any {
     return mapChildrenRecursive(children, child => {
       if (child && child.props && child.props.formGroup) {
-        return <Group {...child.props} className={child.props.formGroupClass}>
-          {child}
-        </Group>
+        const {formGroup, labelClass, controlClass,
+          staticControl, label, contextClass, error, warning, success, validation} = child.props
+        const groupProps = {
+          ...formGroup || {},
+          labelClass, controlClass, staticControl, label,
+          contextClass, error, warning, success, validation
+        }
+        return <Group {...groupProps}>{child}</Group>
       }
       return child
     })
