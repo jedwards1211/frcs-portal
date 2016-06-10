@@ -1,6 +1,7 @@
 import React, {Component, PropTypes, Children} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
+import TransitionContext from 'react-transition-context'
 
 import setStateChain from '../utils/setStateChain'
 import {getTimeout} from '../transition/callOnTransitionEnd'
@@ -25,7 +26,11 @@ export default class Fader extends Component {
     let curChild = Children.only(props.children)
     this.state = {
       curChild,
-      wrappedChildren: [<div className="fade in" key={curChild.key}>{curChild}</div>],
+      wrappedChildren: [
+        <TransitionContext transitionState="in" key={curChild.key}>
+          <div className="fade in">{curChild}</div>
+        </TransitionContext>
+      ]
     }
   }
 
@@ -61,7 +66,9 @@ export default class Fader extends Component {
           curChild: nextChild,
           wrappedChildren: this.state.wrappedChildren.map(child => {
             if (child.key !== nextChild.key) return child
-            return <div {...child.props} key={nextChild.key}>{nextChild}</div>
+            return <TransitionContext {...child.props} key={nextChild.key}>
+              <div {...child.props.children.props}>{nextChild}</div>
+            </TransitionContext>
           }),
         })
       }
@@ -87,10 +94,12 @@ export default class Fader extends Component {
           transitioning: true,
           curChild: nextChild,
           wrappedChildren:  [
-            <div key={prevChild.key} className="fade in">{prevChild}</div>,
-            <div key={nextChild.key} className="next-child fade" ref={c => this._nextChild = c}>
-              {nextChild}
-            </div>,
+            <TransitionContext transitionState="in" key={prevChild.key}>
+              <div className="fade in">{prevChild}</div>
+            </TransitionContext>,
+            <TransitionContext transitionState="out" key={nextChild.key}>
+              <div className="next-child fade" ref={c => this._nextChild = c}>{nextChild}</div>
+            </TransitionContext>
           ],
         }
       }),
@@ -101,10 +110,12 @@ export default class Fader extends Component {
           height:           transitionHeight ? this._nextChild.scrollHeight : undefined,
           curChild:         nextChild,
           wrappedChildren:  [
-            <div key={prevChild.key} className="fade leaving"
-                ref={c => this._prevChild = c}
-            >{prevChild}</div>,
-            <div key={nextChild.key} className="fade">{nextChild}</div>,
+            <TransitionContext transitionState="leaving" key={prevChild.key}>
+              <div className="fade leaving" ref={c => this._prevChild = c}>{prevChild}</div>
+            </TransitionContext>,
+            <TransitionContext transitionState="out" key={nextChild.key}>
+              <div className="fade">{nextChild}</div>
+            </TransitionContext>
           ],
         }
       },
@@ -114,9 +125,9 @@ export default class Fader extends Component {
         return {
           curChild:         nextChild,
           wrappedChildren:  [
-            <div key={nextChild.key} className="fade in entering"
-                ref={c => this._nextChild = c}
-            >{nextChild}</div>,
+            <TransitionContext transitionState="entering" key={nextChild.key}>
+              <div className="fade in entering" ref={c => this._nextChild = c}>{nextChild}</div>
+            </TransitionContext>
           ],
         }
       },
@@ -127,7 +138,9 @@ export default class Fader extends Component {
         return {
           transitioning:    false,
           wrappedChildren:  [
-            <div key={nextChild.key} className="fade in">{nextChild}</div>,
+            <TransitionContext transitionState="in" key={nextChild.key}>
+              <div className="fade in">{nextChild}</div>
+            </TransitionContext>
           ],
         }
       },
@@ -136,7 +149,9 @@ export default class Fader extends Component {
         return {
           height:           undefined,
           wrappedChildren:  [
-            <div key={nextChild.key} className="fade in">{nextChild}</div>,
+            <TransitionContext transitionState="in" key={nextChild.key}>
+              <div className="fade in">{nextChild}</div>
+            </TransitionContext>
           ],
         }
       }),
