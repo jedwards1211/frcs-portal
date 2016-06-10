@@ -2,6 +2,7 @@
 
 import React, {Component} from 'react'
 import _ from 'lodash'
+import {TransitionListener} from 'react-transition-context'
 
 import BindData from 'react-bind-data'
 import Form from '../bootstrap/Form'
@@ -41,11 +42,11 @@ export default class ChangePasswordView extends Component {
     onSubmit() {}
   };
   oldPasswordInput: any;
-  componentDidMount(): void {
+  didComeIn: Function = () => {
     if (this.oldPasswordInput) {
       this.oldPasswordInput.focus()
     }
-  }
+  };
   validate: () => FormValidation = () => {
     let {oldPassword, newPassword, retypeNewPassword} = this.props
 
@@ -126,6 +127,7 @@ export default class ChangePasswordView extends Component {
           </Footer>
         </Form>
       </BindData>
+      <TransitionListener didComeIn={this.didComeIn} />
     </View>
   }
 }
