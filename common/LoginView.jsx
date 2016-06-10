@@ -1,7 +1,9 @@
 /* @flow */
 
 import React, {Component} from 'react'
+import {findDOMNode} from 'react-dom'
 import classNames from 'classnames'
+import {TransitionListener} from 'react-transition-context'
 
 import Spinner from './Spinner'
 import AlertGroup from './AlertGroup'
@@ -30,6 +32,8 @@ type Props = {
 };
 
 export default class LoginView extends Component<void, Props, void> {
+  usernameInput: ?HTMLInputElement;
+
   validate: () => FormValidation = () => {
     let {username, password} = this.props
     let result = {}
@@ -47,6 +51,17 @@ export default class LoginView extends Component<void, Props, void> {
     let {username, password, onSubmit} = this.props
     if (username && password && onSubmit && this.validate().valid) {
       onSubmit(username, password)
+    }
+  };
+  didComeIn: Function = () => {
+    const {onFieldChange} = this.props
+    if (onFieldChange) {
+      onFieldChange(['username'], '')
+      onFieldChange(['password'], '')
+    }
+    if (this.usernameInput) {
+      this.usernameInput.focus()
+      this.usernameInput.select()
     }
   };
   render(): React.Element {
@@ -78,7 +93,7 @@ export default class LoginView extends Component<void, Props, void> {
             omnidata={loggingIn ? {disabled: true} : undefined}
         >
           <Body>
-            <Input type="text" placeholder="Username" name="username" />
+            <Input type="text" placeholder="Username" name="username" ref={c => this.usernameInput = findDOMNode(c)} />
             <Input type="password" placeholder="Password" name="password" />
           </Body>
         </BindData>
@@ -88,6 +103,7 @@ export default class LoginView extends Component<void, Props, void> {
           </Button>
           <AlertGroup alerts={alerts} />
         </Footer>
+        <TransitionListener didComeIn={this.didComeIn} />
       </Form>
     }
 
