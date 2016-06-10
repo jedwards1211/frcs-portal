@@ -3,7 +3,7 @@
 import React, {Component} from 'react'
 import _ from 'lodash'
 
-import Autobind from '../Autobind/Autobind.jsx'
+import BindData from 'react-bind-data'
 import Form from '../bootstrap/Form'
 import Button from '../bootstrap/Button'
 import Input from '../bootstrap/Input'
@@ -26,18 +26,13 @@ export type Props = {
   oldPassword?: string,
   newPassword?: string,
   retypeNewPassword?: string,
-  onOldPasswordChange: Function,
-  onNewPasswordChange: Function,
-  onRetypeNewPasswordChange: Function,
+  onFieldChange?: (path: any[], newValue: any) => any,
   onSubmit: (oldPassword: string, newPassword: string) => any,
 };
 
 export default class ChangePasswordView extends Component {
   props: Props;
   static defaultProps: {
-    onOldPasswordChange: () => void,
-    onNewPasswordChange: () => void,
-    onRetypeNewPasswordChange: () => void,
     onSubmit: (oldPassword: string, newPassword: string) => any,
   } = {
     onOldPasswordChange() {},
@@ -90,7 +85,7 @@ export default class ChangePasswordView extends Component {
     }
   };
   render(): ?React.Element {
-    let {disabled, changingPassword, changePasswordError} = this.props
+    let {disabled, changingPassword, changePasswordError, onFieldChange} = this.props
     let {onSubmit} = this
 
     let validation = this.validate()
@@ -100,7 +95,7 @@ export default class ChangePasswordView extends Component {
     disabled = disabled || changingPassword
 
     return <View className="mf-change-password-view">
-      <Autobind data={this.props} callbacks={this.props} metadata={{validation}}
+      <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
           omnidata={disabled ? {disabled} : undefined}
       >
         <Form onSubmit={onSubmit} labelClass="lbl" controlClass="control">
@@ -109,15 +104,15 @@ export default class ChangePasswordView extends Component {
           </Header>
           <Body>
             <fieldset disabled={disabled}>
-              <Input formGroup label="Old Password" autobindField="oldPassword"
+              <Input formGroup label="Old Password" name="oldPassword"
                   type="password" ref={c => this.oldPasswordInput = c}
               />
 
-              <Input formGroup label="New Password" autobindField="newPassword"
+              <Input formGroup label="New Password" name="newPassword"
                   type="password"
               />
 
-              <Input formGroup label="Retype New Password" autobindField="retypeNewPassword"
+              <Input formGroup label="Retype New Password" name="retypeNewPassword"
                   type="password"
               />
             </fieldset>
@@ -130,7 +125,7 @@ export default class ChangePasswordView extends Component {
             </Button>
           </Footer>
         </Form>
-      </Autobind>
+      </BindData>
     </View>
   }
 }

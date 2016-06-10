@@ -7,9 +7,9 @@ import {connect} from 'react-redux'
 import type {Dispatch} from '../../flowtypes/reduxTypes'
 
 import * as actions from '../actions/changePasswordActions'
-import {setField} from '../../Autobind/AutobindActions'
 
-import dispatchAutobindFieldChanges from '../../Autobind/dispatchAutobindFieldChanges'
+import {dispatchFieldChanges, actions as bindDataActions} from 'react-bind-data-redux'
+const {setField} = bindDataActions
 
 import ChangePasswordView from '../../common/ChangePasswordView'
 
@@ -51,15 +51,14 @@ class ReduxChangePasswordView extends Component {
   };
   componentWillMount() {
     let {dispatch} = this.props
-    dispatch(setField("oldPassword", undefined, dispatchOptions))
-    dispatch(setField("newPassword", undefined, dispatchOptions))
-    dispatch(setField("retypeNewPassword", undefined, dispatchOptions))
+    dispatch(setField(["oldPassword"], undefined, dispatchOptions))
+    dispatch(setField(["newPassword"], undefined, dispatchOptions))
+    dispatch(setField(["retypeNewPassword"], undefined, dispatchOptions))
   }
   render() {
     let {onSubmit, props: {dispatch}} = this
     return <ChangePasswordView  {...this.props} onSubmit={onSubmit}
-        onAutobindFieldChange={dispatchAutobindFieldChanges(dispatch,
-                                                  dispatchOptions)}
+        onFieldChange={dispatchFieldChanges(dispatch, dispatchOptions)}
            />
   }
 }
