@@ -46,6 +46,7 @@ export default class CalibrationWizardButtons extends Component<DefaultProps, Pr
       disableNext = !validation.valid
     }
     else if (stepNumber !== 'confirm') {
+      // flow-issue(jcore-portal)
       const validation = CalibrationSteps.Point.validate({...this.props, pointIndex: stepNumber})
       disableNext = !validation.valid
     }

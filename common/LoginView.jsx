@@ -59,9 +59,10 @@ export default class LoginView extends Component<void, Props, void> {
       onFieldChange(['username'], '')
       onFieldChange(['password'], '')
     }
-    if (this.usernameInput) {
-      this.usernameInput.focus()
-      this.usernameInput.select()
+    const {usernameInput} = this
+    if (usernameInput) {
+      usernameInput.focus()
+      usernameInput.select()
     }
   };
   render(): React.Element {

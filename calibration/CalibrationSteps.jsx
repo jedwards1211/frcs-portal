@@ -63,11 +63,12 @@ export class NumPoints extends Component<DefaultProps, Props, void> {
     }
   };
   didComeIn: Function = () => {
-    if (this._numPoints) {
-      this._numPoints.focus()
-      this._numPoints.select()
+    const {_numPoints} = this
+    if (_numPoints) {
+      _numPoints.focus()
+      _numPoints.select()
     }
-  }
+  };
   static validate(props: Props): FormValidation {
     const {calibration, maxNumPoints} = props
     const numPoints = calibration.get('numPoints')
@@ -126,11 +127,12 @@ export class Point extends Component<DefaultProps, PointProps, void> {
     }
   };
   didComeIn: Function = () => {
-    if (this._outputValue) {
-      this._outputValue.focus()
-      this._outputValue.select()
+    const {_outputValue} = this
+    if (_outputValue) {
+      _outputValue.focus()
+      _outputValue.select()
     }
-  }
+  };
   static validate(props: PointProps): FormValidation {
     const {pointIndex, calibration} = props
     const outputValue = calibration.getIn(['points', pointIndex, 'y'])

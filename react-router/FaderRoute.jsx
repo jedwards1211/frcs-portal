@@ -34,7 +34,7 @@ export default class FaderRoute extends Component<void, Props, void> {
         else {
           routeKey = nextRouteKey++
         }
-        routeKeys.set(nextRoute, routeKey)
+        if (routeKey != null) routeKeys.set(nextRoute, routeKey)
       }
 
     }
