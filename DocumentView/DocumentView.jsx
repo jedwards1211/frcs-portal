@@ -12,8 +12,6 @@ import {Nav} from './../common/View.jsx'
 
 import {createSkinDecorator} from 'react-skin'
 
-import createOrCloneElement from '../utils/createOrCloneElement'
-
 import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx'
 
 type DefaultProps = {
@@ -311,10 +309,16 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
     return <ContentDecorator>
       <div {...this.props} className={className}>
-        {createOrCloneElement(children, {
-          document,
-          disabled: saving || deleting
-        })}
+        {React.isValidElement(children)
+          ? React.cloneElement(children, {
+              document,
+              disabled: saving || deleting
+            })
+          : children({
+              document,
+              disabled: saving || deleting
+            })
+        }
         <CatchUnsavedChangesModal open={askToLeave} saving={saving} valid={valid}
             hasUnsavedChanges={this.hasUnsavedChanges()}
             onOpenChange={open => setAskToLeave(open)}
