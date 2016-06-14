@@ -97,6 +97,7 @@ declare module MeteorGlobal {
   declare var isClient: boolean;
   declare var isServer: boolean;
   declare var isCordova: boolean;
+  declare function sleep(delay: number): void;
   declare function user() : Object;
   declare function userId() : string;
   declare function loggingIn(): boolean;
