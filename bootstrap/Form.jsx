@@ -79,6 +79,10 @@ export class Group extends Component<void, GroupProps, void> {
   }
 }
 
+type DefaultProps = {
+  onSubmit: Function
+}
+
 type FormProps = {
   className?: string,
   inline?: boolean,       // use .form-inline
@@ -89,7 +93,10 @@ type FormProps = {
                           // wrapped in a <Group>
 };
 
-export default class Form extends Component<void, FormProps, void> {
+export default class Form extends Component<DefaultProps, FormProps, void> {
+  static defaultProps = {
+    onSubmit(e) { e.preventDefault() }
+  };
   static childContextTypes = {
     insideForm:   PropTypes.bool,   // some components add .form-control class
                                     // when they detect this
