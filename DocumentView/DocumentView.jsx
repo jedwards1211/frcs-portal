@@ -14,9 +14,20 @@ import {createSkinDecorator} from 'react-skin'
 
 import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx'
 
+export type FooterButtonProps = {
+  leaveAfterCancel?: Function,
+  leaveAfterCreating?: Function,
+  leaveAfterSaving: Function,
+  mode: 'create' | 'edit',
+  disabled?: boolean,
+  save: () => Promise,
+  saving?: boolean,
+}
+
 type DefaultProps = {
   documentDisplayName: string,
-  documentDisplayPronoun: string
+  documentDisplayPronoun: string,
+  FooterButtons: (props: FooterButtonProps) => React.Element,
 };
 
 type Props = {
@@ -54,8 +65,28 @@ type Props = {
   deleting?: boolean,
   saveError?: Error,
   deleteError?: Error,
-  children?: any
+  children?: any,
+  FooterButtons: (props: FooterButtonProps) => React.Element,
 };
+
+const DefaultFooterButtons: (props: FooterButtonProps) => React.Element = props => {
+  const {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving, mode, disabled, save, saving} = props
+  return (
+    <span>
+      <Button onClick={leaveAfterCancel}>Cancel</Button>
+      {mode === 'edit' &&
+        <Button disabled={disabled} onClick={save}>Apply</Button>
+      }
+      {mode !== 'none' &&
+        <Button primary disabled={disabled}
+            onClick={() => save().then(mode === 'create' ? leaveAfterCreating : leaveAfterSaving)}
+        >
+          {saving ? <span><Spinner /> Saving...</span> : mode === 'create' ? 'Create' : 'OK'}
+        </Button>
+      }
+    </span>
+  )
+}
 
 /**
  * Implements logic common to views where the user edits something and then saves it or discards changes.
@@ -68,7 +99,8 @@ type Props = {
 export default class DocumentView extends Component<DefaultProps, Props, void> {
   static defaultProps = {
     documentDisplayName: 'document',
-    documentDisplayPronoun: 'it'
+    documentDisplayPronoun: 'it',
+    FooterButtons: DefaultFooterButtons
   };
   componentWillMount() {
     if (this.props.mode === 'edit') {
@@ -106,6 +138,8 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
   getLeaveCallbacks: () => Object = () => {
     let {leave, leaveAfterCancel, leaveAfterSaving, leaveAfterCreating, leaveAfterDeleting} = this.props
+
+    if (!leave) leave = (() => {})
 
     return {
       leaveAfterCancel:   leaveAfterCancel || leave,
@@ -259,7 +293,7 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props
-      let {disabled, loading, loadError, mode,
+      let {disabled, loading, loadError, mode, FooterButtons,
         saveError, saving, deleteError, deleting, createDocument} = this.props
 
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks()
@@ -282,15 +316,10 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
       return <Footer {...props}>
         <AlertGroup alerts={alerts} animated={false} />
-        <Button onClick={leaveAfterCancel}>Cancel</Button>
-        {footerMode === 'edit' && <Button key="apply" disabled={disabled}
-            onClick={this.save}
-                                  >Apply</Button>}
-        {footerMode !== 'none' && <Button primary key="ok" disabled={disabled}
-            onClick={() => this.save().then(footerMode === 'create' ? leaveAfterCreating : leaveAfterSaving)}
-                                  >
-          {saving ? <span><Spinner /> Saving...</span> : footerMode === 'create' ? 'Create' : 'OK'}
-        </Button>}
+        <FooterButtons leaveAfterCancel={leaveAfterCancel} leaveAfterCreating={leaveAfterCreating}
+            leaveAfterSaving={leaveAfterSaving} mode={footerMode} saving={saving} disabled={disabled}
+            save={this.save}
+        />
         {children}
       </Footer>
     }
