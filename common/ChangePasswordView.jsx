@@ -1,6 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react'
+import classNames from 'classnames'
 import _ from 'lodash'
 import {TransitionListener} from 'react-transition-context'
 
@@ -20,10 +21,17 @@ import type {FormValidation} from '../flowtypes/validationTypes'
 
 import './ChangePasswordView.sass'
 
+export type DefaultProps = {
+  requireOldPassword: boolean,
+  onSubmit: (oldPassword: string, newPassword: string) => any,
+};
+
 export type Props = {
+  className?: string,
   disabled?: boolean,
   changingPassword?: boolean,
   changePasswordError?: any,
+  requireOldPassword: boolean,
   oldPassword?: string,
   newPassword?: string,
   retypeNewPassword?: string,
@@ -31,15 +39,14 @@ export type Props = {
   onSubmit: (oldPassword: string, newPassword: string) => any,
 };
 
-export default class ChangePasswordView extends Component {
+export default class ChangePasswordView extends Component<DefaultProps, Props, void> {
   props: Props;
-  static defaultProps: {
-    onSubmit: (oldPassword: string, newPassword: string) => any,
-  } = {
+  static defaultProps = {
     onOldPasswordChange() {},
     onNewPasswordChange() {},
     onRetypeNewPasswordChange() {},
-    onSubmit() {}
+    onSubmit() {},
+    requireOldPassword: true
   };
   oldPasswordInput: any;
   didComeIn: Function = () => {
@@ -48,10 +55,10 @@ export default class ChangePasswordView extends Component {
     }
   };
   validate: () => FormValidation = () => {
-    let {oldPassword, newPassword, retypeNewPassword} = this.props
+    let {requireOldPassword, oldPassword, newPassword, retypeNewPassword} = this.props
 
     let result = {}
-    if (!oldPassword) {
+    if (!oldPassword && requireOldPassword) {
       result.valid = false
     }
     if (!newPassword || !retypeNewPassword) {
@@ -86,8 +93,9 @@ export default class ChangePasswordView extends Component {
     }
   };
   render(): ?React.Element {
-    let {disabled, changingPassword, changePasswordError, onFieldChange} = this.props
+    let {disabled, changingPassword, changePasswordError, onFieldChange, requireOldPassword} = this.props
     let {onSubmit} = this
+    let className = classNames(this.props.className, "mf-change-password-view")
 
     let validation = this.validate()
     let alerts = {}
@@ -95,19 +103,21 @@ export default class ChangePasswordView extends Component {
 
     disabled = disabled || changingPassword
 
-    return <View className="mf-change-password-view">
-      <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
-          omnidata={disabled ? {disabled} : undefined}
-      >
-        <Form onSubmit={onSubmit} labelClass="lbl" controlClass="control">
-          <Header>
-            <Title>Change Password</Title>
-          </Header>
-          <Body>
+    return <View {...this.props} className={className}>
+      <Header>
+        <Title>Change Password</Title>
+      </Header>
+      <Body>
+        <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
+            omnidata={disabled ? {disabled} : undefined}
+        >
+          <Form onSubmit={onSubmit} labelClass="lbl" controlClass="control">
             <fieldset disabled={disabled}>
-              <Input formGroup label="Old Password" name="oldPassword"
-                  type="password" ref={c => this.oldPasswordInput = c}
-              />
+              {requireOldPassword &&
+                <Input formGroup label="Old Password" name="oldPassword"
+                    type="password" ref={c => this.oldPasswordInput = c}
+                />
+              }
 
               <Input formGroup label="New Password" name="newPassword"
                   type="password"
@@ -117,16 +127,15 @@ export default class ChangePasswordView extends Component {
                   type="password"
               />
             </fieldset>
-          </Body>
-
-          <Footer>
-            <AlertGroup className="alerts" alerts={alerts} />
-            <Button submit primary disabled={!this.canSave()}>
-              {changingPassword ? <span><Spinner /> Saving...</span> : 'Change Password'}
-            </Button>
-          </Footer>
-        </Form>
-      </BindData>
+          </Form>
+        </BindData>
+      </Body>
+      <Footer>
+        <AlertGroup className="alerts" alerts={alerts} />
+        <Button submit primary disabled={!this.canSave()}>
+          {changingPassword ? <span><Spinner /> Saving...</span> : 'Change Password'}
+        </Button>
+      </Footer>
       <TransitionListener didComeIn={this.didComeIn} />
     </View>
   }
