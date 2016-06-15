@@ -89,7 +89,7 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
     if (this.canSave()) {
       let {oldPassword, newPassword, onSubmit} = this.props
       if (newPassword && onSubmit) {
-        onSubmit(oldPassword, newPassword)
+        onSubmit(oldPassword || newPassword, newPassword)
       }
     }
   };
