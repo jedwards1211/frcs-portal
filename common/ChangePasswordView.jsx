@@ -4,6 +4,7 @@ import React, {Component} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 import {TransitionListener} from 'react-transition-context'
+import Responsive from '../../jcore-react-components/common/Responsive.jsx'
 
 import BindData from 'react-bind-data'
 import Form from '../bootstrap/Form'
@@ -108,27 +109,36 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
         <Title>Change Password</Title>
       </Header>
       <Body>
-        <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
-            omnidata={disabled ? {disabled} : undefined}
-        >
-          <Form onSubmit={onSubmit} labelClass="lbl" controlClass="control">
-            <fieldset disabled={disabled}>
-              {requireOldPassword &&
-                <Input formGroup label="Old Password" name="oldPassword"
-                    type="password" ref={c => this.oldPasswordInput = c}
-                />
-              }
+      {/* flow-issue(jcore-portal) */}
+        <Responsive domProps={['offsetWidth']}>
+          {({offsetWidth}) => {
+            const labelClass = offsetWidth <= 400 ? 'lbl' : 'lbl col-lg-4'
+            const controlClass = offsetWidth <= 400 ? 'control' : 'control col-lg-8'
+            return (
+              <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
+                  omnidata={disabled ? {disabled} : undefined}
+              >
+                <Form horizontal labelClass={labelClass} controlClass={controlClass} onSubmit={onSubmit}>
+                  <fieldset disabled={disabled}>
+                    {requireOldPassword &&
+                    <Input formGroup label="Old Password" name="oldPassword"
+                        type="password" ref={c => this.oldPasswordInput = c}
+                    />
+                    }
 
-              <Input formGroup label="New Password" name="newPassword"
-                  type="password"
-              />
+                    <Input formGroup label="New Password" name="newPassword"
+                        type="password"
+                    />
 
-              <Input formGroup label="Retype New Password" name="retypeNewPassword"
-                  type="password"
-              />
-            </fieldset>
-          </Form>
-        </BindData>
+                    <Input formGroup label="Retype New Password" name="retypeNewPassword"
+                        type="password"
+                    />
+                  </fieldset>
+                </Form>
+              </BindData>
+            )
+          }}
+        </Responsive>
       </Body>
       <Footer>
         <AlertGroup className="alerts" alerts={alerts} />
