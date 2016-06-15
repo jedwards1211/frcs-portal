@@ -88,7 +88,7 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
     e.preventDefault()
     if (this.canSave()) {
       let {oldPassword, newPassword, onSubmit} = this.props
-      if (oldPassword && newPassword && onSubmit) {
+      if (newPassword && onSubmit) {
         onSubmit(oldPassword, newPassword)
       }
     }
@@ -142,7 +142,7 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
       </Body>
       <Footer>
         <AlertGroup className="alerts" alerts={alerts} />
-        <Button submit primary disabled={!this.canSave()}>
+        <Button submit primary disabled={!this.canSave()} onClick={this.onSubmit}>
           {changingPassword ? <span><Spinner /> Saving...</span> : 'Change Password'}
         </Button>
       </Footer>
