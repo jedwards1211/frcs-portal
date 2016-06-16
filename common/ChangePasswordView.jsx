@@ -32,6 +32,7 @@ export type Props = {
   disabled?: boolean,
   changingPassword?: boolean,
   changePasswordError?: any,
+  passwordWasChanged?: boolean,
   requireOldPassword: boolean,
   oldPassword?: string,
   newPassword?: string,
@@ -94,13 +95,15 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
     }
   };
   render(): ?React.Element {
-    let {disabled, changingPassword, changePasswordError, onFieldChange, requireOldPassword} = this.props
+    let {disabled, changingPassword, changePasswordError, onFieldChange,
+      requireOldPassword, passwordWasChanged} = this.props
     let {onSubmit} = this
     let className = classNames(this.props.className, "mf-change-password-view")
 
     let validation = this.validate()
     let alerts = {}
     if (changePasswordError) alerts.changePasswordError = {error: changePasswordError}
+    if (passwordWasChanged) alerts.passwordWasChanged = {success: "Password was successfully changed!"}
 
     disabled = disabled || changingPassword
 
@@ -133,6 +136,8 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
                     <Input formGroup label="Retype New Password" name="retypeNewPassword"
                         type="password"
                     />
+
+                    <input type="submit" style={{display: 'none'}} />
                   </fieldset>
                 </Form>
               </BindData>
@@ -142,7 +147,7 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
       </Body>
       <Footer>
         <AlertGroup className="alerts" alerts={alerts} />
-        <Button submit primary disabled={!this.canSave()} onClick={this.onSubmit}>
+        <Button primary disabled={!this.canSave()} onClick={this.onSubmit}>
           {changingPassword ? <span><Spinner /> Saving...</span> : 'Change Password'}
         </Button>
       </Footer>
