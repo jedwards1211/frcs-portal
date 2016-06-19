@@ -13,7 +13,11 @@ import Alert from '../../bootstrap/Alert.jsx'
 
 import ReduxLoginView from './ReduxLoginView.jsx'
 
-import {createSkinDecorator} from 'react-skin'
+import {createSkinnableComponent, createSkinDecorator} from 'react-skin'
+
+const LoginView = createSkinnableComponent('LoginView', {
+  defaultComponent: ReduxLoginView
+})
 
 type Props = {
   requiredRoles?: string | string[],
@@ -72,12 +76,12 @@ class RestrictedView extends Component<void, Props, void> {
     }
     else if (loggedIn) {
       content = <ForbiddenDecorator key="forbidden" requiredRoles={requiredRoles}>
-        <ReduxLoginView />
+        <LoginView />
       </ForbiddenDecorator>
     }
     else {
       content = <UnauthorizedDecorator key="unauthorized">
-        <ReduxLoginView />
+        <LoginView />
       </UnauthorizedDecorator>
     }
 
