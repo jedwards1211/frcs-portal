@@ -138,6 +138,8 @@ declare module AccountsGlobal {
   declare function addEmail(userId: string, newEmail: string, verified?: boolean): void;
   declare function removeEmail(userId: string, email: string): void;
   declare function verifyEmail(token: string, callback?: (error?: Error) => any): void;
+  declare function registerLoginHandler(loginRequest: Object): ?{userId: string};
+  declare function callLoginMethod(options: {methodArguments: any[], userCallback?: Function}): void;
 }
 
 declare var Accounts: $Exports<'AccountsGlobal'>;
