@@ -6,7 +6,7 @@ import _ from 'lodash'
 import {TransitionListener} from 'react-transition-context'
 import Responsive from '../../jcore-react-components/common/Responsive.jsx'
 
-import BindData from 'react-bind-data'
+import bindData from 'react-bind-data'
 import Form from '../bootstrap/Form'
 import Button from '../bootstrap/Button'
 import Input from '../bootstrap/Input'
@@ -107,6 +107,13 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
 
     disabled = disabled || changingPassword
 
+    const data = bindData({
+      data: this.props,
+      metadata: {validation},
+      omnidata: disabled ? {disabled} : undefined,
+      onFieldChange
+    })
+
     return <View {...this.props} className={className}>
       <Header>
         <Title>Change Password</Title>
@@ -118,29 +125,19 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
             const labelClass = offsetWidth <= 400 ? 'lbl' : 'lbl col-lg-4'
             const controlClass = offsetWidth <= 400 ? 'control' : 'control col-lg-8'
             return (
-              <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
-                  omnidata={disabled ? {disabled} : undefined}
-              >
-                <Form horizontal labelClass={labelClass} controlClass={controlClass} onSubmit={onSubmit}>
-                  <fieldset disabled={disabled}>
-                    {requireOldPassword &&
-                    <Input formGroup label="Old Password" name="oldPassword"
+              <Form horizontal labelClass={labelClass} controlClass={controlClass} onSubmit={onSubmit}>
+                <fieldset disabled={disabled}>
+                  {requireOldPassword &&
+                    <Input formGroup label="Old Password" {...data('oldPassword')}
                         type="password" ref={c => this.oldPasswordInput = c}
                     />
-                    }
-
-                    <Input formGroup label="New Password" name="newPassword"
-                        type="password"
-                    />
-
-                    <Input formGroup label="Retype New Password" name="retypeNewPassword"
-                        type="password"
-                    />
-
-                    <input type="submit" style={{display: 'none'}} />
-                  </fieldset>
-                </Form>
-              </BindData>
+                  }
+                  <Input formGroup label="New Password" {...data('newPassword')} type="password" />
+                  <Input formGroup label="Retype New Password" {...data('retypeNewPassword')} type="password" />
+                  {/* enable submit events when user presses enter in fields */}
+                  <input type="submit" style={{display: 'none'}} />
+                </fieldset>
+              </Form>
             )
           }}
         </Responsive>

@@ -11,7 +11,7 @@ import Form from '../bootstrap/Form.jsx'
 import Input from '../bootstrap/Input.jsx'
 import Button from '../bootstrap/Button.jsx'
 import Alert from '../bootstrap/Alert.jsx'
-import BindData from 'react-bind-data'
+import bindData from 'react-bind-data'
 import Fader from './Fader.jsx'
 import {View, Header, Title, Body, Footer} from './View.jsx'
 
@@ -89,15 +89,19 @@ export default class LoginView extends Component<void, Props, void> {
       </span>
     }
     else {
+      const data = bindData({
+        data: this.props,
+        metadata: {validation},
+        omnidata: loggingIn ? {disabled: true} : undefined,
+        onFieldChange
+      })
       content = <Form key="login" onSubmit={this.onSubmit}>
-        <BindData data={this.props} onFieldChange={onFieldChange} metadata={{validation}}
-            omnidata={loggingIn ? {disabled: true} : undefined}
-        >
-          <Body>
-            <Input type="text" placeholder="Username" name="username" ref={c => this.usernameInput = findDOMNode(c)} />
-            <Input type="password" placeholder="Password" name="password" />
-          </Body>
-        </BindData>
+        <Body>
+          <Input type="text" placeholder="Username" {...data('username')}
+              ref={c => this.usernameInput = findDOMNode(c)}
+          />
+          <Input type="password" placeholder="Password" {...data('password')} />
+        </Body>
         <Footer>
           <Button submit primary disabled={loggingIn || !validation.valid}>
             {loggingIn ? <span><Spinner /> Logging in...</span> : 'Log in'}
