@@ -3,18 +3,16 @@
 import React, {Component} from 'react'
 import * as Immutable from 'immutable'
 import {connect} from 'react-redux'
-import {dispatchFieldChanges} from 'react-bind-data-redux'
+import {createSetter, createDispatcher} from 'redux-setters'
 
 import LoginView from '../../common/LoginView'
 
 import * as actions from '../actions/userActions'
 
-const dispatchOptions = {
-  meta: {
-    reduxPath: ['LoginView']
-  },
-  actionTypePrefix: 'LOGIN_VIEW.'
-}
+const reduxPath = ['LoginView']
+const ACTION_TYPE_PREFIX = 'LOGIN_VIEW'
+
+const set = createSetter(reduxPath, {domain: ACTION_TYPE_PREFIX})
 
 class ReduxLoginView extends Component {
   onSubmit: () => void = () => {
@@ -31,13 +29,13 @@ class ReduxLoginView extends Component {
     let {onSubmit, onLogout, props: {dispatch}} = this
     return <LoginView {...this.props} onSubmit={onSubmit}
         onLogout={onLogout}
-        onFieldChange={dispatchFieldChanges(dispatch, dispatchOptions)}
+        onFieldChange={createDispatcher(dispatch, set)}
            />
   }
 }
 
 function select(state) {
-  let viewState = state.get('LoginView') || Immutable.Map()
+  let viewState = state.getIn(reduxPath) || Immutable.Map()
   return {
     user: state.get('user'),
     loggingIn: state.get('loggingIn'),

@@ -3,13 +3,11 @@
 import React, {Component, PropTypes} from 'react'
 import * as Immutable from 'immutable'
 import {connect} from 'react-redux'
+import {createSetter, createDispatcher} from 'redux-setters'
 
 import type {Dispatch} from '../../flowtypes/reduxTypes'
 
 import * as actions from '../actions/changePasswordActions'
-
-import {dispatchFieldChanges, actions as bindDataActions} from 'react-bind-data-redux'
-const {setField} = bindDataActions
 
 import ChangePasswordView from '../../common/ChangePasswordView'
 
@@ -23,12 +21,15 @@ type Props = {
   dispatch: Dispatch,
 };
 
-const meta = {
-  reduxPath: ['ChangePasswordView']
-}
-const actionTypePrefix = 'CHANGE_PASSWORD_VIEW.'
+const ACTION_TYPE_PREFIX = 'CHANGE_PASSWORD_VIEW'
+const reduxPath = ['ChangePasswordView']
 
-const dispatchOptions = {meta, actionTypePrefix}
+const set = createSetter(reduxPath, {domain: ACTION_TYPE_PREFIX})
+const {setOldPassword, setNewPassword, setRetypeNewPassword} = set.subs([
+  ['oldPassword'],
+  ['newPassword'],
+  ['retypeNewPassword']
+])
 
 class ReduxChangePasswordView extends Component {
   props: Props;
@@ -51,20 +52,20 @@ class ReduxChangePasswordView extends Component {
   };
   componentWillMount() {
     let {dispatch} = this.props
-    dispatch(setField(["oldPassword"], undefined, dispatchOptions))
-    dispatch(setField(["newPassword"], undefined, dispatchOptions))
-    dispatch(setField(["retypeNewPassword"], undefined, dispatchOptions))
+    dispatch(setOldPassword(undefined))
+    dispatch(setNewPassword(undefined))
+    dispatch(setRetypeNewPassword(undefined))
   }
   render() {
     let {onSubmit, props: {dispatch}} = this
     return <ChangePasswordView  {...this.props} onSubmit={onSubmit}
-        onFieldChange={dispatchFieldChanges(dispatch, dispatchOptions)}
+        onFieldChange={createDispatcher(dispatch, set)}
            />
   }
 }
 
 function select(state) {
-  let viewState = state.get('ChangePasswordView') || Immutable.Map()
+  let viewState = state.getIn(reduxPath) || Immutable.Map()
   return {
     ...viewState.toObject(),
     changingPassword: state.get('changingPassword'),
