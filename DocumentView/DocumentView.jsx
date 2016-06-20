@@ -208,7 +208,7 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
   hasUnsavedChanges: () => ?boolean = () => {
     let {mode, document, initDocument, hasUnsavedChanges} = this.props
-    return mode === 'edit' && document && hasUnsavedChanges && !hasUnsavedChanges(initDocument, document)
+    return mode === 'edit' && document && hasUnsavedChanges && hasUnsavedChanges(initDocument, document)
   };
 
   closeAskToLeaveDialog:  Function = () => {
