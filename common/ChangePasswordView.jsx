@@ -122,8 +122,8 @@ export default class ChangePasswordView extends Component<DefaultProps, Props, v
       {/* flow-issue(jcore-portal) */}
         <Responsive domProps={['offsetWidth']}>
           {({offsetWidth}) => {
-            const labelClass = offsetWidth <= 400 ? 'lbl' : 'lbl col-lg-4'
-            const controlClass = offsetWidth <= 400 ? 'control' : 'control col-lg-8'
+            const labelClass = offsetWidth <= 400 ? 'col-lg-12' : 'col-lg-4'
+            const controlClass = offsetWidth <= 400 ? 'col-lg-12' : 'col-lg-8'
             return (
               <Form horizontal labelClass={labelClass} controlClass={controlClass} onSubmit={onSubmit}>
                 <fieldset disabled={disabled}>
