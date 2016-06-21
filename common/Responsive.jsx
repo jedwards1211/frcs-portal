@@ -62,6 +62,9 @@ export default class Responsive extends Component<DefaultProps, Props, State> {
   render(): ?React.Element {
     let {props: {children}, state} = this
     let Comp: any = this.props.component
-    return <Comp ref={c => this.root= c} children={children(state)} />
+    const content = Array.isArray(children)
+      ? children.reduce((prev, current) => current(prev), state)
+      : children(state)
+    return <Comp ref={c => this.root= c} children={content} />
   }
 }
