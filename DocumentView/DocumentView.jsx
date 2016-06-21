@@ -1,8 +1,10 @@
 /* @flow */
 
 import React, {Component} from 'react'
+import * as Immutable from 'immutable'
 import classNames from 'classnames'
 import Promise from 'bluebird'
+import _ from 'lodash'
 
 import Button from '../bootstrap/Button.jsx'
 import DeleteButton from '../bootstrap/DeleteButton.jsx'
@@ -25,6 +27,8 @@ export type FooterButtonProps = {
 }
 
 type DefaultProps = {
+  mode: 'create' | 'edit',
+  hasUnsavedChanges: (initDocument: any, document: any) => boolean,
   documentDisplayName: string,
   documentDisplayPronoun: string,
   FooterButtons: (props: FooterButtonProps) => React.Element,
@@ -58,7 +62,7 @@ type Props = {
   updatedTimestamp?: Date, // time that the document in effect was last changed by this client
   initDocument?: any,
   document?: any,       // the document with in-progress edits made by the user
-  hasUnsavedChanges?: (initDocument: any, document: any) => boolean,
+  hasUnsavedChanges: (initDocument: any, document: any) => boolean,
   validate?: (document: any) => {valid: boolean},
   askToLeave?: boolean,
   saving?: boolean,
@@ -88,6 +92,18 @@ const DefaultFooterButtons: (props: FooterButtonProps) => React.Element = props 
   )
 }
 
+export const SaveButtonOnly: (props: FooterButtonProps) => React.Element = props => {
+  const {leaveAfterSaving, disabled, save, saving} = props
+  return (
+    <span>
+      <Button primary disabled={disabled} onClick={() => save().then(leaveAfterSaving)}>
+        {saving ? <span><Spinner /> Saving...</span> : 'Save'}
+      </Button>
+    </span>
+  )
+}
+
+
 /**
  * Implements logic common to views where the user edits something and then saves it or discards changes.
  * Optional create and delete workflows are also supported (based upon whether the createDocument and deleteDocument
@@ -98,6 +114,12 @@ const DefaultFooterButtons: (props: FooterButtonProps) => React.Element = props 
  */
 export default class DocumentView extends Component<DefaultProps, Props, void> {
   static defaultProps = {
+    mode: 'edit',
+    hasUnsavedChanges: (initDocument, document) => (
+      Immutable.Iterable.isIterable(document)
+        ? !Immutable.is(initDocument, document)
+        : !_.deepEquals(initDocument, document)
+    ),
     documentDisplayName: 'document',
     documentDisplayPronoun: 'it',
     FooterButtons: DefaultFooterButtons

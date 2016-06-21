@@ -12,7 +12,7 @@ import type {Dispatch} from '../flowtypes/reduxTypes'
 import * as actions from './DocumentViewActions'
 
 type InputProps = {
-  mode: 'create' | 'edit',
+  mode?: 'create' | 'edit',
   reduxPath: Array<string | number>,
   effectiveDocument?: any, // the document that is actually in effect
   createDocument?: (document: any) => Promise,
