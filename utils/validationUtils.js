@@ -94,7 +94,7 @@ export function validateNumber(number, options = {}) {
 }
 
 export function assignValidity(validation) {
-  if (validation instanceof Object) {
+  if (validation && Object.getPrototypeOf(validation) === Object.prototype && Object.isExtensible(validation)) {
     _.forEach(validation, elem => assignValidity(elem))
     validation.valid = !_.some(validation, (v, key) => v && (key === 'error' || v.valid === false))
   }
