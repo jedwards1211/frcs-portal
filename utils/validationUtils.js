@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 export const numberRegExp = /^\s*[-+]?(\d+(\.\d*)?|\.\d+)\s*$/
 export const numberOrBlankRegExp = /^\s*([-+]?(\d+(\.\d*)?|\.\d+))?\s*$/
 
@@ -89,4 +91,12 @@ export function validateNumber(number, options = {}) {
     return {error: `Please enter a number <= ${max}`}
   }
   return {}
+}
+
+export function assignValidity(validation) {
+  if (validation instanceof Object) {
+    _.forEach(validation, elem => assignValidity(elem))
+    validation.valid = !_.some(validation, (v, key) => v && (key === 'error' || v.valid === false))
+  }
+  return validation
 }
