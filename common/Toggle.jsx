@@ -12,6 +12,7 @@ export default React.createClass({
     checked: React.PropTypes.bool,
     defaultChecked: React.PropTypes.bool,
     onChange: React.PropTypes.func,
+    onCheckedChange: React.PropTypes.func,
     name: React.PropTypes.string,
     value: React.PropTypes.string,
     id: React.PropTypes.string,
@@ -42,6 +43,11 @@ export default React.createClass({
     }
   },
 
+  onChange(newChecked) {
+    this.props.onChange && this.props.onChange(newChecked)
+    this.props.onCheckedChange && this.props.onCheckedChange(newChecked)
+  },
+
   handleClick(event) {
     if ('disabled' in this.props && !!this.props.disabled) {
       return
@@ -49,10 +55,10 @@ export default React.createClass({
     if (!('checked' in this.props)) {
       var newChecked = !this.state.checked
       this.setState({checked: newChecked})
-      this.props.onChange && this.props.onChange(newChecked)
+      this.onChange(newChecked)
     }
     else {
-      this.props.onChange && this.props.onChange(!this.state.checked)
+      this.onChange(!this.state.checked)
     }
   },
 
