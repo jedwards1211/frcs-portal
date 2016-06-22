@@ -66,7 +66,7 @@ class MeteorSubStatus extends Component<void, Props, void> {
       }
     }
     else if (banner) {
-      return Banner(this.props)
+      return ready ? children : Banner(this.props)
     }
     else if (viewSkin) {
       return <ViewSkin {...this.props}>
