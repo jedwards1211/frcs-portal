@@ -4,7 +4,7 @@ import Collapse from '../bootstrap/Collapse'
 
 function anyChildren(children) {
   const childArray = Children.toArray(children)
-  return !!(childArray && childArray.find(c => c != null))
+  return !!(childArray && childArray.find(c => c != null && c !== false))
 }
 
 /**
