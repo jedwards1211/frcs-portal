@@ -66,7 +66,7 @@ export class Group extends Component<void, GroupProps, void> {
     }
 
     return <div {...this.props} className={className}>
-      <label className={labelClass}>{label}</label>
+      {label != null && <label className={labelClass}>{label}</label>}
       {children && <div className={controlClass}>
         {children}
         <CollapseTransitionGroup component="div">
