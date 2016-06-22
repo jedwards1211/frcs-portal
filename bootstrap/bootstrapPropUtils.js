@@ -24,6 +24,7 @@ export const FORM_GROUP_CONTEXT_CLASSES = {
 }
 
 export const SHADE_CLASSES = {
+  faded:    'shade-faded',
   brighter: 'shade-brighter',
   darker:   'shade-darker',
 }
