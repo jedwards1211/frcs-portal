@@ -15,6 +15,7 @@ export default createReducer({
   [actions.SET_DELETING]: createSetter('deleting'),
   [actions.SET_DELETE_ERROR]: createSetter('deleteError'),
   [actions.SET_SAVING]: createSetter('saving'),
+  [actions.SET_SAVED]: createSetter('saved'),
   [actions.SET_SAVE_ERROR]: createSetter('saveError'),
   [actions.SET_UPDATED_TIMESTAMP]: createSetter('updatedTimestamp')
 })

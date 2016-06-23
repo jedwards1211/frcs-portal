@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import Promise from 'bluebird'
 import _ from 'lodash'
 
+import Glyphicon from '../bootstrap/Glyphicon.jsx'
 import Button from '../bootstrap/Button.jsx'
 import DeleteButton from '../bootstrap/DeleteButton.jsx'
 import Spinner from './../common/Spinner.jsx'
@@ -15,6 +16,8 @@ import {Nav} from './../common/View.jsx'
 import {createSkinDecorator} from 'react-skin'
 
 import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx'
+
+import './DocumentView.sass'
 
 export type FooterButtonProps = {
   leaveAfterCancel?: Function,
@@ -48,6 +51,7 @@ type Props = {
   setDocument: (document: any) => any,
   setUpdatedTimestamp: (timestamp: ?Date) => any,
   setSaving: (saving: boolean) => any,
+  setSaved: (saved: boolean) => any,
   setSaveError: (error: ?Error) => any,
   setDeleting: (deleting: boolean) => any,
   setDeleteError: (error: ?Error) => any,
@@ -66,6 +70,7 @@ type Props = {
   validate?: (document: any) => {valid: boolean},
   askToLeave?: boolean,
   saving?: boolean,
+  saved?: boolean,
   deleting?: boolean,
   saveError?: Error,
   deleteError?: Error,
@@ -124,12 +129,16 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
     documentDisplayPronoun: 'it',
     FooterButtons: DefaultFooterButtons
   };
+
+  savedTimeout: ?number;
+
   componentWillMount() {
     if (this.props.mode === 'edit') {
       let {mode, loading, loadError, effectiveDocument, effectiveUpdatedTimestamp,
-        setDocument, setUpdatedTimestamp, setSaving, setSaveError, setDeleting, setDeleteError,
+        setDocument, setUpdatedTimestamp, setSaving, setSaved, setSaveError, setDeleting, setDeleteError,
         setAskToLeave} = this.props
       setSaving(false)
+      setSaved(false)
       setSaveError(undefined)
       setDeleting(false)
       setDeleteError(undefined)
@@ -155,6 +164,7 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
     }
   }
   componentWillUnmount() {
+    if (this.savedTimeout) clearTimeout(this.savedTimeout)
     this.closeAskToLeaveDialog()
   }
 
@@ -183,9 +193,11 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
   };
 
   save: () => Promise = () => {
-    let {mode, document, setSaving, setSaveError, createDocument, saveDocument,
+    let {mode, document, setSaving, setSaved, setSaveError, createDocument, saveDocument,
       setDocument, setUpdatedTimestamp} = this.props
 
+    if (this.savedTimeout != null) clearTimeout(this.savedTimeout)
+    setSaved(false)
     setSaving(true)
     setSaveError(undefined)
 
@@ -207,6 +219,8 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
       if (updatedTimestamp instanceof Date) {
         setUpdatedTimestamp(updatedTimestamp)
       }
+      setSaved(true)
+      this.savedTimeout = setTimeout(() => setSaved(false), 5000)
     }).catch(err => {
       setSaveError(err)
       throw err
@@ -315,8 +329,8 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
     Footer: (Footer:any, props:Props) => {
       let {children} = props
-      let {disabled, loading, loadError, mode, FooterButtons,
-        saveError, saving, deleteError, deleting, createDocument} = this.props
+      let {disabled, document, loading, loadError, mode, FooterButtons,
+        saveError, saving, saved, deleteError, deleting, createDocument} = this.props
 
       let {leaveAfterCancel, leaveAfterCreating, leaveAfterSaving} = this.getLeaveCallbacks()
 
@@ -324,8 +338,13 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
 
       let alerts = {}
       let valid = this.validate()
-      if (!valid) {
+      if (!valid && !loading && !loadError && document) {
         alerts.invalid = {error: 'Please fix the errors highlighted above before continuing'}
+      }
+      if (saved) {
+        alerts.saved = {
+          success: <span><Glyphicon ok /> Your changes have been saved.</span>
+        }
       }
       if (saveError) {
         alerts.saveError = {error: saveError, children: `Failed to ${mode === 'create' ? 'create' : 'save changes'}: `}
@@ -337,7 +356,7 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
       disabled = disabled || !valid || saving || deleting || loading || !!loadError
 
       return <Footer {...props}>
-        <AlertGroup alerts={alerts} animated={false} />
+        <AlertGroup alerts={alerts} />
         <FooterButtons leaveAfterCancel={leaveAfterCancel} leaveAfterCreating={leaveAfterCreating}
             leaveAfterSaving={leaveAfterSaving} mode={footerMode} saving={saving} disabled={disabled}
             save={this.save}
@@ -350,7 +369,7 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
   render(): React.Element {
     let {className, askToLeave, saving, deleting, document, setAskToLeave} = this.props
 
-    className = classNames(className, 'mf-document-view')
+    className = classNames(className, 'mf-DocumentView')
 
     let children: any = this.props.children
 

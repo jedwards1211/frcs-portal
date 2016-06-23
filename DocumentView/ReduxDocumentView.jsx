@@ -47,6 +47,7 @@ class ReduxDocumentView extends Component<void, Props, void> {
 
     return <DocumentView {...this.props}
         setSaving={saving => dispatch(actions.setSaving(saving, meta))}
+        setSaved={saved => dispatch(actions.setSaved(saved, meta))}
         setSaveError={error => dispatch(actions.setSaveError(error, meta))}
         setDeleting={deleting => dispatch(actions.setDeleting(deleting, meta))}
         setDeleteError={error => dispatch(actions.setDeleteError(error, meta))}
