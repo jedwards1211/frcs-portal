@@ -1,3 +1,4 @@
+import {expect} from 'chai'
 import AutoFatTracePlotter from '../../AutoFatTracePlotter'
 import LinearConversion from '../../LinearConversion'
 import TraceRenderer from '../../TraceRenderer'
@@ -35,10 +36,10 @@ describe('AutoFatTracePlotter', () => {
     plotter.addPoint(4000, NaN)
     plotter.flush()
 
-    expect(traceRenderer.lines.map(removeRedundantPoints)).toEqual([
+    expect(traceRenderer.lines.map(removeRedundantPoints)).to.deep.equal([
       [100, 50, 200, 50],
       [300, 50, 400, 50],
     ])
-    expect(traceRenderer.fills).toEqual([])
+    expect(traceRenderer.fills).to.deep.equal([])
   })
 })

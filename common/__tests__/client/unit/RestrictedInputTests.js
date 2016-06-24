@@ -1,3 +1,4 @@
+import {expect} from 'chai'
 import React from 'react'
 import {findDOMNode} from 'react-dom'
 import RestrictedInput from '../../../RestrictedInput.jsx'
@@ -12,7 +13,7 @@ describe('RestrictedInput', () => {
 
       findDOMNode(input.instance()).value = '123.45one6.78two9'
       input.simulate('change')
-      expect(event.target.value).toBe('123.456789')
+      expect(event.target.value).to.equal('123.456789')
     })
   })
 })
