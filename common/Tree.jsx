@@ -57,16 +57,14 @@ export class TreeCell extends Component<void, TreeCellProps, void> {
       paddingLeft: basePadding + depth * indent,
       height: itemHeight,
       lineHeight: itemHeight + 'px'
-    })}
-           >
+    })}>
       {hasChildren && <CollapseIcon {...collapseIconProps} open={expanded} style={propAssign(collapseIconProps.style, {
         paddingLeft: basePadding,
         marginLeft: -basePadding,
         height: itemHeight,
         lineHeight: itemHeight + 'px',
         width: collapseIconWidth
-      })}
-                      />}{children}
+      })} />}{children}
     </div>
   }
 }
