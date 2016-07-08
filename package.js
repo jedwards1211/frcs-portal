@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   var both = ['client', 'server'];
 
-  api.versionsFrom("METEOR@1.2.0.2");
+  api.versionsFrom("METEOR@1.0");
 
   api.use(['underscore',
            'accounts-base',
