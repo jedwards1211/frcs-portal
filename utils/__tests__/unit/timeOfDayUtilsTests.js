@@ -1,4 +1,3 @@
-import {expect} from 'chai'
 /* @flow */
 
 import moment from 'moment'
@@ -9,9 +8,9 @@ import * as timeOfDayUtils from '../../timeOfDayUtils'
 describe('timeOfDayUtils', () => {
   describe('toTimeOfDay', () => {
     function test(input: Moment, expected: string): void {
-      expect(timeOfDayUtils.toTimeOfDay(input)).to.equal(expected)
-      expect(timeOfDayUtils.toTimeOfDay(input.toDate())).to.equal(expected)
-      expect(timeOfDayUtils.toTimeOfDay(input.valueOf())).to.equal(expected)
+      expect(timeOfDayUtils.toTimeOfDay(input)).toBe(expected)
+      expect(timeOfDayUtils.toTimeOfDay(input.toDate())).toBe(expected)
+      expect(timeOfDayUtils.toTimeOfDay(input.valueOf())).toBe(expected)
     }
 
     it('works for time without seconds or milliseconds', () => {
@@ -34,7 +33,7 @@ describe('timeOfDayUtils', () => {
   describe('toMomentToday', () => {
     function test(input: ?string | ?number, expected: string): void {
       let date = timeOfDayUtils.toMomentToday(input)
-      expect(date.format('HH:mm:ss.SSS')).to.equal(expected)
+      expect(date.format('HH:mm:ss.SSS')).toBe(expected)
       expect(date.startOf('day') === moment().startOf('day'))
     }
 
