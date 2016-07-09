@@ -4,6 +4,7 @@ import AssetsPlugin from 'assets-webpack-plugin';
 import cssModulesValues from 'postcss-modules-values';
 import HappyPack from 'happypack';
 import {getDotenv} from '../src/universal/utils/dotenv';
+import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 // Import .env and expand variables:
 getDotenv();
@@ -86,7 +87,8 @@ export default {
     new HappyPack({
       loaders: ['babel'],
       threads: 4
-    })
+    }),
+    new ProgressBarPlugin(),
   ],
   module: {
     loaders: [

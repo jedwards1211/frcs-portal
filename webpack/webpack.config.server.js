@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import cssModulesValues from 'postcss-modules-values';
 import HappyPack from 'happypack';
+import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 const root = process.cwd();
 const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
@@ -47,7 +48,8 @@ export default {
     new HappyPack({
       loaders: ['babel'],
       threads: 4
-    })
+    }),
+    new ProgressBarPlugin(),
   ],
   module: {
     loaders: [
