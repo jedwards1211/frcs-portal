@@ -2,7 +2,9 @@ import r from '../database/rethinkdriver'
 import ldap from 'ldapjs'
 import ldapConfig from './ldapConfig'
 
-const {adminDN, adminPassword, usersDN, baseEntry, usersEntry} = ldapConfig
+const {baseDN, baseEntry, 
+  adminDN, adminEntry, adminPassword, 
+  usersDN, usersEntry} = ldapConfig
 
 const server = ldap.createServer()
 
@@ -14,7 +16,12 @@ function authorize(req, res, next) {
   return next()
 }
 
-server.bind(ldapConfig.base, (req, res, next) => {
+function matches(entry, req) {
+  if (req.scope === 'sub' && req.dn.parentOf(entry.dn)) return true
+  return req.dn.equals(entry.dn)
+}
+
+server.bind(baseDN, (req, res, next) => {
   if (req.dn.equals(adminDN)) {
     if (req.credentials !== adminPassword) return next(new ldap.InvalidCredentialsError())
   }
@@ -26,11 +33,10 @@ server.bind(ldapConfig.base, (req, res, next) => {
   return next()
 })
 
-server.search(ldapConfig.base, authorize, async (req, res, next) => {
-  // TODO need to check the req base
-
-  if (req.filter.matches(baseEntry)) res.send(baseEntry)
-  if (req.filter.matches(usersEntry)) res.send(usersEntry)
+server.search(baseDN, authorize, async (req, res, next) => {
+  if (matches(baseEntry, req)) res.send(baseEntry)
+  if (matches(adminEntry, req)) res.send(adminEntry)
+  if (matches(usersEntry, req)) res.send(usersEntry)
   
   await r.table('users').run().then(users => users.forEach(user => {
     const uid = user.email.split('@')[0]
@@ -47,7 +53,7 @@ server.search(ldapConfig.base, authorize, async (req, res, next) => {
         mail: user.email
       }
     }
-    if (req.filter.matches(userEntry)) res.send(userEntry)
+    if (matches(userEntry, req)) res.send(userEntry)
   }))
   
   res.end()

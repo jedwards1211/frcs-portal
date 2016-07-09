@@ -1,6 +1,6 @@
 const config = {
   port: process.env.LDAP_PORT || 1389,
-  base: process.env.LDAP_BASE || 'dc=example,dc=org',
+  baseDN: process.env.LDAP_BASE || 'dc=example,dc=org',
   usersOU: process.env.LDAP_USERS_OU || 'ou=users',
   adminCN: process.env.LDAP_ADMIN_CN,
   adminPassword: process.env.LDAP_ADMIN_PASSWORD,
@@ -8,7 +8,7 @@ const config = {
 }
 
 config.baseEntry = {
-  dn: config.base,
+  dn: config.baseDN,
   objectclass: [
     'top',
     'dcObject',
@@ -20,8 +20,20 @@ config.baseEntry = {
   }
 }
 
-config.adminDN = `${config.adminCN},${config.base}`
-config.usersDN = `${config.usersOU},${config.base}`
+config.adminDN = `${config.adminCN},${config.baseDN}`
+config.adminEntry = {
+  dn: config.adminDN,
+  objectclass: [
+    'simpleSecurityObject',
+    'organizationalRole'
+  ],
+  attributes: {
+    cn: config.adminCN,
+    description: 'LDAP administrator'
+  }
+}
+
+config.usersDN = `${config.usersOU},${config.baseDN}`
 config.usersEntry = {
   dn: config.usersDN,
   objectclass: ['organizationalUnit', 'top'],
