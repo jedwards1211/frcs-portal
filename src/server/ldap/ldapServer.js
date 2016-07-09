@@ -1,10 +1,8 @@
-
-
 import r from '../database/rethinkdriver'
 import ldap from 'ldapjs'
 import ldapConfig from './ldapConfig'
 
-const {adminDN, adminPassword, usersDN, usersEntry} = ldapConfig
+const {adminDN, adminPassword, usersDN, baseEntry, usersEntry} = ldapConfig
 
 const server = ldap.createServer()
 
@@ -30,7 +28,8 @@ server.bind(ldapConfig.base, (req, res, next) => {
 
 server.search(ldapConfig.base, authorize, async (req, res, next) => {
   // TODO need to check the req base
-  
+
+  if (req.filter.matches(baseEntry)) res.send(baseEntry)
   if (req.filter.matches(usersEntry)) res.send(usersEntry)
   
   await r.table('users').run().then(users => users.forEach(user => {
