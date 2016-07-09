@@ -4,14 +4,14 @@ if (process.env.NODE_ENV !== 'production') {
     ignore: /(\/\.|~$|\.json$)/i
   })) {
 
-    require('babel-register');
-    require('babel-polyfill');
+    require('babel-register')
+    require('babel-polyfill')
 
     var getDotenv = require('../../universal/utils/dotenv').getDotenv
 
     // Import .env and expand variables:
     getDotenv()
 
-    require('./ldapServer');
+    require('./ldapServer')
   }
 }
