@@ -6,11 +6,11 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLList
-} from 'graphql';
-import {GraphQLTitleType} from '../types';
-import {makeRequired} from '../utils';
-import {Note} from '../Notes/noteSchema';
-import r from '../../../database/rethinkdriver';
+} from 'graphql'
+import {GraphQLTitleType} from '../types'
+import {makeRequired} from '../utils'
+import {Note} from '../Notes/noteSchema'
+import r from '../../../database/rethinkdriver'
 
 export const Lane = new GraphQLObjectType({
   name: 'Lane',
@@ -26,27 +26,27 @@ export const Lane = new GraphQLObjectType({
       type: new GraphQLList(Note),
       description: 'The notes in a given lane',
       resolve(source) {
-        return r.table('notes').getAll(source.id, {index: 'laneId'}).run();
+        return r.table('notes').getAll(source.id, {index: 'laneId'}).run()
       }
     }
   })
-});
+})
 
 const inputFields = {
   id: {type: GraphQLID, description: 'The laneId'},
   userId: {type: GraphQLID, description: 'The userId that created the lane'},
   isPrivate: {type: GraphQLBoolean, description: 'Whether the lane is visible to other users'},
   title: {type: GraphQLTitleType, description: 'The lane title'}
-};
+}
 
 export const UpdatedLane = new GraphQLInputObjectType({
   name: 'UpdatedLane',
   description: 'Args to update a kanban lane',
   fields: () => makeRequired(inputFields, ['id'])
-});
+})
 
 export const NewLane = new GraphQLInputObjectType({
   name: 'NewLane',
   description: 'Args to add a kanban lane',
   fields: () => makeRequired(inputFields, ['userId', 'title'])
-});
+})

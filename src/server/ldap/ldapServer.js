@@ -32,8 +32,7 @@ server.bind(base.dn, async (req, res, next) => {
       res.end()
       return next()
     }
-  }
-  else if (req.dn.childOf(users.dn)) {
+  } else if (req.dn.childOf(users.dn)) {
     const match = /^uid\s*=\s*([^,]+)/.exec(req.dn.toString())
     if (!match) return next(new ldap.InvalidCredentialsError())
 
@@ -68,7 +67,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
     console.log(rUser)
 
     const displayname = rUser.firstName || rUser.lastName
-      ? [rUser.firstName, rUser.lastName].filter(i => !!i).join(' ')
+      ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
       : rUser.username
     const attributes = {
       entryuuid: rUser.username,
@@ -93,6 +92,6 @@ server.search(base.dn, authorize, async (req, res, next) => {
   return next()
 })
 
-server.listen(ldapConfig.port, function () {
+server.listen(ldapConfig.port, () => {
   console.log('LDAP server listening at %s', server.url)
 })

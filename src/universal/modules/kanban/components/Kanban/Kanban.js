@@ -1,8 +1,8 @@
-import React, {Component, PropTypes} from 'react';
-import uuid from 'node-uuid';
+import React, {Component, PropTypes} from 'react'
+import uuid from 'node-uuid'
 
-import Lanes from '../Lanes/Lanes.js';
-import styles from './Kanban.css';
+import Lanes from '../Lanes/Lanes.js'
+import styles from './Kanban.css'
 
 export default class Kanban extends Component {
   static propTypes = {
@@ -12,7 +12,7 @@ export default class Kanban extends Component {
   };
 
   render() {
-    const {userId, laneActions: {addLane}} = this.props;
+    const {userId, laneActions: {addLane}} = this.props
     /* eslint-disable react/jsx-no-bind*/
     return (
       <div className={styles.kanban} id="kanban">
@@ -24,6 +24,6 @@ export default class Kanban extends Component {
         </button>
         <Lanes {...this.props}/>
       </div>
-    );
+    )
   }
 }

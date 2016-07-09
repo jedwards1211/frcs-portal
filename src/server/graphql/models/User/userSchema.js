@@ -1,6 +1,6 @@
-import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLInputObjectType} from 'graphql';
-import {GraphQLEmailType, GraphQLURLType} from '../types';
-import {resolveForAdmin} from '../utils';
+import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLInputObjectType} from 'graphql'
+import {GraphQLEmailType, GraphQLURLType} from '../types'
+import {resolveForAdmin} from '../utils'
 
 const GoogleStrategy = new GraphQLObjectType({
   /*  As is, we can share everything with the client
@@ -23,7 +23,7 @@ const GoogleStrategy = new GraphQLObjectType({
     gender: {type: GraphQLString, description: 'gender of google user'},
     locale: {type: GraphQLString, description: 'locale of user to help determine language'}
   })
-});
+})
 
 const LocalStrategy = new GraphQLObjectType({
   name: 'LocalStrategy',
@@ -46,7 +46,7 @@ const LocalStrategy = new GraphQLObjectType({
       resolve: (source, args, {authToken}) => resolveForAdmin(source, args, authToken)
     }
   })
-});
+})
 
 const UserStrategies = new GraphQLObjectType({
   name: 'UserStrategies',
@@ -54,7 +54,7 @@ const UserStrategies = new GraphQLObjectType({
     local: {type: LocalStrategy, description: 'The local authentication strategy'},
     google: {type: GoogleStrategy, description: 'The google authentication strategy'}
   })
-});
+})
 
 export const User = new GraphQLObjectType({
   name: 'User',
@@ -66,7 +66,7 @@ export const User = new GraphQLObjectType({
     updatedAt: {type: GraphQLString, description: 'The datetime the user was last updated'},
     strategies: {type: UserStrategies, description: 'The login strategies used by the user'}
   })
-});
+})
 
 export const UserWithAuthToken = new GraphQLObjectType({
   name: 'UserWithAuthToken',
@@ -75,7 +75,7 @@ export const UserWithAuthToken = new GraphQLObjectType({
     user: {type: User, description: 'The user account'},
     authToken: {type: GraphQLString, description: 'The auth token to allow for quick login'}
   })
-});
+})
 
 /* eslint-disable camelcase*/
 export const GoogleProfile = new GraphQLInputObjectType({
@@ -93,5 +93,5 @@ export const GoogleProfile = new GraphQLInputObjectType({
     gender: {type: GraphQLString, description: 'gender of google user'},
     locale: {type: GraphQLString, description: 'locale of user to help determine language'}
   })
-});
+})
 /* eslint-enable camelcase*/

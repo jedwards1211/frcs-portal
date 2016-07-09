@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router';
-import RaisedButton from 'material-ui/RaisedButton';
-import styles from './Header.css';
+import React, {Component} from 'react'
+import {Link} from 'react-router'
+import RaisedButton from 'material-ui/RaisedButton'
+import styles from './Header.css'
 
 export default class Header extends Component {
   render() {
@@ -17,6 +17,6 @@ export default class Header extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }

@@ -20,5 +20,5 @@ export const same = (t, actual, expected, message) => {
     Expected:
     ${JSON.stringify(expected, null, 2).split('\n').join('\n    ')}
 
-  `);
-};
+  `)
+}

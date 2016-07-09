@@ -1,4 +1,4 @@
-import AppContainer from 'universal/containers/App/AppContainer';
+import AppContainer from 'universal/containers/App/AppContainer'
 
 export default store => {
   return {
@@ -10,5 +10,5 @@ export default store => {
       require('./graphql'),
       require('./notFound')
     ]
-  };
-};
+  }
+}

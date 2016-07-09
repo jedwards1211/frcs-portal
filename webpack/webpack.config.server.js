@@ -1,21 +1,21 @@
-import path from 'path';
-import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import cssModulesValues from 'postcss-modules-values';
-import HappyPack from 'happypack';
-import ProgressBarPlugin from 'progress-bar-webpack-plugin';
+import path from 'path'
+import webpack from 'webpack'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import cssModulesValues from 'postcss-modules-values'
+import HappyPack from 'happypack'
+import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 
-const root = process.cwd();
-const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
-const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
+const root = process.cwd()
+const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')]
+const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global')
 
 const prefetches = [
   'react-dnd-html5-backend/lib/index.js',
   'react-dnd/lib/index.js',
   'joi/lib/index.js',
   'redux-form/lib/index.js'
-];
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+]
+const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier))
 
 export default {
   context: path.join(root, 'src'),
@@ -49,7 +49,7 @@ export default {
       loaders: ['babel'],
       threads: 4
     }),
-    new ProgressBarPlugin(),
+    new ProgressBarPlugin()
   ],
   module: {
     loaders: [
@@ -75,4 +75,4 @@ export default {
       }
     ]
   }
-};
+}

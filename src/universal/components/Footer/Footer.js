@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import styles from './Footer.css';
-import {Link} from 'react-router';
+import React, {Component} from 'react'
+import styles from './Footer.css'
+import {Link} from 'react-router'
 
 export default class Footer extends Component {
 
@@ -17,6 +17,6 @@ export default class Footer extends Component {
           <Link to="/not-found" className={styles.link}>Not found</Link>
         </div>
       </div>
-    );
+    )
   }
 }

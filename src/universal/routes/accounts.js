@@ -1,4 +1,4 @@
-import LandingContainer from '../modules/landing/containers/Landing/LandingContainer';
+import LandingContainer from '../modules/landing/containers/Landing/LandingContainer'
 
 export default function (store) {
   return {
@@ -9,5 +9,5 @@ export default function (store) {
       require('./logout'),
       require('./verifyEmail')
     ]
-  };
+  }
 }

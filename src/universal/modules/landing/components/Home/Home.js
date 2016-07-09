@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import Header from '../Header/Header';
+import React, {Component} from 'react'
+import Header from '../Header/Header'
 
 export default class Home extends Component {
   render() {
@@ -8,6 +8,6 @@ export default class Home extends Component {
         <Header/>
         <h1>...Nothing here. Try the kanban already.</h1>
       </div>
-    );
+    )
   }
 }

@@ -1,20 +1,20 @@
-import makeReducer from 'universal/redux/makeReducer';
-import {resolvePromiseMap} from 'universal/utils/promises';
-import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
+import makeReducer from 'universal/redux/makeReducer'
+import {resolvePromiseMap} from 'universal/utils/promises'
+import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer'
 
 export default function (store) {
   return {
     path: 'kanban',
     component: LandingContainer,
     getIndexRoute: async (location, cb) => {
-      const promiseMap = setKanbanImports();
-      const importMap = await resolvePromiseMap(promiseMap);
-      const {component, optimistic, ...asyncReducers} = getKanbanImports(importMap);
-      const newReducer = makeReducer(asyncReducers, optimistic);
-      store.replaceReducer(newReducer);
-      cb(null, {component});
+      const promiseMap = setKanbanImports()
+      const importMap = await resolvePromiseMap(promiseMap)
+      const {component, optimistic, ...asyncReducers} = getKanbanImports(importMap)
+      const newReducer = makeReducer(asyncReducers, optimistic)
+      store.replaceReducer(newReducer)
+      cb(null, {component})
     }
-  };
+  }
 }
 
 function setKanbanImports() {
@@ -24,7 +24,7 @@ function setKanbanImports() {
     ['lanes', System.import('universal/modules/kanban/ducks/lanes')],
     ['notes', System.import('universal/modules/kanban/ducks/notes')],
     ['socket', System.import('redux-socket-cluster')]
-  ]);
+  ])
 }
 
 function getKanbanImports(importMap) {
@@ -34,5 +34,5 @@ function getKanbanImports(importMap) {
     lanes: importMap.get('lanes').reducer,
     notes: importMap.get('notes').reducer,
     socket: importMap.get('socket').socketClusterReducer
-  };
+  }
 }

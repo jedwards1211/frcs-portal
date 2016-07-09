@@ -121,7 +121,12 @@
     "socketcluster-client": "4.3.17"
   },
   "xo": {
-    "extends": "xo-meatier"
+    "extends": "xo-meatier",
+    "semicolon": false,
+    "rules": {
+      "operator-linebreak": [ "error", "before" ],
+      "curly": 0
+    }
   },
   "homepage": "https://github.com/jedwards1211/frcs-portal#readme",
   "directories": {

@@ -1,8 +1,8 @@
-import React, {PropTypes, Component} from 'react';
-import {push} from 'react-router-redux';
-import socketOptions from 'universal/utils/socketOptions';
+import React, {PropTypes, Component} from 'react'
+import {push} from 'react-router-redux'
+import socketOptions from 'universal/utils/socketOptions'
 
-let key;
+let key
 export default ComposedComponent => {
   return class RequiredAuth extends Component {
     static propTypes = {
@@ -18,34 +18,34 @@ export default ComposedComponent => {
     }
 
     componentWillMount() {
-      this.checkForAuth(this.props);
+      this.checkForAuth(this.props)
     }
 
     componentWillReceiveProps(nextProps) {
-      this.checkForAuth(nextProps);
+      this.checkForAuth(nextProps)
     }
 
     render() {
-      const {isAuthenticated} = this.props;
+      const {isAuthenticated} = this.props
       if (isAuthenticated) {
-        return <ComposedComponent {...this.props}/>;
+        return <ComposedComponent {...this.props}/>
       }
-      return <div>Logging in...</div>;
+      return <div>Logging in...</div>
     }
 
     checkForAuth(props) {
       if (__CLIENT__) {
-        const {dispatch, hasAuthError, location} = props;
-        const newKey = location && location.key || 'none';
+        const {dispatch, hasAuthError, location} = props
+        const newKey = location && location.key || 'none'
         if (newKey === key) {
-          return;
+          return
         }
-        key = newKey;
-        const authToken = localStorage.getItem(socketOptions.authTokenName);
+        key = newKey
+        const authToken = localStorage.getItem(socketOptions.authTokenName)
         if (hasAuthError || !authToken) {
-          dispatch(push('/login?next=%2Fkanban'));
+          dispatch(push('/login?next=%2Fkanban'))
         }
       }
     }
-  };
-};
+  }
+}

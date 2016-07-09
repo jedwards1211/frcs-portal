@@ -1,8 +1,8 @@
 /* eslint react/no-danger:0 */
-import React, {Component, PropTypes} from 'react';
-import {Provider} from 'react-redux';
-import {RouterContext} from 'react-router';
-import {renderToString} from 'react-dom-stream/server';
+import React, {Component, PropTypes} from 'react'
+import {Provider} from 'react-redux'
+import {RouterContext} from 'react-router'
+import {renderToString} from 'react-dom-stream/server'
 
 // Injects the server rendered state and app into a basic html template
 export default class Html extends Component {
@@ -14,14 +14,14 @@ export default class Html extends Component {
   }
 
   render() {
-    const PROD = process.env.NODE_ENV === 'production';
-    const {title, store, assets, renderProps} = this.props;
-    const {manifest, app, vendor} = assets || {};
-    const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
+    const PROD = process.env.NODE_ENV === 'production'
+    const {title, store, assets, renderProps} = this.props
+    const {manifest, app, vendor} = assets || {}
+    const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`
     const root = PROD && renderToString(
       <Provider store={store}>
         <RouterContext {...renderProps}/>
-      </Provider>);
+      </Provider>)
     return (
       <html>
         <head>
@@ -37,6 +37,6 @@ export default class Html extends Component {
           <script src={PROD ? app.js : '/static/app.js'}/>
         </body>
       </html>
-    );
+    )
   }
 }

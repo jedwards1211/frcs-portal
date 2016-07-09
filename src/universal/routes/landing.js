@@ -1,5 +1,5 @@
-import Home from 'universal/modules/landing/components/Home/Home';
-import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
+import Home from 'universal/modules/landing/components/Home/Home'
+import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer'
 
 export default {
   path: '/',
@@ -8,4 +8,4 @@ export default {
     component: Home
   },
   childRoutes: []
-};
+}

@@ -1,12 +1,12 @@
-import {SocketCluster} from 'socketcluster';
-import os from 'os';
-import path from 'path';
+import {SocketCluster} from 'socketcluster'
+import os from 'os'
+import path from 'path'
 
-const numCpus = os.cpus().length;
-import {getDotenv} from '../universal/utils/dotenv';
+const numCpus = os.cpus().length
+import {getDotenv} from '../universal/utils/dotenv'
 
 // Import .env and expand variables:
-getDotenv();
+getDotenv()
 
 export const options = {
   authKey: process.env.JWT_SECRET,
@@ -22,5 +22,5 @@ export const options = {
   brokerController: path.join(__dirname, '/broker.js'),
   socketChannelLimit: 1000,
   rebootWorkerOnCrash: true
-};
-new SocketCluster(options); // eslint-disable-line no-new
+}
+new SocketCluster(options) // eslint-disable-line no-new

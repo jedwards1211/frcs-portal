@@ -1,7 +1,7 @@
-import React, {PropTypes, Component} from 'react';
-import Footer from 'universal/components/Footer/Footer';
-import Navigation from 'universal/components/Navigation/Navigation';
-import styles from './Landing.css';
+import React, {PropTypes, Component} from 'react'
+import Footer from 'universal/components/Footer/Footer'
+import Navigation from 'universal/components/Navigation/Navigation'
+import styles from './Landing.css'
 
 export default class Landing extends Component {
   static propTypes = {
@@ -9,7 +9,7 @@ export default class Landing extends Component {
     isAuthenticated: PropTypes.bool.isRequired
   };
   render() {
-    const {isAuthenticated, children} = this.props;
+    const {isAuthenticated, children} = this.props
     return (
       <div>
         <Navigation isAuthenticated={isAuthenticated}/>
@@ -18,6 +18,6 @@ export default class Landing extends Component {
         </div>
         <Footer/>
       </div>
-    );
+    )
   }
 }

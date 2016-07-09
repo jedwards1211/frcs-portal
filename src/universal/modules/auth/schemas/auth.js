@@ -1,9 +1,9 @@
-import Joi from 'joi';
+import Joi from 'joi'
 
 const anyErrors = {
   required: '!!Required',
   empty: '!!Required'
-};
+}
 
 export const authSchemaInsert = Joi.object().keys({
   email: Joi.string().email().trim().lowercase().max(200).label('Email').required().options({
@@ -22,6 +22,6 @@ export const authSchemaInsert = Joi.object().keys({
       }
     }
   })
-});
-export const authSchemaEmail = authSchemaInsert.optionalKeys('password');
-export const authSchemaPassword = authSchemaInsert.optionalKeys('email');
+})
+export const authSchemaEmail = authSchemaInsert.optionalKeys('password')
+export const authSchemaPassword = authSchemaInsert.optionalKeys('email')

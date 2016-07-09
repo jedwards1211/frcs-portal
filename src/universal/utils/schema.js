@@ -1,15 +1,15 @@
 export function parsedJoiErrors(error) {
   if (!error) {
-    return {};
+    return {}
   }
-  const errors = {};
-  const allErrors = error.details;
+  const errors = {}
+  const allErrors = error.details
   for (let i = 0; i < allErrors.length; i++) {
-    const curError = allErrors[i];
+    const curError = allErrors[i]
     if (errors[curError.path]) {
-      continue;
+      continue
     }
-    errors[curError.path] = curError.message;
+    errors[curError.path] = curError.message
   }
-  return errors;
+  return errors
 }

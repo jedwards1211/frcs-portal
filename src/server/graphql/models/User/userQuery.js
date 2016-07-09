@@ -1,14 +1,14 @@
-import r from '../../../database/rethinkdriver';
-import {GraphQLNonNull, GraphQLID} from 'graphql';
-import {User, UserWithAuthToken} from './userSchema';
-import {errorObj} from '../utils';
-import {GraphQLEmailType, GraphQLPasswordType} from '../types';
-import {getUserByEmail, signJwt, getAltLoginMessage} from './helpers';
-import promisify from 'es6-promisify';
-import bcrypt from 'bcrypt';
-import {isAdminOrSelf} from '../authorization';
+import r from '../../../database/rethinkdriver'
+import {GraphQLNonNull, GraphQLID} from 'graphql'
+import {User, UserWithAuthToken} from './userSchema'
+import {errorObj} from '../utils'
+import {GraphQLEmailType, GraphQLPasswordType} from '../types'
+import {getUserByEmail, signJwt, getAltLoginMessage} from './helpers'
+import promisify from 'es6-promisify'
+import bcrypt from 'bcrypt'
+import {isAdminOrSelf} from '../authorization'
 
-const compare = promisify(bcrypt.compare);
+const compare = promisify(bcrypt.compare)
 
 export default {
   getUserById: {
@@ -17,12 +17,12 @@ export default {
       id: {type: new GraphQLNonNull(GraphQLID)}
     },
     async resolve(source, args, {authToken}) {
-      isAdminOrSelf(authToken, args);
-      const user = await r.table('users').get(args.id);
+      isAdminOrSelf(authToken, args)
+      const user = await r.table('users').get(args.id)
       if (!user) {
-        throw errorObj({_error: 'User not found'});
+        throw errorObj({_error: 'User not found'})
       }
-      return user;
+      return user
     }
   },
   login: {
@@ -32,37 +32,37 @@ export default {
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
     async resolve(source, args) {
-      const {email, password} = args;
-      const user = await getUserByEmail(email);
+      const {email, password} = args
+      const user = await getUserByEmail(email)
       if (!user) {
-        throw errorObj({_error: 'User not found'});
+        throw errorObj({_error: 'User not found'})
       }
-      const {strategies} = user;
-      const hashedPassword = strategies && strategies.local && strategies.local.password;
+      const {strategies} = user
+      const hashedPassword = strategies && strategies.local && strategies.local.password
       if (!hashedPassword) {
-        throw errorObj({_error: getAltLoginMessage(strategies)});
+        throw errorObj({_error: getAltLoginMessage(strategies)})
       }
-      const isCorrectPass = await compare(password, hashedPassword);
+      const isCorrectPass = await compare(password, hashedPassword)
       if (isCorrectPass) {
-        const authToken = signJwt({id: user.id});
-        return {authToken, user};
+        const authToken = signJwt({id: user.id})
+        return {authToken, user}
       }
-      throw errorObj({_error: 'Login failed', password: 'Incorrect password'});
+      throw errorObj({_error: 'Login failed', password: 'Incorrect password'})
     }
   },
   loginAuthToken: {
     type: User,
     async resolve(source, args, {authToken}) {
-      const {id} = authToken;
+      const {id} = authToken
       if (!id) {
-        throw errorObj({_error: 'Invalid authentication Token'});
+        throw errorObj({_error: 'Invalid authentication Token'})
       }
-      const user = await r.table('users').get(id);
+      const user = await r.table('users').get(id)
       if (!user) {
-        throw errorObj({_error: 'User not found'});
+        throw errorObj({_error: 'User not found'})
       }
-      return user;
+      return user
     }
   }
-};
+}
 

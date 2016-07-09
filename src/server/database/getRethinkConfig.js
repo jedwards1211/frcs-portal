@@ -1,5 +1,5 @@
-import {readCert} from './readCert';
-import flag from 'node-env-flag';
+import {readCert} from './readCert'
+import flag from 'node-env-flag'
 
 export const getRethinkConfig = () => {
   const config = {
@@ -9,7 +9,7 @@ export const getRethinkConfig = () => {
     db: process.env.NODE_ENV === 'testing' ? 'ava' : 'meatier',
     min: process.env.NODE_ENV === 'production' ? 50 : 3,
     buffer: process.env.NODE_ENV === 'production' ? 50 : 3
-  };
+  }
 
   if (process.env.NODE_ENV && flag(process.env.DATABASE_SSL)) {
     // we may need a cert for production deployment
@@ -19,7 +19,7 @@ export const getRethinkConfig = () => {
       ssl: {
         ca: readCert()
       }
-    });
+    })
   }
-  return config;
-};
+  return config
+}

@@ -1,13 +1,13 @@
-import React, {PropTypes, Component} from 'react';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import styles from './LostPassword.css';
-import {reduxForm} from 'redux-form';
-import Joi from 'joi';
-import {emailPasswordReset} from '../../ducks/auth';
-import {authSchemaEmail} from '../../schemas/auth';
-import {parsedJoiErrors} from 'universal/utils/schema';
-import {getFormState} from 'universal/redux/helpers';
+import React, {PropTypes, Component} from 'react'
+import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
+import styles from './LostPassword.css'
+import {reduxForm} from 'redux-form'
+import Joi from 'joi'
+import {emailPasswordReset} from '../../ducks/auth'
+import {authSchemaEmail} from '../../schemas/auth'
+import {parsedJoiErrors} from 'universal/utils/schema'
+import {getFormState} from 'universal/redux/helpers'
 
 @reduxForm({form: 'lostPasswordForm', fields: ['email'], validate, getFormState})
 export default class LostPassword extends Component {
@@ -26,7 +26,7 @@ export default class LostPassword extends Component {
     })
   }
   render() {
-    const {fields: {email}, error, handleSubmit, submitting, location} = this.props;
+    const {fields: {email}, error, handleSubmit, submitting, location} = this.props
     return (
       <div className={styles.lostPasswordForm}>
         <h3>Lost password</h3>
@@ -56,11 +56,11 @@ export default class LostPassword extends Component {
           </div>
         </form>
       </div>
-    );
+    )
   }
 }
 
 function validate(values) {
-  const results = Joi.validate(values, authSchemaEmail, {abortEarly: false});
-  return parsedJoiErrors(results.error);
+  const results = Joi.validate(values, authSchemaEmail, {abortEarly: false})
+  return parsedJoiErrors(results.error)
 }

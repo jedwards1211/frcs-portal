@@ -1,25 +1,25 @@
-import path from 'path';
-import webpack from 'webpack';
-import cssModulesValues from 'postcss-modules-values';
-import {getDotenv} from '../src/universal/utils/dotenv';
-import HappyPack from 'happypack';
-import ProgressBarPlugin from 'progress-bar-webpack-plugin';
+import path from 'path'
+import webpack from 'webpack'
+import cssModulesValues from 'postcss-modules-values'
+import {getDotenv} from '../src/universal/utils/dotenv'
+import HappyPack from 'happypack'
+import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 
 // Import .env and expand variables:
-getDotenv();
+getDotenv()
 
-const root = process.cwd();
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')];
-const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
-const srcDir = path.join(root, 'src');
+const root = process.cwd()
+const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')]
+const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global')
+const srcDir = path.join(root, 'src')
 
 const prefetches = [
   'react-dnd/lib/index.js',
   'joi/lib/index.js',
   'universal/modules/kanban/containers/Kanban/KanbanContainer.js'
-];
+]
 
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier))
 
 const babelQuery = {
   plugins: [
@@ -35,7 +35,7 @@ const babelQuery = {
       }]
     }]
   ]
-};
+}
 
 export default {
   // devtool: 'source-maps',
@@ -75,7 +75,7 @@ export default {
       loaders: ['babel'],
       threads: 4
     }),
-    new ProgressBarPlugin(),
+    new ProgressBarPlugin()
   ],
   resolve: {
     extensions: ['.js'],
@@ -112,4 +112,4 @@ export default {
       }
     ]
   }
-};
+}

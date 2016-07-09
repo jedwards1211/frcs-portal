@@ -1,8 +1,8 @@
-import React, {Component, PropTypes} from 'react';
-import uuid from 'node-uuid';
-import EditableContainer from '../../containers/Editable/EditableContainer.js';
-import Notes from '../Notes/Notes';
-import styles from './lane.css';
+import React, {Component, PropTypes} from 'react'
+import uuid from 'node-uuid'
+import EditableContainer from '../../containers/Editable/EditableContainer.js'
+import Notes from '../Notes/Notes'
+import styles from './lane.css'
 
 export default class Lane extends Component {
   static propTypes = {
@@ -18,10 +18,10 @@ export default class Lane extends Component {
 
   render() {
     const {laneActions: {updateLane, deleteLane}, noteActions: {addNote, ...modNoteActions},
-      lane, notes, formKey, initialValues, dispatch, userId} = this.props;
-    const laneId = lane.id;
-    const laneProps = {dispatch, formKey, initialValues};
-    const noteProps = {notes, noteActions: modNoteActions, laneId};
+      lane, notes, formKey, initialValues, dispatch, userId} = this.props
+    const laneId = lane.id
+    const laneProps = {dispatch, formKey, initialValues}
+    const noteProps = {notes, noteActions: modNoteActions, laneId}
     /* eslint-disable react/jsx-no-bind*/
     return (
       <div className={styles.lane}>
@@ -51,6 +51,6 @@ export default class Lane extends Component {
         </div>
         <Notes {...noteProps} dispatch={dispatch}/>
       </div>
-    );
+    )
   }
 }

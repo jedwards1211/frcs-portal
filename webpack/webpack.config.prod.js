@@ -1,17 +1,17 @@
-import path from 'path';
-import webpack from 'webpack';
-import AssetsPlugin from 'assets-webpack-plugin';
-import cssModulesValues from 'postcss-modules-values';
-import HappyPack from 'happypack';
-import {getDotenv} from '../src/universal/utils/dotenv';
-import ProgressBarPlugin from 'progress-bar-webpack-plugin';
+import path from 'path'
+import webpack from 'webpack'
+import AssetsPlugin from 'assets-webpack-plugin'
+import cssModulesValues from 'postcss-modules-values'
+import HappyPack from 'happypack'
+import {getDotenv} from '../src/universal/utils/dotenv'
+import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 
 // Import .env and expand variables:
-getDotenv();
+getDotenv()
 
-const root = process.cwd();
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal'), /joi/, /isemail/, /hoek/, /topo/];
-const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
+const root = process.cwd()
+const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal'), /joi/, /isemail/, /hoek/, /topo/]
+const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global')
 
 /* code can be: vendor-common, vendor-page-specific, meatier-common, meatier-page-specific
  * a small, fast landing page means only include the common from vendor + meatier
@@ -30,15 +30,15 @@ const vendor = [
   // 'redux-thunk',
   // 'redux-form',
   'joi'
-];
+]
 
 const prefetches = [
   'react-dnd/lib/index.js',
   'joi/lib/index.js',
   'universal/modules/kanban/containers/Kanban/KanbanContainer.js'
-];
+]
 
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier))
 
 export default {
   context: path.join(root, 'src'),
@@ -88,7 +88,7 @@ export default {
       loaders: ['babel'],
       threads: 4
     }),
-    new ProgressBarPlugin(),
+    new ProgressBarPlugin()
   ],
   module: {
     loaders: [
@@ -114,4 +114,4 @@ export default {
       }
     ]
   }
-};
+}

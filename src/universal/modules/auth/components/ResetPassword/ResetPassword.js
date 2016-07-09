@@ -1,13 +1,13 @@
-import React, {PropTypes, Component} from 'react';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import styles from './ResetPassword.css';
-import {reduxForm} from 'redux-form';
-import Joi from 'joi';
-import {authSchemaPassword} from '../../schemas/auth';
-import {resetPassword} from '../../ducks/auth';
-import {parsedJoiErrors} from 'universal/utils/schema';
-import {getFormState} from 'universal/redux/helpers';
+import React, {PropTypes, Component} from 'react'
+import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
+import styles from './ResetPassword.css'
+import {reduxForm} from 'redux-form'
+import Joi from 'joi'
+import {authSchemaPassword} from '../../schemas/auth'
+import {resetPassword} from '../../ducks/auth'
+import {parsedJoiErrors} from 'universal/utils/schema'
+import {getFormState} from 'universal/redux/helpers'
 
 @reduxForm({form: 'resetPasswordForm', fields: ['password'], validate, getFormState})
 export default class ResetPassword extends Component {
@@ -21,7 +21,7 @@ export default class ResetPassword extends Component {
     })
   }
   render() {
-    const {fields: {password}, error, handleSubmit, submitting} = this.props;
+    const {fields: {password}, error, handleSubmit, submitting} = this.props
     return (
       <div className={styles.resetPasswordForm}>
         <h3>Reset your password</h3>
@@ -49,16 +49,16 @@ export default class ResetPassword extends Component {
           </div>
         </form>
       </div>
-    );
+    )
   }
   onSubmit = (data, dispatch) => {
-    const {resetToken} = this.props.params;
-    const outData = Object.assign({}, data, {resetToken});
-    return resetPassword(outData, dispatch);
+    const {resetToken} = this.props.params
+    const outData = Object.assign({}, data, {resetToken})
+    return resetPassword(outData, dispatch)
   };
 }
 
 function validate(values) {
-  const results = Joi.validate(values, authSchemaPassword, {abortEarly: false});
-  return parsedJoiErrors(results.error);
+  const results = Joi.validate(values, authSchemaPassword, {abortEarly: false})
+  return parsedJoiErrors(results.error)
 }

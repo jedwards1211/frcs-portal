@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from 'react';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import styles from './Auth.css';
-import {Link} from 'react-router';
-import {loginUser, signupUser, oauthLogin} from '../../ducks/auth';
+import React, {Component, PropTypes} from 'react'
+import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
+import styles from './Auth.css'
+import {Link} from 'react-router'
+import {loginUser, signupUser, oauthLogin} from '../../ducks/auth'
 
 export default class Auth extends Component {
   static propTypes = {
@@ -31,8 +31,8 @@ export default class Auth extends Component {
   }
 
   render() {
-    const {fields: {email, password}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props;
-    const localError = error || authError._error;
+    const {fields: {email, password}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
+    const localError = error || authError._error
     /* eslint-disable react/jsx-handler-names*/
     return (
       <div className={styles.loginForm}>
@@ -58,10 +58,11 @@ export default class Auth extends Component {
             errorText={password.touched && password.error || ''}
           />
 
-          {isLogin ?
-            <Link to={{pathname: '/login/lost-password', query: {e: email.value}}} className={styles.lostPassword}>
+          {isLogin
+            ? <Link to={{pathname: '/login/lost-password', query: {e: email.value}}} className={styles.lostPassword}>
               Forgot your password?
-            </Link> : null}
+            </Link>
+            : null}
 
           <div className={styles.loginButton}>
             <RaisedButton
@@ -79,18 +80,18 @@ export default class Auth extends Component {
         </div>
         <span onClick={this.loginWithGoogle}>Login with Google</span>
       </div>
-    );
+    )
   }
   // need async?
   loginWithGoogle = () => {
-    const redirectRoute = this.props.location.query.next || '/';
-    this.props.dispatch(oauthLogin('/auth/google', redirectRoute));
+    const redirectRoute = this.props.location.query.next || '/'
+    this.props.dispatch(oauthLogin('/auth/google', redirectRoute))
   };
 
   onSubmit = (data, dispatch) => {
     // gotta get that redirect from props
-    const redirectRoute = this.props.location.query.next || '/';
-    const authFunc = this.props.isLogin ? loginUser : signupUser;
-    return authFunc(dispatch, data, redirectRoute);
+    const redirectRoute = this.props.location.query.next || '/'
+    const authFunc = this.props.isLogin ? loginUser : signupUser
+    return authFunc(dispatch, data, redirectRoute)
   };
 }
