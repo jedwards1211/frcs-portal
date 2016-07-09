@@ -4,6 +4,7 @@ import ldapConfig from './ldapConfig'
 import {getUserByEmail, getUserByUsername, getAltLoginMessage} from '../../server/graphql/models/User/helpers'
 import bcrypt from 'bcrypt'
 import promisify from 'es6-promisify'
+import logger from '../logger'
 const compare = promisify(bcrypt.compare)
 
 const {base, admin, adminPassword, users, groups} = ldapConfig
@@ -25,7 +26,7 @@ function matches(entry, req) {
 }
 
 server.bind(base.dn, async (req, res, next) => {
-  console.log('bind: ', req.toString())
+  logger.log('bind: ', req.toString())
 
   if (req.dn.equals(admin.dn)) {
     if (req.credentials === adminPassword) {
@@ -55,8 +56,8 @@ server.bind(base.dn, async (req, res, next) => {
 })
 
 server.search(base.dn, authorize, async (req, res, next) => {
-  console.log('search: ', req.toString())
-  console.log()
+  logger.log('search: ', req.toString())
+  logger.log()
 
   if (matches(base, req)) res.send(base)
   if (matches(admin, req)) res.send(admin)
@@ -64,7 +65,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
   if (matches(groups, req)) res.send(groups)
 
   await r.table('users').run().then(rUsers => rUsers.forEach(rUser => {
-    console.log(rUser)
+    logger.log(rUser)
 
     const displayname = rUser.firstName || rUser.lastName
       ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
@@ -93,5 +94,5 @@ server.search(base.dn, authorize, async (req, res, next) => {
 })
 
 server.listen(ldapConfig.port, () => {
-  console.log('LDAP server listening at %s', server.url)
+  logger.log('LDAP server listening at %s', server.url)
 })

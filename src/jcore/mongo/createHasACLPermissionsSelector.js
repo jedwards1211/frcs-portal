@@ -77,7 +77,7 @@ export default function createACLSelector(options: {
             $all: selector.acl.$all.map(s => ({
               $elemMatch: {
                 ...s.$elemMatch,
-                $or: [...s.$elemMatch.$or, {group: 'owner'}],
+                $or: [...s.$elemMatch.$or, {group: 'owner'}]
               }
             }))
           }

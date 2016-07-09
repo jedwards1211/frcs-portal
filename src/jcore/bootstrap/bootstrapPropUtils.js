@@ -14,7 +14,7 @@ export const CONTEXT_CLASSES = {
   info:     'info',
   success:  'success',
   ok:       'success',
-  primary:  'primary',
+  primary:  'primary'
 }
 
 export const FORM_GROUP_CONTEXT_CLASSES = {
@@ -26,7 +26,7 @@ export const FORM_GROUP_CONTEXT_CLASSES = {
 export const SHADE_CLASSES = {
   faded:    'shade-faded',
   brighter: 'shade-brighter',
-  darker:   'shade-darker',
+  darker:   'shade-darker'
 }
 
 export const SIZING_CLASSES = {
@@ -35,7 +35,7 @@ export const SIZING_CLASSES = {
   lg: 'lg',
   large: 'lg',
   xs: 'xs',
-  extraSmall: 'xs',
+  extraSmall: 'xs'
 }
 
 export function getContextClass(props: Object): ?string {

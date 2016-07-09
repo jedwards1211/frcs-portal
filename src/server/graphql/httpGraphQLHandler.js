@@ -1,5 +1,6 @@
 import Schema from './rootSchema'
 import {graphql} from 'graphql'
+import logger from '../logger'
 
 export default async (req, res) => {
   // Check for admin privileges
@@ -8,7 +9,7 @@ export default async (req, res) => {
   const context = {authToken, context: newContext}
   const result = await graphql(Schema, query, null, context, variables)
   if (result.errors) {
-    console.log('DEBUG GraphQL Error:', result.errors)
+    logger.log('DEBUG GraphQL Error:', result.errors)
   }
   res.send(result)
 }

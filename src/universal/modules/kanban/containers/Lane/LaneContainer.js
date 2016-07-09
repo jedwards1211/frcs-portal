@@ -16,7 +16,7 @@ export default class LaneContainer extends Component {
     userId: PropTypes.string.isRequired
   };
   render() {
-    return <Lane {...this.props}/>
+    return <Lane {...this.props} />
   }
 }
 

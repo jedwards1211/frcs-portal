@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import React, {Component} from 'react'
 import GraphiQL from 'graphiql'
 import fetch from 'isomorphic-fetch'
@@ -26,7 +28,7 @@ const graphQLFetcher = async ({query, variables}) => {
 export default class Graphiql extends Component {
   render() {
     return (
-      <GraphiQL fetcher={graphQLFetcher}/>
+      <GraphiQL fetcher={graphQLFetcher} />
     )
   }
 }

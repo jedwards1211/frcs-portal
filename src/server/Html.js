@@ -20,21 +20,21 @@ export default class Html extends Component {
     const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`
     const root = PROD && renderToString(
       <Provider store={store}>
-        <RouterContext {...renderProps}/>
+        <RouterContext {...renderProps} />
       </Provider>)
     return (
       <html>
         <head>
-          <meta charSet="utf-8"/>
-          {PROD && <link rel="stylesheet" href="/static/prerender.css" type="text/css"/>}
+          <meta charSet="utf-8" />
+          {PROD && <link rel="stylesheet" href="/static/prerender.css" type="text/css" />}
           <title>{title}</title>
         </head>
         <body>
-          <script dangerouslySetInnerHTML={{__html: initialState}}/>
+          <script dangerouslySetInnerHTML={{__html: initialState}} />
           {PROD ? <div id="root" dangerouslySetInnerHTML={{__html: root}}></div> : <div id="root"></div>}
-          {PROD && <script dangerouslySetInnerHTML={{__html: manifest.text}}/>}
-          {PROD && <script src={vendor.js}/>}
-          <script src={PROD ? app.js : '/static/app.js'}/>
+          {PROD && <script dangerouslySetInnerHTML={{__html: manifest.text}} />}
+          {PROD && <script src={vendor.js} />}
+          <script src={PROD ? app.js : '/static/app.js'} />
         </body>
       </html>
     )

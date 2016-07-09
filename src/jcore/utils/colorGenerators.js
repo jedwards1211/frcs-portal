@@ -19,10 +19,10 @@ export function hsvGenerator(options = {}) {
   let {
     hRange = [0, 255],
     sRange = [0, 255],
-    vRange = [0, 255],
+    vRange = [0, 255]
   } = options
 
-  return function() {
+  return function () {
     return Colr().fromHsv(random(hRange), random(sRange), random(vRange))
   }
 }
@@ -40,10 +40,10 @@ export function hslGenerator(options = {}) {
   let {
     hRange = [0, 255],
     sRange = [0, 255],
-    lRange = [0, 255],
+    lRange = [0, 255]
   } = options
 
-  return function() {
+  return function () {
     return Colr().fromHsl(random(hRange), random(sRange), random(lRange))
   }
 }
@@ -57,15 +57,15 @@ const TRIG_SCALE = Math.PI / 720
 
 const SIN_360 = _.range(360).map(v => Math.sin(v * TRIG_SCALE))
 const COS_360 = _.range(360).map(v => Math.cos(v * TRIG_SCALE))
-const L_RADIUS  = _.range(256).map(v => (127.5 - Math.abs(v - 127.5)) / 127.5)
-const Z_SCALE   = 0.01
+const L_RADIUS = _.range(256).map(v => (127.5 - Math.abs(v - 127.5)) / 127.5)
+const Z_SCALE = 0.01
 
 function cssToHslArray(color) {
   return Colr().fromRgbArray(cssColor(color).toRgbaArray()).toHslArray()
 }
 
 export function restrictLuminance(generator, range) {
-  return function() {
+  return function () {
     let color, lum
     do {
       color = generator()
@@ -80,7 +80,7 @@ function hslArrayToXyzArray(hsl) {
   return [
     COS_360[hsl[0]] * radius,
     SIN_360[hsl[0]] * radius,
-    hsl[2] * Z_SCALE,
+    hsl[2] * Z_SCALE
   ]
 }
 
@@ -100,7 +100,7 @@ export function generateColors(options = {}) {
     numColors = 1,
     generator = hslGenerator(),
     exclude = ['#000000', '#ffffff'],
-    numTries = 40,
+    numTries = 40
   } = options
 
   let result = []
@@ -120,7 +120,7 @@ export function generateColors(options = {}) {
         let color = generator()
         let xyz = hslArrayToXyzArray(color.toHslArray())
         let minDist = 100000000
-        xyzColors.forEach(function(point) {
+        xyzColors.forEach(function (point) {
           minDist = Math.min(minDist, distSq(xyz, point))
         })
         if (minDist > bestDist) {

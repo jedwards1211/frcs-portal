@@ -28,7 +28,7 @@ export default class AuthContainer extends Component {
   render() {
     const {pathname} = this.props
     const isLogin = pathname && pathname.indexOf('/login') !== -1
-    return <Auth isLogin={isLogin} {...this.props}/>
+    return <Auth isLogin={isLogin} {...this.props} />
   }
 }
 

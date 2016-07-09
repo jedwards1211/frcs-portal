@@ -28,23 +28,23 @@ export default class ResetPassword extends Component {
         <span className={styles.instructions}>Please type your new password here</span>
         {error && <span>{error}</span>}
         <form className={styles.resetPasswordForm} onSubmit={handleSubmit(this.onSubmit)}>
-          <input style={{display: 'none'}} type="text" name="chromeisabitch"/>
+          <input style={{display: 'none'}} type="text" name="chromeisabitch" />
 
           <TextField
-            {...password}
-            type="password"
-            floatingLabelText="Password"
-            hintText="hunter2"
-            errorText={password.touched && password.error || ''}
+              {...password}
+              type="password"
+              floatingLabelText="Password"
+              hintText="hunter2"
+              errorText={password.touched && password.error || ''}
           />
-          <input style={{display: 'none'}} type="text" name="javascriptDisabled"/>
+          <input style={{display: 'none'}} type="text" name="javascriptDisabled" />
           <div className={styles.resetPasswordButton}>
             <RaisedButton
-              label="Set new password"
-              secondary
-              type="submit"
-              disabled={submitting}
-              onClick={handleSubmit(this.onSubmit)}
+                label="Set new password"
+                secondary
+                type="submit"
+                disabled={submitting}
+                onClick={handleSubmit(this.onSubmit)}
             />
           </div>
         </form>

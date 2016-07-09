@@ -11,7 +11,7 @@ export default function checkSchema(schema, options = {}) {
   if (Meteor.isServer) {
     const createCheckSchemaMethods = require('./createCheckSchemaMethods').default
 
-    return function(collection) {
+    return function (collection) {
       if (monkeypatch) {
         return Object.assign(collection, createCheckSchemaMethods({
           insert: collection.insert.bind(collection),

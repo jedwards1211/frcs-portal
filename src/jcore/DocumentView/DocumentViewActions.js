@@ -17,7 +17,7 @@ type Meta = {
   reduxPath: Array<string | number>
 };
 
-function createSetter(type: string):  (payload: any, meta: Meta) => Action {
+function createSetter(type: string): (payload: any, meta: Meta) => Action {
   return (payload: any, meta: Meta) => ({type, payload, meta})
 }
 

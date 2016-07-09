@@ -20,7 +20,7 @@ export default class AppContainer extends Component {
   render() {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <App {...this.props}/>
+        <App {...this.props} />
       </MuiThemeProvider>
     )
   }

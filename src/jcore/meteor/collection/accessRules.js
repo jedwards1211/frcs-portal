@@ -183,7 +183,7 @@ export const allow: (...methods: MethodOrGroup[]) => AllowRule = (...methods) =>
  * - 'write' (equivalent to 'insert', 'update', 'upsert', 'remove')
  * Passing no arguments means the Rule applies to all operations.
  */
-export const deny:  (...methods: MethodOrGroup[]) => DenyRule  = (...methods) => new DenyRule (...methods)
+export const deny: (...methods: MethodOrGroup[]) => DenyRule = (...methods) => new DenyRule(...methods)
 
 /**
  * A condition that always applies.
@@ -192,15 +192,15 @@ export const always: Condition = () => true
 /**
  * A condition that never applies.
  */
-export const never:  Condition = () => false
+export const never: Condition = () => false
 
 const normalizeOperation = {
-  find:     (selector, options = {}, ...args)           => ({selector, options, args: [selector, options, ...args]}),
-  findOne:  (selector, options = {}, ...args)           => ({selector, options, args: [selector, options, ...args]}),
-  insert:   (document, ...args)                         => ({document, options: {}, args: [document, ...args]}),
+  find:     (selector, options = {}, ...args) => ({selector, options, args: [selector, options, ...args]}),
+  findOne:  (selector, options = {}, ...args) => ({selector, options, args: [selector, options, ...args]}),
+  insert:   (document, ...args) => ({document, options: {}, args: [document, ...args]}),
   update:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
   upsert:   (selector, modifier, options = {}, ...args) => ({selector, modifier, options, args: [selector, modifier, options, ...args]}),
-  remove:   (selector, ...args)                         => ({selector, options: {}, args: [selector, ...args]})
+  remove:   (selector, ...args) => ({selector, options: {}, args: [selector, ...args]})
 }
 
 const methodGroups = {

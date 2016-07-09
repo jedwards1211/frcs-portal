@@ -22,7 +22,7 @@ var ReactTransitionChildMapping = {
    * @param {*} children `this.props.children`
    * @return {object} Mapping of key to child
    */
-  getChildMapping: function(children) {
+  getChildMapping: function (children) {
     if (!children) {
       return children
     }
@@ -52,7 +52,7 @@ var ReactTransitionChildMapping = {
    * @return {object} a key set that contains all keys in `prev` and all keys
    * in `next` in a reasonable order.
    */
-  mergeChildMappings: function(prev, next) {
+  mergeChildMappings: function (prev, next) {
     prev = prev || {}
     next = next || {}
 
@@ -100,7 +100,7 @@ var ReactTransitionChildMapping = {
     }
 
     return childMapping
-  },
+  }
 }
 
 module.exports = ReactTransitionChildMapping

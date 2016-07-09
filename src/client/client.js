@@ -17,7 +17,7 @@ const initialState = iMap([
 const store = makeStore(initialState)
 render(
   <AppContainer>
-    <Root store={store}/>
+    <Root store={store} />
   </AppContainer>
   , document.getElementById('root'))
 
@@ -27,7 +27,7 @@ if (module.hot) {
     const Root = require('./Root')
     render(
       <AppContainer>
-        <Root store={store}/>
+        <Root store={store} />
       </AppContainer>,
       document.getElementById('root')
     )

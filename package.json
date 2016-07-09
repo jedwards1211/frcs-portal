@@ -21,7 +21,7 @@
     "build:db": "node ./src/server/database/setupDB.babel.js",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*.js --verbose",
-    "lint": "xo --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
+    "lint": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json",
     "ldap:dev": "NODE_ENV=development node ./src/server/ldap/ldapServer.babel.js"
   },
@@ -32,7 +32,7 @@
     "ava": "0.14.0",
     "babel-cli": "6.8.0",
     "babel-core": "6.8.0",
-    "babel-eslint": "6.0.4",
+    "babel-eslint": "^6.1.2",
     "babel-loader": "6.2.4",
     "babel-plugin-add-module-exports": "0.2.0",
     "babel-plugin-react-transform": "2.0.2",
@@ -70,8 +70,7 @@
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.4",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "2.10.0",
-    "xo": "0.15.0"
+    "webpack-hot-middleware": "2.10.0"
   },
   "dependencies": {
     "babel-polyfill": "6.8.0",
@@ -119,14 +118,6 @@
     "rethinkdbdash": "2.3.6",
     "socketcluster": "4.6.1",
     "socketcluster-client": "4.3.17"
-  },
-  "xo": {
-    "extends": "xo-meatier",
-    "semicolon": false,
-    "rules": {
-      "operator-linebreak": [ "error", "before" ],
-      "curly": 0
-    }
   },
   "homepage": "https://github.com/jedwards1211/frcs-portal#readme",
   "directories": {

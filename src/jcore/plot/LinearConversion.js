@@ -26,11 +26,11 @@ export default class LinearConversion extends Conversion {
     super(...args)
   }
 
-  convert( d ) {
+  convert(d) {
     return d * this.scale + this.offset
   }
 
-  invert( d ) {
+  invert(d) {
     return (d - this.offset) / this.scale
   }
 
@@ -39,33 +39,33 @@ export default class LinearConversion extends Conversion {
     return new LinearConversion({scale, offset})
   }
 
-  set( a, b, c, d ) {
-    if ( c !== undefined ) {
+  set(a, b, c, d) {
+    if (c !== undefined) {
       // a * s + o == b
       // c * s + o == d
       // (a - c) * s == b - d
       // s == (b - d) / (a - c)
       // o == b - a * s
-      var newScale = requireNotZero( requireFinite( ( b - d ) / ( a - c ) ) )
-      var newOffset = requireFinite( b - a * newScale )
+      var newScale = requireNotZero(requireFinite((b - d) / (a - c)))
+      var newOffset = requireFinite(b - a * newScale)
       this.scale = newScale
       this.offset = newOffset
     }
-    else if ( b !== undefined ) {
-      this.offset = requireFinite( b - a * this.scale )
+    else if (b !== undefined) {
+      this.offset = requireFinite(b - a * this.scale)
     }
-    else if ( a !== undefined ) {
+    else if (a !== undefined) {
       this.offset = a.offset
       this.scale = a.scale
     }
     return this
   }
 
-  zoom( center, factor ) {
-    var scale = requireNotZero( requireFinite( this.scale / factor ) )
+  zoom(center, factor) {
+    var scale = requireNotZero(requireFinite(this.scale / factor))
     // c * s1 + o1 == c * s2 + o2
     // o2 = c * s1 + o1 - c * s2
-    var offset = requireFinite( center * this.scale + this.offset - center * scale )
+    var offset = requireFinite(center * this.scale + this.offset - center * scale)
     this.scale = scale
     this.offset = offset
     return this
@@ -84,21 +84,21 @@ export default class LinearConversion extends Conversion {
    * @throws if any of the input values would produce a conversion with NaN or Infinite scale or
    * offset.
    */
-  clampDomain( r1: number, r2: number, center: number, minRange: number | void, maxRange: number | void) {
+  clampDomain(r1: number, r2: number, center: number, minRange: number | void, maxRange: number | void) {
     // minRange <= |((r1 - o') / s') - ((r2 - o') / s')| <= maxRange
     // minRange <= |(r1 - r2) / s'| <= maxRange
     minRange = minRange ? Math.abs(minRange) : NaN
     maxRange = maxRange ? Math.abs(maxRange) : NaN
     let newScale = this.scale
-    let diff = requireNotZero( requireFinite( Math.abs(r1 - r2) ) )
-    if      (Math.abs(diff / newScale) < minRange) newScale = Math.sign(this.scale) * diff / minRange
+    let diff = requireNotZero(requireFinite(Math.abs(r1 - r2)))
+    if (Math.abs(diff / newScale) < minRange) newScale = Math.sign(this.scale) * diff / minRange
     else if (Math.abs(diff / newScale) > maxRange) newScale = Math.sign(this.scale) * diff / maxRange
 
     if (newScale !== this.scale) {
       // (center - o) / s  == (center - o') / s'
       // -o' = (center - o) / s * s' - center
       // o' = center - (center - o) / s * s'
-      let newOffset = requireFinite( center - (center - this.offset) / this.scale * newScale )
+      let newOffset = requireFinite(center - (center - this.offset) / this.scale * newScale)
       this.scale = newScale
       this.offset = newOffset
     }

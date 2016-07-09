@@ -26,14 +26,14 @@ export default class Editable extends Component {
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         <input
-          {...formProps}
-          ref={formProps.name}
-          type="text"
-          autoFocus
-          defaultValue={title}
-          onSubmit={handleSubmit(this.onSubmit)}
-          onFocus={() => {}}
-          onBlur={handleSubmit(this.onSubmit)}
+            {...formProps}
+            ref={formProps.name}
+            type="text"
+            autoFocus
+            defaultValue={title}
+            onSubmit={handleSubmit(this.onSubmit)}
+            onFocus={() => {}}
+            onBlur={handleSubmit(this.onSubmit)}
         />
       </form>
     )

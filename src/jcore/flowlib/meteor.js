@@ -9,14 +9,14 @@ import type {
   QueryOptions,
   UpdateOptions,
   AllowOptions,
-  SubscriptionHandle,
+  SubscriptionHandle
 } from '../flowtypes/meteorTypes'
 
 import type {
   AggregationPipeline,
   AggregationOptions,
   AggregationCursor,
-  Modifier,
+  Modifier
 } from '../flowtypes/mongoTypes'
 
 declare module NpmGlobal {

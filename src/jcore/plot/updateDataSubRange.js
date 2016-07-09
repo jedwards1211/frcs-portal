@@ -29,7 +29,7 @@ export default function updateDataSubRange(currentRange, newViewRange, options) 
   // union with currentRange
   if (currentRange && !isNaN(currentRange.beginTime) && !isNaN(currentRange.endTime)) {
     beginTime = Math.min(beginTime, currentRange.beginTime)
-    endTime   = Math.max(endTime, currentRange.endTime  )
+    endTime = Math.max(endTime, currentRange.endTime)
   }
 
   // shrink range if it is bigger than maxRange
@@ -46,7 +46,7 @@ export default function updateDataSubRange(currentRange, newViewRange, options) 
 
   // expand to at least minRange or newViewRange
   beginTime = Math.min(beginTime, newViewRange.beginTime, center - minRange / 2)
-  endTime   = Math.max(endTime, newViewRange.endTime,   center + maxRange / 2)
+  endTime = Math.max(endTime, newViewRange.endTime, center + maxRange / 2)
 
   return {beginTime, endTime}
 }

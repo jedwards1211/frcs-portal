@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import React, {PropTypes, Component} from 'react'
 import {push} from 'react-router-redux'
 import socketOptions from 'universal/utils/socketOptions'
@@ -28,7 +30,7 @@ export default ComposedComponent => {
     render() {
       const {isAuthenticated} = this.props
       if (isAuthenticated) {
-        return <ComposedComponent {...this.props}/>
+        return <ComposedComponent {...this.props} />
       }
       return <div>Logging in...</div>
     }

@@ -6,7 +6,7 @@ export default function validationClassNames(validation) {
       'has-error':   !!(validation.error || validation.alarm || validation.danger),
       'has-warning': !!validation.warning,
       'has-info':    !!validation.info,
-      'has-success': !!(validation.success || validation.ok),
+      'has-success': !!(validation.success || validation.ok)
     })
   }
   return ''

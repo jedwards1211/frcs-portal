@@ -12,7 +12,7 @@ export default class Header extends Component {
           <h3 className={styles.bannerDesc}>Like Meteor, but Meatier</h3>
           <div className={styles.tryButton}>
             <Link to="/kanban">
-              <RaisedButton secondary label="Try the Kanban"/>
+              <RaisedButton secondary label="Try the Kanban" />
             </Link>
           </div>
         </div>

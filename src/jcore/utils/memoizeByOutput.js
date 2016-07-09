@@ -10,7 +10,7 @@ import _ from 'lodash'
  */
 export default function memoizeByOutput(func, equalityCheck = _.isEqual) {
   let lastOutput
-  return function(...args) {
+  return function (...args) {
     let output = func(...args)
     if (!equalityCheck(lastOutput, output)) {
       lastOutput = output

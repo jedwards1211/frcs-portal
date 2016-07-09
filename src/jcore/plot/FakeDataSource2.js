@@ -33,12 +33,12 @@ class NoiseGen {
 
 export default class FakeDataSource {
   constructor(options = {}) {
-    this.increment            = options.increment           || 10000
-    this.majorPeriod          = options.majorPeriod         || 3600000
-    this.majorAmplitude       = options.majorAmplitude      || 5
-    this.variancePeriod       = options.variancePeriod      || 4782052
-    this.varianceAmplitude    = options.varianceAmplitude   || 2
-    this.delay                = options.delay               || 1000
+    this.increment = options.increment || 10000
+    this.majorPeriod = options.majorPeriod || 3600000
+    this.majorAmplitude = options.majorAmplitude || 5
+    this.variancePeriod = options.variancePeriod || 4782052
+    this.varianceAmplitude = options.varianceAmplitude || 2
+    this.delay = options.delay || 1000
 
     this.majorGens = {}
     this.varianceGens = {}

@@ -25,7 +25,7 @@ export var leftSide = new Side({
   },
   getFromRect(rect) {
     return rect.x
-  },
+  }
 })
 export var rightSide = new Side({
   name: 'right',
@@ -46,7 +46,7 @@ export var rightSide = new Side({
   },
   getFromRect(rect) {
     return rect.x + rect.width
-  },
+  }
 })
 export var topSide = new Side({
   name: 'top',
@@ -67,7 +67,7 @@ export var topSide = new Side({
   },
   getFromRect(rect) {
     return rect.y
-  },
+  }
 })
 export var bottomSide = new Side({
   name: 'bottom',
@@ -88,21 +88,21 @@ export var bottomSide = new Side({
   },
   getFromRect(rect) {
     return rect.y + rect.height
-  },
+  }
 })
 
 export var sides = {
   left: leftSide,
   right: rightSide,
   top: topSide,
-  bottom: bottomSide,
+  bottom: bottomSide
 }
 
 export var directionSides = {
   up: topSide,
   down: bottomSide,
   left: leftSide,
-  right: rightSide,
+  right: rightSide
 }
 
 export function Axis(props) {
@@ -140,7 +140,7 @@ export var xAxis = new Axis({
   },
   lineTo(ctx, parallel, perp) {
     ctx.lineTo(parallel, perp)
-  },
+  }
 })
 export var yAxis = new Axis({
   name: 'y',
@@ -173,12 +173,12 @@ export var yAxis = new Axis({
   },
   lineTo(ctx, parallel, perp) {
     ctx.lineTo(perp, parallel)
-  },
+  }
 })
 
 export var axes = {
   x: xAxis,
-  y: yAxis,
+  y: yAxis
 }
 
 xAxis.opposite = yAxis

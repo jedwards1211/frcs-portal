@@ -1,6 +1,6 @@
 export const ACLEntry = Match.OneOf({
   user: String,
-  permission: String,
+  permission: String
 }, {
   group: String,
   permission: String,

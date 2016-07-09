@@ -18,11 +18,11 @@ function renderApp(res, store, assets, renderProps) {
   // Needed so some components can render based on location
   store.dispatch(push(location))
   const htmlStream = renderToStaticMarkup(<Html
-    title="meatier"
-    store={store}
-    assets={assets}
-    renderProps={renderProps}
-    />)
+      title="meatier"
+      store={store}
+      assets={assets}
+      renderProps={renderProps}
+                                          />)
   res.write('<!DOCTYPE html>')
   htmlStream.pipe(res, {end: false})
   htmlStream.on('end', () => res.end())

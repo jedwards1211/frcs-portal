@@ -129,30 +129,30 @@ export default class CachePage {
     }
     if (page.beginTime < this.endTime && page.endTime > this.beginTime) {
       if (page.beginTime === this.beginTime && page.endTime === this.endTime) {
-        this.times   = page.times
-        this.values  = page.values
+        this.times = page.times
+        this.values = page.values
       }
       else {
         let startIndex = ceilingIndex(this.times, page.beginTime)
-        let endIndex   = ceilingIndex(this.times, page.endTime  )
-        let count      = endIndex - startIndex
+        let endIndex = ceilingIndex(this.times, page.endTime)
+        let count = endIndex - startIndex
 
         let srcTimes
         let srcValues
         if (page.beginTime < this.beginTime || page.endTime > this.endTime) {
           // page spans outside of this
           let startIndex = ceilingIndex(page.times, this.beginTime)
-          let endIndex   = ceilingIndex(page.times, this.endTime  )
-          srcTimes  = page.times .slice(startIndex, endIndex)
+          let endIndex = ceilingIndex(page.times, this.endTime)
+          srcTimes = page.times.slice(startIndex, endIndex)
           srcValues = page.values.slice(startIndex, endIndex)
         }
         else {
           // page doesn't span outside of this
-          srcTimes  = page.times
+          srcTimes = page.times
           srcValues = page.values
         }
 
-        this.times .splice(startIndex, count, ...srcTimes)
+        this.times.splice(startIndex, count, ...srcTimes)
         this.values.splice(startIndex, count, ...srcValues)
 
         if ('production' !== process.env.NODE_ENV) this.sanityCheck()

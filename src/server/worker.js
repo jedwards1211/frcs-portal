@@ -10,11 +10,12 @@ import createSSR from './createSSR'
 import {googleAuthUrl, googleAuthCallback} from './graphql/models/User/oauthGoogle'
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
+import logger from './logger'
 
 const PROD = process.env.NODE_ENV === 'production'
 
 export function run(worker) {
-  console.log('   >> Worker PID:', process.pid)
+  logger.log('   >> Worker PID:', process.pid)
   const app = express()
   const scServer = worker.scServer
   const httpServer = worker.httpServer
@@ -57,13 +58,13 @@ export function run(worker) {
 
   // handle sockets
   scServer.on('connection', socket => {
-    console.log('Client connected:', socket.id)
+    logger.log('Client connected:', socket.id)
     // hold the client-submitted docs in a queue while they get validated & handled in the DB
     // then, when the DB emits a change, we know if the client caused it or not
     socket.docQueue = new Set()
     socket.on('graphql', wsGraphQLHandler)
     socket.on('subscribe', wsGraphQLSubHandler)
-    socket.on('disconnect', () => console.log('Client disconnected:', socket.id))
+    socket.on('disconnect', () => logger.log('Client disconnected:', socket.id))
   })
 }
 // TODO: dont let tokens expire while still connected, depends on PR to SC

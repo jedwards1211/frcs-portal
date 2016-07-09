@@ -40,5 +40,5 @@ export const defaultProps = {
   onInputValueChange() {},
   onOutputValueChange() {},
   maxNumPoints: 20,
-  calibrationState: Immutable.Map(),
+  calibrationState: Immutable.Map()
 }

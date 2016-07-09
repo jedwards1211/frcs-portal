@@ -31,17 +31,17 @@ export default class OverlapPreventer {
       return true
     }
 
-    var loIndex = floorIndex  (this.mins, max - minSpacing)
+    var loIndex = floorIndex(this.mins, max - minSpacing)
     var hiIndex = ceilingIndex(this.maxes, min + minSpacing)
 
     if (loIndex >= 0 && this.maxes[loIndex] + minSpacing >= min) {
       return false
     }
-    if (hiIndex < this.maxes.length && this.mins [hiIndex] - minSpacing <= max) {
+    if (hiIndex < this.maxes.length && this.mins[hiIndex] - minSpacing <= max) {
       return false
     }
 
-    this.mins .splice(hiIndex, 0, min)
+    this.mins.splice(hiIndex, 0, min)
     this.maxes.splice(hiIndex, 0, max)
     return true
   }

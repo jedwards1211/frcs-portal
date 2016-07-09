@@ -47,7 +47,7 @@ class _FakeImmutable {
     for (let value of this.obj.values()) yield FakeImmutable(value)
   };
   keys: () => any = function* () {
-    yield* this.obj.keys()
+    yield * this.obj.keys()
   };
   map: Function = (...args) => {
     if (Array.isArray(this.obj)) return FakeImmutable(this.obj.map(...args))

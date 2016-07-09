@@ -53,7 +53,7 @@ export default class Conversion {
    * @param{factor} the zoom factor.  If convert() converts from data coordinates to
    * screen coordinates, < 1 means zoom in, > 1 means zoom out.
    */
-  zoom( center, factor ) {
+  zoom(center, factor) {
     return this
   }
 

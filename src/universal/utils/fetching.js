@@ -1,3 +1,5 @@
+/* eslint-env node, browser */
+
 import fetch from 'isomorphic-fetch'
 import socketOptions from './socketOptions'
 

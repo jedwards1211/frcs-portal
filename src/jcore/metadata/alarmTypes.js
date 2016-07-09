@@ -14,5 +14,5 @@ export default {
   lowAlarm: {
     comparison: 'low',
     severity: 'alarm'
-  },
+  }
 }

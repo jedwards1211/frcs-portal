@@ -135,20 +135,20 @@ export default class AutoFatTracePlotter extends TracePlotter {
    * @param {domain} the domain of the point.
    * @param {value} the value of the point.
    */
-  addPoint( domain, value ) {
+  addPoint(domain, value) {
     // coerce null, undefined, or other non-number types to NaN
     if (isNaN(value) || value === null) value = NaN
 
-    var columnX = this.domainConversion.convert( this.column.start[0] )
-    var viewX = this.domainConversion.convert( domain )
+    var columnX = this.domainConversion.convert(this.column.start[0])
+    var viewX = this.domainConversion.convert(domain)
 
     // if the added point is not in the same column of pixels as the last, plot the data
     // between the columns.  This way if there are a lot of points crammed into this small
     // space they can be plotted with (basically) one fill (fat trace) or line (if the points
     // are monotonic)
-    if ( !isNaN( this.column.start[0] ) && Math.round( viewX ) > Math.round( columnX ) )
+    if (!isNaN(this.column.start[0]) && Math.round(viewX) > Math.round(columnX))
     {
-      this._advanceColumn( false )
+      this._advanceColumn(false)
     }
 
     // accumulate information about what to plot until a call to _advanceColumn plots
@@ -159,9 +159,9 @@ export default class AutoFatTracePlotter extends TracePlotter {
   /**
    * Flushes any pending lines or fills to the given trace renderer.
    */
-  flush( )
+  flush()
   {
-    this._advanceColumn( true )
+    this._advanceColumn(true)
   }
 
   /**
@@ -169,7 +169,7 @@ export default class AutoFatTracePlotter extends TracePlotter {
    * This is where the magic happens, there's a lot of tedious logic to decide when to plot
    * a fat trace and when to plot a line, and when to transition between them.
    */
-  _advanceColumn( forceFlush )
+  _advanceColumn(forceFlush)
   {
     let {prevColumn, column} = this
 
@@ -309,11 +309,11 @@ export default class AutoFatTracePlotter extends TracePlotter {
   /**
    * Sends the accumulated line data to the TraceRenderer and clears it.
    */
-  _flushLine( )
+  _flushLine()
   {
-    if ( this.linePoints.length > 1 )
+    if (this.linePoints.length > 1)
     {
-      this.traceRenderer.drawLine( this._copyAndConvert(this.linePoints) )
+      this.traceRenderer.drawLine(this._copyAndConvert(this.linePoints))
     }
     this.linePoints.length = 0
   }
@@ -321,23 +321,23 @@ export default class AutoFatTracePlotter extends TracePlotter {
   /**
    * Sends the accumulated fill data to the TraceRenderer and clears it.
    */
-  _flushFill( )
+  _flushFill()
   {
-    if ( this.fillMinPoints.length > 1 && this.fillMaxPoints.length > 1 )
+    if (this.fillMinPoints.length > 1 && this.fillMaxPoints.length > 1)
     {
       var minLine = this._copyAndConvert(this.fillMinPoints)
       var maxLine = this._copyAndConvert(this.fillMaxPoints)
 
-      var fill = minLine.slice( 0 )
-      for ( var i = 0 ; i < maxLine.length ; i += 2 )
+      var fill = minLine.slice(0)
+      for (var i = 0; i < maxLine.length; i += 2)
       {
-        fill[ minLine.length + i ] = maxLine[ maxLine.length - i - 2 ]
-        fill[ minLine.length + i + 1 ]= maxLine[ maxLine.length - i - 1 ]
+        fill[minLine.length + i] = maxLine[maxLine.length - i - 2]
+        fill[minLine.length + i + 1] = maxLine[maxLine.length - i - 1]
       }
 
-      this.traceRenderer.drawFill( fill )
-      this.traceRenderer.drawLine( maxLine )
-      this.traceRenderer.drawLine( minLine )
+      this.traceRenderer.drawFill(fill)
+      this.traceRenderer.drawLine(maxLine)
+      this.traceRenderer.drawLine(minLine)
     }
 
     this.fillMinPoints.length = 0

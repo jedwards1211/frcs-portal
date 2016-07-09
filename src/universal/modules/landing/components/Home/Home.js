@@ -5,7 +5,7 @@ export default class Home extends Component {
   render() {
     return (
       <div>
-        <Header/>
+        <Header />
         <h1>...Nothing here. Try the kanban already.</h1>
       </div>
     )

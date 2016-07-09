@@ -16,7 +16,7 @@ let publishCount: (sub: PublishHandler, options: {
   collection?: Mongo.Collection,
   selector?: Selector,
   cursor?: Mongo.Cursor
-}) => void = function() {}
+}) => void = function () {}
 
 if (Meteor.isServer) {
   publishCount = function publishCount(sub: PublishHandler, options: {

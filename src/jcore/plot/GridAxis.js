@@ -14,14 +14,14 @@ export default class GridAxis extends Layer {
     transparentBackgroundColor: React.PropTypes.string,
     clip:                       React.PropTypes.bool,
     justifyEndLabels:           React.PropTypes.bool,
-    fadeSpan:                   React.PropTypes.number,
+    fadeSpan:                   React.PropTypes.number
   };
   static defaultProps = {
     backgroundColor:            'white',
     transparentBackgroundColor: 'rgba(255,255,255,0)',
     clip:                       false,
     justifyEndLabels:           false,
-    fadeSpan:                   20,
+    fadeSpan:                   20
   };
   paint(canvas) {
     let {metrics, tickSide, backgroundColor, transparentBackgroundColor, justifyEndLabels, clip, fadeSpan} = this.props

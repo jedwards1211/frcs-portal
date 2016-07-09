@@ -10,7 +10,7 @@ import {
   ADD_POINT,
   BACK,
   NEXT,
-  APPLY,
+  APPLY
 } from './calibrationActions'
 
 import {isValidInputValueOrBlank, isValidOutputValueOrBlank} from './calibrationValidation'
@@ -59,7 +59,7 @@ function goToEditManuallyReducer(state, action) {
           if (points.size < 2) {
             return points.concat(Immutable.Repeat(Immutable.fromJS({
               x: undefined,
-              y: undefined,
+              y: undefined
             }), 2 - points.size))
           }
           return points
@@ -129,15 +129,15 @@ export default function calibrationReducer(state, action) {
   const {viewState} = reduxPaths
 
   switch (type) {
-    case SET_NUM_POINTS:      return state.setIn([...viewState, 'calibration', 'numPoints'], payload)
-    case SET_INPUT_VALUE:     return state.setIn([...viewState, 'calibration', 'points', meta.pointIndex, 'x'], payload)
-    case SET_OUTPUT_VALUE:    return state.setIn([...viewState, 'calibration', 'points', meta.pointIndex, 'y'], payload)
+    case SET_NUM_POINTS: return state.setIn([...viewState, 'calibration', 'numPoints'], payload)
+    case SET_INPUT_VALUE: return state.setIn([...viewState, 'calibration', 'points', meta.pointIndex, 'x'], payload)
+    case SET_OUTPUT_VALUE: return state.setIn([...viewState, 'calibration', 'points', meta.pointIndex, 'y'], payload)
     case GO_TO_EDIT_MANUALLY: return goToEditManuallyReducer(state, action)
-    case ADD_POINT:           return addPointReducer(state, action)
-    case DELETE_POINT:        return deletePointReducer(state, action)
-    case BACK:                return backReducer(state, action)
-    case NEXT:                return nextReducer(state, action)
-    case APPLY:               return applyReducer(state, action)
-    default:                  return state
+    case ADD_POINT: return addPointReducer(state, action)
+    case DELETE_POINT: return deletePointReducer(state, action)
+    case BACK: return backReducer(state, action)
+    case NEXT: return nextReducer(state, action)
+    case APPLY: return applyReducer(state, action)
+    default: return state
   }
 }

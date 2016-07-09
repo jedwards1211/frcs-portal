@@ -6,9 +6,9 @@ import type {SortSpecifier as MongoSortSpecifier} from '../flowtypes/mongoTypes'
 export default function toMongoSort(sort: mixed): ?MongoSortSpecifier {
   function dirToNumber(direction: number | 'asc' | 'desc'): number {
     switch (direction) {
-    case 'asc': return 1
-    case 'desc': return -1
-    default: return typeof direction === 'number' ? direction : 1
+      case 'asc': return 1
+      case 'desc': return -1
+      default: return typeof direction === 'number' ? direction : 1
     }
   }
 

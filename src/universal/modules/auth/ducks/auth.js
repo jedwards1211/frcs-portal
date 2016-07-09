@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import {fromJS, Map as iMap} from 'immutable'
 import {push, replace} from 'react-router-redux'
 import {ensureState} from 'redux-optimistic-ui'

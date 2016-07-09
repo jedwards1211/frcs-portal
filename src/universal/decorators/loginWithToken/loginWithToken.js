@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import React, {PropTypes, Component} from 'react'
 import {loginToken} from '../../modules/auth/ducks/auth'
 
@@ -17,7 +19,7 @@ export default authTokenName => ComposedComponent => {
 
     render() {
       return (
-        <ComposedComponent {...this.props}/>
+        <ComposedComponent {...this.props} />
       )
     }
   }

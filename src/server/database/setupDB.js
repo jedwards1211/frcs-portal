@@ -1,4 +1,5 @@
 import r from './rethinkdriver'
+import logger from '../logger'
 
 // ava is the test database
 const databases = ['meatier', 'ava']
@@ -12,28 +13,28 @@ const database = [
 export default async function setupDB(isUpdate = false) {
   await Promise.all(databases.map(db => ({db, isUpdate})).map(reset))
   await r.getPool().drain()
-  console.log(`>>Database setup complete!`)
+  logger.log(`>>Database setup complete!`)
 }
 
 async function reset({db, isUpdate}) {
   const dbList = await r.dbList()
   if (dbList.indexOf(db) === -1) {
-    console.log(`>>Creating Database: ${db}`)
+    logger.log(`>>Creating Database: ${db}`)
     await r.dbCreate(db)
   }
   const tables = await r.db(db).tableList()
   if (!isUpdate) {
-    console.log(`>>Dropping tables on: ${db}`)
+    logger.log(`>>Dropping tables on: ${db}`)
     await Promise.all(tables.map(table => r.db(db).tableDrop(table)))
   }
-  console.log(`>>Creating tables on: ${db}`)
+  logger.log(`>>Creating tables on: ${db}`)
   await Promise.all(database.map(table => {
     if (!isUpdate || tables.indexOf(table.name) === -1) {
       return r.db(db).tableCreate(table.name)
     }
     return Promise.resolve(false)
   }))
-  console.log(`>>Adding table indices on: ${db}`)
+  logger.log(`>>Adding table indices on: ${db}`)
   const tableIndicies = await Promise.all(database.map(table => {
     return r.db(db).table(table.name).indexList().run()
   }))
@@ -46,5 +47,5 @@ async function reset({db, isUpdate}) {
       return Promise.resolve(false)
     })
   })])
-  console.log(`>>Setup complete for: ${db}`)
+  logger.log(`>>Setup complete for: ${db}`)
 }

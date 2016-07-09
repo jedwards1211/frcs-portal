@@ -8,7 +8,7 @@ import CollapseTransitionGroup from '../transition/CollapseTransitionGroup'
 export default class AlertGroup extends Component {
   static propTypes = {
     animated: PropTypes.bool,
-    alerts: PropTypes.object,
+    alerts: PropTypes.object
   };
   render() {
     const {animated, alerts} = this.props
@@ -27,9 +27,9 @@ export default class AlertGroup extends Component {
       }
     }
     if (animated !== false) {
-      return <CollapseTransitionGroup component="div" {...this.props}>
+      return (<CollapseTransitionGroup component="div" {...this.props}>
         {children}
-      </CollapseTransitionGroup>
+      </CollapseTransitionGroup>)
     }
     return <div {...this.props}>{children}</div>
   }

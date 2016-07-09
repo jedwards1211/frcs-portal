@@ -33,25 +33,25 @@ export default class LostPassword extends Component {
         <span className={styles.instructions}>Enter your email address and we'll send you a password reset link.</span>
         {error && <span>{error}</span>}
         <form className={styles.lostPasswordForm} onSubmit={handleSubmit(emailPasswordReset)}>
-          <input style={{display: 'none'}} type="text" name="javascript-disabled"/>
+          <input style={{display: 'none'}} type="text" name="javascript-disabled" />
 
           <TextField
-            {...email}
-            type="text"
-            hintText="name@email.com"
-            errorText={email.touched && email.error || ''}
-            floatingLabelText="Email"
-            defaultValue={location.query.e}
-            autoFocus
+              {...email}
+              type="text"
+              hintText="name@email.com"
+              errorText={email.touched && email.error || ''}
+              floatingLabelText="Email"
+              defaultValue={location.query.e}
+              autoFocus
           />
-          <input style={{display: 'none'}} type="text" name="javascript-disabled"/>
+          <input style={{display: 'none'}} type="text" name="javascript-disabled" />
           <div className={styles.lostPasswordButton}>
             <RaisedButton
-              label="Send password reset"
-              secondary
-              type="submit"
-              disabled={submitting}
-              onClick={handleSubmit(emailPasswordReset)}
+                label="Send password reset"
+                secondary
+                type="submit"
+                disabled={submitting}
+                onClick={handleSubmit(emailPasswordReset)}
             />
           </div>
         </form>

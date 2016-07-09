@@ -28,17 +28,17 @@ export default class Lane extends Component {
         <div className={styles.header}>
           <div className={styles.delete} onClick={() => deleteLane(laneId)}>x</div>
           <EditableContainer
-            {...laneProps}
-            item={lane}
-            formKey={`lane${laneId}`}
-            updateItem={updateLane}
-            initialValues={lane}
-            fields={['title']}
-            form="laneTitleForm"
+              {...laneProps}
+              item={lane}
+              formKey={`lane${laneId}`}
+              updateItem={updateLane}
+              initialValues={lane}
+              fields={['title']}
+              form="laneTitleForm"
           />
           <div className={styles.addNote}>
             <button
-              onClick={() => addNote({
+                onClick={() => addNote({
                 userId,
                 title: `New note ${notes.length}`,
                 id: uuid.v4(),
@@ -49,7 +49,7 @@ export default class Lane extends Component {
             </button>
           </div>
         </div>
-        <Notes {...noteProps} dispatch={dispatch}/>
+        <Notes {...noteProps} dispatch={dispatch} />
       </div>
     )
   }

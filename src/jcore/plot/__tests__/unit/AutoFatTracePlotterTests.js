@@ -37,7 +37,7 @@ describe('AutoFatTracePlotter', () => {
 
     expect(traceRenderer.lines.map(removeRedundantPoints)).toEqual([
       [100, 50, 200, 50],
-      [300, 50, 400, 50],
+      [300, 50, 400, 50]
     ])
     expect(traceRenderer.fills).toEqual([])
   })

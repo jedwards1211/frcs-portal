@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 /**
  * Subscription handle for the collection of all existing roles.
@@ -14,5 +14,5 @@
  */
 
 Tracker.autorun(function () {
-  Roles.subscription = Meteor.subscribe('_roles');
-});
+  Roles.subscription = Meteor.subscribe('_roles')
+})

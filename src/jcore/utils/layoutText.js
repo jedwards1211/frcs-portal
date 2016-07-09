@@ -126,7 +126,7 @@ export default function layoutText(text: string | Array<string>, options: {
         let lastPart = nextLineStarts[line + 1] - 1
         while (nextLineWidths[line] > nextWidth) {
           if (firstPart === lastPart) {
-            //can't shrink any more
+            // can't shrink any more
             break
           }
           // remove the last part from the current line
@@ -181,7 +181,7 @@ export default function layoutText(text: string | Array<string>, options: {
   let lines = []
   for (var i = 1; i < lineStarts.length; i++) {
     let lineStart = lineStarts[i - 1]
-    let lineEnd   = lineStarts[i]
+    let lineEnd = lineStarts[i]
     lines.push(parts.slice(lineStart, lineEnd).map(
       (part, index) => index === 0 ? part : separators[lineStart + index - 1] + part).join(''))
   }

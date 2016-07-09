@@ -11,7 +11,7 @@ export default class LandingContainer extends Component {
   };
 
   render() {
-    return <Landing {...this.props}/>
+    return <Landing {...this.props} />
   }
 }
 

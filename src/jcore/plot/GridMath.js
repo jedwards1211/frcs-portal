@@ -63,26 +63,26 @@ const niceTimeIncrements = [
   250,
   500,
   1000,
-  2  * 1000,
-  5  * 1000,
+  2 * 1000,
+  5 * 1000,
   10 * 1000,
   15 * 1000,
   20 * 1000,
   30 * 1000,
   60000,
-  2  * 60000,
-  5  * 60000,
+  2 * 60000,
+  5 * 60000,
   10 * 60000,
   15 * 60000,
   20 * 60000,
   30 * 60000,
   3600000,
-  2  * 3600000,
-  3  * 3600000,
-  4  * 3600000,
-  6  * 3600000,
+  2 * 3600000,
+  3 * 3600000,
+  4 * 3600000,
+  6 * 3600000,
   12 * 3600000,
-  86400000,
+  86400000
 ]
 
 /**
@@ -99,8 +99,8 @@ export function chooseNiceTimeIncrement(unitsPerPixel, minTickSpacingPixels, sub
     while (++i < niceTimeIncrements.length) {
       var increment = niceTimeIncrements[i]
       if (increment % subIncrement === 0 && increment > minTickSpacingPixels * unitsPerPixel) {
-          return increment
-        }
+        return increment
+      }
     }
   }
   var rough = minTickSpacingPixels * unitsPerPixel

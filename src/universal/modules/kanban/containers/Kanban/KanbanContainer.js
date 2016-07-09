@@ -33,7 +33,7 @@ export default class KanbanContainer extends Component {
   }
 
   render() {
-    return <Kanban addLane={this.props.laneActions.addLane} {...this.props}/>
+    return <Kanban addLane={this.props.laneActions.addLane} {...this.props} />
   }
 }
 

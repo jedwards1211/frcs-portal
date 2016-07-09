@@ -6,7 +6,7 @@ import LinearConversion from '../../LinearConversion'
 import approxMatchers from '../../../test/approxMatchers'
 
 describe('LinearConversion', () => {
-  beforeEach(function() {
+  beforeEach(function () {
     jasmine.addMatchers(approxMatchers)
   })
 

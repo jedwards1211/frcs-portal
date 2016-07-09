@@ -39,23 +39,23 @@ export default class Auth extends Component {
         <h3>{isLogin ? 'Login' : 'Sign up'}</h3>
         {localError && <span>{localError}</span>}
         <form className={styles.loginForm} onSubmit={handleSubmit(this.onSubmit)}>
-          <input style={{display: 'none'}} type="text" name="chromeisabitch"/>
+          <input style={{display: 'none'}} type="text" name="chromeisabitch" />
 
           <TextField
-            {...email}
-            type="text"
-            hintText="name@email.com"
-            errorText={email.touched && email.error || ''}
-            floatingLabelText="Email"
+              {...email}
+              type="text"
+              hintText="name@email.com"
+              errorText={email.touched && email.error || ''}
+              floatingLabelText="Email"
           />
-          <input style={{display: 'none'}} type="text" name="chromeisabitch"/>
+          <input style={{display: 'none'}} type="text" name="chromeisabitch" />
 
           <TextField
-            {...password}
-            type="password"
-            floatingLabelText="Password"
-            hintText="hunter2"
-            errorText={password.touched && password.error || ''}
+              {...password}
+              type="password"
+              floatingLabelText="Password"
+              hintText="hunter2"
+              errorText={password.touched && password.error || ''}
           />
 
           {isLogin
@@ -66,11 +66,11 @@ export default class Auth extends Component {
 
           <div className={styles.loginButton}>
             <RaisedButton
-              label={isLogin ? 'Login' : 'Sign up'}
-              secondary
-              type="submit"
-              disabled={isAuthenticating}
-              onClick={handleSubmit(this.onSubmit)}
+                label={isLogin ? 'Login' : 'Sign up'}
+                secondary
+                type="submit"
+                disabled={isAuthenticating}
+                onClick={handleSubmit(this.onSubmit)}
             />
 
           </div>

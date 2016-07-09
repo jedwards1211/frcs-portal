@@ -149,9 +149,9 @@ export default class DataCache extends EventEmitter {
 
     if (changed && emitDataChange !== false) {
       let beginPage = _.max(newPages, 'beginTime')
-      let endPage   = _.max(newPages, 'endTime')
+      let endPage = _.max(newPages, 'endTime')
       let beginTime = beginPage && beginPage.beginTime
-      let endTime   = endPage   && endPage  .endTime
+      let endTime = endPage && endPage.endTime
       let channels = {}
       newPages.forEach(page => channels[page.channelId] = true)
 
@@ -223,7 +223,7 @@ export default class DataCache extends EventEmitter {
           return this.dataSource.query({channelId, beginTime: lastTime}).then(page => {
             page.endTime = page.endTime || page.times[page.times.length - 1] + 1
             if (!minBeginTime || page.beginTime < minBeginTime) minBeginTime = page.beginTime
-            if (!maxEndTime   || page.endTime   > maxEndTime  ) maxEndTime   = page.endTime
+            if (!maxEndTime || page.endTime > maxEndTime) maxEndTime = page.endTime
             channels[page.channelId] = true
             this.replaceData(page, {emitDataChange: false})
           })
@@ -257,8 +257,8 @@ export default class DataCache extends EventEmitter {
   *get(channelId, from, to, options = {}) {
     let {surround} = options
 
-    let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange)
-    let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
+    let fromAdj = (surround ? GridMath.modLower : GridMath.modFloor)(from, this.pageRange)
+    let toAdj = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
 
     let pageStart = fromAdj
     let pageEnd = pageStart + this.pageRange
@@ -267,7 +267,7 @@ export default class DataCache extends EventEmitter {
 
     let point = {
       t: NaN,
-      v: NaN,
+      v: NaN
     }
 
     while (pageStart < toAdj) {
@@ -288,7 +288,7 @@ export default class DataCache extends EventEmitter {
           page.times.length - 1
 
         for (let i = startIndex; i <= endIndex; i++) {
-          point.t = page.times [i]
+          point.t = page.times[i]
           point.v = page.values[i]
           yield point
           if (modCount !== this.modCount) {
@@ -329,8 +329,8 @@ export default class DataCache extends EventEmitter {
 
     let {surround} = options
 
-    let beginTime = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange)
-    let endTime   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
+    let beginTime = (surround ? GridMath.modLower : GridMath.modFloor)(from, this.pageRange)
+    let endTime = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
 
     let pageStart = beginTime
     let pageCount = 0

@@ -1,4 +1,4 @@
-;(function () {
+(function () {
 
 /**
  * Provides functions related to user authorization. Compatible with built-in Meteor accounts packages.
@@ -22,22 +22,22 @@
  *
  * @module Roles
  */
- if (!Meteor.roles) {
-  Meteor.roles = new Mongo.Collection("roles");
-}
+  if (!Meteor.roles) {
+    Meteor.roles = new Mongo.Collection("roles")
+  }
 
 /**
  * @class Roles
  */
-if ('undefined' === typeof Roles) {
-  Roles = {};
-}
+  if ('undefined' === typeof Roles) {
+    Roles = {}
+  }
 
-"use strict";
+  "use strict"
 
-var getGroupsForUserDeprecationWarning = false;
+  var getGroupsForUserDeprecationWarning = false
 
-_.extend(Roles, {
+  _.extend(Roles, {
 
   /**
    * Used as a global group (now partition) name. Not used anymore.
@@ -46,7 +46,7 @@ _.extend(Roles, {
    * @static
    * @deprecated
    */
-  GLOBAL_GROUP: null,
+    GLOBAL_GROUP: null,
 
   /**
    * Create a new role.
@@ -58,26 +58,26 @@ _.extend(Roles, {
    * @return {String} ID of the new role.
    * @static
    */
-  createRole: function (roleName, options) {
-    var match;
+    createRole: function (roleName, options) {
+      var match
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
-    Roles._checkRoleName(roleName);
+      Roles._checkRoleName(roleName)
 
-    options = _.defaults(options, {
-      unlessExists: false
-    });
+      options = _.defaults(options, {
+        unlessExists: false
+      })
 
-    var result = Meteor.roles.upsert({_id: roleName}, {$setOnInsert: {children: []}});
+      var result = Meteor.roles.upsert({_id: roleName}, {$setOnInsert: {children: []}})
 
-    if (!result.insertedId) {
-      if (options.unlessExists) return null;
-      throw new Error("Role '" + roleName + "' already exists.");
-    }
+      if (!result.insertedId) {
+        if (options.unlessExists) return null
+        throw new Error("Role '" + roleName + "' already exists.")
+      }
 
-    return result.insertedId;
-  },
+      return result.insertedId
+    },
 
   /**
    * Delete an existing role.
@@ -88,48 +88,48 @@ _.extend(Roles, {
    * @param {String} roleName Name of role.
    * @static
    */
-  deleteRole: function (roleName) {
-    var roles;
+    deleteRole: function (roleName) {
+      var roles
 
-    Roles._checkRoleName(roleName);
+      Roles._checkRoleName(roleName)
 
     // we first remove the role as a children, otherwise
     // Roles._assureConsistency might re-add the role
-    Meteor.roles.update({}, {
-      $pull: {
-        children: {
-          _id: roleName
+      Meteor.roles.update({}, {
+        $pull: {
+          children: {
+            _id: roleName
+          }
         }
-      }
-    }, {multi: true});
+      }, {multi: true})
 
-    Roles.getUsersInRole(roleName, {
-      anyPartition: true,
-      queryOptions: {
-        fields: {
-          _id: 1,
-          roles: 1
+      Roles.getUsersInRole(roleName, {
+        anyPartition: true,
+        queryOptions: {
+          fields: {
+            _id: 1,
+            roles: 1
+          }
         }
-      }
-    }).forEach(function (user, index, cursor) {
+      }).forEach(function (user, index, cursor) {
       // role can be assigned multiple times to the user, for multiple partitions
       // we have to remove the role for each of those partitions
-      roles = _.filter(user.roles, Roles._roleMatcher(roleName));
-      _.each(roles, function (role) {
-        Roles._removeUserFromRole(user, roleName, {
-          partition: role.partition,
+        roles = _.filter(user.roles, Roles._roleMatcher(roleName))
+        _.each(roles, function (role) {
+          Roles._removeUserFromRole(user, roleName, {
+            partition: role.partition,
           // we want to remove the role in any case
-          _assigned: null
-        });
-      });
+            _assigned: null
+          })
+        })
 
       // handle the edge case
-      Roles._assureConsistency(user);
-    });
+        Roles._assureConsistency(user)
+      })
 
     // remove the role itself
-    Meteor.roles.remove({_id: roleName});
-  },
+      Meteor.roles.remove({_id: roleName})
+    },
 
   /**
    * Rename an existing role.
@@ -139,55 +139,55 @@ _.extend(Roles, {
    * @param {String} newName New name of a role.
    * @static
    */
-  renameRole: function (oldName, newName) {
-    var role,
-        count;
+    renameRole: function (oldName, newName) {
+      var role,
+        count
 
-    Roles._checkRoleName(oldName);
-    Roles._checkRoleName(newName);
+      Roles._checkRoleName(oldName)
+      Roles._checkRoleName(newName)
 
-    if (oldName === newName) return;
+      if (oldName === newName) return
 
-    role = Meteor.roles.findOne({_id: oldName});
+      role = Meteor.roles.findOne({_id: oldName})
 
-    if (!role) {
-      throw new Error("Role '" + oldName + "' does not exist.");
-    }
+      if (!role) {
+        throw new Error("Role '" + oldName + "' does not exist.")
+      }
 
-    role._id = newName;
+      role._id = newName
 
-    Meteor.roles.insert(role);
+      Meteor.roles.insert(role)
 
-    do {
-      count = Meteor.users.update({
-        roles: {
-          $elemMatch: {
-            _id: oldName
+      do {
+        count = Meteor.users.update({
+          roles: {
+            $elemMatch: {
+              _id: oldName
+            }
           }
-        }
-      }, {
-        $set: {
-          'roles.$._id': newName
-        }
-      }, {multi: true});
-    } while (count > 0);
-
-    do {
-      count = Meteor.roles.update({
-        children: {
-          $elemMatch: {
-            _id: oldName
+        }, {
+          $set: {
+            'roles.$._id': newName
           }
-        }
-      }, {
-        $set: {
-          'children.$._id': newName
-        }
-      }, {multi: true});
-    } while (count > 0);
+        }, {multi: true})
+      } while (count > 0)
 
-    Meteor.roles.remove({_id: oldName});
-  },
+      do {
+        count = Meteor.roles.update({
+          children: {
+            $elemMatch: {
+              _id: oldName
+            }
+          }
+        }, {
+          $set: {
+            'children.$._id': newName
+          }
+        }, {multi: true})
+      } while (count > 0)
+
+      Meteor.roles.remove({_id: oldName})
+    },
 
   /**
    * Add role parent to roles.
@@ -200,14 +200,14 @@ _.extend(Roles, {
    * @param {String} parentName Name of parent role.
    * @static
    */
-  addRolesToParent: function (rolesNames, parentName) {
+    addRolesToParent: function (rolesNames, parentName) {
     // ensure arrays
-    if (!_.isArray(rolesNames)) rolesNames = [rolesNames];
+      if (!_.isArray(rolesNames)) rolesNames = [rolesNames]
 
-    _.each(rolesNames, function (roleName) {
-      Roles._addRoleToParent(roleName, parentName);
-    });
-  },
+      _.each(rolesNames, function (roleName) {
+        Roles._addRoleToParent(roleName, parentName)
+      })
+    },
 
   /**
    * @method _addRoleToParent
@@ -216,82 +216,82 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _addRoleToParent: function (roleName, parentName) {
-    var role,
+    _addRoleToParent: function (roleName, parentName) {
+      var role,
         count,
         parentRoles,
         rolesToCheck,
         alreadyCheckedRoles,
         checkRoleName,
-        checkRole;
+        checkRole
 
-    Roles._checkRoleName(roleName);
-    Roles._checkRoleName(parentName);
+      Roles._checkRoleName(roleName)
+      Roles._checkRoleName(parentName)
 
     // query to get role's children
-    role = Meteor.roles.findOne({_id: roleName});
+      role = Meteor.roles.findOne({_id: roleName})
 
-    if (!role) {
-      throw new Error("Role '" + roleName + "' does not exist.");
-    }
+      if (!role) {
+        throw new Error("Role '" + roleName + "' does not exist.")
+      }
 
     // detect cycles
-    alreadyCheckedRoles = [];
-    rolesToCheck = _.pluck(role.children, '_id');
-    while (rolesToCheck.length) {
-      checkRoleName = rolesToCheck.pop();
-      if (checkRoleName === parentName) {
-        throw new Error("Roles '" + roleName + "' and '" + parentName + "' would form a cycle.");
-      }
-      alreadyCheckedRoles.push(checkRoleName);
+      alreadyCheckedRoles = []
+      rolesToCheck = _.pluck(role.children, '_id')
+      while (rolesToCheck.length) {
+        checkRoleName = rolesToCheck.pop()
+        if (checkRoleName === parentName) {
+          throw new Error("Roles '" + roleName + "' and '" + parentName + "' would form a cycle.")
+        }
+        alreadyCheckedRoles.push(checkRoleName)
 
-      checkRole = Meteor.roles.findOne({_id: checkRoleName});
+        checkRole = Meteor.roles.findOne({_id: checkRoleName})
 
       // This should not happen, but this is a problem to address at some other time.
-      if (!checkRole) continue;
+        if (!checkRole) continue
 
-      rolesToCheck = _.union(rolesToCheck, _.difference(_.pluck(checkRole.children, '_id'), alreadyCheckedRoles));
-    }
-
-    count = Meteor.roles.update({
-      _id: parentName,
-      'children._id': {
-        $ne: role._id
+        rolesToCheck = _.union(rolesToCheck, _.difference(_.pluck(checkRole.children, '_id'), alreadyCheckedRoles))
       }
-    }, {
-      $addToSet: {
-        children: {
-          _id: role._id
+
+      count = Meteor.roles.update({
+        _id: parentName,
+        'children._id': {
+          $ne: role._id
         }
-      }
-    });
+      }, {
+        $addToSet: {
+          children: {
+            _id: role._id
+          }
+        }
+      })
 
     // if there was no change, parent role might not exist, or role is
     // already a subrole; in any case we do not have anything more to do
-    if (!count) return;
+      if (!count) return
 
-    Roles.getUsersInRole(parentName, {
-      anyPartition: true,
-      queryOptions: {
-        fields: {
-          _id: 1,
-          roles: 1
+      Roles.getUsersInRole(parentName, {
+        anyPartition: true,
+        queryOptions: {
+          fields: {
+            _id: 1,
+            roles: 1
+          }
         }
-      }
-    }).forEach(function (user, index, cursor) {
+      }).forEach(function (user, index, cursor) {
       // parent role can be assigned multiple times to the user, for multiple partitions
       // we have to assign a new subrole for each of those partitions
-      parentRoles = _.filter(user.roles, Roles._roleMatcher(parentName));
-      _.each(parentRoles, function (parentRole) {
-        Roles._addUserToRole(user, roleName, {
-          partition: parentRole.partition,
+        parentRoles = _.filter(user.roles, Roles._roleMatcher(parentName))
+        _.each(parentRoles, function (parentRole) {
+          Roles._addUserToRole(user, roleName, {
+            partition: parentRole.partition,
           // we are assigning a subrole, so we set it as unassigned,
           // but only if they do not already exist
-          _assigned: null
-        });
-      });
-    });
-  },
+            _assigned: null
+          })
+        })
+      })
+    },
 
   /**
    * Remove role parent from roles.
@@ -304,14 +304,14 @@ _.extend(Roles, {
    * @param {String} parentName Name of parent role.
    * @static
    */
-  removeRolesFromParent: function (rolesNames, parentName) {
+    removeRolesFromParent: function (rolesNames, parentName) {
     // ensure arrays
-    if (!_.isArray(rolesNames)) rolesNames = [rolesNames];
+      if (!_.isArray(rolesNames)) rolesNames = [rolesNames]
 
-    _.each(rolesNames, function (roleName) {
-      Roles._removeRoleFromParent(roleName, parentName);
-    });
-  },
+      _.each(rolesNames, function (roleName) {
+        Roles._removeRoleFromParent(roleName, parentName)
+      })
+    },
 
   /**
    * @method _removeRoleFromParent
@@ -320,60 +320,60 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _removeRoleFromParent: function (roleName, parentName) {
-    var role,
+    _removeRoleFromParent: function (roleName, parentName) {
+      var role,
         count,
-        parentRoles;
+        parentRoles
 
-    Roles._checkRoleName(roleName);
-    Roles._checkRoleName(parentName);
+      Roles._checkRoleName(roleName)
+      Roles._checkRoleName(parentName)
 
     // check for role existence
     // this would not really be needed, but we are trying to match addRolesToParent
-    role = Meteor.roles.findOne({_id: roleName}, {fields: {_id: 1}});
+      role = Meteor.roles.findOne({_id: roleName}, {fields: {_id: 1}})
 
-    if (!role) {
-      throw new Error("Role '" + roleName + "' does not exist.");
-    }
-
-    count = Meteor.roles.update({
-      _id: parentName
-    }, {
-      $pull: {
-        children: {
-          _id: role._id
-        }
+      if (!role) {
+        throw new Error("Role '" + roleName + "' does not exist.")
       }
-    });
+
+      count = Meteor.roles.update({
+        _id: parentName
+      }, {
+        $pull: {
+          children: {
+            _id: role._id
+          }
+        }
+      })
 
     // if there was no change, parent role might not exist, or role was
     // already not a subrole; in any case we do not have anything more to do
-    if (!count) return;
+      if (!count) return
 
-    Roles.getUsersInRole(parentName, {
-      anyPartition: true,
-      queryOptions: {
-        fields: {
-          _id: 1,
-          roles: 1
+      Roles.getUsersInRole(parentName, {
+        anyPartition: true,
+        queryOptions: {
+          fields: {
+            _id: 1,
+            roles: 1
+          }
         }
-      }
-    }).forEach(function (user, index, cursor) {
+      }).forEach(function (user, index, cursor) {
       // parent role can be assigned multiple times to the user, for multiple partitions
       // we have to remove the subrole for each of those partitions
-      parentRoles = _.filter(user.roles, Roles._roleMatcher(parentName));
-      _.each(parentRoles, function (parentRole) {
-        Roles._removeUserFromRole(user, roleName, {
-          partition: parentRole.partition,
+        parentRoles = _.filter(user.roles, Roles._roleMatcher(parentName))
+        _.each(parentRoles, function (parentRole) {
+          Roles._removeUserFromRole(user, roleName, {
+            partition: parentRole.partition,
           // but we want to remove it only if it was not also explicitly assigned
-          _assigned: false
-        });
-      });
+            _assigned: false
+          })
+        })
 
       // handle the edge case
-      Roles._assureConsistency(user);
-    });
-  },
+        Roles._assureConsistency(user)
+      })
+    },
 
   /**
    * Add users to roles.
@@ -396,33 +396,33 @@ _.extend(Roles, {
    * Alternatively, it can be a partition name string.
    * @static
    */
-  addUsersToRoles: function (users, roles, options) {
-    if (!users) throw new Error ("Missing 'users' param.");
-    if (!roles) throw new Error ("Missing 'roles' param.");
+    addUsersToRoles: function (users, roles, options) {
+      if (!users) throw new Error("Missing 'users' param.")
+      if (!roles) throw new Error("Missing 'roles' param.")
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
     // ensure arrays
-    if (!_.isArray(users)) users = [users];
-    if (!_.isArray(roles)) roles = [roles];
+      if (!_.isArray(users)) users = [users]
+      if (!_.isArray(roles)) roles = [roles]
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
-      ifExists: false,
+      options = _.defaults(options, {
+        ifExists: false,
       // internal option, should not be used publicly because it will break assumptions
       // in te code; publicly, you can only add users to an assigned role
       // should the role be set as assigned, default is `true`; `null` is the same as `false`,
       // only that it does not force the value to `false` if the role is already assigned
-      _assigned: true
-    });
+        _assigned: true
+      })
 
-    _.each(users, function (user) {
-      _.each(roles, function (role) {
-        Roles._addUserToRole(user, role, options);
-      });
-    });
-  },
+      _.each(users, function (user) {
+        _.each(roles, function (role) {
+          Roles._addUserToRole(user, role, options)
+        })
+      })
+    },
 
   /**
    * Set users' roles.
@@ -445,45 +445,45 @@ _.extend(Roles, {
    * Alternatively, it can be a partition name string.
    * @static
    */
-  setUserRoles: function (users, roles, options) {
-    var id;
+    setUserRoles: function (users, roles, options) {
+      var id
 
-    if (!users) throw new Error ("Missing 'users' param.");
-    if (!roles) throw new Error ("Missing 'roles' param.");
+      if (!users) throw new Error("Missing 'users' param.")
+      if (!roles) throw new Error("Missing 'roles' param.")
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
     // ensure arrays
-    if (!_.isArray(users)) users = [users];
-    if (!_.isArray(roles)) roles = [roles];
+      if (!_.isArray(users)) users = [users]
+      if (!_.isArray(roles)) roles = [roles]
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
-      ifExists: false,
+      options = _.defaults(options, {
+        ifExists: false,
       // internal option, should not be used publicly because it will break assumptions
       // in te code; publicly, you can only add users to an assigned role
       // should the role be set as assigned, default is `true`; `null` is the same as `false`,
       // only that it does not force the value to `false` if the role is already assigned
-      _assigned: true
-    });
+        _assigned: true
+      })
 
-    _.each(users, function (user) {
-      if (_.isObject(user)) {
-        id = user._id;
-      }
-      else {
-        id = user;
-      }
+      _.each(users, function (user) {
+        if (_.isObject(user)) {
+          id = user._id
+        }
+        else {
+          id = user
+        }
       // we first clear all roles for the user
-      Meteor.users.update(id, {$pull: {roles: {partition: options.partition}}});
+        Meteor.users.update(id, {$pull: {roles: {partition: options.partition}}})
 
       // and then add all
-      _.each(roles, function (role) {
-        Roles._addUserToRole(user, role, options);
-      });
-    });
-  },
+        _.each(roles, function (role) {
+          Roles._addUserToRole(user, role, options)
+        })
+      })
+    },
 
   /**
    * Add one user to one role.
@@ -502,108 +502,108 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _addUserToRole: function (user, roleName, options) {
-    var id,
+    _addUserToRole: function (user, roleName, options) {
+      var id,
         role,
         count,
-        setRoles;
+        setRoles
 
-    Roles._checkRoleName(roleName);
-    Roles._checkPartitionName(options.partition);
+      Roles._checkRoleName(roleName)
+      Roles._checkPartitionName(options.partition)
 
-    if (_.isObject(user)) {
-      id = user._id;
-    }
-    else {
-      id = user;
-    }
-
-    if (!id) return [];
-
-    role = Meteor.roles.findOne({_id: roleName}, {fields: {children: 1}});
-
-    if (!role) {
-      if (options.ifExists) {
-        return [];
+      if (_.isObject(user)) {
+        id = user._id
       }
       else {
-        throw new Error("Role '" + roleName + "' does not exist.");
+        id = user
       }
-    }
+
+      if (!id) return []
+
+      role = Meteor.roles.findOne({_id: roleName}, {fields: {children: 1}})
+
+      if (!role) {
+        if (options.ifExists) {
+          return []
+        }
+        else {
+          throw new Error("Role '" + roleName + "' does not exist.")
+        }
+      }
 
     // add new role if it is not already added
-    count = Meteor.users.update({
-      _id: id,
-      roles: {
-        $not: {
-          $elemMatch: {
-            _id: roleName,
-            partition: options.partition
-          }
-        }
-      }
-
-    }, {
-      $addToSet: {
+      count = Meteor.users.update({
+        _id: id,
         roles: {
-          _id: roleName,
-          partition: options.partition,
+          $not: {
+            $elemMatch: {
+              _id: roleName,
+              partition: options.partition
+            }
+          }
+        }
+
+      }, {
+        $addToSet: {
+          roles: {
+            _id: roleName,
+            partition: options.partition,
           // we want to make sure it is a boolean value
-          assigned: !!options._assigned
+            assigned: !!options._assigned
+          }
+        }
+      })
+
+      if (!count) {
+      // a role has not been added, it maybe already exists
+        if (options._assigned) {
+        // let's make sure it is set as assigned
+          Meteor.users.update({
+            _id: id,
+            roles: {
+              $elemMatch: {
+                _id: roleName,
+                partition: options.partition
+              }
+            }
+
+          }, {
+            $set: {
+              'roles.$.assigned': true
+            }
+          })
+        }
+        else if (options._assigned === false) {
+        // let's make sure it is set as unassigned
+          Meteor.users.update({
+            _id: id,
+            roles: {
+              $elemMatch: {
+                _id: roleName,
+                partition: options.partition
+              }
+            }
+
+          }, {
+            $set: {
+              'roles.$.assigned': false
+            }
+          })
         }
       }
-    });
 
-    if (!count) {
-      // a role has not been added, it maybe already exists
-      if (options._assigned) {
-        // let's make sure it is set as assigned
-        Meteor.users.update({
-          _id: id,
-          roles: {
-            $elemMatch: {
-              _id: roleName,
-              partition: options.partition
-            }
-          }
+      setRoles = [{
+        _id: roleName,
+        partition: options.partition
+      }]
 
-        }, {
-          $set: {
-            'roles.$.assigned': true
-          }
-        });
-      }
-      else if (options._assigned === false) {
-        // let's make sure it is set as unassigned
-        Meteor.users.update({
-          _id: id,
-          roles: {
-            $elemMatch: {
-              _id: roleName,
-              partition: options.partition
-            }
-          }
-
-        }, {
-          $set: {
-            'roles.$.assigned': false
-          }
-        });
-      }
-    }
-
-    setRoles = [{
-      _id: roleName,
-      partition: options.partition
-    }];
-
-    _.each(role.children, function (child) {
+      _.each(role.children, function (child) {
       // subroles are set as unassigned, but only if they do not already exist
-      setRoles = setRoles.concat(Roles._addUserToRole(user, child._id, _.extend({}, options, {_assigned: null})));
-    });
+        setRoles = setRoles.concat(Roles._addUserToRole(user, child._id, _.extend({}, options, {_assigned: null})))
+      })
 
-    return setRoles;
-  },
+      return setRoles
+    },
 
   /**
    * Remove users from assigned roles.
@@ -622,35 +622,35 @@ _.extend(Roles, {
    * Alternatively, it can be a partition name string.
    * @static
    */
-  removeUsersFromRoles: function (users, roles, options) {
-    if (!users) throw new Error ("Missing 'users' param.");
-    if (!roles) throw new Error ("Missing 'roles' param.");
+    removeUsersFromRoles: function (users, roles, options) {
+      if (!users) throw new Error("Missing 'users' param.")
+      if (!roles) throw new Error("Missing 'roles' param.")
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
     // ensure arrays
-    if (!_.isArray(users)) users = [users];
-    if (!_.isArray(roles)) roles = [roles];
+      if (!_.isArray(users)) users = [users]
+      if (!_.isArray(roles)) roles = [roles]
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
+      options = _.defaults(options, {
       // internal option, should not be used publicly because it will break assumptions
       // in te code; publicly, you can only remove users from an assigned role
       // when should the role be removed, default is `true` which means only when it is assigned,
       // `false` means when it is not assigned, and `null` means always
-      _assigned: true
-    });
+        _assigned: true
+      })
 
-    _.each(users, function (user) {
-      _.each(roles, function (role) {
-        Roles._removeUserFromRole(user, role, options);
-      });
+      _.each(users, function (user) {
+        _.each(roles, function (role) {
+          Roles._removeUserFromRole(user, role, options)
+        })
 
       // handle the edge case
-      Roles._assureConsistency(user);
-    });
-  },
+        Roles._assureConsistency(user)
+      })
+    },
 
   /**
    * Remove one user from one role.
@@ -673,52 +673,52 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _removeUserFromRole: function (user, roleName, options) {
-    var id,
+    _removeUserFromRole: function (user, roleName, options) {
+      var id,
         role,
-        update;
+        update
 
-    Roles._checkRoleName(roleName);
-    Roles._checkPartitionName(options.partition);
+      Roles._checkRoleName(roleName)
+      Roles._checkPartitionName(options.partition)
 
-    if (_.isObject(user)) {
-      id = user._id;
-    }
-    else {
-      id = user;
-    }
+      if (_.isObject(user)) {
+        id = user._id
+      }
+      else {
+        id = user
+      }
 
-    if (!id) return;
+      if (!id) return
 
-    update = {
-      $pull: {
-        roles: {
-          _id: roleName,
-          partition: options.partition
+      update = {
+        $pull: {
+          roles: {
+            _id: roleName,
+            partition: options.partition
+          }
         }
       }
-    };
 
-    if (options._assigned) {
-      update.$pull.roles.assigned = true;
-    }
-    else if (options._assigned === false) {
-      update.$pull.roles.assigned = false;
-    }
+      if (options._assigned) {
+        update.$pull.roles.assigned = true
+      }
+      else if (options._assigned === false) {
+        update.$pull.roles.assigned = false
+      }
 
     // we try to remove the role in every case, whether the role really exists or not
-    Meteor.users.update(id, update);
+      Meteor.users.update(id, update)
 
-    role = Meteor.roles.findOne({_id: roleName}, {fields: {children: 1}});
+      role = Meteor.roles.findOne({_id: roleName}, {fields: {children: 1}})
 
     // role does not exist, we do not anything more
-    if (!role) return;
+      if (!role) return
 
-    _.each(role.children, function (child) {
+      _.each(role.children, function (child) {
       // if a child role has been assigned explicitly, we do not remove it
-      Roles._removeUserFromRole(user, child._id, _.extend({}, options, {_assigned: false}));
-    });
-  },
+        Roles._removeUserFromRole(user, child._id, _.extend({}, options, {_assigned: false}))
+      })
+    },
 
   /**
    * Makes sure all subroles are correctly set, and no extra subroles are set which should not be.
@@ -734,39 +734,39 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _assureConsistency: function (user) {
-    var roles,
-        setRoles;
+    _assureConsistency: function (user) {
+      var roles,
+        setRoles
 
     // we want always the latest state
-    user = Roles._resolveUser(user, true);
+      user = Roles._resolveUser(user, true)
 
     // only assigned roles
-    roles = _.filter(user.roles, Roles._onlyAssignedMatcher());
+      roles = _.filter(user.roles, Roles._onlyAssignedMatcher())
 
-    setRoles = [];
-    _.each(roles, function (role) {
-      setRoles = setRoles.concat(Roles._addUserToRole(user, role._id, {
-        partition: role.partition,
-        _assigned: role.assigned, // this is true
-        ifExists: true
-      }));
-    });
+      setRoles = []
+      _.each(roles, function (role) {
+        setRoles = setRoles.concat(Roles._addUserToRole(user, role._id, {
+          partition: role.partition,
+          _assigned: role.assigned, // this is true
+          ifExists: true
+        }))
+      })
 
-    if (setRoles.length) {
+      if (setRoles.length) {
       // remove all extra entries which should not be there
-      Meteor.users.update(user._id, {
-        $pull: {
-          roles: {
-            $nor: _.map(setRoles, function (role) {return _.pick(role, '_id', 'partition')})
+        Meteor.users.update(user._id, {
+          $pull: {
+            roles: {
+              $nor: _.map(setRoles, function (role) {return _.pick(role, '_id', 'partition')})
+            }
           }
-        }
-      });
-    }
-    else {
-      Meteor.users.update(user._id, {$set: {roles: []}});
-    }
-  },
+        })
+      }
+      else {
+        Meteor.users.update(user._id, {$set: {roles: []}})
+      }
+    },
 
   /**
    * Check if user has specified roles.
@@ -797,74 +797,74 @@ _.extend(Roles, {
    * @return {Boolean} `true` if user is in _any_ of the target roles
    * @static
    */
-  userIsInRole: function (user, roles, options) {
-    var id,
-        query;
+    userIsInRole: function (user, roles, options) {
+      var id,
+        query
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
     // ensure array to simplify code
-    if (!_.isArray(roles)) roles = [roles];
+      if (!_.isArray(roles)) roles = [roles]
 
-    if (!roles.length) return false;
+      if (!roles.length) return false
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
-      anyPartition: false
-    });
+      options = _.defaults(options, {
+        anyPartition: false
+      })
 
-    if (!user) return false;
+      if (!user) return false
 
-    if (_.isObject(user)) {
-      if (_.has(user, 'roles')) {
-        return _.some(roles, function (role) {
-          if (options.anyPartition) {
-            return _.some(user.roles || [], Roles._roleMatcher(role));
-          }
-          else {
-            return _.some(user.roles || [], Roles._roleAndPartitionMatcher(role, options.partition));
-          }
-        })
-      } else {
+      if (_.isObject(user)) {
+        if (_.has(user, 'roles')) {
+          return _.some(roles, function (role) {
+            if (options.anyPartition) {
+              return _.some(user.roles || [], Roles._roleMatcher(role))
+            }
+            else {
+              return _.some(user.roles || [], Roles._roleAndPartitionMatcher(role, options.partition))
+            }
+          })
+        } else {
         // missing roles field, try going direct via id
-        id = user._id;
+          id = user._id
+        }
+      } else {
+        id = user
       }
-    } else {
-      id = user;
-    }
 
-    if (!id) return false;
+      if (!id) return false
 
-    if (options.anyPartition) {
-      query = {
-        _id: id,
-        'roles._id': {$in: roles}
-      };
-    }
-    else {
-      query = {
-        _id: id,
-        $or: [{
-          roles: {
-            $elemMatch: {
-              _id: {$in: roles},
-              partition: options.partition
+      if (options.anyPartition) {
+        query = {
+          _id: id,
+          'roles._id': {$in: roles}
+        }
+      }
+      else {
+        query = {
+          _id: id,
+          $or: [{
+            roles: {
+              $elemMatch: {
+                _id: {$in: roles},
+                partition: options.partition
+              }
             }
-          }
-        }, {
-          roles: {
-            $elemMatch: {
-              _id: {$in: roles},
-              partition: null
+          }, {
+            roles: {
+              $elemMatch: {
+                _id: {$in: roles},
+                partition: null
+              }
             }
-          }
-        }]
-      };
-    }
+          }]
+        }
+      }
 
-    return !!Meteor.users.findOne(query, {fields: {_id: 1}});
-  },
+      return !!Meteor.users.findOne(query, {fields: {_id: 1}})
+    },
 
   /**
    * Retrieve user's roles.
@@ -881,40 +881,40 @@ _.extend(Roles, {
    * @return {Array} Array of user's roles, unsorted.
    * @static
    */
-  getRolesForUser: function (user, options) {
-    var roles;
+    getRolesForUser: function (user, options) {
+      var roles
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
-      fullObjects: false,
-      onlyAssigned: false,
-      anyPartition: false
-    });
+      options = _.defaults(options, {
+        fullObjects: false,
+        onlyAssigned: false,
+        anyPartition: false
+      })
 
-    user = Roles._resolveUser(user);
+      user = Roles._resolveUser(user)
 
-    if (!user) return [];
+      if (!user) return []
 
-    if (options.anyPartition) {
-      roles = user.roles || [];
-    }
-    else {
-      roles = _.filter(user.roles || [], Roles._partitionMatcher(options.partition));
-    }
+      if (options.anyPartition) {
+        roles = user.roles || []
+      }
+      else {
+        roles = _.filter(user.roles || [], Roles._partitionMatcher(options.partition))
+      }
 
-    if (options.onlyAssigned) {
-      roles = _.filter(roles, Roles._onlyAssignedMatcher());
-    }
+      if (options.onlyAssigned) {
+        roles = _.filter(roles, Roles._onlyAssignedMatcher())
+      }
 
-    if (options.fullObjects) {
-      return roles;
-    }
+      if (options.fullObjects) {
+        return roles
+      }
 
-    return _.uniq(_.pluck(roles, '_id'));
-  },
+      return _.uniq(_.pluck(roles, '_id'))
+    },
 
   /**
    * Retrieve cursor of all existing roles.
@@ -925,11 +925,11 @@ _.extend(Roles, {
    * @return {Cursor} Cursor of existing roles.
    * @static
    */
-  getAllRoles: function (queryOptions) {
-    queryOptions = queryOptions || {sort: {_id: 1}};
+    getAllRoles: function (queryOptions) {
+      queryOptions = queryOptions || {sort: {_id: 1}}
 
-    return Meteor.roles.find({}, queryOptions);
-  },
+      return Meteor.roles.find({}, queryOptions)
+    },
 
   /**
    * Retrieve all users who are in target role.
@@ -954,13 +954,13 @@ _.extend(Roles, {
    * @return {Cursor} Cursor of users in roles.
    * @static
    */
-  getUsersInRole: function (roles, options, queryOptions) {
-    var result;
+    getUsersInRole: function (roles, options, queryOptions) {
+      var result
 
-    result = Roles._usersInRoleQuery(roles, options, queryOptions);
+      result = Roles._usersInRoleQuery(roles, options, queryOptions)
 
-    return Meteor.users.find(result.query, result.queryOptions);
-  },
+      return Meteor.users.find(result.query, result.queryOptions)
+    },
 
   /**
    * @method _usersInRoleQuery
@@ -982,51 +982,51 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _usersInRoleQuery: function (roles, options, queryOptions) {
-    var query;
+    _usersInRoleQuery: function (roles, options, queryOptions) {
+      var query
 
-    options = Roles._normalizeOptions(options);
+      options = Roles._normalizeOptions(options)
 
     // ensure array to simplify code
-    if (!_.isArray(roles)) roles = [roles];
+      if (!_.isArray(roles)) roles = [roles]
 
-    Roles._checkPartitionName(options.partition);
+      Roles._checkPartitionName(options.partition)
 
-    options = _.defaults(options, {
-      queryOptions: queryOptions || {},
-      anyPartition: false
-    });
+      options = _.defaults(options, {
+        queryOptions: queryOptions || {},
+        anyPartition: false
+      })
 
-    if (options.anyPartition) {
-      query = {
-        'roles._id': {$in: roles}
-      };
-    }
-    else {
-      query = {
-        $or: [{
-          roles: {
-            $elemMatch: {
-              _id: {$in: roles},
-              partition: options.partition
+      if (options.anyPartition) {
+        query = {
+          'roles._id': {$in: roles}
+        }
+      }
+      else {
+        query = {
+          $or: [{
+            roles: {
+              $elemMatch: {
+                _id: {$in: roles},
+                partition: options.partition
+              }
             }
-          }
-        }, {
-          roles: {
-            $elemMatch: {
-              _id: {$in: roles},
-              partition: null
+          }, {
+            roles: {
+              $elemMatch: {
+                _id: {$in: roles},
+                partition: null
+              }
             }
-          }
-        }]
-      };
-    }
+          }]
+        }
+      }
 
-    return {
-      query: query,
-      queryOptions: options.queryOptions
-    }
-  },
+      return {
+        query: query,
+        queryOptions: options.queryOptions
+      }
+    },
 
   /**
    * Deprecated. Use `getPartitionsForUser` instead.
@@ -1035,14 +1035,14 @@ _.extend(Roles, {
    * @static
    * @deprecated
    */
-  getGroupsForUser: function (/*args*/) {
-    if (!getGroupsForUserDeprecationWarning) {
-      getGroupsForUserDeprecationWarning = true;
-      console && console.warn("getGroupsForUser has been deprecated. Use getPartitionsForUser instead.");
-    }
+    getGroupsForUser: function (/* args*/) {
+      if (!getGroupsForUserDeprecationWarning) {
+        getGroupsForUserDeprecationWarning = true
+        console && console.warn("getGroupsForUser has been deprecated. Use getPartitionsForUser instead.")
+      }
 
-    return Roles.getPartitionsForUser.apply(this, arguments);
-  },
+      return Roles.getPartitionsForUser.apply(this, arguments)
+    },
 
   /**
    * Retrieve users partitions, if any.
@@ -1054,27 +1054,27 @@ _.extend(Roles, {
    * @return {Array} Array of user's partitions, unsorted.
    * @static
    */
-  getPartitionsForUser: function (user, roles) {
-    var partitions;
+    getPartitionsForUser: function (user, roles) {
+      var partitions
 
     // ensure array to simplify code
-    if (roles && !_.isArray(roles)) roles = [roles];
+      if (roles && !_.isArray(roles)) roles = [roles]
 
-    user = Roles._resolveUser(user);
+      user = Roles._resolveUser(user)
 
-    if (!user) return [];
+      if (!user) return []
 
-    partitions = [];
-    _.each(user.roles || [], function (userRole) {
+      partitions = []
+      _.each(user.roles || [], function (userRole) {
       // == used on purpose.
-      if (userRole.partition == null) return;
-      if (roles && !_.contains(roles, userRole._id)) return;
+        if (userRole.partition == null) return
+        if (roles && !_.contains(roles, userRole._id)) return
 
-      partitions.push(userRole.partition);
-    });
+        partitions.push(userRole.partition)
+      })
 
-    return _.uniq(partitions);
-  },
+      return _.uniq(partitions)
+    },
 
   /**
    * Rename a partition.
@@ -1086,28 +1086,28 @@ _.extend(Roles, {
    * @param {String} newName New name of a partition.
    * @static
    */
-  renamePartition: function (oldName, newName) {
-    var count;
+    renamePartition: function (oldName, newName) {
+      var count
 
-    Roles._checkPartitionName(oldName);
-    Roles._checkPartitionName(newName);
+      Roles._checkPartitionName(oldName)
+      Roles._checkPartitionName(newName)
 
-    if (oldName === newName) return;
+      if (oldName === newName) return
 
-    do {
-      count = Meteor.users.update({
-        roles: {
-          $elemMatch: {
-            partition: oldName
+      do {
+        count = Meteor.users.update({
+          roles: {
+            $elemMatch: {
+              partition: oldName
+            }
           }
-        }
-      }, {
-        $set: {
-          'roles.$.partition': newName
-        }
-      }, {multi: true});
-    } while (count > 0);
-  },
+        }, {
+          $set: {
+            'roles.$.partition': newName
+          }
+        }, {multi: true})
+      } while (count > 0)
+    },
 
   /**
    * Remove a partition.
@@ -1118,17 +1118,17 @@ _.extend(Roles, {
    * @param {String} name The name of a partition.
    * @static
    */
-  removePartition: function (name) {
-    Roles._checkPartitionName(name);
+    removePartition: function (name) {
+      Roles._checkPartitionName(name)
 
-    Meteor.users.update({}, {
-      $pull: {
-        roles: {
-          partition: name
+      Meteor.users.update({}, {
+        $pull: {
+          roles: {
+            partition: name
+          }
         }
-      }
-    }, {multi: true});
-  },
+      }, {multi: true})
+    },
 
   /**
    * Resolves the user ID into an actual user object with `roles` field,
@@ -1141,20 +1141,20 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _resolveUser: function (user, force) {
+    _resolveUser: function (user, force) {
     // TODO: We could use $elemMatch to limit returned fields here.
-    if (!_.isObject(user)) {
-      user = Meteor.users.findOne(
+      if (!_.isObject(user)) {
+        user = Meteor.users.findOne(
                {_id: user},
-               {fields: {roles: 1}});
-    } else if (force || !_.has(user, 'roles')) {
-      user = Meteor.users.findOne(
+               {fields: {roles: 1}})
+      } else if (force || !_.has(user, 'roles')) {
+        user = Meteor.users.findOne(
                {_id: user._id},
-               {fields: {roles: 1}});
-    }
+               {fields: {roles: 1}})
+      }
 
-    return user;
-  },
+      return user
+    },
 
   /**
    * @method _roleMatcher
@@ -1164,11 +1164,11 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _roleMatcher: function (roleName) {
-    return function (userRole) {
-      return userRole._id === roleName;
-    };
-  },
+    _roleMatcher: function (roleName) {
+      return function (userRole) {
+        return userRole._id === roleName
+      }
+    },
 
   /**
    * @method _roleAndPartitionMatcher
@@ -1179,13 +1179,13 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _roleAndPartitionMatcher: function (roleName, partition) {
-    return function (userRole) {
+    _roleAndPartitionMatcher: function (roleName, partition) {
+      return function (userRole) {
       // == used on purpose in "userRole.partition == null"
-      return (userRole._id === roleName && userRole.partition === partition) ||
-        (userRole._id === roleName && (!_.has(userRole, 'partition') || userRole.partition == null));
-    };
-  },
+        return (userRole._id === roleName && userRole.partition === partition) ||
+        (userRole._id === roleName && (!_.has(userRole, 'partition') || userRole.partition == null))
+      }
+    },
 
   /**
    * @method _partitionMatcher
@@ -1195,13 +1195,13 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _partitionMatcher: function (partition) {
-    return function (userRole) {
+    _partitionMatcher: function (partition) {
+      return function (userRole) {
       // == used on purpose in "userRole.partition == null"
-      return (userRole.partition === partition) ||
-        (!_.has(userRole, 'partition') || userRole.partition == null);
-    };
-  },
+        return (userRole.partition === partition) ||
+        (!_.has(userRole, 'partition') || userRole.partition == null)
+      }
+    },
 
   /**
    * @method _onlyAssignedMatcher
@@ -1210,11 +1210,11 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _onlyAssignedMatcher: function () {
-    return function (userRole) {
-      return !!userRole.assigned;
-    };
-  },
+    _onlyAssignedMatcher: function () {
+      return function (userRole) {
+        return !!userRole.assigned
+      }
+    },
 
   /**
    * Throw an exception if `roleName` is an invalid role name.
@@ -1224,11 +1224,11 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _checkRoleName: function (roleName) {
-    if (!roleName || !_.isString(roleName) || Roles._trim(roleName) !== roleName) {
-      throw new Error("Invalid role name '" + roleName + "'.");
-    }
-  },
+    _checkRoleName: function (roleName) {
+      if (!roleName || !_.isString(roleName) || Roles._trim(roleName) !== roleName) {
+        throw new Error("Invalid role name '" + roleName + "'.")
+      }
+    },
 
   /**
    * Normalize options.
@@ -1239,17 +1239,17 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _normalizeOptions: function (options) {
-    options = _.isUndefined(options) ? {} : options;
+    _normalizeOptions: function (options) {
+      options = _.isUndefined(options) ? {} : options
 
-    if (options === null || _.isString(options)) {
-      options = {partition: options};
-    }
+      if (options === null || _.isString(options)) {
+        options = {partition: options}
+      }
 
-    options.partition = Roles._normalizePartitionName(options.partition);
+      options.partition = Roles._normalizePartitionName(options.partition)
 
-    return options;
-  },
+      return options
+    },
 
   /**
    * Normalize partition name.
@@ -1260,15 +1260,15 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _normalizePartitionName: function (partitionName) {
+    _normalizePartitionName: function (partitionName) {
     // map undefined and null to null
-    if (partitionName == null) {
-      return null;
-    }
-    else {
-      return partitionName;
-    }
-  },
+      if (partitionName == null) {
+        return null
+      }
+      else {
+        return partitionName
+      }
+    },
 
   /**
    * Throw an exception if `partitionName` is an invalid partition name.
@@ -1278,13 +1278,13 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _checkPartitionName: function (partitionName) {
-    if (partitionName === null) return;
+    _checkPartitionName: function (partitionName) {
+      if (partitionName === null) return
 
-    if (!partitionName || !_.isString(partitionName) || Roles._trim(partitionName) !== partitionName) {
-      throw new Error("Invalid partition name '" + partitionName + "'.");
-    }
-  },
+      if (!partitionName || !_.isString(partitionName) || Roles._trim(partitionName) !== partitionName) {
+        throw new Error("Invalid partition name '" + partitionName + "'.")
+      }
+    },
 
   /**
    * @param {String} string Input string.
@@ -1292,15 +1292,15 @@ _.extend(Roles, {
    * @private
    * @static
    */
-  _trim: function (string) {
-    if (string.trim) {
-      return string.trim();
+    _trim: function (string) {
+      if (string.trim) {
+        return string.trim()
+      }
+      else {
+        return string.replace(/^\s+|\s+$/g, '')
+      }
     }
-    else {
-      return string.replace(/^\s+|\s+$/g, '');
-    }
-  }
 
-});  // end _.extend(Roles ...)
+  })  // end _.extend(Roles ...)
 
-}());
+}())

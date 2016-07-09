@@ -34,9 +34,9 @@ export default function formatElapsedTime(millis: number, options?: ElapsedTimeO
     // round
     millis = modFloor(millis + 500, 1000)
   }
-  const hours   = showHours !== false ? (Math.floor(millis / 3600000) + ':') : ''
+  const hours = showHours !== false ? (Math.floor(millis / 3600000) + ':') : ''
   const minutes = showMinutes !== false ? _.padStart(Math.floor(millis / 60000) % 60, 2, '0') : ''
-  const seconds = showSeconds !== false ? (':' + _.padStart(Math.floor(millis /  1000) % 60, 2, '0')) : ''
+  const seconds = showSeconds !== false ? (':' + _.padStart(Math.floor(millis / 1000) % 60, 2, '0')) : ''
   const milliseconds = showMillis !== false ? (':' + _.padStart(Math.floor(millis % 1000), 3, '0')) : ''
   return `${sign}${hours}${minutes}${seconds}${milliseconds}`
 }

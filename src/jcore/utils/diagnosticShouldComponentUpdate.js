@@ -4,7 +4,7 @@ import {shouldComponentUpdate} from 'react-addons-pure-render-mixin'
 import unequalPaths from './unequalPaths'
 
 export default function diagnosticShouldComponentUpdate(log = console.log.bind(console)) {
-  return function(...args) {
+  return function (...args) {
     if (shouldComponentUpdate.apply(this, args)) {
       log('component updating: ' + this)
       let nextProps = args[0]

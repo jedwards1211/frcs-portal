@@ -1,18 +1,18 @@
 export default {
   highAlarm: {
     comparison: 'high',
-    severity: 'alarm',
+    severity: 'alarm'
   },
   highWarning: {
     comparison: 'high',
-    severity: 'warning',
+    severity: 'warning'
   },
   lowWarning: {
     comparison: 'low',
-    severity: 'warning',
+    severity: 'warning'
   },
   lowAlarm: {
     comparison: 'low',
-    severity: 'alarm',
-  },
+    severity: 'alarm'
+  }
 }

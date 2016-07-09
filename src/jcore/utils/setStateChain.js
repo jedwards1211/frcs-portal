@@ -11,7 +11,7 @@ import {TICK} from '../transition/animConstants'
  *                                 as argument.  If a callback returns an object,
  *                                 this will call component.setState(<object>, <next callback>).
  */
-export default function setStateChain(component, callbacks, finalCallback = function() {}) {
+export default function setStateChain(component, callbacks, finalCallback = function () {}) {
   let canceled = false
 
   callbacks.reduceRight(

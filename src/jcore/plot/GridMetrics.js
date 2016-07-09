@@ -4,18 +4,18 @@ import * as GridMath from './GridMath'
 
 export class GridMetrics {
   constructor(conversion, startPx, endPx, options = {}) {
-    this.conversion     = conversion
+    this.conversion = conversion
 
-    this.startPx        = Math.min(startPx, endPx)
-    this.endPx          = Math.max(startPx, endPx)
+    this.startPx = Math.min(startPx, endPx)
+    this.endPx = Math.max(startPx, endPx)
 
-    this.startValue     = conversion.invert(startPx)
-    this.endValue       = conversion.invert(endPx)
+    this.startValue = conversion.invert(startPx)
+    this.endValue = conversion.invert(endPx)
 
-    this.minorTickSize  = options.minorTickSize || 2
-    this.majorTickSize  = options.majorTickSize || this.minorTickSize * 2
+    this.minorTickSize = options.minorTickSize || 2
+    this.majorTickSize = options.majorTickSize || this.minorTickSize * 2
 
-    this.maxTickSize    = this.majorTickSize
+    this.maxTickSize = this.majorTickSize
 
     this.majorTickColor = options.majorTickColor || '#aaa'
     this.minorTickColor = options.minorTickColor || '#ccc'
@@ -97,14 +97,14 @@ export class TimeMetrics extends GridMetrics {
     this.minorIncrement = conversion.chooseNiceTimeIncrement(minMinorSpacing)
     this.majorIncrement = conversion.chooseNiceTimeIncrement(minMajorSpacing, this.minorIncrement)
 
-    this.firstMajor     = GridMath.modCeiling(this.startValue, this.majorIncrement)
-    this.firstMinor     = GridMath.modCeiling(this.startValue, this.minorIncrement)
+    this.firstMajor = GridMath.modCeiling(this.startValue, this.majorIncrement)
+    this.firstMinor = GridMath.modCeiling(this.startValue, this.minorIncrement)
 
-    var maxTime         = Math.max(this.startValue, this.endValue)
-    this.showHours      = Math.abs(maxTime) >= 3600000
-    this.showMinutes    = true
-    this.showSeconds    = Math.abs(this.majorIncrement) < 60000 || !this.showHours
-    this.showMillis     = Math.abs(this.majorIncrement) < 1000
+    var maxTime = Math.max(this.startValue, this.endValue)
+    this.showHours = Math.abs(maxTime) >= 3600000
+    this.showMinutes = true
+    this.showSeconds = Math.abs(this.majorIncrement) < 60000 || !this.showHours
+    this.showMillis = Math.abs(this.majorIncrement) < 1000
   }
 
   isMajorTick(time) {
@@ -121,10 +121,10 @@ export class TimeMetrics extends GridMetrics {
     }
 
     var items = []
-    if (this.showHours)    items.push(Math.floor(time / 3600000))
-    if (this.showMinutes)  items.push(pad(Math.floor((time / 60000) % 60), 2))
-    if (this.showSeconds)  items.push(pad(Math.floor((time / 1000) % 60), 2))
-    if (this.showMillis)   items.push(pad(Math.floor(time % 1000), 3))
+    if (this.showHours) items.push(Math.floor(time / 3600000))
+    if (this.showMinutes) items.push(pad(Math.floor((time / 60000) % 60), 2))
+    if (this.showSeconds) items.push(pad(Math.floor((time / 1000) % 60), 2))
+    if (this.showMillis) items.push(pad(Math.floor(time % 1000), 3))
 
     return items.join(':')
   }
@@ -174,7 +174,7 @@ export class DateMetrics extends TimeMetrics {
 
     this.dayFont = options.dayFont || 'bold 10px sans-serif'
 
-    this.maxTickSize    = this.dayTickSize
+    this.maxTickSize = this.dayTickSize
 
     this.majorTickColor = options.majorTickColor || '#aaa'
 

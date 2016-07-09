@@ -12,7 +12,7 @@ import color from 'css-color-converter'
 
 const conversionPropType = React.PropTypes.shape({
   convert: React.PropTypes.func.isRequired,
-  invert:  React.PropTypes.func.isRequired,
+  invert:  React.PropTypes.func.isRequired
 })
 
 export default class Trace extends Layer {
@@ -29,13 +29,13 @@ export default class Trace extends Layer {
     // (CanvasRenderingContext2D) => TraceRenderer
     renderer:         React.PropTypes.func,
     domainAxis:       React.PropTypes.instanceOf(Axis),
-    currentTime:      React.PropTypes.number,
+    currentTime:      React.PropTypes.number
   };
   static defaultProps = {
     lineColor:        '#00f',
     plotter:          (...args) => new StepTracePlotter(new AutoFatTracePlotter(...args)),
     renderer:         ctx => new CanvasTraceRenderer(ctx),
-    domainAxis:       xAxis,
+    domainAxis:       xAxis
   };
   paint(canvas) {
     var ctx = canvas.getContext('2d')
@@ -55,15 +55,15 @@ export default class Trace extends Layer {
       ctx.setTransform(0, 1, 1, 0, 0, 0)
     }
 
-    renderer        = renderer(ctx)
+    renderer = renderer(ctx)
 
     ctx.strokeStyle = lineColor
     ctx.lineWidth = 1.3
-    ctx.fillStyle   = fillColor
+    ctx.fillStyle = fillColor
 
-    plotter         = plotter(domainConversion, valueConversion, renderer)
+    plotter = plotter(domainConversion, valueConversion, renderer)
 
-    var leftDomain  = domainConversion.invert(0)
+    var leftDomain = domainConversion.invert(0)
     var rightDomain = domainConversion.invert(canvas[domainAxis.span])
 
     let points = pointGenerator(leftDomain, rightDomain, {surround: true, currentTime})

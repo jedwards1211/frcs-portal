@@ -1,13 +1,14 @@
 import {graphql} from 'graphql'
 import {prepareClientError} from './models/utils'
 import Schema from './rootSchema'
+import logger from '../logger'
 
 export const wsGraphQLHandler = async function (body, cb) {
   const {query, variables, ...context} = body
   const authToken = this.getAuthToken()
   const docId = variables.doc && variables.doc.id || variables.id
   if (!docId) {
-    console.warn('No documentId found for the doc submitted via websockets!')
+    logger.warn('No documentId found for the doc submitted via websockets!')
     return cb({_error: 'No documentId found'})
   }
   this.docQueue.add(docId)

@@ -8,7 +8,9 @@ export default function validateSecretToken(secretToken) {
   if (typeof Buffer === 'function') {
     secretTokenStr = new Buffer(secretToken, 'base64').toString('ascii')
   } else if (typeof atob === 'function') {
+    /* eslint-disable no-undef */
     secretTokenStr = atob(secretToken)
+    /* eslint-enable no-undef */
   } else {
     return invalidToken
   }

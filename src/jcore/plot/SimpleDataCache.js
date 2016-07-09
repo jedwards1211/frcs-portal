@@ -82,9 +82,9 @@ export default class SimpleDataCache extends EventEmitter {
 
     if (changed && emitDataChange !== false) {
       let beginPage = _.max(newPages, 'beginTime')
-      let endPage   = _.max(newPages, 'endTime')
+      let endPage = _.max(newPages, 'endTime')
       let beginTime = beginPage && beginPage.beginTime
-      let endTime   = endPage   && endPage  .endTime
+      let endTime = endPage && endPage.endTime
       let channels = {}
       newPages.forEach(page => channels[page.channelId] = true)
 
@@ -134,14 +134,14 @@ export default class SimpleDataCache extends EventEmitter {
   *get(channelId, from, to, options = {}) {
     let {surround, currentTime} = options
 
-    let fromAdj = (surround ? GridMath.modLower  : GridMath.modFloor  )(from, this.pageRange)
-    let toAdj   = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
+    let fromAdj = (surround ? GridMath.modLower : GridMath.modFloor)(from, this.pageRange)
+    let toAdj = (surround ? GridMath.modHigher : GridMath.modCeiling)(to, this.pageRange)
 
     let modCount = this.modCount
 
     let point = {
       t: NaN,
-      v: NaN,
+      v: NaN
     }
 
     let pageStart = fromAdj
@@ -167,7 +167,7 @@ export default class SimpleDataCache extends EventEmitter {
           page.times.length - 1
 
         for (let i = startIndex; i <= endIndex; i++) {
-          point.t = page.times [i]
+          point.t = page.times[i]
           point.v = page.values[i]
           yield point
           if (modCount !== this.modCount) {

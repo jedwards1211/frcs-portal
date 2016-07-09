@@ -1,4 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
+import logger from '../../logger'
 
 export const defaultResolveFn = (source, args, {fieldName}) => {
   const property = source[fieldName]
@@ -23,7 +24,7 @@ export const prepareClientError = res => {
   }
   const error = errors[0].message
   if (error.indexOf('{"_error"') === -1) {
-    console.log('DEBUG GraphQL Error:', error)
+    logger.log('DEBUG GraphQL Error:', error)
     return {data, error: JSON.stringify({_error: 'Server error while querying data'})}
   }
   return {data, error}

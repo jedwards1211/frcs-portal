@@ -1,4 +1,5 @@
+import logger from './logger'
 
 module.exports.run = function () {
-  console.log('   >> Broker PID:', process.pid)
+  logger.log('   >> Broker PID:', process.pid)
 }

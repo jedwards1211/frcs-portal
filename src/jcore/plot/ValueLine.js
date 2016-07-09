@@ -10,10 +10,10 @@ export default class ValueLine extends Layer {
     color:      React.PropTypes.string.isRequired,
     conversion: React.PropTypes.instanceOf(Conversion).isRequired,
     value:      React.PropTypes.number,
-    axis:       React.PropTypes.instanceOf(Axis),
+    axis:       React.PropTypes.instanceOf(Axis)
   };
   static defaultProps = {
-    axis:       xAxis,
+    axis:       xAxis
   };
   paint(canvas) {
     var {color, conversion, value, axis} = this.props

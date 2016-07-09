@@ -36,14 +36,14 @@ export function relativeTimeString(dateOrTime, options = {}) {
         }
         else {
           switch (date.getDay()) {
-          case 0: return 'last Sunday'
-          case 1: return 'last Monday'
-          case 2: return 'last Tuesday'
-          case 3: return 'last Wednesday'
-          case 4: return 'last Thursday'
-          case 5: return 'last Friday'
-          case 6: return 'last Saturday'
-          default: //uhhhhh....
+            case 0: return 'last Sunday'
+            case 1: return 'last Monday'
+            case 2: return 'last Tuesday'
+            case 3: return 'last Wednesday'
+            case 4: return 'last Thursday'
+            case 5: return 'last Friday'
+            case 6: return 'last Saturday'
+            default: // uhhhhh....
           }
         }
       }
