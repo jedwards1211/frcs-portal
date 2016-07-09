@@ -1,0 +1,16 @@
+@import ~sass-flex-mixin/_flex
+
+.mf-date-time-picker
+  @include flexbox
+
+  > *
+    @include flex(1 1 0px)
+
+  .react-datepicker__input-container input
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
+
+  .mf-time-picker input
+    border-left-width: 0
+    border-top-left-radius: 0
+    border-bottom-left-radius: 0

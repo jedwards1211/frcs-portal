@@ -1,0 +1,74 @@
+.mf-ScrollableTable
+  overflow: auto
+  max-width: 100%
+
+  table
+    min-width: 100%
+    border-collapse: separate
+
+  thead
+    position: relative
+    z-index: 100
+    th
+      z-index: 150
+
+    th.is-row-header
+      z-index: 200
+
+  tbody,
+  th,
+  td
+    position: relative
+
+  tbody th.is-row-header
+    z-index: 50
+
+.mf-ScrollableTable.is-bordered
+  border: 1px solid #ddd
+  background-color: #ddd
+
+  &::-webkit-scrollbar
+    background: #ddd
+
+  table
+    margin: 0px
+
+    th:not(:last-child),
+    td:not(:last-child)
+      border-right: 1px solid #ddd
+
+    td
+      border-top: 1px solid #ddd
+
+    tr:first-child
+      > td,
+      > th
+        border-top: none
+
+    thead th
+      border-bottom: 2px solid #ddd
+
+    th.is-row-header
+      border-right: 2px solid #ddd
+
+  &.is-unbordered-in-top-left-cell
+    border-top-style: none
+    border-left-style: none
+
+    table
+      margin-top: 0
+      margin-left: 0
+
+      > :first-child
+        td:first-child,
+        th:first-child
+          border-right-width: 1px
+          border-bottom-width: 1px
+        td:not(:first-child),
+        th:not(:first-child)
+          border-top: 1px solid #ddd
+
+      > :not(:first-child)
+        td:first-child,
+        th:first-child
+          border-left: 1px solid #ddd

@@ -1,0 +1,11 @@
+@import ../sass/css3-mixins
+
+.mf-ProgressTicks
+  position: relative
+  overflow: visible
+  height: 15px
+
+  > *
+    position: absolute
+    top: 0
+    @include transform(translateX(-50%))

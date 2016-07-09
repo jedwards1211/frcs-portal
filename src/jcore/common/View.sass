@@ -1,0 +1,42 @@
+@import ~sass-flex-mixin/_flex
+
+.mf-default-view
+  margin: 0 auto
+  max-width: 615px
+  padding: 0 15px
+
+.mf-default-title
+  font-size: 30px
+  text-align: center
+
+.mf-default-footer
+  text-align: right
+  margin-bottom: 15px
+  button
+    margin: 5px 0
+  button:not(:first-child)
+    margin-left: 5px
+
+.mf-default-nav.skinnable-nav-left
+  float: left
+
+.mf-default-nav.skinnable-nav-right
+  float: right
+
+.mf-default-view.is-absolute
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  @include flexbox
+  @include flex-direction(column)
+
+  .mf-default-header,
+  .mf-default-footer
+    @include flex(0 0 auto)
+
+  .mf-default-body
+    overflow: auto
+    @include flex(1 1 auto)
+

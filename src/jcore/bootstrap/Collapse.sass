@@ -1,0 +1,9 @@
+@import "../sass/css3-mixins"
+
+.collapse-arrow
+  @include transition(transform ease-out 0.35s)
+
+.collapse-arrow.open,
+.collapse.open .collapse-arrow,
+.collapsing.open .collapse-arrow
+  transform: rotate(90deg)

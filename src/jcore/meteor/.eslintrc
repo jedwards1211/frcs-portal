@@ -1,0 +1,8 @@
+{
+  "env": {
+    "meteor": true,
+  },
+  "globals": {
+    "LocalCollection": false,
+  }
+}

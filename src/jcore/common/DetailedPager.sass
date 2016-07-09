@@ -1,0 +1,15 @@
+@import ~sass-flex-mixin/_flex
+
+.mf-detailed-pager
+  @include flexbox
+  @include align-items(center)
+  margin: 5px 0
+
+  > *
+    @include flex(0 0 auto)
+
+  .mf-detailed-pager-items
+    margin-right: 15px
+
+  .pagination
+    margin: 0

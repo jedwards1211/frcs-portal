@@ -1,0 +1,17 @@
+@import "../sass/css3-mixins"
+@import BlockVars
+
+.block
+  cursor: pointer
+  display: inline-block
+  position: absolute
+  background-color: #eee
+  overflow: hidden  
+  border-style: none
+  border-radius: 0
+  outline: none
+  @include transition(all $block-transition-duration ease-out)
+
+  &.grabbed,
+  &.resizing
+    @include transition(opacity $block-transition-duration linear)

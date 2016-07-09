@@ -1,0 +1,35 @@
+@import gauge
+@import ~sass-flex-mixin/_flex
+
+$name-height: 40%
+$name-width: 100%
+$value-height: 100% - $name-height
+$value-width: 70%
+$units-width: 30%
+
+.text-gauge
+  position: relative
+  padding: 3px
+  @include flexbox
+  @include align-items(center)
+
+  .value,
+  .units
+    @include align-self(baseline)
+
+  .name
+    width: $name-width
+
+  .value-and-units
+    margin: 0 2%
+    width: 100%
+    @include flexbox
+    @include align-items(baseline)
+
+  .value
+    width: $value-width
+    text-align: right
+
+  .units
+    margin-left: 2%
+    width: $units-width

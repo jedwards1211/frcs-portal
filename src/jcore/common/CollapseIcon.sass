@@ -1,0 +1,7 @@
+@import "../sass/css3-mixins"
+
+.collapse-icon
+  > .glyphicon
+    @include transition(transform ease-out 0.35s)
+  &.open > .glyphicon
+    @include transform(rotate(90deg))
