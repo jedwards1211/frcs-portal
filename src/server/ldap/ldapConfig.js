@@ -8,5 +8,12 @@ const config = {
 
 config.adminDN = `${config.adminCN},${config.base}`
 config.usersDN = `${config.usersOU},${config.base}`
+config.usersEntry = {
+  dn: config.usersDN,
+  objectclass: ['organizationalUnit', 'top'],
+  attributes: {
+    ou: config.usersOU
+  }
+}
 
 export default config
