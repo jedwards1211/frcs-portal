@@ -5,7 +5,7 @@ import logger from '../logger'
 const databases = ['meatier', 'ava']
 
 const database = [
-  {name: 'users', indices: ['email']},
+  {name: 'users', indices: ['username', 'email']},
   {name: 'lanes', indices: ['userId']},
   {name: 'notes', indices: ['laneId']}
 ]

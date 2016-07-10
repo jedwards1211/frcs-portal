@@ -34,11 +34,10 @@ export function getJSON(route) {
 //  return Object.assign({}, ...(for (p of fields) {[p]: o[p]}));
 // }
 
-export const getClientError = errors => {
-  if (!errors) {
-    return
-  }
-  const error = errors[0].message
+export const getClientError = res => {
+  const {errors} = res
+  const error = res.error || (errors && errors[0].message)
+  if (!error) return
   if (!error || error.indexOf('{"_error"') === -1) {
     return {_error: 'Server query error'}
   }
@@ -65,6 +64,6 @@ export const fetchGraphQL = async graphParams => {
     body: serializedParams
   })
   const resJSON = await res.json()
-  const {data, errors} = resJSON
-  return {data, error: getClientError(errors)}
+  const {data} = resJSON
+  return {data, error: getClientError(resJSON)}
 }

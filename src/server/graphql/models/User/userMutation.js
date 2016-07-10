@@ -1,9 +1,9 @@
 import r from '../../../database/rethinkdriver'
 import {UserWithAuthToken, GoogleProfile} from './userSchema'
 import {GraphQLEmailType, GraphQLPasswordType} from '../types'
-import {getUserByEmail, signJwt, getAltLoginMessage, makeSecretToken} from './helpers'
+import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage, makeSecretToken} from './helpers'
 import {errorObj} from '../utils'
-import {GraphQLNonNull, GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
 import validateSecretToken from '../../../../universal/utils/validateSecretToken'
 import {isLoggedIn} from '../authorization'
 import promisify from 'es6-promisify'
@@ -18,11 +18,14 @@ export default {
   createUser: {
     type: UserWithAuthToken,
     args: {
+      username: {type: new GraphQLNonNull(GraphQLString)},
       email: {type: new GraphQLNonNull(GraphQLEmailType)},
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
-    async resolve(source, {email, password}) {
-      const user = await getUserByEmail(email)
+    async resolve(source, {username, email, password}) {
+      const userByUsername = await getUserByUsername(username)
+      const userByEmail = await getUserByEmail(email)
+      const user = userByUsername || userByEmail
       if (user) {
         const {strategies} = user
         const hashedPassword = strategies && strategies.local && strategies.local.password
@@ -34,7 +37,10 @@ export default {
           const authToken = signJwt({id: user.id})
           return {authToken, user}
         }
-        throw errorObj({_error: 'Cannot create account', email: 'Email already exists'})
+        const error = {_error: 'Cannot create account'}
+        if (userByUsername) error.username = 'Username already taken'
+        if (userByEmail) error.email = 'Email already registered'
+        throw errorObj(error)
       } else {
         // production should use 12+, but it's slow for dev
         const newHashedPassword = await hash(password, 10)
@@ -43,6 +49,7 @@ export default {
         const verifiedEmailToken = makeSecretToken(id, 60 * 24)
         const userDoc = {
           id,
+          username,
           email,
           createdAt: new Date(),
           strategies: {

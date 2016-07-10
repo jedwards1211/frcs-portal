@@ -1,12 +1,14 @@
 import r from '../../../database/rethinkdriver'
-import {GraphQLNonNull, GraphQLID} from 'graphql'
+import {GraphQLNonNull, GraphQLString, GraphQLID, GraphQLUnionType} from 'graphql'
 import {User, UserWithAuthToken} from './userSchema'
 import {errorObj} from '../utils'
 import {GraphQLEmailType, GraphQLPasswordType} from '../types'
-import {getUserByEmail, signJwt, getAltLoginMessage} from './helpers'
+import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage} from './helpers'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import {isAdminOrSelf} from '../authorization'
+
+console.log('getUserByUsername: ', getUserByUsername)
 
 const compare = promisify(bcrypt.compare)
 
@@ -28,14 +30,16 @@ export default {
   login: {
     type: UserWithAuthToken,
     args: {
-      email: {type: new GraphQLNonNull(GraphQLEmailType)},
+      username: {type: GraphQLString},
+      email: {type: GraphQLEmailType},
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
     async resolve(source, args) {
-      const {email, password} = args
-      const user = await getUserByEmail(email)
+      const {username, email, password} = args
+      const user = (username && await getUserByUsername(username)) || 
+        (email && await getUserByEmail(email))
       if (!user) {
-        throw errorObj({_error: 'User not found'})
+        throw errorObj({_error: 'Incorrect username/email or password'})
       }
       const {strategies} = user
       const hashedPassword = strategies && strategies.local && strategies.local.password
@@ -47,7 +51,7 @@ export default {
         const authToken = signJwt({id: user.id})
         return {authToken, user}
       }
-      throw errorObj({_error: 'Login failed', password: 'Incorrect password'})
+      throw errorObj({_error: 'Login failed', password: 'Incorrect username/email or password'})
     }
   },
   loginAuthToken: {

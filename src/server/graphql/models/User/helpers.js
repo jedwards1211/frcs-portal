@@ -2,6 +2,11 @@ import r from '../../../database/rethinkdriver'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 
+export const getUserByUsername = async username => {
+  const users = await r.table('users').getAll(username, {index: 'username'}).limit(1).run()
+  return users[0]
+}
+
 export const getUserByEmail = async email => {
   const users = await r.table('users').getAll(email, {index: 'email'}).limit(1).run()
   return users[0]

@@ -28,8 +28,8 @@ export default class VerifyEmailContainer extends Component {
      Then, the verifyEmail can change that to be true in the DB and in the local state
      Then, log in success can turn it back to false in the local state
      Since we can guarantee we'll start authenticating before verifying, we can delay the verification*/
-    const {dispatch, params: {verifiedEmailToken}, isAuthenticating, authError, isVerified} = props
-    if (!isVerified && !isAuthenticating && !authError.size) {
+    const {dispatch, params: {verifiedEmailToken}, isAuthenticating, error, isVerified} = props
+    if (!isVerified && !isAuthenticating && !error.size) {
       dispatch(verifyEmail(verifiedEmailToken))
       // if they don't have a JWT, we don't log them in
       // edge case since that means they logged out before they verified
@@ -40,7 +40,7 @@ export default class VerifyEmailContainer extends Component {
 function mapStateToProps(state) {
   const auth = ensureState(state).get('auth')
   return {
-    authError: auth.get('error').toJS(),
+    error: auth.get('verifyEmailError').toJS(),
     isAuthenticating: auth.get('isAuthenticating'),
     isVerified: auth.getIn(['user', 'strategies', 'local', 'isVerified'])
   }

@@ -22,7 +22,9 @@ export const VERIFY_EMAIL_ERROR = 'VERIFY_EMAIL_ERROR'
 export const VERIFY_EMAIL_SUCCESS = 'VERIFY_EMAIL_SUCCESS'
 
 const initialState = iMap({
-  error: iMap(),
+  loginError: iMap(),
+  signupError: iMap(),
+  verifyEmailError: iMap(),
   isAuthenticated: false,
   isAuthenticating: false,
   authToken: null,
@@ -34,26 +36,30 @@ const initialState = iMap({
 })
 
 export default function reducer(state = initialState, action = {}) {
+  let errorProp = 'signupError'
   switch (action.type) {
     case LOGIN_USER_REQUEST:
+      errorProp = 'loginError'
     case SIGNUP_USER_REQUEST:
       return state.merge({
-        error: iMap(),
+        [errorProp]: iMap(),
         isAuthenticating: true
       })
     case LOGIN_USER_SUCCESS:
+      errorProp = 'loginError'
     case SIGNUP_USER_SUCCESS:
       return state.merge({
-        error: iMap(),
+        [errorProp]: iMap(),
         isAuthenticating: false,
         isAuthenticated: true,
         authToken: action.payload.authToken,
         user: fromJS(action.payload.user)
       })
     case LOGIN_USER_ERROR:
+      errorProp = 'loginError'
     case SIGNUP_USER_ERROR:
       return state.merge({
-        error: fromJS(action.error) || iMap(),
+        [errorProp]: fromJS(action.error) || iMap(),
         isAuthenticating: false,
         isAuthenticated: false,
         authToken: null,
@@ -63,11 +69,11 @@ export default function reducer(state = initialState, action = {}) {
       return initialState
     case VERIFY_EMAIL_ERROR:
       return state.merge({
-        error: fromJS(action.error) || iMap()
+        verifyEmailError: fromJS(action.error) || iMap()
       })
     case VERIFY_EMAIL_SUCCESS:
       return state.merge({
-        error: iMap(),
+        verifyEmailError: iMap(),
         isAuthenticating: false,
         isAuthenticated: true,
         authToken: action.payload.authToken,
@@ -109,6 +115,7 @@ export function signupUserError(error) {
 const user = `
 {
   id,
+  username,
   email,
   strategies {
     local {
@@ -127,8 +134,8 @@ export const loginUser = (dispatch, variables, redirect) => {
   dispatch({type: LOGIN_USER_REQUEST})
   return new Promise(async (resolve, reject) => {
     const query = `
-    query($email: Email!, $password: Password!){
-       payload: login(email: $email, password: $password)
+    query($username: String, $email: Email, $password: Password!){
+       payload: login(username: $username, email: $email, password: $password)
        ${userWithAuthToken}
     }`
     const {error, data} = await fetchGraphQL({query, variables})
@@ -173,8 +180,8 @@ export function signupUser(dispatch, variables, redirect) {
   dispatch({type: SIGNUP_USER_REQUEST})
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($email: Email!, $password: Password!){
-       payload: createUser(email: $email, password: $password)
+    mutation($username: String!, $email: Email!, $password: Password!){
+       payload: createUser(username: $username, email: $email, password: $password)
        ${userWithAuthToken}
     }`
     const {error, data} = await fetchGraphQL({query, variables})

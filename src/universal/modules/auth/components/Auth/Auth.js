@@ -24,6 +24,7 @@ export default class Auth extends Component {
     isLogin: PropTypes.bool,
     authError: PropTypes.shape({
       _error: PropTypes.string,
+      username: PropTypes.string,
       email: PropTypes.string,
       password: PropTypes.string
     }),
@@ -82,10 +83,6 @@ export default class Auth extends Component {
 
           </div>
         </form>
-        <div className={styles.hrWithText}>
-          <span className={styles.hrText}>or</span>
-        </div>
-        <span onClick={this.loginWithGoogle}>Login with Google</span>
       </div>
     )
   }
@@ -96,9 +93,15 @@ export default class Auth extends Component {
   };
 
   onSubmit = (data, dispatch) => {
+    const {isLogin} = this.props
+    const newData = {...data}
+    if (isLogin) {
+      newData.username = newData.email
+      if (newData.email.indexOf('@') < 0) delete newData.email
+    }
     // gotta get that redirect from props
     const redirectRoute = this.props.location.query.next || '/'
-    const authFunc = this.props.isLogin ? loginUser : signupUser
-    return authFunc(dispatch, data, redirectRoute)
+    const authFunc = isLogin ? loginUser : signupUser
+    return authFunc(dispatch, newData, redirectRoute)
   };
 }
