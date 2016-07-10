@@ -119,6 +119,8 @@ const user = `
   id,
   username,
   email,
+  firstName,
+  lastName,
   strategies {
     local {
       isVerified

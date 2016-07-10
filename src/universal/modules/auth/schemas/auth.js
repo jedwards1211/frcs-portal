@@ -49,7 +49,7 @@ export const signupAuthSchema = Joi.object().keys({
   confirmPassword
 })
 export const loginAuthSchema = Joi.object().keys({
-  email: Joi.string().alphanum().trim().lowercase().min(4).max(200).label('Username or Email').required().options({
+  email: Joi.string().trim().lowercase().min(4).max(200).label('Username or Email').required().options({
     language: {
       any: anyErrors,
       string: {

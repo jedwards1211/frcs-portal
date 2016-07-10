@@ -51,7 +51,6 @@ export default {
           throw new errorObj({_error: err.message})
         }
 
-        console.log(memberInfo)
         const {firstName, lastName} = memberInfo
         
         // production should use 12+, but it's slow for dev
