@@ -9,7 +9,11 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 getDotenv()
 
 const root = process.cwd()
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')]
+const clientInclude = [
+  path.join(root, 'src', 'client'), 
+  path.join(root, 'src', 'universal'),
+  path.join(root, 'src', 'jcore')
+]
 const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global')
 const srcDir = path.join(root, 'src')
 
@@ -45,6 +49,7 @@ export default {
     app: [
       'babel-polyfill',
       'react-hot-loader/patch',
+      'bootstrap-sass/assets/stylesheets/_bootstrap.scss',
       'client/client.js',
       'webpack-hot-middleware/client'
     ]
@@ -103,6 +108,14 @@ export default {
         loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss',
         exclude: globalCSS,
         include: clientInclude
+      },
+      {
+        test: /\.sass/,
+        loader: 'style!css!sass?indentedSyntax&outputStyle=expanded'
+      },
+      {
+        test: /\.scss/,
+        loader: 'style!css!sass?outputStyle=expanded&' + "includePaths[]=" + (path.resolve(__dirname, "./node_modules"))
       },
       {
         test: /\.js$/,
