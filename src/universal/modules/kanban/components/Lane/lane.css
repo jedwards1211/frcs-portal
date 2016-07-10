@@ -1,5 +1,3 @@
-@value primary, secondary from 'universal/styles/colors.css';
-
 .lane {
   display: inline-block;
 
@@ -16,7 +14,6 @@
 .header {
   overflow: auto;
   color: #fff;
-  background-color: secondary;
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0.5em;
   display: flex;

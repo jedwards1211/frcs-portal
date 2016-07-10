@@ -1,14 +1,10 @@
-@value primary, secondary from 'universal/styles/colors.css';
 @value maxWidth from 'universal/styles/layout.css';
-
 
 .header {
   background-image: url('./paddleboard.jpg');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  color: #fff;
   min-height: 700px;
-
 }
 
 .banner {
@@ -26,7 +22,6 @@
 
 .bannerDesc {
   padding: 0;
-  color: rgba(255, 255, 255, .9);
   font-size: 1.25em;
   font-weight: 300;
   margin: 0;

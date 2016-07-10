@@ -1,46 +1,22 @@
-import FlatButton from 'material-ui/FlatButton'
-import RaisedButton from 'material-ui/RaisedButton'
-import Paper from 'material-ui/Paper'
+import AppBar from 'material-ui/AppBar';
 import React, {PropTypes, Component} from 'react'
-import styles from './Navigation.css'
-import {Link} from 'react-router'
+
+import {setShowMenu} from '../../modules/landing/redux/landing'
 
 export default class Navigation extends Component {
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired
+    isAuthenticated: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
 
   render() {
+    const {isAuthenticated, dispatch} = this.props
+    
     return (
-      <Paper zDepth={2} className={styles.nav} style={{borderRadius: 0}}>
-        <Link to="/" className={styles.brand}>
-          <span>Detroit Urban Grotto</span>
-        </Link>
-        <div className={styles.menuButtons}>
-          {this.props.isAuthenticated ? this.renderLoggedIn() : this.renderLoggedOut()}
-        </div>
-      </Paper>
-    )
-  }
-
-  renderLoggedIn() {
-    return (
-      <Link className={styles.buttonBuffer} to="/logout">
-        <FlatButton className={styles.menuButton} label="Logout" />
-      </Link>
-    )
-  }
-
-  renderLoggedOut() {
-    return (
-      <span>
-        <Link className={styles.buttonBuffer} to="/login">
-          <FlatButton className={styles.menuButton} label="Login" />
-        </Link>
-        <Link className={styles.buttonBuffer} to="/signup">
-          <RaisedButton secondary className={styles.menuButton} label="Sign up" />
-        </Link>
-      </span>
+      <AppBar
+        onLeftIconButtonTouchTap={() => dispatch(setShowMenu(true))}
+        title="Detroit Urban Grotto"
+      />
     )
   }
 }

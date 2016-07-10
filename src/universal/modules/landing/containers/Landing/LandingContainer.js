@@ -17,6 +17,7 @@ export default class LandingContainer extends Component {
 
 function mapStateToProps(state) {
   return {
+    showMenu: Boolean(ensureState(state).getIn(['landing', 'showMenu'])),
     isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
   }
 }

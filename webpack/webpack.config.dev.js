@@ -49,7 +49,6 @@ export default {
     app: [
       'babel-polyfill',
       'react-hot-loader/patch',
-      'bootstrap-sass/assets/stylesheets/_bootstrap.scss',
       'client/client.js',
       'webpack-hot-middleware/client'
     ]

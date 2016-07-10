@@ -1,6 +1,3 @@
-@value colors: 'universal/styles/colors.css';
-@value primary from colors;
-
 .kanban {
 }
 
@@ -10,8 +7,6 @@
 }
 
 .addLane {
-  background: primary;
   font-size: 16px;
   border-radius: 5px;
-
 }

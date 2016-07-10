@@ -285,6 +285,6 @@ export function logoutAndRedirect() {
   localStorage.removeItem(authTokenName)
   return function (dispatch) {
     dispatch({type: LOGOUT_USER})
-    dispatch(replace('/'))
+    dispatch(replace('/login'))
   }
 }

@@ -5,7 +5,6 @@ export default store => {
     component: AppContainer,
     childRoutes: [
       require('./landing'),
-      require('./kanban')(store),
       require('./accounts')(store),
       require('./graphql'),
       require('./notFound')
