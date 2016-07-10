@@ -37,7 +37,7 @@ export default {
       const user = (username && await getUserByUsername(username)) ||
         (email && await getUserByEmail(email))
       if (!user) {
-        throw errorObj({_error: 'Incorrect username/email or password'})
+        throw errorObj({_error: 'Login failed', email: 'User not found'})
       }
       const {strategies} = user
       const hashedPassword = strategies && strategies.local && strategies.local.password
@@ -49,7 +49,7 @@ export default {
         const authToken = signJwt({id: user.id})
         return {authToken, user}
       }
-      throw errorObj({_error: 'Login failed', password: 'Incorrect username/email or password'})
+      throw errorObj({_error: 'Login failed', password: 'Incorrect password'})
     }
   },
   loginAuthToken: {
