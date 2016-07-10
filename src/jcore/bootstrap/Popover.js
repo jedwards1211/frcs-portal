@@ -3,9 +3,9 @@
 import React, {Component, Children, PropTypes} from 'react'
 import classNames from 'classnames'
 import {getContextClass, getShadeClass} from './bootstrapPropUtils'
-import {Title, Body} from './../common/View.jsx'
+import {Title, Body} from './../common/View'
 import {getSide} from '../utils/propUtils'
-import Collapse from './Collapse.jsx'
+import Collapse from './Collapse'
 
 import './Popover.sass'
 

@@ -2,7 +2,7 @@
 
 import React, {Component} from 'react'
 
-import Input from '../bootstrap/Input.jsx'
+import Input from '../bootstrap/Input'
 
 export function replaceNonMatching(input: string, pattern: string): string {
   return input.replace(new RegExp(`(${pattern})|.`, 'gi'), (match, p1) => p1 || '')

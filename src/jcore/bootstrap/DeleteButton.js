@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import classNames from 'classnames'
 
-import Button from './Button.jsx'
+import Button from './Button'
 import Spinner from '../common/Spinner'
 
 export default class DeleteButton extends Component {

@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import type {Key} from '../flowtypes/commonTypes'
 
-import ButtonGroup from '../bootstrap/ButtonGroup.jsx'
+import ButtonGroup from '../bootstrap/ButtonGroup'
 
 type Props = {
   value?: Key,

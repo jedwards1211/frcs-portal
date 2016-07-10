@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react'
 import classNames from 'classnames'
 
-import Responsive from './Responsive.jsx'
+import Responsive from './Responsive'
 
 /**
- * This is a skin for the skinnable Table (see ./Table.jsx) that splits it up into multiple tables, wrapping the rows
+ * This is a skin for the skinnable Table (see ./Table) that splits it up into multiple tables, wrapping the rows
  * just like rows of text in a multi-column article flow.
  */
 export default class SplitTable extends Component {

@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 
-import Alert from '../bootstrap/Alert.jsx'
+import Alert from '../bootstrap/Alert'
 import Toast from './Toast'
 import Spinner from './Spinner'
 

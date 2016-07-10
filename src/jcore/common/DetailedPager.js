@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react'
-import Pager from './Pager.jsx'
+import Pager from './Pager'
 import _ from 'lodash'
 
 import './DetailedPager.sass'

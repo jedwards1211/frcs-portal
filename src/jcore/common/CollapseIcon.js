@@ -1,6 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
-import Icon from '../bootstrap/Glyphicon.jsx'
+import Icon from '../bootstrap/Glyphicon'
 
 import './CollapseIcon.sass'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import {findDOMNode} from 'react-dom'
-import RestrictedInput from '../../../RestrictedInput.jsx'
+import RestrictedInput from '../../../RestrictedInput'
 
 import {mount} from 'enzyme'
 

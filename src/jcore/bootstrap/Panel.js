@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes, Children} from 'react'
 import classNames from 'classnames'
-import {Header, Title, Body, Footer} from './../common/View.jsx'
+import {Header, Title, Body, Footer} from './../common/View'
 import Collapse from './Collapse'
 import {getContextClass, getContextContent, getShadeClass} from './bootstrapPropUtils'
 import {errorMessage} from '../utils/reactErrorUtils'

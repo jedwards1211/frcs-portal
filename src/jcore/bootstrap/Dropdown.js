@@ -151,57 +151,45 @@ class Dropdown extends Component {
 
     children = Children.toArray(children)
 
-    if (!children.find(child => child.type === DropdownToggle)) {
-      let count = children.length
-      if (count === 1) {
-        children = [
-          <DropdownToggle key="dropdown-toggle"
-              {...(children[0].props || {})} disabled={disabled}
-          >
-            {children[0]}
-          </DropdownToggle>
-        ]
-      }
-      else {
-        children = [
-          ...children.slice(0, count - 2),
-          children[count - 2] && <DropdownToggle key="dropdown-toggle"
-              {...(children[count - 2].props || {})} disabled={disabled}
-                                 >
-            {children[count - 2]}
-          </DropdownToggle>,
-          children[count - 1] && <DropdownMenu key="dropdown-menu"
-              {...(children[count - 1].props || {})} disabled={disabled}
-                                 >
-            {children[count - 1]}
-          </DropdownMenu>
-        ]
-      }
-    }
-
-    children = children.map(child => {
+    children = children.map((child, index) => {
       if (child) {
-        if (child.type === DropdownToggle) {
-          var onClick = () => {
+        if (index === children.length - 2) {
+          let {open, className} = child.props
+          className = classNames('dropdown-toggle', className)
+
+          let onClick = () => {
             if (child.props.onClick) child.props.onClick()
             if (!disabled && this.props.open === undefined) this.onDropdownToggleClick()
           }
 
           let origRef = child.ref
           return React.cloneElement(child, {
+            ...child.props,
+            className,
+            disabled,
+            'aria-haspopup': true,
+            'aria-expanded': open,
+            open, onClick,
             ref: c => {
               if (origRef) origRef(c)
               this.toggle = c
-            },
-            open, onClick
+            }
           })
         }
-        if (child.type === DropdownMenu) {
+        if (index === children.length - 1) {
+          let {className} = child.props
+          className = classNames('dropdown-menu', className)
+          
           let origRef = child.ref
-          return React.cloneElement(child, {ref: c => {
-            if (origRef) origRef(c)
-            this.menu = c
-          }})
+          return React.cloneElement(child, {
+            ...child.props,
+            className,
+            disabled,
+            ref: c => {
+              if (origRef) origRef(c)
+              this.menu = c
+            }
+          })
         }
       }
       return child

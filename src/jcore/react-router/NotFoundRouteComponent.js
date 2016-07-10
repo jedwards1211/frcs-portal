@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react'
-import Alert from '../bootstrap/Alert.jsx'
+import Alert from '../bootstrap/Alert'
 
 type Props = {
   location: {

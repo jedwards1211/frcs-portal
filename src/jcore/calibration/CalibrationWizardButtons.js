@@ -4,8 +4,8 @@ import React, {Component, PropTypes} from 'react'
 import classNames from 'classnames'
 import {TransitionListener} from 'react-transition-context'
 
-import Button from '../bootstrap/Button.jsx'
-import Spinner from '../common/Spinner.jsx'
+import Button from '../bootstrap/Button'
+import Spinner from '../common/Spinner'
 
 import * as CalibrationSteps from './CalibrationSteps'
 

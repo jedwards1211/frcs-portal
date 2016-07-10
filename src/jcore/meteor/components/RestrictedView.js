@@ -7,11 +7,11 @@ import {createSelector} from 'reselect'
 
 import createOrCloneElement from '../../utils/createOrCloneElement'
 
-import Glyphicon from '../../bootstrap/Glyphicon.jsx'
-import Fader from '../../common/Fader.jsx'
-import Alert from '../../bootstrap/Alert.jsx'
+import Glyphicon from '../../bootstrap/Glyphicon'
+import Fader from '../../common/Fader'
+import Alert from '../../bootstrap/Alert'
 
-import ReduxLoginView from './ReduxLoginView.jsx'
+import ReduxLoginView from './ReduxLoginView'
 
 import {createSkinnableComponent, createSkinDecorator} from 'react-skin'
 

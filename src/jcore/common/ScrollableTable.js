@@ -6,7 +6,7 @@ import shouldPureComponentUpdate from '../utils/shouldPureComponentUpdate'
 import './ScrollableTable.sass'
 
 /**
- * This is a skin for the skinnable Table (see ./Table.jsx) that wraps it in a scrollable div
+ * This is a skin for the skinnable Table (see ./Table) that wraps it in a scrollable div
  * and keeps column/row headers fixed to the top/left.  It does so using CSS position: relative
  * and top/left on the <td> and <th> elements.
  *

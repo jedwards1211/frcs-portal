@@ -9,12 +9,12 @@ import {getSizingClass} from './bootstrapPropUtils'
 import InterruptibleCSSTransitionGroup from '../transition/InterruptibleCSSTransitionGroup'
 import CSSCore from 'fbjs/lib/CSSCore'
 
-import {View} from './../common/View.jsx'
+import {View} from './../common/View'
 
 import './Modal.sass'
 
 /////////////////////////////////////////////////////////////////////////////////
-// See ModalExample.jsx for an example of how to use this
+// See ModalExample for an example of how to use this
 /////////////////////////////////////////////////////////////////////////////////
 
 // Note: if you're creating a wrapper class that renders to a Modal, you'll want

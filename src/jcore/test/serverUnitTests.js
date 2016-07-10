@@ -1,2 +1,2 @@
-var req = require.context('../', true, /__tests__\/(server\/)?unit\/.*\.jsx?$/)
+var req = require.context('../', true, /__tests__\/(server\/)?unit\/.*\?$/)
 req.keys().forEach(req)

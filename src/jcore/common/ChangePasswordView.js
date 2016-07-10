@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 import {TransitionListener} from 'react-transition-context'
-import Responsive from '../../jcore-react-components/common/Responsive.jsx'
+import Responsive from '../../jcore-react-components/common/Responsive'
 
 import bindData from 'react-bind-data'
 import Form from '../bootstrap/Form'
@@ -14,7 +14,7 @@ import Input from '../bootstrap/Input'
 import Spinner from './Spinner'
 import AlertGroup from './AlertGroup'
 
-import {View, Header, Title, Body, Footer} from './View.jsx'
+import {View, Header, Title, Body, Footer} from './View'
 
 import {testPasswordStrengthForUI} from '../utils/testPasswordStrength'
 

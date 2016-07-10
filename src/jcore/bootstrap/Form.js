@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import {getFormGroupContextClass, getContextContent} from './bootstrapPropUtils'
 import {errorMessage} from '../utils/reactErrorUtils'
 
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx'
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup'
 
 import mapChildrenRecursive from '../utils/mapChildrenRecursive'
 

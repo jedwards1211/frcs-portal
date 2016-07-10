@@ -2,13 +2,13 @@
 
 import React, {Component} from 'react'
 
-import Alert from '../bootstrap/Alert.jsx'
-import Well from '../bootstrap/Well.jsx'
-import ListGroup from '../bootstrap/ListGroup.jsx'
-import Glyphicon from '../bootstrap/Glyphicon.jsx'
-import Spinner from './Spinner.jsx'
+import Alert from '../bootstrap/Alert'
+import Well from '../bootstrap/Well'
+import ListGroup from '../bootstrap/ListGroup'
+import Glyphicon from '../bootstrap/Glyphicon'
+import Spinner from './Spinner'
 
-import {View, Header, Title, Body, Footer} from '../common/View.jsx'
+import {View, Header, Title, Body, Footer} from '../common/View'
 
 export type NonDefaultProps = {
   title: string,

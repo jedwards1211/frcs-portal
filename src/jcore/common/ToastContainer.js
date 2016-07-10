@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import classNames from 'classnames'
 
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx'
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup'
 
 import './ToastContainer.sass'
 

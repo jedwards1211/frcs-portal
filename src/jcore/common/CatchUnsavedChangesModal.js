@@ -3,10 +3,10 @@
 import React, {Component, PropTypes} from 'react'
 import Portal from 'react-portal'
 
-import Button from '../bootstrap/Button.jsx'
-import Modal from '../bootstrap/Modal.jsx'
-import Spinner from './Spinner.jsx'
-import {Header, Title, Body, Footer} from './View.jsx'
+import Button from '../bootstrap/Button'
+import Modal from '../bootstrap/Modal'
+import Spinner from './Spinner'
+import {Header, Title, Body, Footer} from './View'
 
 type Props = {
   open?: boolean,

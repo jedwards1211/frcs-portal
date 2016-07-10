@@ -6,8 +6,8 @@ import classNames from 'classnames'
 import moment from 'moment'
 const Moment = moment.fn
 
-import DatePicker from './DatePicker.jsx'
-import TimePicker from './TimePicker.jsx'
+import DatePicker from './DatePicker'
+import TimePicker from './TimePicker'
 
 import './DateTimePicker.sass'
 

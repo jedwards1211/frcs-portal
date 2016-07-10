@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {getFormGroupContextClass, getContextContent} from '../bootstrap/bootstrapPropUtils'
 import {errorMessage} from '../utils/reactErrorUtils'
 
-import CollapseTransitionGroup from '../transition/CollapseTransitionGroup.jsx'
+import CollapseTransitionGroup from '../transition/CollapseTransitionGroup'
 
 export default class ValidationLabels extends Component {
   render() {

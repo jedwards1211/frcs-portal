@@ -3,8 +3,8 @@ import {shouldComponentUpdate as shouldPureComponentUpdate} from 'react-addons-p
 import {Link, match} from 'react-router'
 import classNames from 'classnames'
 
-import Glyphicon from '../bootstrap/Glyphicon.jsx'
-import {Nav} from './../common/View.jsx'
+import Glyphicon from '../bootstrap/Glyphicon'
+import {Nav} from './../common/View'
 import PageSlider from './../common/PageSlider'
 
 import splitPrefixes from '../utils/splitPrefixes'

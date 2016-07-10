@@ -2,7 +2,7 @@
 
 import React, {Component} from 'react'
 
-import Fader from '../common/Fader.jsx'
+import Fader from '../common/Fader'
 
 type Props = {
   children: any,

@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react'
-import Glyphicon from '../bootstrap/Glyphicon.jsx'
+import Glyphicon from '../bootstrap/Glyphicon'
 import _ from 'lodash'
 
 type OrderBy = {[field: string]: 'asc' | 'desc'};

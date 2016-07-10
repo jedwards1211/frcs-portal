@@ -2,8 +2,8 @@
 
 import React, {Component} from 'react'
 
-import Alert from '../bootstrap/Alert.jsx'
-import Spinner from './Spinner.jsx'
+import Alert from '../bootstrap/Alert'
+import Spinner from './Spinner'
 
 type Props = {
   pluginName?: string,

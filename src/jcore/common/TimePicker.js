@@ -4,11 +4,11 @@ import React, {Component} from 'react'
 import classNames from 'classnames'
 import _ from 'lodash'
 
-import Clock from './Clock.jsx'
-import Dropdown from '../bootstrap/Dropdown.jsx'
-import Input from '../bootstrap/Input.jsx'
-import InputGroup from '../bootstrap/InputGroup.jsx'
-import Button from '../bootstrap/Button.jsx'
+import Clock from './Clock'
+import Dropdown from '../bootstrap/Dropdown'
+import Input from '../bootstrap/Input'
+import InputGroup from '../bootstrap/InputGroup'
+import Button from '../bootstrap/Button'
 
 import type {FormValidation} from '../flowtypes/validationTypes'
 

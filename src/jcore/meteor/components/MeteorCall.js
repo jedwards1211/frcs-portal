@@ -3,8 +3,8 @@
 import React, {Component} from 'react'
 import shallowEqual from 'fbjs/lib/shallowEqual'
 
-import Alert from '../../bootstrap/Alert.jsx'
-import Spinner from '../../common/Spinner.jsx'
+import Alert from '../../bootstrap/Alert'
+import Spinner from '../../common/Spinner'
 
 import {createSkinDecorator} from 'react-skin'
 

@@ -5,7 +5,7 @@ import * as Immutable from 'immutable'
 import Promise from 'bluebird'
 import {connect} from 'react-redux'
 
-import DocumentView from './DocumentView.jsx'
+import DocumentView from './DocumentView'
 
 import type {Dispatch} from '../flowtypes/reduxTypes'
 

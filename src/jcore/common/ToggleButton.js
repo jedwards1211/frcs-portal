@@ -3,8 +3,8 @@
 import React, {Component} from 'react'
 import classNames from 'classnames'
 
-import Button from '../bootstrap/Button.jsx'
-import type {Props as ButtonProps} from '../bootstrap/Button.jsx'
+import Button from '../bootstrap/Button'
+import type {Props as ButtonProps} from '../bootstrap/Button'
 
 type Props = ButtonProps & {
   value?: boolean,

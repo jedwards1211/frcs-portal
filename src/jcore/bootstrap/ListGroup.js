@@ -3,10 +3,10 @@
 import React, {Component, PropTypes, Children} from 'react'
 import classNames from 'classnames'
 
-import Badge from './Badge.jsx'
+import Badge from './Badge'
 import {getContextClass} from './bootstrapPropUtils'
 
-import {Header, Title, Body} from '../common/View.jsx'
+import {Header, Title, Body} from '../common/View'
 
 type DefaultProps = {
   component: any

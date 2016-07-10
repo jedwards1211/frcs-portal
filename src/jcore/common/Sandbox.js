@@ -32,7 +32,7 @@ class Shell extends Component {
 
     let root = new BasicNode({
       expanded: true,
-      children: requireContext.keys().filter(key => key !== './Sandbox.jsx').map(module => {
+      children: requireContext.keys().filter(key => key !== './Sandbox').map(module => {
         return {
           module,
           selected: module.substring(1) === pathname,

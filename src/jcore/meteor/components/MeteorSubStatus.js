@@ -5,8 +5,8 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {createSelector} from 'reselect'
 
-import Alert from '../../bootstrap/Alert.jsx'
-import Spinner from '../../common/Spinner.jsx'
+import Alert from '../../bootstrap/Alert'
+import Spinner from '../../common/Spinner'
 
 import {createSkinDecorator} from 'react-skin'
 

@@ -3,7 +3,7 @@
 import React, {Component, PropTypes} from 'react'
 import classNames from 'classnames'
 
-import Dropdown from './Dropdown.jsx'
+import Dropdown from './Dropdown'
 
 import {getSizingClass} from './bootstrapPropUtils'
 

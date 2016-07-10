@@ -6,16 +6,16 @@ import classNames from 'classnames'
 import Promise from 'bluebird'
 import _ from 'lodash'
 
-import Glyphicon from '../bootstrap/Glyphicon.jsx'
-import Button from '../bootstrap/Button.jsx'
-import DeleteButton from '../bootstrap/DeleteButton.jsx'
-import Spinner from './../common/Spinner.jsx'
+import Glyphicon from '../bootstrap/Glyphicon'
+import Button from '../bootstrap/Button'
+import DeleteButton from '../bootstrap/DeleteButton'
+import Spinner from './../common/Spinner'
 import AlertGroup from './../common/AlertGroup'
-import {Nav} from './../common/View.jsx'
+import {Nav} from './../common/View'
 
 import {createSkinDecorator} from 'react-skin'
 
-import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal.jsx'
+import CatchUnsavedChangesModal from './../common/CatchUnsavedChangesModal'
 
 import './DocumentView.sass'
 
