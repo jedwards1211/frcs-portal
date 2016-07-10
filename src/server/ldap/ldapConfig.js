@@ -1,3 +1,18 @@
+import logger from '../logger'
+
+function checkMissing(...envvars) {
+  envvars.forEach(envvar => {
+    if (!process.env[envvar]) {
+      logger.error('missing environment variable: ', envvar)
+      process.exit(1)
+    }
+  })
+}
+
+checkMissing([
+  'LDAP_ADMIN_PASSWORD'
+])
+
 const config = {
   port: process.env.LDAP_PORT || 1389,
   baseDN: process.env.LDAP_BASE || 'dc=example,dc=org',
