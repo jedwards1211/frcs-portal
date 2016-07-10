@@ -95,7 +95,8 @@ export default {
     args: {
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
-    async resolve(source, {password}, {resetToken}) {
+    async resolve(source, {password}, context) {
+      const {resetToken} = context
       const resetTokenObject = validateSecretToken(resetToken)
       if (resetTokenObject._error) {
         throw errorObj(resetTokenObject)

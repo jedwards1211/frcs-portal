@@ -36,8 +36,7 @@ const password = Joi.string().min(8).max(200).label('Password').required().optio
 const confirmPassword = Joi.string().valid(Joi.ref('password')).required().options({
   language: {
     any: {
-      required: '!!Required',
-      empty: '!!Required',
+      ...anyErrors, 
       allowOnly: '!!Passwords do not match'
     }
   } 
@@ -62,5 +61,11 @@ export const loginAuthSchema = Joi.object().keys({
   password
 })
 
-export const authSchemaEmail = signupAuthSchema.optionalKeys('username', 'password')
-export const authSchemaPassword = signupAuthSchema.optionalKeys('username', 'email')
+export const emailAuthSchema = Joi.object().keys({
+  email 
+})
+
+export const passwordAuthSchema = Joi.object().keys({
+  password,
+  confirmPassword
+})

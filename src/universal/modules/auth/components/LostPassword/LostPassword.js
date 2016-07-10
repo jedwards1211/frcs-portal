@@ -4,9 +4,9 @@ import RaisedButton from 'material-ui/RaisedButton'
 import styles from './LostPassword.css'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 import {emailPasswordReset} from '../../ducks/auth'
-import {authSchemaEmail} from '../../schemas/auth'
+import {emailAuthSchema} from '../../schemas/auth'
 
-@meatierForm({form: 'lostPasswordForm', fields: ['email'], schema: authSchemaEmail})
+@meatierForm({form: 'lostPasswordForm', fields: ['email'], schema: emailAuthSchema})
 export default class LostPassword extends Component {
   static propTypes = {
     fields: PropTypes.object,
