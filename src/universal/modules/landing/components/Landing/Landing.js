@@ -16,7 +16,6 @@ export default class Landing extends Component {
         <div className={styles.component}>
           {children}
         </div>
-        <Footer />
       </div>
     )
   }

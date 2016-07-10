@@ -1,6 +1,9 @@
-@value primary: #61dafb;
-@value secondary: #373277;
+@value primary: #eaf9f0;
+@value secondary: #3a6275;
 
+.blah {
+  color: #eaf9f0;
+}
 
 .brandColor {
   color: primary;

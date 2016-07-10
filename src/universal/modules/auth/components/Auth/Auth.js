@@ -31,7 +31,7 @@ export default class Auth extends Component {
   }
 
   render() {
-    const {fields: {email, password}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
+    const {fields: {username, email, password}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
     const localError = error || authError._error
     /* eslint-disable react/jsx-handler-names*/
     return (
@@ -39,22 +39,29 @@ export default class Auth extends Component {
         <h3>{isLogin ? 'Login' : 'Sign up'}</h3>
         {localError && <span>{localError}</span>}
         <form className={styles.loginForm} onSubmit={handleSubmit(this.onSubmit)}>
-          <input style={{display: 'none'}} type="text" name="chromeisabitch" />
+          {!isLogin &&
+            <TextField
+              {...username}
+              type="text"
+              hintText="jdoe"
+              errorText={username && username.touched && username.error || ''}
+              floatingLabelText="Username"
+            />
+          }
 
           <TextField
-              {...email}
-              type="text"
-              hintText="name@email.com"
-              errorText={email.touched && email.error || ''}
-              floatingLabelText="Email"
+            {...email}
+            type="text"
+            hintText="name@email.com"
+            errorText={email.touched && email.error || ''}
+            floatingLabelText={isLogin ? "Username or E-mail Address" : "Email"}
           />
-          <input style={{display: 'none'}} type="text" name="chromeisabitch" />
 
           <TextField
               {...password}
               type="password"
               floatingLabelText="Password"
-              hintText="hunter2"
+              hintText={"oQyX9\"WXaE9"}
               errorText={password.touched && password.error || ''}
           />
 

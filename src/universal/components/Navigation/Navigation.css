@@ -7,6 +7,9 @@
   justify-content: space-between;
   padding: 16px;
   background: secondary !important;
+  border-radius: 0;
+  position: relative;
+  z-index: 100;
 }
 
 .menuButtons {

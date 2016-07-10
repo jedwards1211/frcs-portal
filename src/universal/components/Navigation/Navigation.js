@@ -15,10 +15,9 @@ export default class Navigation extends Component {
 
   render() {
     return (
-      <Paper zDepth={0} className={styles.nav}>
+      <Paper zDepth={2} className={styles.nav} style={{borderRadius: 0}}>
         <Link to="/" className={styles.brand}>
-          <img src={smallLogo} width="38" height="38" alt="React" />
-          <span>React, Redux, Rethink</span>
+          <span>Detroit Urban Grotto</span>
         </Link>
         <div className={styles.menuButtons}>
           <Link className={styles.buttonBuffer} to="/kanban">
