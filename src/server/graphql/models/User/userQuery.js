@@ -1,5 +1,5 @@
 import r from '../../../database/rethinkdriver'
-import {GraphQLNonNull, GraphQLString, GraphQLID, GraphQLUnionType} from 'graphql'
+import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql'
 import {User, UserWithAuthToken} from './userSchema'
 import {errorObj} from '../utils'
 import {GraphQLEmailType, GraphQLPasswordType} from '../types'
@@ -7,8 +7,6 @@ import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage} from './
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import {isAdminOrSelf} from '../authorization'
-
-console.log('getUserByUsername: ', getUserByUsername)
 
 const compare = promisify(bcrypt.compare)
 
@@ -36,7 +34,7 @@ export default {
     },
     async resolve(source, args) {
       const {username, email, password} = args
-      const user = (username && await getUserByUsername(username)) || 
+      const user = (username && await getUserByUsername(username)) ||
         (email && await getUserByEmail(email))
       if (!user) {
         throw errorObj({_error: 'Incorrect username/email or password'})

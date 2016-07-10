@@ -1,12 +1,9 @@
-import Navbar, {NavLink} from 'jcore/bootstrap/Navbar'
-import Dropdown from 'jcore/bootstrap/Dropdown'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
 import React, {PropTypes, Component} from 'react'
 import styles from './Navigation.css'
 import {Link} from 'react-router'
-import smallLogo from './../Navigation/logo-small.png'
 
 export default class Navigation extends Component {
   static propTypes = {

@@ -38,6 +38,7 @@ const initialState = iMap({
 export default function reducer(state = initialState, action = {}) {
   let errorProp = 'signupError'
   switch (action.type) {
+    /* eslint-disable no-fallthrough */
     case LOGIN_USER_REQUEST:
       errorProp = 'loginError'
     case SIGNUP_USER_REQUEST:
@@ -65,6 +66,7 @@ export default function reducer(state = initialState, action = {}) {
         authToken: null,
         user: iMap()
       })
+    /* eslint-enable no-fallthrough */
     case LOGOUT_USER:
       return initialState
     case VERIFY_EMAIL_ERROR:

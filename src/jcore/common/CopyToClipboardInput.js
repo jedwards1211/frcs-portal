@@ -46,7 +46,8 @@ export default class CopyToClipboardInput extends Component {
         {showErrorMessage && <Alert error={<span>
           <CloseButton onClick={this.onCloseErrorMessageClick} />
           {"Failed to copy to clipboard; this feature isn't supported on older browsers"}
-        </span>} />}
+        </span>}
+                             />}
       </InterruptibleCSSTransitionGroup>
     </div>
   }

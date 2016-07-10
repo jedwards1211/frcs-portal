@@ -152,7 +152,8 @@ export default React.createClass({
       <div ref={c => this.root = c} className={className} {...restProps}>
         <svg key="svg" ref="svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" style={{
           padding: padding
-        }}>
+        }}
+        >
           <rect key="track" className="track" x={0} y={barY} width={width} height={barHeight} />
           <BarFill  key="fill"
               className={classNames('fill', {'na': isNA})}

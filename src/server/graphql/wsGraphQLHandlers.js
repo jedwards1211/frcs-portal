@@ -13,7 +13,7 @@ export const wsGraphQLHandler = async function (body, cb) {
   }
   this.docQueue.add(docId)
   const result = await graphql(Schema, query, null, {authToken, socket: this, ...context}, variables)
-  const {error} = prepareClientError(result)
+  const {error, data} = prepareClientError(result)
   if (error) {
     this.docQueue.delete(docId)
   }

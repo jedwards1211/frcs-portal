@@ -61,10 +61,10 @@ const ViewSkin = createSkinDecorator({
  * as a standalone `banner`, a `viewSkin` that injects a banner into its children, or custom `inject`ion passed to your
  * own `children` rendering function.
  */
-export default class MeteorCall extends Component<void,Props,State> {
+export default class MeteorCall extends Component<void, Props, State> {
   state: State = {
     callNumber: 0,
-    calling: true 
+    calling: true
   };
 
   mounted: boolean = false;

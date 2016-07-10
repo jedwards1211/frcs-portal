@@ -42,20 +42,20 @@ export default class Auth extends Component {
         <form className={styles.loginForm} onSubmit={handleSubmit(this.onSubmit)}>
           {!isLogin &&
             <TextField
-              {...username}
-              type="text"
-              hintText="jdoe"
-              errorText={username && username.touched && username.error || ''}
-              floatingLabelText="Username"
+                {...username}
+                type="text"
+                hintText="jdoe"
+                errorText={username && username.touched && username.error || ''}
+                floatingLabelText="Username"
             />
           }
 
           <TextField
-            {...email}
-            type="text"
-            hintText="name@email.com"
-            errorText={email.touched && email.error || ''}
-            floatingLabelText={isLogin ? "Username or E-mail Address" : "Email"}
+              {...email}
+              type="text"
+              hintText="name@email.com"
+              errorText={email.touched && email.error || ''}
+              floatingLabelText={isLogin ? "Username or E-mail Address" : "Email"}
           />
 
           <TextField

@@ -179,7 +179,7 @@ class Dropdown extends Component {
         if (index === children.length - 1) {
           let {className} = child.props
           className = classNames('dropdown-menu', className)
-          
+
           let origRef = child.ref
           return React.cloneElement(child, {
             ...child.props,

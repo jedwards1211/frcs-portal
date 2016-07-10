@@ -306,7 +306,8 @@ export default class DocumentView extends Component<DefaultProps, Props, void> {
           <Button warning className="alert-btn-right" onClick={() => {
             setDocument(effectiveDocument)
             setUpdatedTimestamp(effectiveUpdatedTimestamp)
-          }}>Load Changes</Button>
+          }}
+          >Load Changes</Button>
           Someone else changed {documentDisplayName}.
         </span>
         }
