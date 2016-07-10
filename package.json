@@ -13,17 +13,19 @@
   "scripts": {
     "start": "NODE_ENV=development node ./src/server/server.babel.js",
     "prod": "NODE_ENV=production node ./src/server/server.babel.js",
-    "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
+    "build": "rimraf build && npm run build:client && npm run build:server",
     "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run prod\"",
     "quickstart": "rimraf build && concurrently \"npm run build:db\" \"npm run build:client\" \"npm run build:server\" \"npm run prod\"",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "build:db": "node ./src/server/database/setupDB.babel.js",
+    "build:docker": "docker build -t frcs/portal:$npm_package_version .",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*.js --verbose",
     "lint": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json",
-    "ldap:dev": "NODE_ENV=development node ./src/server/ldap/ldapServer.babel.js"
+    "ldap:dev": "NODE_ENV=development node ./src/server/ldap/ldapServer.babel.js",
+    "ldap:prod": "NODE_ENV=production node ./src/server/ldap/ldapServer.babel.js"
   },
   "author": "Andy Edwards <jedwards@fastmail.com>",
   "license": "MIT",

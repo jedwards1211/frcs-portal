@@ -85,6 +85,7 @@ export default {
       'PORT'
     ]),
     new HappyPack({
+      cache: !process.env.DOCKER_BUILD,
       loaders: ['babel'],
       threads: 4
     }),

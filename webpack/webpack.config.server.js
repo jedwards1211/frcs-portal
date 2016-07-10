@@ -46,6 +46,7 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new HappyPack({
+      cache: !process.env.DOCKER_BUILD,
       loaders: ['babel'],
       threads: 4
     }),
