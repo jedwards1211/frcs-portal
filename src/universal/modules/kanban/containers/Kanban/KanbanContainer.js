@@ -40,12 +40,13 @@ export default class KanbanContainer extends Component {
 function mapStateToProps(state) {
   state = ensureState(state)
   const auth = state.get('auth')
+  const error = auth.get('loginError')
   return {
     lanes: state.get('lanes').toJS(),
     userId: auth.getIn(['user', 'id']),
     socketState: state.getIn(['socket', 'socketState']),
     isAuthenticated: auth.get('isAuthenticated'),
-    hasAuthError: Boolean(auth.get('error').size)
+    hasAuthError: Boolean(error && error.size)
   }
 }
 

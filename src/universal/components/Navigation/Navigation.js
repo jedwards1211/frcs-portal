@@ -17,11 +17,6 @@ export default class Navigation extends Component {
           <span>Detroit Urban Grotto</span>
         </Link>
         <div className={styles.menuButtons}>
-          <Link className={styles.buttonBuffer} to="/kanban">
-            <FlatButton className={styles.menuButton} label="Kanban" />
-          </Link>
-
-          <span className="spacer"> | </span>
           {this.props.isAuthenticated ? this.renderLoggedIn() : this.renderLoggedOut()}
         </div>
       </Paper>

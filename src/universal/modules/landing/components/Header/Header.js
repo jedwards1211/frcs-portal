@@ -8,13 +8,8 @@ export default class Header extends Component {
     return (
       <div className={styles.header}>
         <div className={styles.banner}>
-          <h1 className={styles.bannerTitle}>Welcome to Meatier</h1>
-          <h3 className={styles.bannerDesc}>Like Meteor, but Meatier</h3>
-          <div className={styles.tryButton}>
-            <Link to="/kanban">
-              <RaisedButton secondary label="Try the Kanban" />
-            </Link>
-          </div>
+          <h1 className={styles.bannerTitle}>Detroit Urban Grotto</h1>
+          <h3 className={styles.bannerDesc}>Member Portal</h3>
         </div>
       </div>
     )
