@@ -11,6 +11,8 @@ import bcrypt from 'bcrypt'
 import uuid from 'node-uuid'
 import logger from '../../../logger'
 
+import getMemberInfo from '../../../members/getMemberInfo'
+
 const compare = promisify(bcrypt.compare)
 const hash = promisify(bcrypt.hash)
 
@@ -42,6 +44,16 @@ export default {
         if (userByEmail) error.email = 'Email already registered'
         throw errorObj(error)
       } else {
+        let memberInfo
+        try {
+          memberInfo = await getMemberInfo({email})
+        } catch (err) {
+          throw new errorObj({_error: err.message})
+        }
+
+        console.log(memberInfo)
+        const {firstName, lastName} = memberInfo
+        
         // production should use 12+, but it's slow for dev
         const newHashedPassword = await hash(password, 10)
         const id = uuid.v4()
@@ -51,6 +63,8 @@ export default {
           id,
           username,
           email,
+          firstName,
+          lastName,
           createdAt: new Date(),
           strategies: {
             local: {

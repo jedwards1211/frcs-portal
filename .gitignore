@@ -1,5 +1,6 @@
 .DS_Store
 .happypack
+members-config.json
 node_modules
 npm-debug.log
 build

@@ -11,6 +11,7 @@ import {googleAuthUrl, googleAuthCallback} from './graphql/models/User/oauthGoog
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import logger from './logger'
+import './members/config'
 
 const PROD = process.env.NODE_ENV === 'production'
 

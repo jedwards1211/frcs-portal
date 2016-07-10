@@ -63,6 +63,8 @@ export const User = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The userId'},
     username: {type: new GraphQLNonNull(GraphQLString), description: 'The username'},
     email: {type: new GraphQLNonNull(GraphQLEmailType), description: 'The user email'},
+    firstName: {type: GraphQLString, description: 'First name'},
+    lastName: {type: GraphQLString, description: 'Last name'},
     createdAt: {type: GraphQLString, description: 'The datetime the user was created'},
     updatedAt: {type: GraphQLString, description: 'The datetime the user was last updated'},
     strategies: {type: UserStrategies, description: 'The login strategies used by the user'}
