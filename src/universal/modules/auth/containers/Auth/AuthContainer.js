@@ -5,7 +5,7 @@ import Auth from '../../components/Auth/Auth'
 import {ensureState} from 'redux-optimistic-ui'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 
-const SignUpContainer = meatierForm({form: 'signup', fields: ['username', 'email', 'password'], schema: signupAuthSchema})(Auth)
+const SignUpContainer = meatierForm({form: 'signup', fields: ['username', 'email', 'password', 'confirmPassword'], schema: signupAuthSchema})(Auth)
 const LoginContainer = meatierForm({form: 'login', fields: ['email', 'password'], schema: loginAuthSchema})(Auth)
 
 // use the same form to retain form values (there's really no difference between login and signup, it's just for show)

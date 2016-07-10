@@ -32,7 +32,7 @@ export default class Auth extends Component {
   }
 
   render() {
-    const {fields: {username, email, password}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
+    const {fields: {username, email, password, confirmPassword}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
     const localError = error || authError._error
     /* eslint-disable react/jsx-handler-names*/
     return (
@@ -65,6 +65,16 @@ export default class Auth extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={password.touched && password.error || ''}
           />
+
+          {!isLogin &&
+            <TextField
+              {...confirmPassword}
+              type="password"
+              floatingLabelText="Confirm password"
+              hintText={"oQyX9\"WXaE9"}
+              errorText={confirmPassword.touched && confirmPassword.error || ''}
+            />
+          } 
 
           {isLogin
             ? <Link to={{pathname: '/login/lost-password', query: {e: email.value}}} className={styles.lostPassword}>
