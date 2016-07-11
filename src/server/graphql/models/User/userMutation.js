@@ -140,6 +140,47 @@ export default {
       return {newAuthToken, user: newUser}
     }
   },
+  changePassword: {
+    type: GraphQLBoolean,
+    args: {
+      oldPassword: {type: new GraphQLNonNull(GraphQLPasswordType)},
+      newPassword: {type: new GraphQLNonNull(GraphQLPasswordType)}
+    },
+    async resolve(source, {oldPassword, newPassword}, {authToken}) {
+      const {id} = authToken
+      if (!id) {
+        throw errorObj({_error: 'Invalid authentication token'})
+      }
+      
+      const user = await r.table('users').get(id)
+      if (!user) {
+        throw errorObj({_error: 'User not found'})
+      }
+      const {strategies} = user
+      const hashedPassword = strategies && strategies.local && strategies.local.password
+      if (!hashedPassword) {
+        throw errorObj({_error: getAltLoginMessage(strategies)})
+      }
+      const isCorrectPass = await compare(oldPassword, hashedPassword)
+      if (!isCorrectPass) {
+        throw errorObj({_error: 'Incorrect password', oldPassword: 'Incorrect password'})
+      }
+      
+      const newHashedPassword = await hash(newPassword, 10)
+      const updates = {
+        strategies: {
+          local: {
+            password: newHashedPassword,
+            resetToken: null
+          }
+        }
+      }
+      const result = await r.table('users').get(id).update(updates, {returnChanges: true})
+      if (!result.replaced) {
+        throw errorObj({_error: 'Failed to update user'})
+      }
+    } 
+  },
   resendVerificationEmail: {
     type: GraphQLBoolean,
     async resolve(source, args, {authToken}) {
@@ -158,7 +199,7 @@ export default {
         throw errorObj({_error: 'Could not find or update user'})
       }
       // TODO send email with new verifiedEmailToken via mailgun or whatever
-      logger.log('Verified url:', `http://localhost:3000/login/verify-email/${verifiedEmailToken}`)
+      logger.log('Verified url:', `http://localhost:3000/verify-email/${verifiedEmailToken}`)
       return true
     }
   },

@@ -2,14 +2,10 @@ import LandingContainer from '../modules/landing/containers/Landing/LandingConta
 
 export default function (store) {
   return {
+    path: 'account',
     component: LandingContainer,
     childRoutes: [
-      require('./login')(store),
-      require('./signup'),
-      require('./logout'),
-      require('./verifyEmail'),
-      require('./verifyEmailSent'),
-      require('./resendVerifyEmail'),
+      require('./changePassword')(store),
     ]
   }
 }

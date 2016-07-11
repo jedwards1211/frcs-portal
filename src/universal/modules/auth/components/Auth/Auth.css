@@ -16,6 +16,10 @@
   font-weight: 500;
 }
 
+.notRegistered, .alreadyRegistered {
+  margin-top: 16px;
+}
+
 .hrWithText {
   margin: 16px auto;
   max-width: 400px;

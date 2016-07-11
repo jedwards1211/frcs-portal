@@ -18,15 +18,25 @@ export const SIGNUP_USER_REQUEST = 'SIGNUP_USER_REQUEST'
 export const SIGNUP_USER_ERROR = 'SIGNUP_USER_ERROR'
 export const SIGNUP_USER_SUCCESS = 'SIGNUP_USER_SUCCESS'
 export const LOGOUT_USER = 'LOGOUT_USER'
+export const RESEND_VERIFY_EMAIL_REQUEST = 'RESEND_VERIFY_EMAIL_REQUEST'
+export const RESEND_VERIFY_EMAIL_ERROR = 'RESEND_VERIFY_EMAIL_ERROR'
+export const RESEND_VERIFY_EMAIL_SUCCESS = 'RESEND_VERIFY_EMAIL_SUCCESS'
 export const VERIFY_EMAIL_ERROR = 'VERIFY_EMAIL_ERROR'
 export const VERIFY_EMAIL_SUCCESS = 'VERIFY_EMAIL_SUCCESS'
+export const CHANGE_PASSWORD = 'CHANGE_PASSWORD'
+export const CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR'
+export const CHANGE_PASSWORD_SUCCESS = 'CHANGE_PASSWORD_SUCCESS'
 
 const initialState = iMap({
   loginError: iMap(),
   signupError: iMap(),
   verifyEmailError: iMap(),
+  resendVerifyEmailError: iMap(),
+  changePasswordError: iMap(),
   isAuthenticated: false,
   isAuthenticating: false,
+  isChangingPassword: false,
+  isResendingVerifyEmail: false,
   authToken: null,
   user: iMap({
     id: null,
@@ -80,6 +90,36 @@ export default function reducer(state = initialState, action = {}) {
         isAuthenticated: true,
         authToken: action.payload.authToken,
         user: fromJS(action.payload.user)
+      })
+    case CHANGE_PASSWORD:
+      return state.merge({
+        changingPassword: true,
+        changePasswordError: iMap()
+      })
+    case CHANGE_PASSWORD_ERROR:
+      return state.merge({
+        changingPassword: false,
+        changePasswordError: fromJS(action.error) || iMap()
+      })
+    case CHANGE_PASSWORD_SUCCESS:
+      return state.merge({
+        changingPassword: false,
+        changePasswordError: iMap(),
+      })
+    case RESEND_VERIFY_EMAIL_REQUEST:
+      return state.merge({
+        isResendingVerifyEmail: true,
+        resendVerifyEmailError: iMap()
+      })
+    case RESEND_VERIFY_EMAIL_ERROR:
+      return state.merge({
+        isResendingVerifyEmail: false,
+        resendVerifyEmailError: fromJS(action.error) || iMap()
+      })
+    case RESEND_VERIFY_EMAIL_SUCCESS:
+      return state.merge({
+        isResendingVerifyEmail: false,
+        resendVerifyEmailError: iMap()
       })
     default:
       return state
@@ -180,7 +220,7 @@ export function loginToken() {
   }
 }
 
-export function signupUser(dispatch, variables, redirect) {
+export function signupUser(dispatch, variables) {
   dispatch({type: SIGNUP_USER_REQUEST})
   return new Promise(async function (resolve, reject) {
     const query = `
@@ -197,7 +237,7 @@ export function signupUser(dispatch, variables, redirect) {
       const {payload} = data
       localStorage.setItem(authTokenName, payload.authToken)
       dispatch(signupUserSuccess(payload))
-      dispatch(push(redirect))
+      dispatch(push('/verify-email-sent'))
       resolve()
     }
   })
@@ -240,6 +280,42 @@ export function resetPassword({resetToken, password}, dispatch) {
       resolve()
     }
   })
+}
+
+export function changePassword({oldPassword, newPassword}, dispatch) {
+  return new Promise(async function (resolve, reject) {
+    const query = `
+    mutation($oldPassword: Password!, $newPassword: Password!){
+       payload: changePassword(oldPassword: $oldPassword, newPassword: $newPassword)
+    }`
+    const {error, data} = await fetchGraphQL({query, variables: {oldPassword, newPassword}})
+    if (error) {
+      reject(error)
+    } else {
+      const {payload} = data
+      dispatch({type: CHANGE_PASSWORD_SUCCESS, payload})
+      dispatch(replace('/login/reset-password-success'))
+      resolve()
+    }
+  })
+}
+
+export function resendVerifyEmail() {
+  return async function (dispatch) {
+    dispatch({type: RESEND_VERIFY_EMAIL_REQUEST})
+    const query = `
+    mutation {
+        payload: resendVerificationEmail
+    }`
+    const {error, data} = await fetchGraphQL({query})
+    if (error) {
+      return dispatch({type: RESEND_VERIFY_EMAIL_ERROR, error})
+    } else {
+      const {payload} = data
+      dispatch({type: RESEND_VERIFY_EMAIL_SUCCESS, payload})
+      return dispatch(replace('/verify-email-sent'))
+    }
+  }
 }
 
 export function verifyEmail(verifiedEmailToken) {

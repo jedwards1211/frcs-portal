@@ -74,13 +74,13 @@ export default class Auth extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={confirmPassword.touched && confirmPassword.error || ''}
             />
-          } 
+          }
 
-          {isLogin
-            ? <Link to={{pathname: '/login/lost-password', query: {e: email.value}}} className={styles.lostPassword}>
+          {isLogin && (
+            <Link to={{pathname: '/login/lost-password', query: {e: email.value}}} className={styles.lostPassword}>
               Forgot your password?
             </Link>
-            : null}
+          )}
 
           <div className={styles.loginButton}>
             <RaisedButton
@@ -90,8 +90,18 @@ export default class Auth extends Component {
                 disabled={isAuthenticating}
                 onClick={handleSubmit(this.onSubmit)}
             />
-
           </div>
+          
+          {isLogin && (
+            <div className={styles.notRegistered}>
+              Not registered? <Link to={{pathname: '/signup'}}>Sign Up</Link>
+            </div>  
+          )}
+          {!isLogin && (
+            <div className={styles.alreadyRegistered}>
+              Already registered? <Link to={{pathname: '/login'}}>Log In</Link>
+            </div>  
+          )}
         </form>
       </div>
     )

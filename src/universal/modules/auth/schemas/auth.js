@@ -69,3 +69,16 @@ export const passwordAuthSchema = Joi.object().keys({
   password,
   confirmPassword
 })
+
+export const changePasswordSchema = Joi.object().keys({
+  oldPassword: password.label('Old Password'),
+  newPassword: password.label('New Password'),
+  confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required().options({
+    language: {
+      any: {
+        ...anyErrors,
+        allowOnly: '!!Passwords do not match'
+      }
+    }
+  })
+})
