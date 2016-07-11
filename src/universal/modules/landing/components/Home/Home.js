@@ -19,7 +19,7 @@ export default class Home extends Component {
 
       return (
         <div className={styles.home}>
-          <h1 className={styles.header}>Welcome, {displayName}!</h1>
+          <h3 className={styles.header}>Welcome, {displayName}!</h3>
           {isVerified ||
             <div>
               <p>Note: you have not verified your e-mail address yet.</p>
@@ -34,7 +34,7 @@ export default class Home extends Component {
     
     return (
       <div className={styles.home}>
-        <h1 className={styles.header}>Welcome to the member portal!</h1>
+        <h3 className={styles.header}>Welcome to our member portal!</h3>
         <div className={styles.login}>
           <RaisedButton className={styles.button} secondary label="Sign Up" onTouchTap={() => dispatch(push('/signup'))} />
           <RaisedButton className={styles.button} primary label="Log In" onTouchTap={() => dispatch(push('/login'))} />
