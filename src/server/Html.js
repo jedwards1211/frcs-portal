@@ -26,6 +26,9 @@ export default class Html extends Component {
       <html>
         <head>
           <meta charSet="utf-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+          <meta name="description" content="" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
           {PROD && <link rel="stylesheet" href="/static/prerender.css" type="text/css" />}
           <title>{title}</title>
         </head>
