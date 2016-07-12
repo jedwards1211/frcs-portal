@@ -18,7 +18,7 @@ export default class Navigation extends Component {
       <AppBar
         onLeftIconButtonTouchTap={() => dispatch(setShowMenu(true))}
         onTitleTouchTap={() => dispatch(push('/'))}
-        title={<span className={styles.brand}>Detroit Urban Grotto</span>}
+        title={<span className={styles.brand}>DUG Member Portal</span>}
       />
     )
   }
