@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {Router, browserHistory} from 'react-router'
+import {Router} from 'react-router'
+import appHistory from '../universal/routes/appHistory'
 import {Provider} from 'react-redux'
 import routes from '../universal/routes/index'
 import {syncHistoryWithStore} from 'react-router-redux'
@@ -12,7 +13,7 @@ export default class Root extends Component {
 
   render() {
     const {store} = this.props
-    const history = syncHistoryWithStore(browserHistory, store, {selectLocationState: state => ensureState(state).get('routing')})
+    const history = syncHistoryWithStore(appHistory, store, {selectLocationState: state => ensureState(state).get('routing')})
     return (
       <Provider store={store}>
         <div>
