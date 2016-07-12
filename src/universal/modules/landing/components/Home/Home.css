@@ -12,3 +12,26 @@
 .button {
     margin: 12px;
 }
+
+.services {
+    display: flex;
+}
+
+.owncloudSection, .svnSection {
+    flex: 1 0 290px;
+}
+.svnSection {
+    margin-left: 10px;
+}
+
+.owncloudLogo, .svnLogo {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    height: 100px;
+    transition: background-color linear 0.15s;
+    background-color: rgba(0, 0, 0, 0);
+}
+.owncloudLogo:hover, .svnLogo:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
