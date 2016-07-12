@@ -38,8 +38,17 @@ function wrapNext(next) {
   }
 }
 
-server.bind(base.dn, async (req, res, next) => {
+async function run(next, operation) {
   try {
+    return await operation(next)
+  } catch (err) {
+    console.error('  [error]   ', err.message)
+    return next(new ldap.UnknownError(err.message))
+  }
+}
+
+server.bind(base.dn, async (req, res, next) => {
+  return run(next, async next => {
     logger.log('\n[bind] ', req.toString())
     next = wrapNext(next)
 
@@ -72,14 +81,11 @@ server.bind(base.dn, async (req, res, next) => {
       }
     }
     return next(new ldap.InvalidCredentialsError())
-  } catch (err) {
-    console.error('  [error]   ', err.message)
-    return next(new ldap.UnknownError(err.message))
-  }
+  })
 })
 
 server.search(base.dn, authorize, async (req, res, next) => {
-  try {
+  return run(next, async next => {
     logger.log('\n[search] ', req.toString())
     next = wrapNext(next)
 
@@ -118,10 +124,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
 
     res.end()
     return next()
-  } catch (err) {
-    console.error('  [error]   ', err.message)
-    return next(new ldap.UnknownError(err.message))
-  }
+  })
 })
 
 server.listen(ldapConfig.port, () => {
