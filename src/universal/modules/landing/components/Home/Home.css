@@ -15,13 +15,17 @@
 
 .services {
     display: flex;
+    flex-wrap: wrap;
 }
 
+.directorySection, .accountingSection {
+    margin-bottom: 10px
+}
+
+.directorySection, .accountingSection,
 .owncloudSection, .svnSection {
     flex: 1 0 290px;
-}
-.svnSection {
-    margin-left: 10px;
+    margin: 5px;
 }
 
 .owncloudLogo, .svnLogo {

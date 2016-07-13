@@ -3,13 +3,15 @@ import {compose} from 'redux'
 import {combineReducers} from 'redux-immutablejs'
 import auth from '../modules/auth/ducks/auth'
 import landing from '../modules/landing/redux/landing'
+import settings from '../modules/settings/redux/settings'
 import {routing} from './routing'
 
 const currentReducers = {
   auth,
   routing,
   form,
-  landing
+  landing,
+  settings
 }
 
 export default (newReducers, reducerEnhancers) => {

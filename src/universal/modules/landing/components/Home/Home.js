@@ -12,6 +12,9 @@ import svnLogo from './subversion.svg'
 import ContentCopy from 'material-ui/svg-icons/content/content-copy'
 import CloudDownload from 'material-ui/svg-icons/file/cloud-download'
 import FileDownload from 'material-ui/svg-icons/file/file-download'
+import SettingsContainer from '../../../settings/containers/SettingsContainer'
+import Contacts from 'material-ui/svg-icons/communication/contacts'
+import Money from 'material-ui/svg-icons/editor/attach-money'
 
 export default class Home extends Component {
   static propTypes = {
@@ -41,13 +44,35 @@ export default class Home extends Component {
           <h2 className={styles.header}>Welcome, {displayName}!</h2>
           {isVerified
             ? <div>
+              <SettingsContainer>
+                {({settings: {current}}) => {
+                  const {memberSpreadsheet} = current || {}
+                  return (memberSpreadsheet 
+                    ? <div className={styles.services}>
+                      <Paper className={styles.directorySection}>
+                        <ListItem leftIcon={<Contacts />}
+                                  href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.directorySheetId}`}>
+                          <strong>Member Directory</strong>
+                        </ListItem>
+                      </Paper>
+                      <Paper className={styles.accountingSection}>
+                        <ListItem leftIcon={<Money />}
+                                  href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.journalSheetId}`}>
+                          <strong>Accounting Spreadsheet</strong>
+                        </ListItem>
+                      </Paper>
+                    </div>
+                    : <div/>
+                  )
+                }}
+              </SettingsContainer>
               <div className={styles.services}>
                 <Paper className={styles.owncloudSection} rounded={false}>
-                  <ListItem innerDivStyle={{padding: 0}} href={owncloudLink()}>
-                    <img className={styles.owncloudLogo} src={owncloudLogo} />
-                  </ListItem>
-                  <Divider />
                   <List className={styles.owncloudList} style={{paddingTop: 0, paddingBottom: 0}}>
+                    <ListItem innerDivStyle={{padding: 0}} href={owncloudLink()}>
+                      <img className={styles.owncloudLogo} src={owncloudLogo} />
+                    </ListItem>
+                    <Divider />
                     <ListItem href="https://owncloud.org/install/#install-clients" rightIcon={<CloudDownload />}>
                       <strong>
                         Install ownCloud sync client
@@ -64,11 +89,11 @@ export default class Home extends Component {
                   </List>
                 </Paper>
                 <Paper className={styles.svnSection} rounded={false}>
-                  <ListItem innerDivStyle={{padding: 0}} href="https://subversion.apache.org/">
-                    <img className={styles.svnLogo} src={svnLogo} />
-                  </ListItem>
-                  <Divider />
                   <List className={styles.svnList} style={{paddingTop: 0, paddingBottom: 0}}>
+                    <ListItem innerDivStyle={{padding: 0}} href="https://subversion.apache.org/">
+                      <img className={styles.svnLogo} src={svnLogo} />
+                    </ListItem>
+                    <Divider />
                     <ListItem rightIcon={<ContentCopy />} onTouchTap={this.copySvnURL}>
                       <strong>URL: </strong>
                       <TextField style={{height: 'initial'}} underlineStyle={{bottom: 0}} 

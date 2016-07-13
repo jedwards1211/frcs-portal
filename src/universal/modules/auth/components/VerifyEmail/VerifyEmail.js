@@ -1,6 +1,8 @@
 import React, {PropTypes, Component} from 'react'
 import styles from './VerifyEmail.css'
+import CircularProgress from 'material-ui/CircularProgress'
 import {Link} from 'react-router'
+import RaisedButton from 'material-ui/RaisedButton'
 
 export default class VerifyEmail extends Component {
   static propTypes = {
@@ -16,12 +18,14 @@ export default class VerifyEmail extends Component {
     } else {
       status = isVerified 
         ? (
-          <span>
+          <div className={styles.form}>
             <p>Your email has been verified. Thank you!</p>
-            <p>You may now log into <Link to="/owncloud">OwnCloud</Link> and <Link to="/svn">Subversion</Link>.</p>
-          </span>
+            <RaisedButton secondary linkButton containerElement={<Link to="/" />} label="Home" />
+          </div>
         )
-        : 'Your email is currently being verified...'
+        : <div className={styles.form}>
+          <CircularProgress /> Your email is currently being verified...
+        </div>
     }
 
     return (

@@ -5,7 +5,7 @@ import promisify from 'es6-promisify'
 import {auth} from './googleAuth'
 import config from './config'
 
-const settings = config.memberSheet
+const settings = config.memberSpreadsheet
 
 const sheets = google.sheets('v4')
 const getValues = promisify(sheets.spreadsheets.values.get, sheets.spreadsheets.values)
