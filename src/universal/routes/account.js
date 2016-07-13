@@ -6,6 +6,7 @@ export default function (store) {
     component: LandingContainer,
     childRoutes: [
       require('./changePassword')(store),
+      require('./changeEmail')(store),
     ]
   }
 }

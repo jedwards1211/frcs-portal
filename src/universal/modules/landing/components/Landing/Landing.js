@@ -36,6 +36,7 @@ export default class Landing extends Component {
             title="Menu"
           />
           {isAuthenticated && <MenuItem onTouchTap={() => this.push('/logout')}>Log Out</MenuItem>}
+          {isAuthenticated && <MenuItem onTouchTap={() => this.push('/account/changeEmail')}>Change Email</MenuItem>}
           {isAuthenticated && <MenuItem onTouchTap={() => this.push('/account/changePassword')}>Change Password</MenuItem>}
           {!isAuthenticated && <MenuItem onTouchTap={() => this.push('/login')}>Log In</MenuItem>}
           {!isAuthenticated && <MenuItem onTouchTap={() => this.push('/signup')}>Sign Up</MenuItem>}

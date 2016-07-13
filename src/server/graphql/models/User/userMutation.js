@@ -1,7 +1,8 @@
 import r from '../../../database/rethinkdriver'
-import {UserWithAuthToken, GoogleProfile} from './userSchema'
+import {User, UserWithAuthToken, GoogleProfile} from './userSchema'
 import {GraphQLEmailType, GraphQLPasswordType} from '../types'
-import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage, makeSecretToken} from './helpers'
+import {getUserByUsername, getUserByEmail, getUserByAuthToken, checkPassword, sendVerifyEmail, sendResetPasswordEmail,
+  signJwt, getAltLoginMessage, makeSecretToken} from './helpers'
 import {errorObj} from '../utils'
 import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
 import validateSecretToken from '../../../../universal/utils/validateSecretToken'
@@ -9,11 +10,9 @@ import {isLoggedIn} from '../authorization'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import uuid from 'node-uuid'
-import logger from '../../../logger'
 
 import getMemberInfo from '../../../members/getMemberInfo'
 
-const compare = promisify(bcrypt.compare)
 const hash = promisify(bcrypt.hash)
 
 export default {
@@ -29,20 +28,16 @@ export default {
       const userByEmail = await getUserByEmail(email)
       const user = userByUsername || userByEmail
       if (user) {
-        const {strategies} = user
-        const hashedPassword = strategies && strategies.local && strategies.local.password
-        if (!hashedPassword) {
-          throw errorObj({_error: getAltLoginMessage(strategies)})
-        }
-        const isCorrectPass = await compare(password, hashedPassword)
-        if (isCorrectPass) {
+        try {
+          await checkPassword(user, password)
           const authToken = signJwt({id: user.id})
           return {authToken, user}
+        } catch (err) {
+          const error = {_error: 'Cannot create account'}
+          if (userByUsername) error.username = 'Username already taken'
+          if (userByEmail) error.email = 'Email already registered'
+          throw errorObj(error)
         }
-        const error = {_error: 'Cannot create account'}
-        if (userByUsername) error.username = 'Username already taken'
-        if (userByEmail) error.email = 'Email already registered'
-        throw errorObj(error)
       } else {
         let memberInfo
         try {
@@ -77,8 +72,7 @@ export default {
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
         }
-        // TODO send email with verifiedEmailToken via mailgun or whatever
-        logger.log('Verify url:', `http://localhost:3000/verify-email/${verifiedEmailToken}`)
+        await sendVerifyEmail(verifiedEmailToken)
         const authToken = signJwt({id})
         return {user: userDoc, authToken}
       }
@@ -99,7 +93,7 @@ export default {
       if (!result.replaced) {
         throw errorObj({_error: 'Could not find or update user'})
       }
-      logger.log('Reset url:', `http://localhost:3000/login/reset-password/${resetToken}`)
+      await sendResetPasswordEmail(resetToken)
       return true
     }
   },
@@ -147,25 +141,11 @@ export default {
       newPassword: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
     async resolve(source, {oldPassword, newPassword}, {authToken}) {
-      const {id} = authToken
-      if (!id) {
-        throw errorObj({_error: 'Invalid authentication token'})
-      }
-      
-      const user = await r.table('users').get(id)
-      if (!user) {
-        throw errorObj({_error: 'User not found'})
-      }
-      const {strategies} = user
-      const hashedPassword = strategies && strategies.local && strategies.local.password
-      if (!hashedPassword) {
-        throw errorObj({_error: getAltLoginMessage(strategies)})
-      }
-      const isCorrectPass = await compare(oldPassword, hashedPassword)
-      if (!isCorrectPass) {
-        throw errorObj({_error: 'Incorrect password', oldPassword: 'Incorrect password'})
-      }
-      
+      isLoggedIn(authToken)
+      const user = await getUserByAuthToken(authToken)
+
+      await checkPassword(user, oldPassword, 'oldPassword')
+
       const newHashedPassword = await hash(newPassword, 10)
       const updates = {
         strategies: {
@@ -175,21 +155,20 @@ export default {
           }
         }
       }
-      const result = await r.table('users').get(id).update(updates, {returnChanges: true})
+      const result = await r.table('users').get(user.id).update(updates, {returnChanges: true})
       if (!result.replaced) {
         throw errorObj({_error: 'Failed to update user'})
       }
+      return true
     } 
   },
   resendVerificationEmail: {
     type: GraphQLBoolean,
     async resolve(source, args, {authToken}) {
       isLoggedIn(authToken)
-      const {id} = authToken
-      const user = await r.table('users').get(id)
-      if (!user) {
-        throw errorObj({_error: 'User not found'})
-      }
+      const user = await getUserByAuthToken(authToken)
+      const {id} = user
+      
       if (user.strategies && user.strategies.local && user.strategies.local.isVerified) {
         throw errorObj({_error: 'Email already verified'})
       }
@@ -198,8 +177,7 @@ export default {
       if (!result.replaced) {
         throw errorObj({_error: 'Could not find or update user'})
       }
-      // TODO send email with new verifiedEmailToken via mailgun or whatever
-      logger.log('Verified url:', `http://localhost:3000/verify-email/${verifiedEmailToken}`)
+      await sendVerifyEmail(verifiedEmailToken)
       return true
     }
   },
@@ -237,6 +215,47 @@ export default {
         user: result.changes[0].new_val,
         authToken: signJwt(verifiedEmailTokenObj)
       }
+    }
+  },
+  changeEmail: {
+    type: User,
+    args: {
+      password: {type: new GraphQLNonNull(GraphQLPasswordType)},
+      newEmail: {type: new GraphQLNonNull(GraphQLEmailType)}
+    },
+    async resolve(source, {password, newEmail}, {authToken}) {
+      isLoggedIn(authToken)
+      const user = await getUserByAuthToken(authToken)
+
+      await checkPassword(user, password)
+
+      if (user.email === newEmail) {
+        throw errorObj({_error: 'This is your current email address; nothing changed'})
+      }
+
+      const userByEmail = await getUserByEmail(newEmail)
+      if (userByEmail && userByEmail.id !== user.id) {
+        throw errorObj({_error: 'Could not change email address', newEmail: 'Email belongs to another user'})
+      }
+
+      // must verify email within 1 day
+      const verifiedEmailToken = makeSecretToken(user.id, 60 * 24)
+      const updates = {
+        email: newEmail,
+        strategies: {
+          local: {
+            isVerified: false,
+            verifiedEmailToken
+          }
+        }
+      }
+      const result = await r.table('users').get(user.id).update(updates)
+      if (!result.replaced) {
+        throw errorObj({_error: 'Could not change email address, please try again'})
+      }
+      await sendVerifyEmail(verifiedEmailToken)
+      
+      return await r.table('users').get(user.id).run()
     }
   },
   loginWithGoogle: {

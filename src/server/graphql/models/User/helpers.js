@@ -1,6 +1,12 @@
 import r from '../../../database/rethinkdriver'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import {errorObj} from '../utils'
+import bcrypt from 'bcrypt'
+import logger from '../../../logger'
+import promisify from 'es6-promisify'
+
+const compare = promisify(bcrypt.compare)
 
 export const getUserByUsername = async username => {
   const users = await r.table('users').getAll(username, {index: 'username'}).limit(1).run()
@@ -10,6 +16,29 @@ export const getUserByUsername = async username => {
 export const getUserByEmail = async email => {
   const users = await r.table('users').getAll(email, {index: 'email'}).limit(1).run()
   return users[0]
+}
+
+export const getUserByAuthToken = async authToken => {
+  const {id} = authToken
+  if (!id) {
+    throw errorObj({_error: 'Invalid authentication token'})
+  }
+
+  const user = await r.table('users').get(id)
+  if (!user) {
+    throw errorObj({_error: 'User not found'})
+  }
+  return user
+}
+
+export const sendVerifyEmail = async verifiedEmailToken => {
+  // TODO send email with verifiedEmailToken via mailgun or whatever
+  logger.log('Verify url:', `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/portal/verify-email/${verifiedEmailToken}`)
+}
+
+export const sendResetPasswordEmail = async resetToken => {
+  // TODO send email with verifiedEmailToken via mailgun or whatever
+  logger.log('Reset url:', `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/portal/login/reset-password/${resetToken}`)
 }
 
 export const signJwt = ({id}) => {
@@ -24,6 +53,18 @@ export const getAltLoginMessage = (userStrategies = {}) => {
   let authStr = authTypes.reduce((reduction, type) => `${reduction} ${type}, or `, 'Try logging in with ')
   authStr = authStr.slice(0, -5).replace('local', 'your password')
   return authTypes.length ? authStr : 'Create a new account'
+}
+
+export const checkPassword = async (user, password, fieldName = 'password') => {
+  const {strategies} = user
+  const hashedPassword = strategies && strategies.local && strategies.local.password
+  if (!hashedPassword) {
+    throw errorObj({_error: getAltLoginMessage(strategies)})
+  }
+  const isCorrectPass = await compare(password, hashedPassword)
+  if (!isCorrectPass) {
+    throw errorObj({_error: 'Incorrect password', [fieldName]: 'Incorrect password'})
+  }
 }
 
 /* a secret token has the user id, an expiration, and a secret

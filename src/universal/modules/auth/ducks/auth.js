@@ -26,6 +26,9 @@ export const VERIFY_EMAIL_SUCCESS = 'VERIFY_EMAIL_SUCCESS'
 export const CHANGE_PASSWORD = 'CHANGE_PASSWORD'
 export const CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR'
 export const CHANGE_PASSWORD_SUCCESS = 'CHANGE_PASSWORD_SUCCESS'
+export const CHANGE_EMAIL = 'CHANGE_EMAIL'
+export const CHANGE_EMAIL_ERROR = 'CHANGE_EMAIL_ERROR'
+export const CHANGE_EMAIL_SUCCESS = 'CHANGE_EMAIL_SUCCESS'
 
 const initialState = iMap({
   loginError: iMap(),
@@ -33,6 +36,7 @@ const initialState = iMap({
   verifyEmailError: iMap(),
   resendVerifyEmailError: iMap(),
   changePasswordError: iMap(),
+  changeEmailError: iMap(),
   isAuthenticated: false,
   isAuthenticating: false,
   isChangingPassword: false,
@@ -104,7 +108,23 @@ export default function reducer(state = initialState, action = {}) {
     case CHANGE_PASSWORD_SUCCESS:
       return state.merge({
         changingPassword: false,
-        changePasswordError: iMap(),
+        changePasswordError: iMap()
+      })
+    case CHANGE_EMAIL:
+      return state.merge({
+        changingEmail: true,
+        changeEmailError: iMap()
+      })
+    case CHANGE_EMAIL_ERROR:
+      return state.merge({
+        changingEmail: false,
+        changeEmailError: fromJS(action.error) || iMap()
+      })
+    case CHANGE_EMAIL_SUCCESS:
+      return state.merge({
+        changingEmail: false,
+        changeEmailError: iMap(),
+        user: fromJS(action.payload)
       })
     case RESEND_VERIFY_EMAIL_REQUEST:
       return state.merge({
@@ -151,6 +171,13 @@ export function signupUserError(error) {
   return {
     type: SIGNUP_USER_ERROR,
     error
+  }
+}
+
+export function changeEmailSuccess(payload) {
+  return {
+    type: CHANGE_EMAIL_SUCCESS,
+    payload
   }
 }
 
@@ -295,6 +322,25 @@ export function changePassword({oldPassword, newPassword}, dispatch) {
       const {payload} = data
       dispatch({type: CHANGE_PASSWORD_SUCCESS, payload})
       dispatch(replace('/login/reset-password-success'))
+      resolve()
+    }
+  })
+}
+
+export function changeEmail({password, newEmail}, dispatch) {
+  return new Promise(async function (resolve, reject) {
+    const query = `
+    mutation($password: Password!, $newEmail: Email!){
+       payload: changeEmail(password: $password, newEmail: $newEmail),
+       ${user}
+    }`
+    const {error, data} = await fetchGraphQL({query, variables: {password, newEmail}})
+    if (error) {
+      reject(error)
+    } else {
+      const {payload} = data
+      dispatch(changeEmailSuccess(payload))
+      dispatch(replace('/verify-email-sent'))
       resolve()
     }
   })

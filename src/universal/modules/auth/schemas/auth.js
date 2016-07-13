@@ -70,6 +70,11 @@ export const passwordAuthSchema = Joi.object().keys({
   confirmPassword
 })
 
+export const changeEmailSchema = Joi.object().keys({
+  password,
+  newEmail: email
+})
+
 export const changePasswordSchema = Joi.object().keys({
   oldPassword: password.label('Old Password'),
   newPassword: password.label('New Password'),

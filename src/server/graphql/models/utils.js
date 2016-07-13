@@ -24,7 +24,7 @@ export const prepareClientError = res => {
   }
   const error = errors[0].message
   if (error.indexOf('{"_error"') === -1) {
-    logger.log('DEBUG GraphQL Error:', error)
+    logger.error('DEBUG GraphQL Error:', errors[0].stack)
     return {data, error: JSON.stringify({_error: 'Server error while querying data'})}
   }
   return {data, error}
