@@ -44,7 +44,7 @@ export function run(worker) {
   })
   if (PROD) {
     app.use(compression())
-    app.use('/static', express.static('build'))
+    app.use(process.env.BASENAME + '/static', express.static('build'))
   }
 
   // Oauth

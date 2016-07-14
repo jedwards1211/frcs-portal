@@ -16,6 +16,7 @@ EXPOSE 80 389
 ENV DATABASE_HOST=localhost \
     DATABASE_PORT=28015 \
     DATABASE_SSL=false \
+    BASENAME=/portal \
     PROTOCOL=http \
     HOST=localhost \
     PORT=80 \

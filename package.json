@@ -19,7 +19,7 @@
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "build:db": "node ./src/server/database/setupDB.babel.js",
-    "build:docker": "docker build -t frcs/portal:$npm_package_version .",
+    "build:docker": "docker build -t frcs/portal:latest -t \"frcs/portal:$(git rev-parse HEAD)\" -t frcs/portal:$npm_package_version .",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*.js --verbose",
     "lint": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
