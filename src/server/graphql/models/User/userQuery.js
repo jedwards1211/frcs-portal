@@ -2,8 +2,8 @@ import r from '../../../database/rethinkdriver'
 import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql'
 import {User, UserWithAuthToken} from './userSchema'
 import {errorObj} from '../utils'
-import {GraphQLEmailType, GraphQLPasswordType} from '../types'
-import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage} from './helpers'
+import {GraphQLUsernameType, GraphQLEmailType, GraphQLPasswordType} from '../types'
+import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage, getUserGroupnames} from './helpers'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import {isAdminOrSelf} from '../authorization'
@@ -22,13 +22,14 @@ export default {
       if (!user) {
         throw errorObj({_error: 'User not found'})
       }
+      user.groupnames = await getUserGroupnames(args.id)
       return user
     }
   },
   login: {
     type: UserWithAuthToken,
     args: {
-      username: {type: GraphQLString},
+      username: {type: GraphQLUsernameType},
       email: {type: GraphQLEmailType},
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
@@ -46,6 +47,7 @@ export default {
       }
       const isCorrectPass = await compare(password, hashedPassword)
       if (isCorrectPass) {
+        user.groupnames = await getUserGroupnames(user.id)
         const authToken = signJwt({id: user.id})
         return {authToken, user}
       }
@@ -63,6 +65,7 @@ export default {
       if (!user) {
         throw errorObj({_error: 'User not found'})
       }
+      user.groupnames = getUserGroupnames(id)
       return user
     }
   }

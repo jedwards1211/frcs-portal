@@ -1,5 +1,6 @@
-import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLInputObjectType} from 'graphql'
-import {GraphQLEmailType, GraphQLURLType} from '../types'
+import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, 
+  GraphQLInputObjectType, GraphQLList} from 'graphql'
+import {GraphQLUsernameType, GraphQLEmailType, GraphQLGroupnameType, GraphQLURLType} from '../types'
 import {resolveForAdmin} from '../utils'
 
 const GoogleStrategy = new GraphQLObjectType({
@@ -61,8 +62,10 @@ export const User = new GraphQLObjectType({
   description: 'The user account',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The userId'},
-    username: {type: new GraphQLNonNull(GraphQLString), description: 'The username'},
+    username: {type: new GraphQLNonNull(GraphQLUsernameType), description: 'The username'},
     email: {type: new GraphQLNonNull(GraphQLEmailType), description: 'The user email'},
+    groupnames: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLGroupnameType))), 
+      description: 'The names of the groups the user belongs to'},
     firstName: {type: GraphQLString, description: 'First name'},
     lastName: {type: GraphQLString, description: 'Last name'},
     createdAt: {type: GraphQLString, description: 'The datetime the user was created'},

@@ -1,10 +1,10 @@
 import r from '../../../database/rethinkdriver'
 import {User, UserWithAuthToken, GoogleProfile} from './userSchema'
-import {GraphQLEmailType, GraphQLPasswordType} from '../types'
+import {GraphQLUsernameType, GraphQLEmailType, GraphQLPasswordType} from '../types'
 import {getUserByUsername, getUserByEmail, getUserByAuthToken, checkPassword, sendVerifyEmail, sendResetPasswordEmail,
-  signJwt, getAltLoginMessage, makeSecretToken} from './helpers'
+  signJwt, getAltLoginMessage, makeSecretToken, getUserGroupnames} from './helpers'
 import {errorObj} from '../utils'
-import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLBoolean} from 'graphql'
 import validateSecretToken from '../../../../universal/utils/validateSecretToken'
 import {isLoggedIn} from '../authorization'
 import promisify from 'es6-promisify'
@@ -19,7 +19,7 @@ export default {
   createUser: {
     type: UserWithAuthToken,
     args: {
-      username: {type: new GraphQLNonNull(GraphQLString)},
+      username: {type: new GraphQLNonNull(GraphQLUsernameType)},
       email: {type: new GraphQLNonNull(GraphQLEmailType)},
       password: {type: new GraphQLNonNull(GraphQLPasswordType)}
     },
@@ -56,6 +56,7 @@ export default {
         const userDoc = {
           id,
           username,
+          groupnames: [],
           email,
           firstName,
           lastName,
@@ -130,6 +131,7 @@ export default {
         throw errorObj({_error: 'Could not find or update user'})
       }
       const newUser = result.changes[0].new_val
+      newUser.groupnames = await getUserGroupnames(user.id)
       const newAuthToken = signJwt(newUser)
       return {newAuthToken, user: newUser}
     }
@@ -188,7 +190,8 @@ export default {
       if (verifiedEmailTokenObj._error) {
         throw errorObj(verifiedEmailTokenObj)
       }
-      const user = await r.table('users').get(verifiedEmailTokenObj.id)
+      const {id} = verifiedEmailTokenObj
+      const user = await r.table('users').get(id)
       if (!user) {
         throw errorObj({_error: 'User not found'})
       }
@@ -207,12 +210,14 @@ export default {
           }
         }
       }
-      const result = await r.table('users').get(verifiedEmailTokenObj.id).update(updates, {returnChanges: true})
+      const result = await r.table('users').get(id).update(updates, {returnChanges: true})
       if (!result.replaced) {
         throw errorObj({_error: 'Could not find or update user'})
       }
+      const newUser = result.changes[0].new_val
+      newUser.groupnames = await getUserGroupnames(id)
       return {
-        user: result.changes[0].new_val,
+        user: newUser,
         authToken: signJwt(verifiedEmailTokenObj)
       }
     }
@@ -254,8 +259,10 @@ export default {
         throw errorObj({_error: 'Could not change email address, please try again'})
       }
       await sendVerifyEmail(verifiedEmailToken)
-      
-      return await r.table('users').get(user.id).run()
+
+      const newUser = await r.table('users').get(user.id).run()
+      newUser.groupnames = await getUserGroupnames(user.id)
+      return newUser
     }
   },
   loginWithGoogle: {

@@ -7,7 +7,7 @@ import promisify from 'es6-promisify'
 import logger from '../logger'
 const compare = promisify(bcrypt.compare)
 
-const {base, admin, adminPassword, users, groups} = ldapConfig
+const {base, admin, adminPassword, users, groups, ocgroups} = ldapConfig
 
 const server = ldap.createServer()
 
@@ -58,10 +58,8 @@ server.bind(base.dn, async (req, res, next) => {
         return next()
       }
     } else if (req.dn.childOf(users.dn)) {
-      const match = /^uid\s*=\s*([^,]+)/.exec(req.dn.toString())
-      if (!match) return next(new ldap.InvalidCredentialsError())
-
-      const uid = match[1]
+      if (!req.dn.rdns[0].attrs.uid) return next(new ldap.InvalidCredentialsError())
+      const uid = req.dn.rdns[0].attrs.uid.value
 
       const user = await getUserByEmail(uid) || await getUserByUsername(uid)
       if (!user) return next(new ldap.InvalidCredentialsError())
@@ -93,34 +91,130 @@ server.search(base.dn, authorize, async (req, res, next) => {
     if (matches(admin, req)) res.send(admin)
     if (matches(users, req)) res.send(users)
     if (matches(groups, req)) res.send(groups)
+    if (matches(ocgroups, req)) res.send(ocgroups)
 
-    await r.table('users')
-      .filter({strategies: {local: {isVerified: true}}})
-      .run().then(rUsers => rUsers.forEach(rUser => {
-        const displayname = rUser.firstName || rUser.lastName
-          ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
-          : rUser.username
-        const attributes = {
-          entryuuid: rUser.id,
-          displayname,
-          uid: rUser.username,
-          mail: rUser.email
-        }
-        const user = {
-          dn: `uid=${rUser.username},${users.dn}`,
-          objectclass: [
-            'inetOrgPerson',
-            'posixAccount',
-            'top'
-          ],
-          attributes,
-          ...attributes
-        }
-        if (matches(user, req)) {
-          console.log('  [user]    ', rUser.username, rUser.id)
-          res.send(user)
-        }
-      }))
+    let usersQuery = r.table('users')
+
+    if (req.dn.childOf(users.dn)) {
+      const uidObj = req.dn.rdns[0].attrs.uid
+      const uid = uidObj && uidObj.value
+      if (uid) usersQuery = usersQuery.getAll(uid, {index: 'username'}).limit(1)
+    }
+    const rUsers = await usersQuery.merge(user => ({
+      groupnames: r.table('users_groups')
+        .getAll(user('id'), {index: 'user_id'})
+        .eqJoin('group_id', r.table('groups'))
+        .zip()
+        .map(g => g('groupname'))
+        .coerceTo('array')
+    })).run()
+
+    rUsers.forEach(rUser => {
+      const displayname = rUser.firstName || rUser.lastName
+        ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
+        : rUser.username
+      const attributes = {
+        entryuuid: rUser.user_id,
+        displayname,
+        uid: rUser.username,
+        mail: rUser.email,
+      }
+      if (rUser.groupnames.length) attributes.memberOf = rUser.groupnames
+      const user = {
+        dn: `uid=${rUser.username},${users.dn}`,
+        objectclass: [
+          'inetOrgPerson',
+          'posixAccount',
+          'top'
+        ],
+        attributes,
+        ...attributes
+      }
+
+      if (matches(user, req)) {
+        console.log('  [user]    ', rUser.username, rUser.id)
+        res.send(user)
+      }
+    })
+    
+    let groupsQuery = r.table('groups')
+    
+    if (req.dn.childOf(groups.dn)) {
+      const cnObj = req.dn.rdns[0].attrs.cn
+      const cn = cnObj && cnObj.value
+      if (cn) groupsQuery = groupsQuery.getAll(cn, {index: 'groupname'}).limit(1)
+    }
+    const rGroups = await groupsQuery.merge(group => ({
+      members: r.table('users_groups')
+        .getAll(group('id'), {index: 'group_id'})
+        .eqJoin('user_id', r.table('users'))
+        .zip()
+        .map(u => u('username'))
+        .coerceTo('array')
+    })).run()
+    
+    rGroups.forEach(rGroup => {
+      const attributes = {
+        entryuuid: rGroup.id,
+        cn: rGroup.groupname
+      }
+      if (rGroup.members.length) {
+        attributes.memberuid = rGroup.members.map(member => `uid=${member},${users.dn}`)
+      }
+      const group = {
+        dn: `cn=${rGroup.groupname},${groups.dn}`,
+        objectclass: [
+          'posixGroup',
+          'top'
+        ],
+        attributes,
+        ...attributes
+      }
+      if (matches(group, req)) {
+        console.log('  [group]   ', rGroup.groupname, rGroup.id)
+        res.send(group)
+      }
+    })
+
+
+    let ocgroupsQuery = r.table('groups')
+
+    if (req.dn.childOf(ocgroups.dn)) {
+      const cnObj = req.dn.rdns[0].attrs.cn
+      const cn = cnObj && cnObj.value
+      if (cn) ocgroupsQuery = ocgroupsQuery.getAll(cn, {index: 'groupname'}).limit(1)
+    }
+    const rOcgroups = await ocgroupsQuery.merge(group => ({
+      members: r.table('users_groups')
+        .getAll(group('id'), {index: 'group_id'})
+        .eqJoin('user_id', r.table('users'))
+        .zip()
+        .map(u => u('username'))
+        .coerceTo('array')
+    })).run()
+
+    rOcgroups.forEach(rOcgroup => {
+      const attributes = {
+        entryuuid: rOcgroup.id,
+        cn: rOcgroup.groupname
+      }
+      if (rOcgroup.members.length) {
+        attributes.member = rOcgroup.members.map(member => `uid=${member},${users.dn}`)
+      }
+      const ocgroup = {
+        dn: `cn=${rOcgroup.groupname},${ocgroups.dn}`,
+        objectclass: [
+          'groupOfNames',
+          'top'
+        ],
+        attributes,
+        ...attributes
+      }
+      if (matches(ocgroup, req)) {
+        console.log('  [ocgroup] ', rOcgroup.groupname, rOcgroup.id)
+        res.send(ocgroup)
+      }
+    })
 
     res.end()
     return next()

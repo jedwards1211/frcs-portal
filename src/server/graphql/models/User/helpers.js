@@ -8,6 +8,16 @@ import promisify from 'es6-promisify'
 
 const compare = promisify(bcrypt.compare)
 
+export const getUserGroupnames = async userId => {
+  return (await r.table('users_groups')
+    .getAll(userId, {index: 'user_id'})
+    .eqJoin('group_id', r.table('groups'))
+    .zip()
+    .withFields('groupname')
+    .run())
+    .map(g => g.groupname)
+}
+
 export const getUserByUsername = async username => {
   const users = await r.table('users').getAll(username, {index: 'username'}).limit(1).run()
   return users[0]

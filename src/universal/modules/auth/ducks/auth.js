@@ -185,6 +185,7 @@ const user = `
 {
   id,
   username,
+  groupnames,
   email,
   firstName,
   lastName,
@@ -205,7 +206,7 @@ export const loginUser = (dispatch, variables, redirect) => {
   dispatch({type: LOGIN_USER_REQUEST})
   return new Promise(async (resolve, reject) => {
     const query = `
-    query($username: String, $email: Email, $password: Password!){
+    query($username: Username, $email: Email, $password: Password!){
        payload: login(username: $username, email: $email, password: $password)
        ${userWithAuthToken}
     }`
@@ -251,7 +252,7 @@ export function signupUser(dispatch, variables) {
   dispatch({type: SIGNUP_USER_REQUEST})
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($username: String!, $email: Email!, $password: Password!){
+    mutation($username: Username!, $email: Email!, $password: Password!){
        payload: createUser(username: $username, email: $email, password: $password)
        ${userWithAuthToken}
     }`

@@ -18,6 +18,7 @@ const config = {
   baseDN: process.env.LDAP_BASE || 'dc=example,dc=org',
   usersOU: process.env.LDAP_USERS_OU || 'ou=users',
   groupsOU: process.env.LDAP_GROUPS_OU || 'ou=groups',
+  ocgroupsOU: process.env.LDAP_OCGROUPS_OU || 'ou=ocgroups',
   adminCN: process.env.LDAP_ADMIN_CN,
   adminPassword: process.env.LDAP_ADMIN_PASSWORD,
   organization: process.env.LDAP_ORGANIZATION
@@ -67,6 +68,18 @@ config.groups = {
   ],
   attributes: {
     ou: config.groupsOU
+  }
+}
+
+config.ocgroupsDN = `${config.ocgroupsOU},${config.baseDN}`
+config.ocgroups = {
+  dn: config.ocgroupsDN,
+  objectclass: [
+    'organizationalUnit',
+    'top'
+  ],
+  attributes: {
+    ou: config.ocgroupsOU
   }
 }
 

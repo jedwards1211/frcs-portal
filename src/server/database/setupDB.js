@@ -6,6 +6,8 @@ const databases = ['meatier', 'ava']
 
 const database = [
   {name: 'users', indices: ['username', 'email']},
+  {name: 'groups', indices: ['groupname']},
+  {name: 'users_groups', indices: ['user_id', 'group_id']},
   {name: 'lanes', indices: ['userId']},
   {name: 'notes', indices: ['laneId']}
 ]
