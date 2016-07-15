@@ -16,7 +16,7 @@ checkMissing(
 
 const config = {
   port: process.env.LDAP_PORT || 1389,
-  baseDN: process.env.LDAP_BASE || 'dc=example,dc=org',
+  baseDN: process.env.LDAP_BASE_DN || 'dc=example,dc=org',
   usersOU: process.env.LDAP_USERS_OU || 'users',
   groupsOU: process.env.LDAP_GROUPS_OU || 'groups',
   ocgroupsOU: process.env.LDAP_OCGROUPS_OU || 'ocgroups',
