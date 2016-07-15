@@ -10,8 +10,8 @@ COPY .babelrc .eslintrc /usr/src/app/
 COPY webpack /usr/src/app/webpack
 COPY src /usr/src/app/src
 
-ARG ROOT_URL=http://localhost:3000 \
-    BASENAME=""
+ARG ROOT_URL=http://localhost:3000
+ARG BASENAME=""
 ENV ROOT_URL=$ROOT_URL \
     BASENAME=$BASENAME
 
