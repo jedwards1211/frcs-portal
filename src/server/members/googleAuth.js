@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 var fs = require('fs')
+var path = require('path')
 var readline = require('readline')
 var googleAuth = require('google-auth-library')
 import {googleSheets} from './config'
@@ -8,9 +9,9 @@ import {googleSheets} from './config'
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-var TOKEN_DIR = process.env.GOOGLE_API_TOKEN_DIR || ((process.env.HOME || process.env.HOMEPATH ||
-  process.env.USERPROFILE) + '/.credentials/')
-var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json'
+var TOKEN_DIR = process.env.GOOGLE_API_TOKEN_DIR
+  || path.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE, '.credentials')
+var TOKEN_PATH = path.join(TOKEN_DIR, 'sheets.googleapis.com-nodejs-quickstart.json')
 
 let _auth
 
