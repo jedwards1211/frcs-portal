@@ -22,8 +22,6 @@ ENV DATABASE_HOST=localhost \
     PORT=80 \
     LDAP_PORT=389 \
     LDAP_ORGANIZATION="Detroit Urban Grotto" \
-    LDAP_ADMIN_CN="cn=admin" \
-    LDAP_BASE="dc=fisherridge,dc=net" \
-    LDAP_USERS_OU="ou=users"
+    LDAP_BASE="dc=fisherridge,dc=net"
 
 CMD ["npm", "run", "prod"]
