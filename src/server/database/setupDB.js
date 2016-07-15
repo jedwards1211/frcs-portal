@@ -2,7 +2,7 @@ import r from './rethinkdriver'
 import logger from '../logger'
 
 // ava is the test database
-const databases = ['meatier', 'ava']
+const databases = ['portal', 'ava']
 
 const database = [
   {name: 'users', indices: ['username', 'email']},
@@ -14,7 +14,7 @@ const database = [
 
 export default async function setupDB(isUpdate = false) {
   await Promise.all(databases.map(db => ({db, isUpdate})).map(reset))
-  await r.getPool().drain()
+  if (!isUpdate) await r.getPool().drain()
   logger.log(`>>Database setup complete!`)
 }
 
@@ -26,18 +26,18 @@ async function reset({db, isUpdate}) {
   }
   const tables = await r.db(db).tableList()
   if (!isUpdate) {
-    logger.log(`>>Dropping tables on: ${db}`)
+    logger.log(`>>Dropping tables in: ${db}`)
     await Promise.all(tables.map(table => r.db(db).tableDrop(table)))
   }
-  logger.log(`>>Creating tables on: ${db}`)
   await Promise.all(database.map(table => {
     if (!isUpdate || tables.indexOf(table.name) === -1) {
+      logger.log(`>>Creating table ${table.name} in: ${db}`)
       return r.db(db).tableCreate(table.name)
     }
     return Promise.resolve(false)
   }))
-  logger.log(`>>Adding table indices on: ${db}`)
   const tableIndicies = await Promise.all(database.map(table => {
+    logger.log(`>>Adding indices on table ${table.name} in: ${db}`)
     return r.db(db).table(table.name).indexList().run()
   }))
   await Promise.all([...database.map((table, i) => {
@@ -49,5 +49,5 @@ async function reset({db, isUpdate}) {
       return Promise.resolve(false)
     })
   })])
-  logger.log(`>>Setup complete for: ${db}`)
+  logger.log(`>>${isUpdate ? 'Update' : 'Setup'} complete for: ${db}`)
 }

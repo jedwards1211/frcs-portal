@@ -11,12 +11,15 @@ import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import logger from './logger'
 import './members/config'
+import setupDB from './database/setupDB'
 
 const PROD = process.env.NODE_ENV === 'production'
 
 const basename = process.env.BASENAME || ''
 
 export function run(worker) {
+  setupDB(true)
+  
   logger.log('   >> Worker PID:', process.pid)
   const app = express()
   const scServer = worker.scServer
