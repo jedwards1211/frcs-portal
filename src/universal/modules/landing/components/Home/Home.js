@@ -35,9 +35,9 @@ export default class Home extends Component {
       const displayName = user.get('firstName') || user.get('username')
       const isVerified = user.getIn(['strategies', 'local', 'isVerified'])
       
-      const {protocol, host, hostname} = window.location
+      const {hostname} = window.location
       
-      const owncloudLink = path => `${protocol}//${host}/owncloud/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
+      const owncloudLink = path => `/owncloud/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
 
       return (
         <div className={styles.home}>
