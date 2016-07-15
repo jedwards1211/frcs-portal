@@ -22,4 +22,4 @@ ENV DATABASE_HOST=localhost \
     LDAP_ORGANIZATION="Detroit Urban Grotto" \
     LDAP_BASE="dc=fisherridge,dc=net"
 
-CMD ["npm", "run", "prod"]
+CMD ["npm", "run", "ldap:prod"]
