@@ -114,7 +114,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
         : rUser.username
       const attributes = {
-        entryuuid: rUser.user_id,
+        entryuuid: rUser.id,
         displayname,
         uid: rUser.username,
         mail: rUser.email,
