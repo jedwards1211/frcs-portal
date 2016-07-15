@@ -7,14 +7,16 @@ if (process.env.NODE_ENV !== 'production') {
     hook: false,
     ignore: /(\/\.|~$|\.json$)/i
   })) {
-    require('babel-register')
-    require('babel-polyfill')
-
-    let getDotenv = require('../../universal/utils/dotenv').getDotenv
-
-    // Import .env and expand variables:
-    getDotenv()
-
-    require('./ldapServer')
+    return 
   }
 }
+
+require('babel-register')
+require('babel-polyfill')
+
+let getDotenv = require('../../universal/utils/dotenv').getDotenv
+
+// Import .env and expand variables:
+getDotenv()
+
+require('./ldapServer')
