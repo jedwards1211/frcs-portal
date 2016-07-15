@@ -10,9 +10,13 @@ COPY .babelrc .eslintrc /usr/src/app/
 COPY webpack /usr/src/app/webpack
 COPY src /usr/src/app/src
 
-ARG ROOT_URL=http://localhost:3000
+ARG PROTOCOL=http
+ARG HOST=localhost
+ARG PUBLIC_PORT=80
 ARG BASENAME=""
-ENV ROOT_URL=$ROOT_URL \
+ENV PROTOCOL=$PROTOCOL \
+    HOST=$HOST \
+    PUBLIC_PORT=$PUBLIC_PORT \
     BASENAME=$BASENAME
 
 RUN DOCKER_BUILD=true npm run build

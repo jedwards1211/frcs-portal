@@ -2,11 +2,9 @@ import {SocketCluster} from 'socketcluster'
 import os from 'os'
 import path from 'path'
 
-const numCpus = os.cpus().length
-import {getDotenv} from '../universal/utils/dotenv'
+require('../universal/utils/dotenv').getDotenv()
 
-// Import .env and expand variables:
-getDotenv()
+const numCpus = os.cpus().length
 
 export const options = {
   authKey: process.env.JWT_SECRET,

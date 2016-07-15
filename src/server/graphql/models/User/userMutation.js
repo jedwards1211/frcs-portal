@@ -73,7 +73,7 @@ export default {
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
         }
-        await sendVerifyEmail(verifiedEmailToken)
+        await sendVerifyEmail(email, verifiedEmailToken)
         const authToken = signJwt({id})
         return {user: userDoc, authToken}
       }
@@ -94,7 +94,7 @@ export default {
       if (!result.replaced) {
         throw errorObj({_error: 'Could not find or update user'})
       }
-      await sendResetPasswordEmail(resetToken)
+      await sendResetPasswordEmail(email, resetToken)
       return true
     }
   },
@@ -179,7 +179,7 @@ export default {
       if (!result.replaced) {
         throw errorObj({_error: 'Could not find or update user'})
       }
-      await sendVerifyEmail(verifiedEmailToken)
+      await sendVerifyEmail(user.email, verifiedEmailToken)
       return true
     }
   },
@@ -258,7 +258,7 @@ export default {
       if (!result.replaced) {
         throw errorObj({_error: 'Could not change email address, please try again'})
       }
-      await sendVerifyEmail(verifiedEmailToken)
+      await sendVerifyEmail(newEmail, verifiedEmailToken)
 
       const newUser = await r.table('users').get(user.id).run()
       newUser.groupnames = await getUserGroupnames(user.id)

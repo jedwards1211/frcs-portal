@@ -82,7 +82,9 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.EnvironmentPlugin([
-      'ROOT_URL',
+      'PROTOCOL',
+      'HOST',
+      'PUBLIC_PORT',
       'BASENAME'
     ]),
     new HappyPack({

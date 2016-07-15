@@ -4,7 +4,7 @@ import {Provider} from 'react-redux'
 import {RouterContext} from 'react-router'
 import {renderToString} from 'react-dom-stream/server'
 
-const basename = process.env.BASENAME || ''
+const BASENAME = process.env.BASENAME || ''
 
 // Injects the server rendered state and app into a basic html template
 export default class Html extends Component {
@@ -32,7 +32,7 @@ export default class Html extends Component {
           <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
           <meta name="description" content="" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          {PROD && <link rel="stylesheet" href={`${basename}/static/prerender.css`} type="text/css" />}
+          {PROD && <link rel="stylesheet" href={`${BASENAME}/static/prerender.css`} type="text/css" />}
           <title>{title}</title>
         </head>
         <body>
@@ -40,7 +40,7 @@ export default class Html extends Component {
           {PROD ? <div id="root" dangerouslySetInnerHTML={{__html: root}}></div> : <div id="root"></div>}
           {PROD && <script dangerouslySetInnerHTML={{__html: manifest.text}} />}
           {PROD && <script src={vendor.js} />}
-          <script src={PROD ? app.js : `${basename}/static/app.js`} />
+          <script src={PROD ? app.js : `${BASENAME}/static/app.js`} />
         </body>
       </html>
     )

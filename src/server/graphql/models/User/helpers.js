@@ -3,9 +3,10 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import {errorObj} from '../utils'
 import bcrypt from 'bcrypt'
-import logger from '../../../logger'
 import promisify from 'es6-promisify'
 import {hostUrl} from '../../../../universal/utils/fetching'
+
+import sendEmail from '../../../email/sendEmail'
 
 const compare = promisify(bcrypt.compare)
 
@@ -42,14 +43,49 @@ export const getUserByAuthToken = async authToken => {
   return user
 }
 
-export const sendVerifyEmail = async verifiedEmailToken => {
-  // TODO send email with verifiedEmailToken via mailgun or whatever
-  logger.log('Verify url:', `${hostUrl()}/verify-email/${verifiedEmailToken}`)
+export const sendVerifyEmail = async (email, verifiedEmailToken) => {
+  const heading = "Welcome to the Detroit Urban Grotto member portal!"
+  const message = "Please confirm your email address by clicking on the following link:"
+  const url = `${hostUrl()}/verify-email/${verifiedEmailToken}`
+  const html = `<h3>${heading}</h3>
+<p>${message}</p>
+<p><a href="${url}">${url}</a></p>`
+  const text = `${heading}
+  
+${message}
+
+${url}
+`
+  
+  return await sendEmail({
+    to: [email],
+    subject: 'fisherridge.net email verification',
+    text,
+    html
+  })
 }
 
-export const sendResetPasswordEmail = async resetToken => {
-  // TODO send email with verifiedEmailToken via mailgun or whatever
-  logger.log('Reset url:', `${hostUrl()}/login/reset-password/${resetToken}`)
+export const sendResetPasswordEmail = async (email, resetToken) => {
+  const heading = "Password Reset Requested" 
+  const message = `Somebody, hopefully you, requested to change your password for fisherridge.net. 
+Click on the following link to change it:`
+  const url = `${hostUrl()}/login/reset-password/${resetToken}`
+  const html = `<h3>${heading}</h3>
+<p>${message}</p>
+<p><a href="${url}">${url}</a></p>`
+  const text = `${heading}
+  
+${message}
+
+${url}
+`
+  
+  return await sendEmail({
+    to: [email],
+    subject: 'fisherridge.net password reset',
+    text,
+    html
+  })
 }
 
 export const signJwt = ({id}) => {

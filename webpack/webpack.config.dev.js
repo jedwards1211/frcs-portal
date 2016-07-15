@@ -73,7 +73,9 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
     new webpack.EnvironmentPlugin([
-      'ROOT_URL',
+      'PROTOCOL',
+      'HOST',
+      'PUBLIC_PORT',
       'BASENAME'
     ]),
     new HappyPack({

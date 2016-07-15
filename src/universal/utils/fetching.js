@@ -7,8 +7,17 @@ export function parseJSON(response) {
   return response.json()
 }
 
+const defaultPorts = {
+  http: 80,
+  https: 443
+}
+
 export function hostUrl() {
-  return process.env.ROOT_URL + (process.env.BASENAME || '')
+  const PROTOCOL = process.env.PROTOCOL
+  const HOST = process.env.HOST
+  const PUBLIC_PORT = process.env.PUBLIC_PORT
+  const BASENAME = process.env.BASENAME || ''
+  return `${PROTOCOL}://${HOST}${PUBLIC_PORT === defaultPorts[PROTOCOL] ? '' : ':' + PUBLIC_PORT}${BASENAME}`
 }
 
 export function postJSON(route, obj) {
