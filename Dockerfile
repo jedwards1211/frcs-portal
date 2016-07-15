@@ -9,8 +9,11 @@ RUN npm install
 COPY .babelrc .eslintrc /usr/src/app/
 COPY webpack /usr/src/app/webpack
 COPY src /usr/src/app/src
-ENV ROOT_URL=http://fisherridge.net \
-    BASENAME=/portal
+
+ARG ROOT_URL=http://localhost:3000 \
+    BASENAME=""
+ENV ROOT_URL=$ROOT_URL \
+    BASENAME=$BASENAME
 
 RUN DOCKER_BUILD=true npm run build
 
