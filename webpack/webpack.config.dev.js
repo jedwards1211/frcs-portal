@@ -8,6 +8,8 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 // Import .env and expand variables:
 getDotenv()
 
+const basename = process.env.BASENAME || ''
+
 const root = process.cwd()
 const clientInclude = [
   path.join(root, 'src', 'client'),
@@ -58,7 +60,7 @@ export default {
     filename: 'app.js',
     chunkFilename: '[name]_[chunkhash].js',
     path: path.join(root, 'build'),
-    publicPath: '/static/'
+    publicPath: `${basename}/static/`
   },
   plugins: [
     ...prefetchPlugins,
@@ -71,9 +73,8 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
     new webpack.EnvironmentPlugin([
-      'PROTOCOL',
-      'HOST',
-      'PORT'
+      'ROOT_URL',
+      'BASENAME'
     ]),
     new HappyPack({
       loaders: ['babel'],

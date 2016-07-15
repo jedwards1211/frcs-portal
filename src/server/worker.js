@@ -7,13 +7,14 @@ import jwt from 'express-jwt'
 
 import config from '../../webpack/webpack.config.dev'
 import createSSR from './createSSR'
-import {googleAuthUrl, googleAuthCallback} from './graphql/models/User/oauthGoogle'
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import logger from './logger'
 import './members/config'
 
 const PROD = process.env.NODE_ENV === 'production'
+
+const basename = process.env.BASENAME || ''
 
 export function run(worker) {
   logger.log('   >> Worker PID:', process.pid)
@@ -44,15 +45,11 @@ export function run(worker) {
   })
   if (PROD) {
     app.use(compression())
-    app.use(process.env.BASENAME + '/static', express.static('build'))
+    app.use(basename + '/static', express.static('build'))
   }
 
-  // Oauth
-  app.get('/auth/google', (req, res) => res.redirect(googleAuthUrl))
-  app.get('/auth/google/callback', googleAuthCallback)
-
   // HTTP GraphQL endpoint
-  app.post('/graphql', jwt({secret: process.env.JWT_SECRET, credentialsRequired: false}), httpGraphQLHandler)
+  app.post(basename + '/graphql', jwt({secret: process.env.JWT_SECRET, credentialsRequired: false}), httpGraphQLHandler)
 
   // server-side rendering
   app.get('*', createSSR)

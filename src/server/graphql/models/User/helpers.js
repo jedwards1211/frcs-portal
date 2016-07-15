@@ -5,6 +5,7 @@ import {errorObj} from '../utils'
 import bcrypt from 'bcrypt'
 import logger from '../../../logger'
 import promisify from 'es6-promisify'
+import {hostUrl} from '../../../../universal/utils/fetching'
 
 const compare = promisify(bcrypt.compare)
 
@@ -43,12 +44,12 @@ export const getUserByAuthToken = async authToken => {
 
 export const sendVerifyEmail = async verifiedEmailToken => {
   // TODO send email with verifiedEmailToken via mailgun or whatever
-  logger.log('Verify url:', `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/portal/verify-email/${verifiedEmailToken}`)
+  logger.log('Verify url:', `${hostUrl()}/verify-email/${verifiedEmailToken}`)
 }
 
 export const sendResetPasswordEmail = async resetToken => {
   // TODO send email with verifiedEmailToken via mailgun or whatever
-  logger.log('Reset url:', `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/portal/login/reset-password/${resetToken}`)
+  logger.log('Reset url:', `${hostUrl()}/login/reset-password/${resetToken}`)
 }
 
 export const signJwt = ({id}) => {

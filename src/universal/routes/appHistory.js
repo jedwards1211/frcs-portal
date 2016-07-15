@@ -2,5 +2,5 @@ import { useRouterHistory } from 'react-router'
 import { createHistory } from 'history'
 
 export default useRouterHistory(createHistory)({
-  basename: '/portal'
+  basename: process.env.BASENAME || '/'
 })

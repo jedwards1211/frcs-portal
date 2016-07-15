@@ -9,6 +9,9 @@ RUN npm install
 COPY .babelrc .eslintrc /usr/src/app/
 COPY webpack /usr/src/app/webpack
 COPY src /usr/src/app/src
+ENV ROOT_URL=http://fisherridge.net \
+    BASENAME=/portal
+
 RUN DOCKER_BUILD=true npm run build
 
 EXPOSE 80 389
@@ -16,9 +19,6 @@ EXPOSE 80 389
 ENV DATABASE_HOST=localhost \
     DATABASE_PORT=28015 \
     DATABASE_SSL=false \
-    BASENAME=/portal \
-    PROTOCOL=http \
-    HOST=localhost \
     PORT=80 \
     LDAP_PORT=389 \
     LDAP_ORGANIZATION="Detroit Urban Grotto" \

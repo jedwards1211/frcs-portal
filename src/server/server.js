@@ -15,7 +15,7 @@ export const options = {
   workers: 1 || numCpus,
   brokers: 1,
   port: process.env.PORT || 3000,
-  appName: 'Meatier',
+  appName: process.env.APP_NAME,
   allowClientPublish: false,
   initController: path.join(__dirname, '/init.js'),
   workerController: path.join(__dirname, '/worker.js'),

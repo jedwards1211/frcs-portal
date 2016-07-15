@@ -8,10 +8,7 @@ export function parseJSON(response) {
 }
 
 export function hostUrl() {
-  const host = process.env.HOST
-  const protocol = process.env.PROTOCOL
-  const port = process.env.PORT
-  return `${protocol}://${host}:${port}`
+  return process.env.ROOT_URL + (process.env.BASENAME || '')
 }
 
 export function postJSON(route, obj) {

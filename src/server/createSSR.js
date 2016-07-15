@@ -10,8 +10,16 @@ import {join, basename} from 'path'
 import promisify from 'es6-promisify'
 import thunkMiddleware from 'redux-thunk'
 import {Map as iMap} from 'immutable'
+import {getDotenv} from '../universal/utils/dotenv'
+
+getDotenv()
 
 // https://github.com/systemjs/systemjs/issues/953
+
+const env = {
+  BASENAME: process.env.BASENAME,
+  ROOT_URL: process.env.ROOT_URL,
+}
 
 function renderApp(res, store, assets, renderProps) {
   const location = renderProps && renderProps.location && renderProps.location.pathname || '/'
@@ -21,6 +29,7 @@ function renderApp(res, store, assets, renderProps) {
       title="Detroit Urban Grotto"
       store={store}
       assets={assets}
+      env={env}
       renderProps={renderProps}
                                           />)
   res.write('<!DOCTYPE html>')
