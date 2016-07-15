@@ -8,20 +8,18 @@ RUN npm install
 
 COPY .babelrc .eslintrc /usr/src/app/
 COPY webpack /usr/src/app/webpack
-COPY src /usr/src/app/src
+COPY src/.eslintrc /usr/src/app/
+COPY src/universal /usr/src/app/src/universal
+COPY src/server /usr/src/app/src/server
 
-ARG ROOT_URL=http://localhost:3000
-ARG BASENAME=""
-ENV ROOT_URL=$ROOT_URL \
-    BASENAME=$BASENAME
-
-RUN DOCKER_BUILD=true npm run build
-
-EXPOSE 80
+EXPOSE 389
 
 ENV DATABASE_HOST=localhost \
     DATABASE_PORT=28015 \
     DATABASE_SSL=false \
-    PORT=80
+    PORT=80 \
+    LDAP_PORT=389 \
+    LDAP_ORGANIZATION="Detroit Urban Grotto" \
+    LDAP_BASE="dc=fisherridge,dc=net"
 
 CMD ["npm", "run", "prod"]
