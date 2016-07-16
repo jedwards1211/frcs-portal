@@ -1,0 +1,2 @@
+const {PROTOCOL, HOST, PUBLIC_PORT, BASENAME} = process.env
+export default {PROTOCOL, HOST, PUBLIC_PORT, BASENAME}
