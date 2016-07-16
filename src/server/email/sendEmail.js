@@ -3,8 +3,7 @@ import logger from '../logger'
 
 ;['MAILGUN_API_KEY', 'EMAIL_DOMAIN', 'EMAIL_SENDER_NAME', 'EMAIL_USER'].forEach(v => {
   if (!process.env[v]) {
-    console.error('missing required environment variable: ', v)
-    process.exit(1)
+    console.warn('missing required environment variable: ', v)
   }
 })
 
