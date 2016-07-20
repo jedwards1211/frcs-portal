@@ -39,11 +39,13 @@ export default {
           throw errorObj(error)
         }
       } else {
-        let memberInfo
-        try {
-          memberInfo = await getMemberInfo({email})
-        } catch (err) {
-          throw new errorObj({_error: err.message})
+        let memberInfo = {}
+        if (!process.env.BYPASS_MEMBER_LOOKUP) {
+          try {
+            memberInfo = await getMemberInfo({email})
+          } catch (err) {
+            throw new errorObj({_error: err.message})
+          }
         }
 
         const {firstName, lastName} = memberInfo
@@ -56,7 +58,6 @@ export default {
         const userDoc = {
           id,
           username,
-          groupnames: [],
           email,
           firstName,
           lastName,
@@ -72,6 +73,13 @@ export default {
         const newUser = await r.table('users').insert(userDoc)
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
+        }
+        const frcsGroup = await r.table('groups').getAll('frcs', {index: 'groupname'}).limit(1).run()[0]
+        if (frcsGroup && frcsGroup.id) {
+          const newMembership = await r.table('users_groups').insert({user_id: id, group_id: frcsGroup.id}).run()
+          if (!newMembership.inserted) {
+            throw errorObj({_error: 'Failed to add you to the frcs group'})
+          }
         }
         await sendVerifyEmail(email, verifiedEmailToken)
         const authToken = signJwt({id})

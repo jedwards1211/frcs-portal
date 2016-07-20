@@ -13,11 +13,11 @@ const defaultPorts = {
 }
 
 export function hostUrl() {
-  const PROTOCOL = process.env.PROTOCOL
-  const HOST = process.env.HOST
-  const PUBLIC_PORT = process.env.PUBLIC_PORT
-  const BASENAME = process.env.BASENAME || ''
-  return `${PROTOCOL}://${HOST}${PUBLIC_PORT === defaultPorts[PROTOCOL] ? '' : ':' + PUBLIC_PORT}${BASENAME}`
+  if (typeof window !== 'undefined' && window.location) {
+    const {origin, protocol, host} = window.location;
+    return origin || `${protocol}//${host}`;
+  }
+  return 'http://localhost:3000';
 }
 
 export function postJSON(route, obj) {

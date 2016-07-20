@@ -4,11 +4,21 @@ import crypto from 'crypto'
 import {errorObj} from '../utils'
 import bcrypt from 'bcrypt'
 import promisify from 'es6-promisify'
-import {hostUrl} from '../../../../universal/utils/fetching'
 
 import sendEmail from '../../../email/sendEmail'
 
 const compare = promisify(bcrypt.compare)
+
+const defaultPorts = {
+  http: 80,
+  https:443
+}
+
+function hostUrl() {
+  const {PROTOCOL, HOST, PUBLIC_PORT} = process.env
+  if (PUBLIC_PORT !== defaultPorts[PROTOCOL]) return `${PROTOCOL}://${HOST}:${PUBLIC_PORT}`
+  return `${PROTOCOL}://${HOST}`
+}
 
 export const getUserGroupnames = async userId => {
   return (await r.table('users_groups')

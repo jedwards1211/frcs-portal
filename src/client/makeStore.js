@@ -2,13 +2,13 @@ import {createStore, applyMiddleware, compose} from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import optimisticMiddleware from '../universal/redux/middleware/optimisticMiddleware'
 import {routerMiddleware} from 'react-router-redux'
-import appHistory from '../universal/routes/appHistory'
+import {browserHistory} from 'react-router'
 import makeReducer from '../universal/redux/makeReducer'
 
 export default initialState => {
   let store
   const reducer = makeReducer()
-  const reduxRouterMiddleware = routerMiddleware(appHistory)
+  const reduxRouterMiddleware = routerMiddleware(browserHistory)
   const middlewares = [
     reduxRouterMiddleware,
     optimisticMiddleware,

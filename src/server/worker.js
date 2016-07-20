@@ -15,8 +15,6 @@ import setupDB from './database/setupDB'
 
 const PROD = process.env.NODE_ENV === 'production'
 
-const basename = process.env.BASENAME || ''
-
 export function run(worker) {
   setupDB(true)
   
@@ -48,11 +46,11 @@ export function run(worker) {
   })
   if (PROD) {
     app.use(compression())
-    app.use(basename + '/static', express.static('build'))
+    app.use('/static', express.static('build'))
   }
 
   // HTTP GraphQL endpoint
-  app.post(basename + '/graphql', jwt({secret: process.env.JWT_SECRET, credentialsRequired: false}), httpGraphQLHandler)
+  app.post('/graphql', jwt({secret: process.env.JWT_SECRET, credentialsRequired: false}), httpGraphQLHandler)
 
   // server-side rendering
   app.get('*', createSSR)
