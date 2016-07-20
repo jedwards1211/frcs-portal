@@ -119,7 +119,12 @@ server.search(base.dn, authorize, async (req, res, next) => {
         uid: rUser.username,
         mail: rUser.email,
       }
-      if (rUser.groupnames.length) attributes.memberOf = rUser.groupnames
+      if (rUser.groupnames.length) {
+        attributes.memberOf = [
+          ...rUser.groupnames.map(groupname => `cn=${groupname},${groups.dn}`),
+          ...rUser.groupnames.map(groupname => `cn=${groupname},${ocgroups.dn}`)
+        ]
+      }
       const user = {
         dn: `uid=${rUser.username},${users.dn}`,
         objectclass: [
