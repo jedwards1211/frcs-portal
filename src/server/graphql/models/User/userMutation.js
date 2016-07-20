@@ -40,7 +40,7 @@ export default {
         }
       } else {
         let memberInfo = {}
-        if (!process.env.BYPASS_MEMBER_LOOKUP) {
+        if (!process.env.OFFLINE_MODE) {
           try {
             memberInfo = await getMemberInfo({email})
           } catch (err) {
@@ -59,6 +59,7 @@ export default {
           id,
           username,
           email,
+          groupnames: [],
           firstName,
           lastName,
           createdAt: new Date(),
@@ -74,12 +75,13 @@ export default {
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
         }
-        const frcsGroup = await r.table('groups').getAll('frcs', {index: 'groupname'}).limit(1).run()[0]
+        const frcsGroup = (await r.table('groups').getAll('frcs', {index: 'groupname'}).limit(1).coerceTo('array').run())[0]
         if (frcsGroup && frcsGroup.id) {
           const newMembership = await r.table('users_groups').insert({user_id: id, group_id: frcsGroup.id}).run()
           if (!newMembership.inserted) {
             throw errorObj({_error: 'Failed to add you to the frcs group'})
           }
+          userDoc.groupnames.push(frcsGroup.groupname)
         }
         await sendVerifyEmail(email, verifiedEmailToken)
         const authToken = signJwt({id})

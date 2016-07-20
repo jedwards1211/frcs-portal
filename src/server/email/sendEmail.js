@@ -17,6 +17,7 @@ async function sendEmail(options) {
     ...options
   }
   logger.log('[email] ', email)
+  if (process.env.OFFLINE_MODE) return Promise.resolve()
   return mg.messages.create(EMAIL_DOMAIN, email).then(res => {
     logger.log('[email] ', res)
     return res
