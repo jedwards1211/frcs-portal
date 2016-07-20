@@ -1,5 +1,8 @@
 import r from './rethinkdriver'
 import logger from '../logger'
+import settings from '../settings'
+
+const groups = settings.groups || []
 
 // ava is the test database
 const databases = ['portal', 'ava']
@@ -8,14 +11,6 @@ const database = [
   {name: 'users', indices: ['username', 'email']},
   {name: 'groups', indices: ['groupname']},
   {name: 'users_groups', indices: ['user_id', 'group_id']},
-  {name: 'init_user_groups', indices: ['email']},
-  {name: 'lanes', indices: ['userId']},
-  {name: 'notes', indices: ['laneId']}
-]
-
-const groupnames = [
-  'frcs',
-  'frcs-admin'
 ]
 
 export default async function setupDB(isUpdate = false) {
@@ -56,7 +51,8 @@ async function reset({db, isUpdate}) {
       return Promise.resolve(false)
     }))
   }))
-  await Promise.all(groupnames.map(groupname => {
+  await Promise.all(groups.map(groupname => {
+    logger.log(`>>Adding group ${groupname} in: ${db}`)
     return r.branch(r.db(db).table('groups').getAll(groupname, {index: 'groupname'}).isEmpty(),
       r.db(db).table('groups').insert({groupname}),
       { }).run()

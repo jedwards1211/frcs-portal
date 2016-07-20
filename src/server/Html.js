@@ -11,19 +11,21 @@ export default class Html extends Component {
     title: PropTypes.string.isRequired,
     assets: PropTypes.object,
     env: PropTypes.object,
+    settings: PropTypes.object,
     renderProps: PropTypes.object
   }
 
   render() {
     const PROD = process.env.NODE_ENV === 'production'
-    const {title, store, assets, renderProps} = this.props
+    const {title, store, assets, settings, renderProps} = this.props
     const {manifest, app, vendor} = assets || {}
     const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`
-    const env = `window.__env__ = ${JSON.stringify(this.props.env)}`
     const root = PROD && renderToString(
       <Provider store={store}>
         <RouterContext {...renderProps} />
       </Provider>)
+    
+    const settingsScript = `window.__settings__ = ${JSON.stringify(settings || {})}`
     
     return (
       <html>
@@ -36,7 +38,7 @@ export default class Html extends Component {
           <title>{title}</title>
         </head>
         <body>
-          <script dangerouslySetInnerHTML={{__html: env}}/>
+          <script dangerouslySetInnerHTML={{__html: settingsScript}}/>
           <script dangerouslySetInnerHTML={{__html: initialState}}/>
           {PROD ? <div id="root" dangerouslySetInnerHTML={{__html: root}}></div> : <div id="root"></div>}
           {PROD && <script dangerouslySetInnerHTML={{__html: manifest.text}} />}

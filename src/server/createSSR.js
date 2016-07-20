@@ -10,7 +10,7 @@ import {join, basename} from 'path'
 import promisify from 'es6-promisify'
 import thunkMiddleware from 'redux-thunk'
 import {Map as iMap} from 'immutable'
-import clientEnv from './clientEnv'
+import settings from './settings'
 
 // https://github.com/systemjs/systemjs/issues/953
 
@@ -22,7 +22,7 @@ function renderApp(res, store, assets, renderProps) {
     title="Detroit Urban Grotto"
     store={store}
     assets={assets}
-    env={clientEnv}
+    settings={{public: settings.public || {}}}
     renderProps={renderProps}
   />);
   res.write('<!DOCTYPE html>');

@@ -1,3 +1,4 @@
+import fs from 'fs'
 import r from '../../../database/rethinkdriver'
 import {User, UserWithAuthToken, GoogleProfile} from './userSchema'
 import {GraphQLUsernameType, GraphQLEmailType, GraphQLPasswordType} from '../types'
@@ -10,10 +11,14 @@ import {isLoggedIn} from '../authorization'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import uuid from 'node-uuid'
+import logger from '../../../logger'
+import settings from '../../../settings'
 
 import getMemberInfo from '../../../members/getMemberInfo'
 
 const hash = promisify(bcrypt.hash)
+
+const initUserGroups = settings.initUserGroups || {}
 
 export default {
   createUser: {
@@ -75,13 +80,16 @@ export default {
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
         }
-        const frcsGroup = (await r.table('groups').getAll('frcs', {index: 'groupname'}).limit(1).coerceTo('array').run())[0]
-        if (frcsGroup && frcsGroup.id) {
-          const newMembership = await r.table('users_groups').insert({user_id: id, group_id: frcsGroup.id}).run()
-          if (!newMembership.inserted) {
-            throw errorObj({_error: 'Failed to add you to the frcs group'})
+        const requestGroupNames = (initUserGroups.dugMembers || [])
+          .concat(initUserGroups.byEmail && initUserGroups.byEmail[email] || [])
+
+        const groupIds = await r.table('groups').getAll(...requestGroupNames, {index: 'groupname'})
+          .map(g => g('id')).coerceTo('array').run()
+        if (groupIds.length) {
+          const results = await r.table('users_groups').insert(groupIds.map(group_id => ({user_id: id, group_id}))).run()
+          if (results.inserted !== groupIds.length) {
+            throw errorObj({_error: 'Failed to add you to some groups'})
           }
-          userDoc.groupnames.push(frcsGroup.groupname)
         }
         await sendVerifyEmail(email, verifiedEmailToken)
         const authToken = signJwt({id})
