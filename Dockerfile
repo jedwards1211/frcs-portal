@@ -15,7 +15,7 @@ ENV BASENAME=$BASENAME
 
 RUN DOCKER_BUILD=true npm run build
 
-EXPOSE 80
+EXPOSE 80 389
 
 ENV PROTOCOL=http \
     HOST=localhost \
@@ -24,6 +24,9 @@ ENV PROTOCOL=http \
     DATABASE_HOST=localhost \
     DATABASE_PORT=28015 \
     DATABASE_SSL=false \
-    PORT=80
+    PORT=80 \
+    LDAP_PORT=389 \
+    LDAP_ORGANIZATION="Detroit Urban Grotto" \
+    LDAP_BASE="dc=fisherridge,dc=net"
 
 CMD ["npm", "run", "prod"]
