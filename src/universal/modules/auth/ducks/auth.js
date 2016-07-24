@@ -206,8 +206,8 @@ export const loginUser = (dispatch, variables, redirect) => {
   dispatch({type: LOGIN_USER_REQUEST})
   return new Promise(async (resolve, reject) => {
     const query = `
-    query($username: Username, $email: Email, $password: Password!){
-       payload: login(username: $username, email: $email, password: $password)
+    query($usernameOrEmail: String!, $password: String!){
+       payload: login(usernameOrEmail: $usernameOrEmail, password: $password)
        ${userWithAuthToken}
     }`
     const {error, data} = await fetchGraphQL({query, variables})

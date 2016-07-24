@@ -2,7 +2,6 @@ import r from '../../../database/rethinkdriver'
 import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql'
 import {User, UserWithAuthToken} from './userSchema'
 import {errorObj} from '../utils'
-import {GraphQLUsernameType, GraphQLEmailType, GraphQLPasswordType} from '../types'
 import {getUserByUsername, getUserByEmail, signJwt, getAltLoginMessage, getUserGroupnames} from './helpers'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
@@ -29,14 +28,12 @@ export default {
   login: {
     type: UserWithAuthToken,
     args: {
-      username: {type: GraphQLUsernameType},
-      email: {type: GraphQLEmailType},
-      password: {type: new GraphQLNonNull(GraphQLPasswordType)}
+      usernameOrEmail: {type: new GraphQLNonNull(GraphQLString)},
+      password: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, args) {
-      const {username, email, password} = args
-      const user = (username && await getUserByUsername(username)) ||
-        (email && await getUserByEmail(email))
+      const {usernameOrEmail, password} = args
+      const user = (await getUserByUsername(usernameOrEmail)) || (await getUserByEmail(usernameOrEmail))
       if (!user) {
         throw errorObj({_error: 'Login failed', email: 'User not found'})
       }
