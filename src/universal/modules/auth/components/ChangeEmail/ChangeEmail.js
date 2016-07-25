@@ -21,7 +21,7 @@ export default class ChangeEmail extends Component {
   render() {
     const {fields: {password, newEmail}, error,
       changeEmailError, handleSubmit, submitting} = this.props
-    
+
     const localError = error || (changeEmailError && changeEmailError._error)
     return (
       <div className={styles.changeEmailForm}>
@@ -36,7 +36,7 @@ export default class ChangeEmail extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={password.touched && password.error || ''}
           />
- 
+
           <TextField
               {...newEmail}
               type="email"

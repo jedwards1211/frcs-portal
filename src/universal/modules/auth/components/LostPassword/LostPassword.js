@@ -5,9 +5,16 @@ import LinearProgress from 'material-ui/LinearProgress'
 import styles from './LostPassword.css'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 import {emailPasswordReset} from '../../ducks/auth'
-import {emailAuthSchema} from '../../schemas/auth'
+import validateFields from 'universal/utils/validateFields'
+import required from 'universal/utils/required'
 
-@meatierForm({form: 'lostPasswordForm', fields: ['email'], schema: emailAuthSchema})
+@meatierForm({
+  form: 'lostPasswordForm',
+  fields: ['email'],
+  validate: validateFields({
+    email: required
+  })
+})
 export default class LostPassword extends Component {
   static propTypes = {
     fields: PropTypes.object,

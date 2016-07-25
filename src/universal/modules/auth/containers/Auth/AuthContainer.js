@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react'
-import {signupAuthSchema, loginAuthSchema} from '../../schemas/auth'
 import {connect} from 'react-redux'
 import Auth from '../../components/Auth/Auth'
 import {ensureState} from 'redux-optimistic-ui'
@@ -8,21 +7,28 @@ import validateFields from 'universal/utils/validateFields'
 import validateUsername from 'universal/utils/validateUsername'
 import validatePassword from 'universal/utils/validatePassword'
 import validateEmail from 'universal/utils/validateEmail'
+import required from 'universal/utils/required'
 
 const SignUpContainer = meatierForm({
-  form: 'signup', 
-  fields: ['username', 'email', 'password', 'confirmPassword'], 
-  schema: signupAuthSchema,
+  form: 'signup',
+  fields: ['username', 'email', 'password', 'confirmPassword'],
   validate: validateFields({
-    username: validateUsername,
-    email: validateEmail,
-    password: validatePassword
+    username: [required, validateUsername],
+    email: [required, validateEmail],
+    password: [required, validatePassword],
+    confirmPassword: [required, (confirmPassword, {password}) => {
+      if (confirmPassword !== password) return {valid: false, error: 'Passwords do not match'}
+      return {valid: true}
+    }]
   })
 })(Auth)
 const LoginContainer = meatierForm({
-  form: 'login', 
-  fields: ['email', 'password'], 
-  schema: loginAuthSchema
+  form: 'login',
+  fields: ['email', 'password'],
+  validate: validateFields({
+    email: required,
+    password: required
+  })
 })(Auth)
 
 // use the same form to retain form values (there's really no difference between login and signup, it's just for show)

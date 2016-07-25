@@ -1,3 +1,4 @@
+/* eslint-env browser */
 let settings
 
 if (__CLIENT__) {

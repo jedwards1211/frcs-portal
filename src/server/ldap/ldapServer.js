@@ -139,9 +139,9 @@ server.search(base.dn, authorize, async (req, res, next) => {
         res.send(user)
       }
     })
-    
+
     let groupsQuery = r.table('groups')
-    
+
     if (req.dn.childOf(groups.dn)) {
       const cnObj = req.dn.rdns[0].attrs.cn
       const cn = cnObj && cnObj.value
@@ -155,7 +155,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         .map(u => u('username'))
         .coerceTo('array')
     })).run()
-    
+
     rGroups.forEach(rGroup => {
       const attributes = {
         entryuuid: rGroup.id,

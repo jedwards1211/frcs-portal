@@ -3,10 +3,19 @@ import {connect} from 'react-redux'
 import {ensureState} from 'redux-optimistic-ui'
 import ChangeEmail from '../../components/ChangeEmail/ChangeEmail'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
-import {changeEmailSchema} from '../../schemas/auth'
+import validateFields from 'universal/utils/validateFields'
+import validateEmail from 'universal/utils/validateEmail'
+import required from 'universal/utils/required'
 
 @connect(mapStateToProps)
-@meatierForm({form: 'changeEmailForm', fields: ['password', 'newEmail'], schema: changeEmailSchema})
+@meatierForm({
+  form: 'changeEmailForm',
+  fields: ['password', 'newEmail'],
+  validate: validateFields({
+    password: required,
+    newEmail: [required, validateEmail]
+  })
+})
 export default class ChangeEmailContainer extends Component {
   static propTypes = {
     location: PropTypes.object,

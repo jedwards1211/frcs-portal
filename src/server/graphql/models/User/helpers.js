@@ -66,7 +66,7 @@ ${message}
 
 ${url}
 `
-  
+
   return await sendEmail({
     to: [email],
     subject: 'fisherridge.net email verification',
@@ -76,7 +76,7 @@ ${url}
 }
 
 export const sendResetPasswordEmail = async (email, resetToken) => {
-  const heading = "Password Reset Requested" 
+  const heading = "Password Reset Requested"
   const message = `Somebody, hopefully you, requested to change your password for fisherridge.net. 
 Click on the following link to change it:`
   const url = `${hostUrl()}/login/reset-password/${resetToken}`
@@ -89,7 +89,7 @@ ${message}
 
 ${url}
 `
-  
+
   return await sendEmail({
     to: [email],
     subject: 'fisherridge.net password reset',

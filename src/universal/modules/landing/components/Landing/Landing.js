@@ -3,8 +3,8 @@ import Navigation from 'universal/components/Navigation/Navigation'
 import MenuItem from 'material-ui/MenuItem'
 import Drawer from 'material-ui/Drawer'
 import AppBar from 'material-ui/AppBar'
-import IconButton from 'material-ui/IconButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import IconButton from 'material-ui/IconButton'
+import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import styles from './Landing.css'
 import {push} from 'react-router-redux'
 
@@ -16,13 +16,13 @@ export default class Landing extends Component {
     showMenu: PropTypes.bool.isRequired,
     isAuthenticated: PropTypes.bool.isRequired
   };
-  
+
   push = location => {
     const {dispatch} = this.props
     dispatch(setShowMenu(false))
     dispatch(push(location))
   };
-  
+
   render() {
     const {dispatch, isAuthenticated, showMenu, children} = this.props
     return (
@@ -30,10 +30,10 @@ export default class Landing extends Component {
         <Navigation dispatch={dispatch} showMenu={showMenu} isAuthenticated={isAuthenticated} />
         <Drawer open={showMenu}>
           <AppBar
-            iconElementLeft={
+              iconElementLeft={
               <IconButton onTouchTap={() => dispatch(setShowMenu(false))}><NavigationClose /></IconButton>
             }
-            title="Menu"
+              title="Menu"
           />
           {isAuthenticated && <MenuItem onTouchTap={() => this.push('/logout')}>Log Out</MenuItem>}
           {isAuthenticated && <MenuItem onTouchTap={() => this.push('/account/changeEmail')}>Change Email</MenuItem>}

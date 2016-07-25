@@ -1,5 +1,5 @@
 import Schema from './rootSchema'
-import {graphql, validate} from 'graphql'
+import {graphql} from 'graphql'
 import {prepareClientError} from './models/utils'
 
 export default async (req, res) => {

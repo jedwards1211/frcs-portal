@@ -24,15 +24,19 @@ export default class Home extends Component {
     user: PropTypes.object,
     dispatch: PropTypes.func,
   };
-  
+
   copySvnURL = () => {
-    this.svnTextField.select()
-    document.execCommand('copy')
+    if (typeof document !== 'undefined') {
+      this.svnTextField.select()
+      /* eslint-disable no-undef */
+      document.execCommand('copy')
+      /* eslint-enable no-undef */
+    }
   };
-  
+
   render() {
     const {isAuthenticating, isAuthenticated, user, dispatch} = this.props
-    
+
     if (isAuthenticating) {
       return (
         <div>
@@ -45,9 +49,11 @@ export default class Home extends Component {
     if (isAuthenticated && user) {
       const displayName = user.get('firstName') || user.get('username')
       const isVerified = user.getIn(['strategies', 'local', 'isVerified'])
-      
-      const {hostname} = window.location
-      
+
+      /* eslint-disable no-undef */
+      const {hostname} = typeof window !== 'undefined' ? window.location : ''
+      /* eslint-enable no-undef */
+
       const owncloudLink = path => `${hostUrl().replace(/\/\/(portal\.)?/, '//owncloud.')}/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
 
       return (
@@ -58,22 +64,24 @@ export default class Home extends Component {
               <SettingsContainer>
                 {({settings: {current}}) => {
                   const {memberSpreadsheet} = current || {}
-                  return (memberSpreadsheet 
+                  return (memberSpreadsheet
                     ? <div className={styles.services}>
                       <Paper className={styles.directorySection}>
                         <ListItem leftIcon={<Contacts />}
-                                  href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.directorySheetId}`}>
+                            href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.directorySheetId}`}
+                        >
                           <strong>Member Directory</strong>
                         </ListItem>
                       </Paper>
                       <Paper className={styles.accountingSection}>
                         <ListItem leftIcon={<Money />}
-                                  href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.journalSheetId}`}>
+                            href={`https://docs.google.com/spreadsheets/d/${memberSpreadsheet.id}/edit#gid=${memberSpreadsheet.journalSheetId}`}
+                        >
                           <strong>Accounting Spreadsheet</strong>
                         </ListItem>
                       </Paper>
                     </div>
-                    : <div/>
+                    : <div />
                   )
                 }}
               </SettingsContainer>
@@ -107,9 +115,10 @@ export default class Home extends Component {
                     <Divider />
                     <ListItem rightIcon={<ContentCopy />} onTouchTap={this.copySvnURL}>
                       <strong>URL: </strong>
-                      <TextField style={{height: 'initial'}} underlineStyle={{bottom: 0}} 
-                                 value={`svn+ssh://${hostname}/svn`}
-                                 ref={c => this.svnTextField = c} />
+                      <TextField style={{height: 'initial'}} underlineStyle={{bottom: 0}}
+                          value={`svn+ssh://${hostname}/svn`}
+                          ref={c => this.svnTextField = c}
+                      />
                     </ListItem>
                     <ListItem href="http://www.smartsvn.com/download" rightIcon={<FileDownload />}>
                       <strong>
@@ -136,7 +145,7 @@ export default class Home extends Component {
         </div>
       )
     }
-    
+
     return (
       <div className={styles.home}>
         <h3 className={styles.header}>Welcome to our member portal!</h3>

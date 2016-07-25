@@ -45,7 +45,7 @@ export default ComposedComponent => {
         key = newKey
         const authToken = localStorage.getItem(socketOptions.authTokenName)
         if (hasAuthError || !authToken) {
-          dispatch(push('/login?next=%2Fkanban'))
+          dispatch(push('/login?next=%2F'))
         }
       }
     }

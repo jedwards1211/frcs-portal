@@ -2,6 +2,7 @@ import r from '../../../database/rethinkdriver'
 import {Settings} from './settingsSchema'
 import {isLoggedIn} from '../authorization'
 import membersConfig from '../../../members/config'
+import {errorObj} from '../utils'
 
 export default {
   getSettings: {

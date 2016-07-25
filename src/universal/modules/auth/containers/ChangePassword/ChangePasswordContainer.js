@@ -3,17 +3,21 @@ import {connect} from 'react-redux'
 import {ensureState} from 'redux-optimistic-ui'
 import ChangePassword from '../../components/ChangePassword/ChangePassword'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
-import {changePasswordSchema} from '../../schemas/auth'
 import validateFields from 'universal/utils/validateFields'
 import validatePassword from 'universal/utils/validatePassword'
+import required from 'universal/utils/required'
 
 @connect(mapStateToProps)
 @meatierForm({
-  form: 'changePasswordForm', 
-  fields: ['oldPassword', 'newPassword', 'confirmPassword'], 
-  schema: changePasswordSchema,
+  form: 'changePasswordForm',
+  fields: ['oldPassword', 'newPassword', 'confirmPassword'],
   validate: validateFields({
-    newPassword: validatePassword
+    oldPassword: required,
+    newPassword: [required, validatePassword],
+    confirmPassword: [required, (confirmPassword, {newPassword}) => {
+      if (confirmPassword !== newPassword) return {valid: false, error: 'Passwords do not match'}
+      return {valid: true}
+    }]
   })
 })
 export default class ChangePasswordContainer extends Component {

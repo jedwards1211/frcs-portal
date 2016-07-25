@@ -15,8 +15,8 @@ export default class ResendVerifyEmail extends Component {
     this.props.dispatch(resendVerifyEmail())
   }
   render() {
-    const {error, resending} = this.props 
-    
+    const {error, resending} = this.props
+
     if (resending) {
       return (
         <div>
@@ -27,15 +27,15 @@ export default class ResendVerifyEmail extends Component {
         </div>
       )
     }
-    
+
     if (error) {
       return (
         <h3 style={{textAlign: 'center'}}>
-          Failed to send verification email: {error._error} 
+          Failed to send verification email: {error._error}
         </h3>
       )
     }
-    
+
     return null
   }
 }
@@ -45,6 +45,6 @@ function mapStateToProps(state, props) {
   const auth = state.get('auth')
   return {
     resending: auth.get('isResendingVerifyEmail'),
-    error: auth.get('resendVerifyEmailError').toJS() 
+    error: auth.get('resendVerifyEmailError').toJS()
   }
 }

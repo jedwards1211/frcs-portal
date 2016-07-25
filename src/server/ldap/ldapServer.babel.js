@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
     hook: false,
     ignore: /(\/\.|~$|\.json$)/i
   })) {
-    return 
+    return
   }
 }
 

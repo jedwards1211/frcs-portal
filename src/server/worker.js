@@ -17,7 +17,7 @@ const PROD = process.env.NODE_ENV === 'production'
 
 export function run(worker) {
   setupDB(true)
-  
+
   logger.log('   >> Worker PID:', process.pid)
   const app = express()
   const scServer = worker.scServer

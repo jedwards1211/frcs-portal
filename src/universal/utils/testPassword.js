@@ -6,6 +6,6 @@ owasp.config({
   minLength              : 10,
   minPhraseLength        : 20,
   minOptionalTestsToPass : 3
-});
+})
 
 export default password => owasp.test(password)

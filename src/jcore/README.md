@@ -1,1 +1,0 @@
-# mindfront-react-components

@@ -13,12 +13,12 @@ export default class SettingsContainer extends Component {
     children: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
-  
+
   componentWillMount() {
     const {dispatch, isAuthenticated} = this.props
     if (isAuthenticated) dispatch(fetchSettings())
   }
-  
+
   componentWillReceiveProps(nextProps) {
     const {dispatch, isAuthenticated, user} = nextProps
     if (isAuthenticated !== this.props.isAuthenticated || user !== this.props.user) dispatch(fetchSettings())

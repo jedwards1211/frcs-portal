@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import styles from './ChangePassword.css'
 import {changePassword} from '../../ducks/auth'
+import validatePassword from 'universal/utils/validatePassword'
 
 export default class ChangePassword extends Component {
   static propTypes = {
@@ -19,9 +20,11 @@ export default class ChangePassword extends Component {
     })
   }
   render() {
-    const {fields: {oldPassword, newPassword, confirmPassword}, error, 
+    const {fields: {oldPassword, newPassword, confirmPassword}, error,
       changePasswordError, handleSubmit, submitting} = this.props
-    
+
+    const passval = newPassword && newPassword.value && validatePassword(newPassword.value)
+
     const localError = error || (changePasswordError && changePasswordError._error)
     return (
       <div className={styles.changePasswordForm}>
@@ -36,13 +39,13 @@ export default class ChangePassword extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={oldPassword.touched && oldPassword.error || ''}
           />
- 
+
           <TextField
               {...newPassword}
               type="password"
               floatingLabelText="New Password"
               hintText={"oQyX9\"WXaE9"}
-              errorText={newPassword.touched && newPassword.error || ''}
+              errorText={(passval && passval.error) || (newPassword.touched && newPassword.error || '')}
           />
           <TextField
               {...confirmPassword}
@@ -51,7 +54,7 @@ export default class ChangePassword extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={confirmPassword.touched && confirmPassword.error || ''}
           />
-          
+
           <div className={styles.changePasswordButton}>
             <RaisedButton
                 label={submitting ? 'Changing password...' : 'Set new password'}

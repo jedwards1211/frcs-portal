@@ -37,10 +37,10 @@ export default class Auth extends Component {
   render() {
     const {fields: {username, email, password, confirmPassword}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
     const localError = error || authError._error
-    
-    const userval = username.value && validateUsername(username.value)
-    const passval = password.value && validatePassword(password.value)
-    
+
+    const userval = username && username.value && validateUsername(username.value)
+    const passval = !isLogin && password && password.value && validatePassword(password.value)
+
     /* eslint-disable react/jsx-handler-names*/
     return (
       <div className={styles.loginForm}>
@@ -76,11 +76,11 @@ export default class Auth extends Component {
 
           {!isLogin &&
             <TextField
-              {...confirmPassword}
-              type="password"
-              floatingLabelText="Confirm password"
-              hintText={"oQyX9\"WXaE9"}
-              errorText={confirmPassword.touched && confirmPassword.error || ''}
+                {...confirmPassword}
+                type="password"
+                floatingLabelText="Confirm password"
+                hintText={"oQyX9\"WXaE9"}
+                errorText={confirmPassword.touched && confirmPassword.error || ''}
             />
           }
 
@@ -89,10 +89,10 @@ export default class Auth extends Component {
               Forgot your password?
             </Link>
           )}
-          
+
           <div className={styles.loginButton}>
             <RaisedButton
-                label={isLogin 
+                label={isLogin
                   ? (isAuthenticating ? 'Logging In...' : 'Login')
                   : (isAuthenticating ? 'Signing Up...' : 'Sign up')
                 }
@@ -102,16 +102,16 @@ export default class Auth extends Component {
                 onClick={handleSubmit(this.onSubmit)}
             />
           </div>
-          
+
           {isLogin && (
             <div className={styles.notRegistered}>
               Not registered? <Link to={{pathname: '/signup'}}>Sign Up</Link>
-            </div>  
+            </div>
           )}
           {!isLogin && (
             <div className={styles.alreadyRegistered}>
               Already registered? <Link to={{pathname: '/login'}}>Log In</Link>
-            </div>  
+            </div>
           )}
         </form>
       </div>

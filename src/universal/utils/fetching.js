@@ -7,11 +7,6 @@ export function parseJSON(response) {
   return response.json()
 }
 
-const defaultPorts = {
-  http: 80,
-  https: 443
-}
-
 export function hostUrl() {
   if (typeof window !== 'undefined' && window.location) {
     const {origin, protocol, host} = window.location
@@ -29,7 +24,7 @@ export function baseUrl() {
     }
     return `${protocol}//${host}`
   }
-  return 'http://localhost:3000'  
+  return 'http://localhost:3000'
 }
 
 export function postJSON(route, obj) {

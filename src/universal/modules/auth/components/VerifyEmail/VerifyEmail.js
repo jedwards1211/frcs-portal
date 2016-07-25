@@ -16,7 +16,7 @@ export default class VerifyEmail extends Component {
     if (error && error._error) {
       status = `There was an error verifying your email: ${error._error}`
     } else {
-      status = isVerified 
+      status = isVerified
         ? (
           <div className={styles.form}>
             <p>Your email has been verified. Thank you!</p>

@@ -12,7 +12,7 @@ const getValues = promisify(sheets.spreadsheets.values.get, sheets.spreadsheets.
 
 const notFoundMessage = "Couldn't find your e-mail address in the member records.  Please use your e-mail address from the members spreadsheet; if it is out of date, ask one of the officers to update it for you."
 
-async function getMemberInfo(options): MemberInfo {
+async function getMemberInfo(options) {
   const {email} = options
 
   const rows = (await getValues({

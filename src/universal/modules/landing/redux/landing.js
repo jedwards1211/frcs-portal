@@ -8,11 +8,11 @@ const initialState = iMap({
 
 export default function landingReducer(state = initialState, action) {
   switch (action.type) {
-    case SET_SHOW_MENU: 
+    case SET_SHOW_MENU:
       return state.set('showMenu', action.payload)
-    default: 
+    default:
       return state
-  } 
+  }
 }
 
 export function setShowMenu(showMenu) {

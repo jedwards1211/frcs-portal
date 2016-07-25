@@ -24,9 +24,9 @@ export default class Html extends Component {
       <Provider store={store}>
         <RouterContext {...renderProps} />
       </Provider>)
-    
+
     const settingsScript = `window.__settings__ = ${JSON.stringify(settings || {})}`
-    
+
     return (
       <html>
         <head>
@@ -38,8 +38,8 @@ export default class Html extends Component {
           <title>{title}</title>
         </head>
         <body>
-          <script dangerouslySetInnerHTML={{__html: settingsScript}}/>
-          <script dangerouslySetInnerHTML={{__html: initialState}}/>
+          <script dangerouslySetInnerHTML={{__html: settingsScript}} />
+          <script dangerouslySetInnerHTML={{__html: initialState}} />
           {PROD ? <div id="root" dangerouslySetInnerHTML={{__html: root}}></div> : <div id="root"></div>}
           {PROD && <script dangerouslySetInnerHTML={{__html: manifest.text}} />}
           {PROD && <script src={vendor.js} />}

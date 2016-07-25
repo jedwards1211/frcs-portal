@@ -4,10 +4,22 @@ import RaisedButton from 'material-ui/RaisedButton'
 import LinearProgress from 'material-ui/LinearProgress'
 import styles from './ResetPassword.css'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
-import {passwordAuthSchema} from '../../schemas/auth'
 import {resetPassword} from '../../ducks/auth'
+import validateFields from 'universal/utils/validateFields'
+import validatePassword from 'universal/utils/validatePassword'
+import required from 'universal/utils/required'
 
-@meatierForm({form: 'resetPasswordForm', fields: ['password', 'confirmPassword'], schema: passwordAuthSchema})
+@meatierForm({
+  form: 'resetPasswordForm',
+  fields: ['password', 'confirmPassword'],
+  validate: validateFields({
+    password: [required, validatePassword],
+    confirmPassword: [required, (confirmPassword, {password}) => {
+      if (confirmPassword !== password) return {valid: false, error: 'Passwords do not match'}
+      return {valid: true}
+    }]
+  })
+})
 export default class ResetPassword extends Component {
   static propTypes = {
     fields: PropTypes.any,
@@ -20,6 +32,9 @@ export default class ResetPassword extends Component {
   }
   render() {
     const {fields: {password, confirmPassword}, error, handleSubmit, submitting} = this.props
+
+    const passval = password && password.value && validatePassword(password.value)
+
     return (
       <div className={styles.resetPasswordForm}>
         <h3>Reset your password</h3>
@@ -32,7 +47,7 @@ export default class ResetPassword extends Component {
               type="password"
               floatingLabelText="Password"
               hintText={"oQyX9\"WXaE9"}
-              errorText={password.touched && password.error || ''}
+              errorText={(passval && passval.error) || (password.touched && password.error || '')}
           />
           <TextField
               {...confirmPassword}
@@ -41,7 +56,7 @@ export default class ResetPassword extends Component {
               hintText={"oQyX9\"WXaE9"}
               errorText={confirmPassword.touched && confirmPassword.error || ''}
           />
-          
+
           <div className={styles.resetPasswordButton}>
             <RaisedButton
                 label={submitting ? "Changing password..." : "Set new password"}

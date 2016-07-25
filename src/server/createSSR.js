@@ -19,15 +19,15 @@ function renderApp(res, store, assets, renderProps) {
   // Needed so some components can render based on location
   store.dispatch(push(location))
   const htmlStream = renderToStaticMarkup(<Html
-    title="Detroit Urban Grotto"
-    store={store}
-    assets={assets}
-    settings={{public: settings.public || {}}}
-    renderProps={renderProps}
-  />);
-  res.write('<!DOCTYPE html>');
-  htmlStream.pipe(res, {end: false});
-  htmlStream.on('end', () => res.end());
+      title="Detroit Urban Grotto"
+      store={store}
+      assets={assets}
+      settings={{public: settings.public || {}}}
+      renderProps={renderProps}
+                                          />)
+  res.write('<!DOCTYPE html>')
+  htmlStream.pipe(res, {end: false})
+  htmlStream.on('end', () => res.end())
 }
 
 export default async function createSSR(req, res) {

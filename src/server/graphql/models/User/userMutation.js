@@ -1,4 +1,3 @@
-import fs from 'fs'
 import r from '../../../database/rethinkdriver'
 import {User, UserWithAuthToken} from './userSchema'
 import {getUserByUsername, getUserByEmail, getUserByAuthToken, checkPassword, sendVerifyEmail, sendResetPasswordEmail,
@@ -42,7 +41,7 @@ export default {
         if (validation.password.error) error.password = validation.password.error
         throw errorObj(error)
       }
-      
+
       const userByUsername = await getUserByUsername(username)
       const userByEmail = await getUserByEmail(email)
       const user = userByUsername || userByEmail
@@ -68,7 +67,7 @@ export default {
         }
 
         const {firstName, lastName} = memberInfo
-        
+
         // production should use 12+, but it's slow for dev
         const newHashedPassword = await hash(password, 10)
         const id = uuid.v4()
@@ -208,7 +207,7 @@ export default {
         throw errorObj({_error: 'Failed to update user'})
       }
       return true
-    } 
+    }
   },
   resendVerificationEmail: {
     type: GraphQLBoolean,
@@ -216,7 +215,7 @@ export default {
       isLoggedIn(authToken)
       const user = await getUserByAuthToken(authToken)
       const {id} = user
-      
+
       if (user.strategies && user.strategies.local && user.strategies.local.isVerified) {
         throw errorObj({_error: 'Email already verified'})
       }

@@ -20,7 +20,6 @@ const srcDir = path.join(root, 'src')
 const prefetches = [
   'react-dnd/lib/index.js',
   'joi/lib/index.js',
-  'universal/modules/kanban/containers/Kanban/KanbanContainer.js'
 ]
 
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier))
@@ -72,7 +71,7 @@ export default {
     }),
     new webpack.ProvidePlugin({
       // inject certain process.env variables provided by the server
-      process: 'client/process.js' 
+      process: 'client/process.js'
     }),
     new HappyPack({
       loaders: ['babel'],

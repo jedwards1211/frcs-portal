@@ -1,5 +1,4 @@
 import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql'
-import {GraphQLUsernameType, GraphQLEmailType, GraphQLGroupnameType} from '../types'
 import {resolveForAdmin} from '../utils'
 
 const LocalStrategy = new GraphQLObjectType({
@@ -37,9 +36,9 @@ export const User = new GraphQLObjectType({
   description: 'The user account',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The userId'},
-    username: {type: new GraphQLNonNull(GraphQLUsernameType), description: 'The username'},
-    email: {type: new GraphQLNonNull(GraphQLEmailType), description: 'The user email'},
-    groupnames: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLGroupnameType))), 
+    username: {type: new GraphQLNonNull(GraphQLString), description: 'The username'},
+    email: {type: new GraphQLNonNull(GraphQLString), description: 'The user email'},
+    groupnames: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The names of the groups the user belongs to'},
     firstName: {type: GraphQLString, description: 'First name'},
     lastName: {type: GraphQLString, description: 'Last name'},
