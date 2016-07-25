@@ -5,6 +5,8 @@ import LinearProgress from 'material-ui/LinearProgress'
 import styles from './Auth.css'
 import {Link} from 'react-router'
 import {loginUser, signupUser, oauthLogin} from '../../ducks/auth'
+import validateUsername from 'universal/utils/validateUsername'
+import validatePassword from 'universal/utils/validatePassword'
 
 export default class Auth extends Component {
   static propTypes = {
@@ -35,6 +37,10 @@ export default class Auth extends Component {
   render() {
     const {fields: {username, email, password, confirmPassword}, handleSubmit, isLogin, error, isAuthenticating, authError} = this.props
     const localError = error || authError._error
+    
+    const userval = username.value && validateUsername(username.value)
+    const passval = password.value && validatePassword(password.value)
+    
     /* eslint-disable react/jsx-handler-names*/
     return (
       <div className={styles.loginForm}>
@@ -47,7 +53,7 @@ export default class Auth extends Component {
                 {...username}
                 type="text"
                 hintText="jdoe"
-                errorText={username && username.touched && username.error || ''}
+                errorText={(userval && userval.error) || (username && username.touched && username.error || '')}
                 floatingLabelText="Username"
             />
           }
@@ -65,7 +71,7 @@ export default class Auth extends Component {
               type="password"
               floatingLabelText="Password"
               hintText={"oQyX9\"WXaE9"}
-              errorText={password.touched && password.error || ''}
+              errorText={(passval && passval.error) || (password.touched && password.error || '')}
           />
 
           {!isLogin &&
