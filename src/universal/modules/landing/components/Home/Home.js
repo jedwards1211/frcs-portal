@@ -38,7 +38,7 @@ export default class Home extends Component {
       
       const {hostname} = window.location
       
-      const owncloudLink = path => `${hostUrl().replace(/\\(portal\.)/, '\\owncloud.')}/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
+      const owncloudLink = path => `${hostUrl().replace(/\/\/(portal\.)?/, '//owncloud.')}/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
 
       return (
         <div className={styles.home}>
