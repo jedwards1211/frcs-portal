@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react'
 import styles from './VerifyEmail.css'
-import CircularProgress from 'material-ui/CircularProgress'
+import LinearProgress from 'material-ui/LinearProgress'
 import {Link} from 'react-router'
 import RaisedButton from 'material-ui/RaisedButton'
 
@@ -23,9 +23,12 @@ export default class VerifyEmail extends Component {
             <RaisedButton secondary linkButton containerElement={<Link to="/" />} label="Home" />
           </div>
         )
-        : <div className={styles.form}>
-          <CircularProgress /> Your email is currently being verified...
-        </div>
+        : (
+          <div className={styles.form}>
+            <p>Your email is currently being verified...</p>
+            <LinearProgress />
+          </div>
+        )
     }
 
     return (

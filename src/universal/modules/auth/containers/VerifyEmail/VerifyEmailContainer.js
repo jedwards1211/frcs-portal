@@ -18,8 +18,7 @@ export default class VerifyEmailContainer extends Component {
     this.verifyHandler(nextProps)
   }
   render() {
-    const {error, isVerified} = this.props
-    return <VerifyEmail error={error} isVerified={isVerified} />
+    return <VerifyEmail {...this.props} />
   }
 
   verifyHandler(props) {

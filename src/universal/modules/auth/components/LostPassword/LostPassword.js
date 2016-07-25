@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './LostPassword.css'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 import {emailPasswordReset} from '../../ducks/auth'
@@ -28,8 +29,9 @@ export default class LostPassword extends Component {
       <div className={styles.lostPasswordForm}>
         <h3>Lost password</h3>
         <span className={styles.instructions}>Enter your email address and we'll send you a password reset link.</span>
-        {error && <span>{error}</span>}
+        {error && !submitting && <span>{error}</span>}
         <form className={styles.lostPasswordForm} onSubmit={handleSubmit(emailPasswordReset)}>
+          {submitting && <LinearProgress />}
           <input style={{display: 'none'}} type="text" name="javascript-disabled" />
 
           <TextField
@@ -44,7 +46,7 @@ export default class LostPassword extends Component {
           <input style={{display: 'none'}} type="text" name="javascript-disabled" />
           <div className={styles.lostPasswordButton}>
             <RaisedButton
-                label="Send password reset"
+                label={submitting ? "Sending..." : "Send password reset"}
                 secondary
                 type="submit"
                 disabled={submitting}

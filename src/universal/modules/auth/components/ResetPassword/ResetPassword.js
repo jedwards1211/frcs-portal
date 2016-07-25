@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './ResetPassword.css'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 import {passwordAuthSchema} from '../../schemas/auth'
@@ -23,8 +24,9 @@ export default class ResetPassword extends Component {
       <div className={styles.resetPasswordForm}>
         <h3>Reset your password</h3>
         <span className={styles.instructions}>Please type your new password here</span>
-        {error && <span>{error}</span>}
+        {error && !submitting && <span>{error}</span>}
         <form className={styles.resetPasswordForm} onSubmit={handleSubmit(this.onSubmit)}>
+          {submitting && <LinearProgress />}
           <TextField
               {...password}
               type="password"
@@ -42,7 +44,7 @@ export default class ResetPassword extends Component {
           
           <div className={styles.resetPasswordButton}>
             <RaisedButton
-                label="Set new password"
+                label={submitting ? "Changing password..." : "Set new password"}
                 secondary
                 type="submit"
                 disabled={submitting}

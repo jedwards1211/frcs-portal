@@ -1,7 +1,7 @@
 import React, {PropTypes, Component} from 'react'
 import {connect} from 'react-redux'
 import {ensureState} from 'redux-optimistic-ui'
-import CircularProgress from 'material-ui/CircularProgress'
+import LinearProgress from 'material-ui/LinearProgress'
 import {resendVerifyEmail} from '../../ducks/auth'
 
 @connect(mapStateToProps)
@@ -19,9 +19,12 @@ export default class ResendVerifyEmail extends Component {
     
     if (resending) {
       return (
-        <h3 style={{textAlign: 'center', verticalAlign: 'middle'}}>
-          <CircularProgress /> Sending verification email...
-        </h3>
+        <div>
+          <h3 style={{textAlign: 'center', verticalAlign: 'middle'}}>
+            Sending verification email...
+          </h3>
+          <LinearProgress />
+        </div>
       )
     }
     

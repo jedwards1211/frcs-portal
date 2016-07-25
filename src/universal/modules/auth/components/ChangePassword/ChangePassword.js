@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './ChangePassword.css'
 import {changePassword} from '../../ducks/auth'
 
@@ -25,8 +26,9 @@ export default class ChangePassword extends Component {
     return (
       <div className={styles.changePasswordForm}>
         <h3>Change your password</h3>
-        {localError && <span>{localError}</span>}
+        {localError && !submitting && <span>{localError}</span>}
         <form className={styles.changePasswordForm} onSubmit={handleSubmit(this.onSubmit)}>
+          {submitting && <LinearProgress />}
           <TextField
               {...oldPassword}
               type="password"
@@ -52,7 +54,7 @@ export default class ChangePassword extends Component {
           
           <div className={styles.changePasswordButton}>
             <RaisedButton
-                label={submitting ? 'Changing password' : 'Set new password'}
+                label={submitting ? 'Changing password...' : 'Set new password'}
                 secondary
                 type="submit"
                 disabled={submitting}

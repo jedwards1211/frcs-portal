@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
 import Divider from 'material-ui/Divider'
 import TextField from 'material-ui/TextField'
+import LinearProgress from 'material-ui/LinearProgress'
 import {List, ListItem} from 'material-ui/List'
 import {push} from 'react-router-redux'
 import styles from './Home.css'
@@ -30,7 +31,16 @@ export default class Home extends Component {
   };
   
   render() {
-    const {isAuthenticated, user, dispatch} = this.props
+    const {isAuthenticating, isAuthenticated, user, dispatch} = this.props
+    
+    if (isAuthenticating) {
+      return (
+        <div>
+          <h3 style={{textAlign: 'center'}}>Authenticating...</h3>
+          <LinearProgress />
+        </div>
+      )
+    }
 
     if (isAuthenticated && user) {
       const displayName = user.get('firstName') || user.get('username')

@@ -46,7 +46,6 @@ export default class AuthContainer extends Component {
     const {isLogin} = this.props
     const Container = isLogin ? LoginContainer : SignUpContainer
     return <Container isLogin={isLogin} {...this.props} />
-    // return <Auth isLogin={isLogin} {...this.props} />
   }
 }
 

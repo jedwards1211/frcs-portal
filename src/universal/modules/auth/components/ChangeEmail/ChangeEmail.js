@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './ChangeEmail.css'
 import {changeEmail} from '../../ducks/auth'
 
@@ -25,8 +26,9 @@ export default class ChangeEmail extends Component {
     return (
       <div className={styles.changeEmailForm}>
         <h3>Change your email</h3>
-        {localError && <span>{localError}</span>}
+        {localError && !submitting && <span>{localError}</span>}
         <form className={styles.changeEmailForm} onSubmit={handleSubmit(this.onSubmit)}>
+          {submitting && <LinearProgress />}
           <TextField
               {...password}
               type="password"
@@ -45,7 +47,7 @@ export default class ChangeEmail extends Component {
 
           <div className={styles.changeEmailButton}>
             <RaisedButton
-                label={submitting ? 'Changing email' : 'Set new email'}
+                label={submitting ? 'Changing email...' : 'Set new email'}
                 secondary
                 type="submit"
                 disabled={submitting}

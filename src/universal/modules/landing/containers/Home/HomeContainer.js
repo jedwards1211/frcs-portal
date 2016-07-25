@@ -16,8 +16,10 @@ export default class HomeContainer extends Component {
 }
 
 function mapStateToProps(state) {
+  state = ensureState(state)
   return {
-    user: ensureState(state).getIn(['auth', 'user']),
-    isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
+    user: state.getIn(['auth', 'user']),
+    isAuthenticating: state.getIn(['auth', 'isAuthenticating']),
+    isAuthenticated: state.getIn(['auth', 'isAuthenticated'])
   }
 }

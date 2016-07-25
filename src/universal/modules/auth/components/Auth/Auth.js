@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import LinearProgress from 'material-ui/LinearProgress'
 import styles from './Auth.css'
 import {Link} from 'react-router'
 import {loginUser, signupUser, oauthLogin} from '../../ducks/auth'
@@ -38,8 +39,9 @@ export default class Auth extends Component {
     return (
       <div className={styles.loginForm}>
         <h3>{isLogin ? 'Login' : 'Sign up'}</h3>
-        {localError && <span>{localError}</span>}
+        {localError && !isAuthenticating && <span>{localError}</span>}
         <form className={styles.loginForm} onSubmit={handleSubmit(this.onSubmit)}>
+          {isAuthenticating && <LinearProgress />}
           {!isLogin &&
             <TextField
                 {...username}
@@ -81,10 +83,13 @@ export default class Auth extends Component {
               Forgot your password?
             </Link>
           )}
-
+          
           <div className={styles.loginButton}>
             <RaisedButton
-                label={isLogin ? 'Login' : 'Sign up'}
+                label={isLogin 
+                  ? (isAuthenticating ? 'Logging In...' : 'Login')
+                  : (isAuthenticating ? 'Signing Up...' : 'Sign up')
+                }
                 secondary
                 type="submit"
                 disabled={isAuthenticating}
