@@ -116,8 +116,7 @@ export default class Auth extends Component {
     const {isLogin} = this.props
     const newData = {...data}
     if (isLogin) {
-      newData.username = newData.email
-      if (newData.email.indexOf('@') < 0) delete newData.email
+      newData.usernameOrEmail = newData.email
     }
     // gotta get that redirect from props
     const redirectRoute = this.props.location.query.next || '/'

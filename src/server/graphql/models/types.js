@@ -6,83 +6,92 @@ import testPassword from '../../../universal/utils/testPassword'
 export const GraphQLUsernameType = new GraphQLScalarType({
   name: 'Username',
   serialize: value => value.toLowerCase(),
-  parseValue: value => value.toLowerCase(),
+  parseValue: value => {
+     const re = /[a-z0-9]+/
+    if (!re.test(value)) {
+      throw new GraphQLError('Query error: Username can only contain lowercase letters and numbers', value)
+    }
+    if (value.length < 4) {
+      throw new GraphQLError(`Query error: Username must have a minimum length of 4.`, value)
+    }
+    if (value.length > 20) {
+      throw new GraphQLError(`Query error: Username must have a maximum length of 20.`, value)
+    }
+    return value.toLowerCase()
+  },
   parseLiteral: ast => {
     const re = /[a-z0-9]+/
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(`Query error: Username is not a string, it is a: ${ast.kind}`, [ast])
     }
-    if (!re.test(ast.value)) {
-      throw new GraphQLError('Query error: Username can only contain lowercase letters and numbers', [ast])
-    }
-    if (ast.value.length < 4) {
-      throw new GraphQLError(`Query error: Username must have a minimum length of 4.`, [ast])
-    }
-    if (ast.value.length > 20) {
-      throw new GraphQLError(`Query error: Username must have a maximum length of 20.`, [ast])
-    }
-    return ast.value.toLowerCase()
+    return this.parseValue(ast.value)
   }
 })
 
 export const GraphQLGroupnameType = new GraphQLScalarType({
   name: 'Group',
   serialize: value => value.toLowerCase(),
-  parseValue: value => value.toLowerCase(),
+  parseValue: value => {
+    if (!/^[-a-z0-9]+$/.test(value)) {
+      throw new GraphQLError('Query error: Group can only contain lowercase letters, numbers, and dash (-)', value)
+    }
+    if (value.length < 4) {
+      throw new GraphQLError(`Query error: Group must have a minimum length of 4.`, value)
+    }
+    if (value.length > 20) {
+      throw new GraphQLError(`Query error: Group must have a maximum length of 20.`, value)
+    }
+    return value.toLowerCase()    
+  },
   parseLiteral: ast => {
-    const re = /[-a-z0-9]+/
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(`Query error: Group is not a string, it is a: ${ast.kind}`, [ast])
     }
-    if (!re.test(ast.value)) {
-      throw new GraphQLError('Query error: Group can only contain lowercase letters, numbers, and dash (-)', [ast])
-    }
-    if (ast.value.length < 4) {
-      throw new GraphQLError(`Query error: Group must have a minimum length of 4.`, [ast])
-    }
-    if (ast.value.length > 20) {
-      throw new GraphQLError(`Query error: Group must have a maximum length of 20.`, [ast])
-    }
-    return ast.value.toLowerCase()
+    return this.parseValue(ast.value)
   }
 })
 
 export const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',
   serialize: value => value.toLowerCase(),
-  parseValue: value => value.toLowerCase(),
+  parseValue: value => {
+    const re = /^.+@.+$/
+     if (!re.test(value)) {
+      throw new GraphQLError('Query error: Not a valid Email', value)
+    }
+    if (value.length < 4) {
+      throw new GraphQLError(`Query error: Email must have a minimum length of 4.`, value)
+    }
+    if (value.length > 300) {
+      throw new GraphQLError(`Query error: Email is too long.`, value)
+    }
+    return value.toLowerCase()   
+  },
   parseLiteral: ast => {
-    const re = /.+@.+/
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(`Query error: Email is not a string, it is a: ${ast.kind}`, [ast])
     }
-    if (!re.test(ast.value)) {
-      throw new GraphQLError('Query error: Not a valid Email', [ast])
-    }
-    if (ast.value.length < 4) {
-      throw new GraphQLError(`Query error: Email must have a minimum length of 4.`, [ast])
-    }
-    if (ast.value.length > 300) {
-      throw new GraphQLError(`Query error: Email is too long.`, [ast])
-    }
-    return ast.value.toLowerCase()
+    return this.parseValue(ast.value)
   }
 })
 
 export const GraphQLPasswordType = new GraphQLScalarType({
   name: 'Password',
   serialize: value => String(value),
-  parseValue: value => String(value),
+  parseValue: value => {
+    console.log("TEST")
+    const result = testPassword(value)
+    if (result.requiredTestErrors && result.requiredTestErrors.length) {
+      throw new GraphQLError(`Password did not met strength requirements:
+${result.requiredTestErrors.join('\n')}`, value)
+    }
+    return String(value)    
+  },
   parseLiteral: ast => {
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(`Password is not a string, it is a: ${ast.kind}`, [ast])
     }
-    const result = testPassword(ast.value)
-    if (result.requiredTestErrors && result.requiredTestErrors.length) {
-      throw new GraphQLError(`Password did not met strength requirements:
-${result.requiredTestErrors.join('\n')}`, [ast])
-    }
-    return String(ast.value)
+    return this.parseValue(ast.value)
   }
 })
 

@@ -4,9 +4,18 @@ import {ensureState} from 'redux-optimistic-ui'
 import ChangePassword from '../../components/ChangePassword/ChangePassword'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
 import {changePasswordSchema} from '../../schemas/auth'
+import validateFields from 'universal/utils/validateFields'
+import validatePassword from 'universal/utils/validatePassword'
 
 @connect(mapStateToProps)
-@meatierForm({form: 'changePasswordForm', fields: ['oldPassword', 'newPassword', 'confirmPassword'], schema: changePasswordSchema})
+@meatierForm({
+  form: 'changePasswordForm', 
+  fields: ['oldPassword', 'newPassword', 'confirmPassword'], 
+  schema: changePasswordSchema,
+  validate: validateFields({
+    newPassword: validatePassword
+  })
+})
 export default class ChangePasswordContainer extends Component {
   static propTypes = {
     location: PropTypes.object,

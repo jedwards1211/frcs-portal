@@ -8,14 +8,19 @@ import {getFormState} from 'universal/redux/helpers'
  * options, and also injects the necessary `getFormState` for `redux-optimistic-ui`.
  */
 export default function meatierForm(options) {
-  const {schema} = options
+  const {schema, validate} = options
   return reduxForm(Object.assign(
     options,
     {getFormState},
     schema && {
       validate(values) {
         const results = Joi.validate(values, options.schema, {abortEarly: false})
-        return parsedJoiErrors(results.error)
+        const result = parsedJoiErrors(results.error)
+        if (validate) {
+          const validation2 = validate(values)
+          if (validation2) Object.assign(result, validation2)
+        }
+        return result
       }
     }
   ))

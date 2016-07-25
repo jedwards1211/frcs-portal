@@ -14,10 +14,22 @@ const defaultPorts = {
 
 export function hostUrl() {
   if (typeof window !== 'undefined' && window.location) {
-    const {origin, protocol, host} = window.location;
-    return origin || `${protocol}//${host}`;
+    const {origin, protocol, host} = window.location
+    return origin || `${protocol}//${host}`
   }
-  return 'http://localhost:3000';
+  return 'http://localhost:3000'
+}
+
+export function baseUrl() {
+  if (typeof window !== 'undefined' && window.location) {
+    const {protocol, host} = window.location
+    const result = /^portal\.(.+)$/.exec(host)
+    if (result) {
+      return `${protocol}//${result[1]}`
+    }
+    return `${protocol}//${host}`
+  }
+  return 'http://localhost:3000'  
 }
 
 export function postJSON(route, obj) {

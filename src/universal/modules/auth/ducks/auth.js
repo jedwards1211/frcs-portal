@@ -206,8 +206,8 @@ export const loginUser = (dispatch, variables, redirect) => {
   dispatch({type: LOGIN_USER_REQUEST})
   return new Promise(async (resolve, reject) => {
     const query = `
-    query($username: Username, $email: Email, $password: Password!){
-       payload: login(username: $username, email: $email, password: $password)
+    query($usernameOrEmail: String!, $password: String!){
+       payload: login(usernameOrEmail: $usernameOrEmail, password: $password)
        ${userWithAuthToken}
     }`
     const {error, data} = await fetchGraphQL({query, variables})
@@ -252,7 +252,7 @@ export function signupUser(dispatch, variables) {
   dispatch({type: SIGNUP_USER_REQUEST})
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($username: Username!, $email: Email!, $password: Password!){
+    mutation($username: String!, $email: String!, $password: String!){
        payload: createUser(username: $username, email: $email, password: $password)
        ${userWithAuthToken}
     }`
@@ -273,7 +273,7 @@ export function signupUser(dispatch, variables) {
 export function emailPasswordReset(variables, dispatch) {
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($email: Email!){
+    mutation($email: String!){
        payload: emailPasswordReset(email: $email)
     }`
     const {error} = await fetchGraphQL({query, variables})
@@ -293,7 +293,7 @@ export function resetPassword({resetToken, password}, dispatch) {
       return reject(resetTokenObj._error)
     }
     const query = `
-    mutation($password: Password!){
+    mutation($password: String!){
        payload: resetPassword(password: $password)
        ${userWithAuthToken}
     }`
@@ -313,7 +313,7 @@ export function resetPassword({resetToken, password}, dispatch) {
 export function changePassword({oldPassword, newPassword}, dispatch) {
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($oldPassword: Password!, $newPassword: Password!){
+    mutation($oldPassword: String!, $newPassword: String!){
        payload: changePassword(oldPassword: $oldPassword, newPassword: $newPassword)
     }`
     const {error, data} = await fetchGraphQL({query, variables: {oldPassword, newPassword}})
@@ -331,7 +331,7 @@ export function changePassword({oldPassword, newPassword}, dispatch) {
 export function changeEmail({password, newEmail}, dispatch) {
   return new Promise(async function (resolve, reject) {
     const query = `
-    mutation($password: Password!, $newEmail: Email!){
+    mutation($password: String!, $newEmail: String!){
        payload: changeEmail(password: $password, newEmail: $newEmail),
        ${user}
     }`

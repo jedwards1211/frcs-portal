@@ -4,9 +4,26 @@ import {connect} from 'react-redux'
 import Auth from '../../components/Auth/Auth'
 import {ensureState} from 'redux-optimistic-ui'
 import meatierForm from 'universal/decorators/meatierForm/meatierForm'
+import validateFields from 'universal/utils/validateFields'
+import validateUsername from 'universal/utils/validateUsername'
+import validatePassword from 'universal/utils/validatePassword'
+import validateEmail from 'universal/utils/validateEmail'
 
-const SignUpContainer = meatierForm({form: 'signup', fields: ['username', 'email', 'password', 'confirmPassword'], schema: signupAuthSchema})(Auth)
-const LoginContainer = meatierForm({form: 'login', fields: ['email', 'password'], schema: loginAuthSchema})(Auth)
+const SignUpContainer = meatierForm({
+  form: 'signup', 
+  fields: ['username', 'email', 'password', 'confirmPassword'], 
+  schema: signupAuthSchema,
+  validate: validateFields({
+    username: validateUsername,
+    email: validateEmail,
+    password: validatePassword
+  })
+})(Auth)
+const LoginContainer = meatierForm({
+  form: 'login', 
+  fields: ['email', 'password'], 
+  schema: loginAuthSchema
+})(Auth)
 
 // use the same form to retain form values (there's really no difference between login and signup, it's just for show)
 @connect(mapStateToProps)
