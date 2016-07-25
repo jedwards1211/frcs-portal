@@ -15,6 +15,7 @@ import FileDownload from 'material-ui/svg-icons/file/file-download'
 import SettingsContainer from '../../../settings/containers/SettingsContainer'
 import Contacts from 'material-ui/svg-icons/communication/contacts'
 import Money from 'material-ui/svg-icons/editor/attach-money'
+import {hostUrl} from 'universal/utils/fetching'
 
 export default class Home extends Component {
   static propTypes = {
@@ -37,7 +38,7 @@ export default class Home extends Component {
       
       const {hostname} = window.location
       
-      const owncloudLink = path => `/owncloud/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
+      const owncloudLink = path => `${hostUrl().replace(/\\(portal\.)/, '\\owncloud.')}/index.php/apps/files/?dir=%2F${(path || '').replace(/\//g, '%2F').replace(/ /g, '%20')}`
 
       return (
         <div className={styles.home}>

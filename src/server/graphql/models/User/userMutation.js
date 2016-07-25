@@ -1,17 +1,18 @@
 import fs from 'fs'
 import r from '../../../database/rethinkdriver'
-import {User, UserWithAuthToken, GoogleProfile} from './userSchema'
-import {GraphQLUsernameType, GraphQLEmailType, GraphQLPasswordType} from '../types'
+import {User, UserWithAuthToken} from './userSchema'
 import {getUserByUsername, getUserByEmail, getUserByAuthToken, checkPassword, sendVerifyEmail, sendResetPasswordEmail,
-  signJwt, getAltLoginMessage, makeSecretToken, getUserGroupnames} from './helpers'
+  signJwt, makeSecretToken, getUserGroupnames} from './helpers'
 import {errorObj} from '../utils'
-import {GraphQLNonNull, GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLBoolean, GraphQLString} from 'graphql'
 import validateSecretToken from '../../../../universal/utils/validateSecretToken'
+import validateUsername from '../../../../universal/utils/validateUsername'
+import validateEmail from '../../../../universal/utils/validateEmail'
+import validatePassword from '../../../../universal/utils/validatePassword'
 import {isLoggedIn} from '../authorization'
 import promisify from 'es6-promisify'
 import bcrypt from 'bcrypt'
 import uuid from 'node-uuid'
-import logger from '../../../logger'
 import settings from '../../../settings'
 
 import getMemberInfo from '../../../members/getMemberInfo'
@@ -24,11 +25,24 @@ export default {
   createUser: {
     type: UserWithAuthToken,
     args: {
-      username: {type: new GraphQLNonNull(GraphQLUsernameType)},
-      email: {type: new GraphQLNonNull(GraphQLEmailType)},
-      password: {type: new GraphQLNonNull(GraphQLPasswordType)}
+      username: {type: new GraphQLNonNull(GraphQLString)},
+      email: {type: new GraphQLNonNull(GraphQLString)},
+      password: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, {username, email, password}) {
+      const validation = {
+        username: validateUsername(username),
+        email: validateEmail(email),
+        password: validatePassword(password)
+      }
+      if (!validation.username.valid || !validation.email.valid || !validation.password.valid) {
+        const error = {_error: 'Cannot create account'}
+        if (validation.username.error) error.username = validation.username.error
+        if (validation.email.error) error.email = validation.email.error
+        if (validation.password.error) error.password = validation.password.error
+        throw errorObj(error)
+      }
+      
       const userByUsername = await getUserByUsername(username)
       const userByEmail = await getUserByEmail(email)
       const user = userByUsername || userByEmail
@@ -100,7 +114,7 @@ export default {
   emailPasswordReset: {
     type: GraphQLBoolean,
     args: {
-      email: {type: new GraphQLNonNull(GraphQLEmailType)}
+      email: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, {email}) {
       const user = await getUserByEmail(email)
@@ -119,9 +133,16 @@ export default {
   resetPassword: {
     type: UserWithAuthToken,
     args: {
-      password: {type: new GraphQLNonNull(GraphQLPasswordType)}
+      password: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, {password}, context) {
+      const validation = validatePassword(password)
+      if (!validation.valid) {
+        throw errorObj({
+          _error: 'Failed to change password',
+          password: validation.error
+        })
+      }
       const {resetToken} = context
       const resetTokenObject = validateSecretToken(resetToken)
       if (resetTokenObject._error) {
@@ -157,14 +178,21 @@ export default {
   changePassword: {
     type: GraphQLBoolean,
     args: {
-      oldPassword: {type: new GraphQLNonNull(GraphQLPasswordType)},
-      newPassword: {type: new GraphQLNonNull(GraphQLPasswordType)}
+      oldPassword: {type: new GraphQLNonNull(GraphQLString)},
+      newPassword: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, {oldPassword, newPassword}, {authToken}) {
       isLoggedIn(authToken)
       const user = await getUserByAuthToken(authToken)
 
       await checkPassword(user, oldPassword, 'oldPassword')
+      const validation = validatePassword(newPassword)
+      if (!validation.valid) {
+        throw errorObj({
+          _error: 'Failed to change password',
+          newPassword: validation.error
+        })
+      }
 
       const newHashedPassword = await hash(newPassword, 10)
       const updates = {
@@ -243,10 +271,18 @@ export default {
   changeEmail: {
     type: User,
     args: {
-      password: {type: new GraphQLNonNull(GraphQLPasswordType)},
-      newEmail: {type: new GraphQLNonNull(GraphQLEmailType)}
+      password: {type: new GraphQLNonNull(GraphQLString)},
+      newEmail: {type: new GraphQLNonNull(GraphQLString)}
     },
     async resolve(source, {password, newEmail}, {authToken}) {
+      const validation = validateEmail(newEmail)
+      if (!validation.valid) {
+        throw errorObj({
+          _error: 'Failed to change email address',
+          newEmail: validation.error
+        })
+      }
+
       isLoggedIn(authToken)
       const user = await getUserByAuthToken(authToken)
 
@@ -281,52 +317,6 @@ export default {
       const newUser = await r.table('users').get(user.id).run()
       newUser.groupnames = await getUserGroupnames(user.id)
       return newUser
-    }
-  },
-  loginWithGoogle: {
-    type: UserWithAuthToken,
-    args: {
-      profile: {type: new GraphQLNonNull(GoogleProfile)}
-    },
-    async resolve(source, {profile}) {
-      const user = await getUserByEmail(profile.email)
-      if (!user) {
-        // create new user
-        const userDoc = {
-          email: profile.email,
-          createdAt: new Date(),
-          strategies: {
-            google: {
-              id: profile.id,
-              email: profile.email,
-              isVerified: profile.verified_email, // we'll assume this is always true
-              name: profile.name,
-              firstName: profile.given_name,
-              lastName: profile.family_name,
-              // link: profile.link, //who cares, it's google+
-              picture: profile.picture,
-              gender: profile.gender,
-              locale: profile.locale
-            }
-          }
-        }
-        const result = await r.table('users').insert(userDoc, {returnChanges: true})
-        if (!result.inserted) {
-          throw errorObj({_error: 'Could not find or update user'})
-        }
-        const authToken = signJwt({id: user.id})
-        return {authToken, user: result.changes[0].new_val}
-      }
-      // if the user already exists && they have a google strategy
-      if (user.strategies && user.strategies.google) {
-        if (user.strategies.google.id !== profile.id) {
-          throw errorObj({_error: 'Unauthorized'})
-        }
-        const authToken = signJwt({id: user.id})
-        return {authToken, user}
-      }
-      // if the user already exists && they don't have a google strategy
-      throw errorObj(getAltLoginMessage(user.strategies))
     }
   }
 }

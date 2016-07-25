@@ -49,16 +49,16 @@ export const signupAuthSchema = Joi.object().keys({
   confirmPassword
 })
 export const loginAuthSchema = Joi.object().keys({
-  email: Joi.string().trim().lowercase().min(4).max(200).label('Username or Email').required().options({
+  email: Joi.string().trim().lowercase().min(1).label('Email').required().options({
     language: {
-      any: anyErrors,
-      string: {
-        min: '{{!key}} must be at least {{limit}} chars long',
-        max: '{{!key}} must be at most {{limit}} chars long'
-      }
+      any: anyErrors
     }
   }),
-  password
+  password: Joi.string().min(1).label('Password').required().options({
+    language: {
+      any: anyErrors
+    }
+  })
 })
 
 export const emailAuthSchema = Joi.object().keys({
