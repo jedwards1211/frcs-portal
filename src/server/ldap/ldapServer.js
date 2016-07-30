@@ -121,6 +121,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         const displayname = rUser.firstName || rUser.lastName
           ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
           : rUser.username
+        console.log(JSON.stringify(rUser, null, 2))
         const attributes = {
           entryuuid: rUser.id,
           displayname,
@@ -129,7 +130,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           mail: rUser.email,
           loginshell: 'bash',
           homedirectory: `/home/${rUser.username}`,
-          shadowLastChange: 0,
+          shadowLastChange: Math.floor(new Date(rUser.strategies.local.lastChange).getTime() / 86400000),
           shadowExpire: '',
           shadowFlag: 0,
           shadowInactive: '',

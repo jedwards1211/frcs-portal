@@ -85,6 +85,7 @@ export default {
             local: {
               isVerified: false,
               password: newHashedPassword,
+              lastChange: new Date().toISOString(),
               verifiedEmailToken
             }
           },
@@ -165,6 +166,7 @@ export default {
         strategies: {
           local: {
             password: newHashedPassword,
+            lastChange: new Date().toISOString(),
             resetToken: null
           }
         }
@@ -203,6 +205,7 @@ export default {
         strategies: {
           local: {
             password: newHashedPassword,
+            lastChange: new Date().toISOString(),
             resetToken: null
           }
         }
