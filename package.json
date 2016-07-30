@@ -26,7 +26,7 @@
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json",
     "ldap:dev": "NODE_ENV=development node ./src/server/ldap/ldapServer.babel.js",
     "ldap:prod": "NODE_ENV=production node ./src/server/ldap/ldapServer.babel.js",
-    "shell": "babel-node ./src/server/database/shell.js"
+    "shell": "node ./src/server/database/shell.babel.js"
   },
   "author": "Andy Edwards <jedwards@fastmail.com>",
   "license": "MIT",
