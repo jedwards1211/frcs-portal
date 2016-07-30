@@ -128,7 +128,14 @@ server.search(base.dn, authorize, async (req, res, next) => {
           uidnumber: rUser.uidnumber,
           mail: rUser.email,
           loginshell: 'bash',
-          homedirectory: `/home/${rUser.username}`
+          homedirectory: `/home/${rUser.username}`,
+          shadowLastChange: 0,
+          shadowExpire: ' ',
+          shadowFlag: 0,
+          shadowInactive: ' ',
+          shadowMax: 99999,
+          shadowMin: 0,
+          shadowWarning: 7
         }
         if (rUser.gidnumber) attributes.gidnumber = rUser.gidnumber
         if (rUser.groupnames.length) {
@@ -141,6 +148,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           objectclass: [
             'inetOrgPerson',
             'posixAccount',
+            'shadowAccount',
             'top'
           ],
           attributes,
