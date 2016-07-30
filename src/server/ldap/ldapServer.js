@@ -13,6 +13,9 @@ const server = ldap.createServer()
 
 function authorize(req, res, next) {
   /* Any user may search after bind, only cn=root has full power */
+  if (req.dn.childOf(users.dn)) {
+    if (req.connection.ldap.bindDN.equals(req.dn)) return next()
+  }
   if (!req.connection.ldap.bindDN.equals(admin.dn))
     return next(new ldap.InsufficientAccessRightsError())
 
@@ -87,6 +90,7 @@ server.bind(base.dn, async (req, res, next) => {
 
 server.search(base.dn, authorize, async (req, res, next) => {
   return run(next, async next => {
+    console.log("TEST")
     logger.log('\n[search] ', req.toString())
     next = wrapNext(next)
 
@@ -147,6 +151,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         const user = {
           dn: `uid=${rUser.username},${users.dn}`,
           objectclass: [
+            'simpleSecurityObject',
             'inetOrgPerson',
             'posixAccount',
             'shadowAccount',
