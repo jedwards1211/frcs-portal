@@ -130,7 +130,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           entryuuid: rUser.id,
           displayname,
           uid: rUser.username,
-          uidnumber: rUser.uidnumber,
+          uidnumber: String(rUser.uidnumber),
           mail: rUser.email,
           loginshell: '/bin/bash',
           homedirectory: `/home/${rUser.username}`,
@@ -189,7 +189,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         const attributes = {
           entryuuid: rGroup.id,
           cn: rGroup.groupname,
-          gidnumber: rGroup.gidnumber,
+          gidnumber: String(rGroup.gidnumber),
         }
         if (rGroup.members.length) {
           attributes.memberuid = rGroup.members.map(member => `uid=${member},${users.dn}`)
