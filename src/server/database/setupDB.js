@@ -1,8 +1,9 @@
 import r from './rethinkdriver'
 import logger from '../logger'
 import settings from '../settings'
+import map from 'lodash.map'
 
-const groups = settings.groups || []
+const groups = settings.groups || {}
 
 // ava is the test database
 const databases = ['portal', 'ava']
@@ -51,10 +52,10 @@ async function reset({db, isUpdate}) {
       return Promise.resolve(false)
     }))
   }))
-  await Promise.all(groups.map(groupname => {
+  await Promise.all(map(groups, (attrs, groupname) => {
     logger.log(`>>Adding group ${groupname} in: ${db}`)
     return r.branch(r.db(db).table('groups').getAll(groupname, {index: 'groupname'}).isEmpty(),
-      r.db(db).table('groups').insert({groupname}),
+      r.db(db).table('groups').insert({groupname, ...attrs}),
       { }).run()
   }))
   logger.log(`>>${isUpdate ? 'Update' : 'Setup'} complete for: ${db}`)

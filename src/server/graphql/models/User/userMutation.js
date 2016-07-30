@@ -73,7 +73,7 @@ export default {
         const id = uuid.v4()
         // must verify email within 1 day
         const verifiedEmailToken = makeSecretToken(id, 60 * 24)
-        const userDoc = {
+        const newUser = await r.table('users').insert({
           id,
           username,
           email,
@@ -87,12 +87,17 @@ export default {
               password: newHashedPassword,
               verifiedEmailToken
             }
-          }
-        }
-        const newUser = await r.table('users').insert(userDoc)
+          },
+          uidnumber: r.branch(
+            r.table('users').filter(u => u('uidnumber')).isEmpty(),
+            1000,
+            r.table('users').max(u => u('uidnumber'))('uidnumber').add(1)
+          )
+        })
         if (!newUser.inserted) {
           throw errorObj({_error: 'Could not create account, please try again'})
         }
+        const userDoc = await r.table('users').get(id)
         const requestGroupNames = (initUserGroups.dugMembers || [])
           .concat(initUserGroups.byEmail && initUserGroups.byEmail[email] || [])
 

@@ -1,4 +1,5 @@
-import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql'
+import {GraphQLBoolean, GraphQLString, GraphQLObjectType, GraphQLNonNull,
+  GraphQLInt, GraphQLID, GraphQLList} from 'graphql'
 import {resolveForAdmin} from '../utils'
 
 const LocalStrategy = new GraphQLObjectType({
@@ -38,6 +39,7 @@ export const User = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The userId'},
     username: {type: new GraphQLNonNull(GraphQLString), description: 'The username'},
     email: {type: new GraphQLNonNull(GraphQLString), description: 'The user email'},
+    uidnumber: {type: new GraphQLNonNull(GraphQLInt), description: 'posix uid number'},
     groupnames: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The names of the groups the user belongs to'},
     firstName: {type: GraphQLString, description: 'First name'},

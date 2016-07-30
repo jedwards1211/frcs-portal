@@ -100,6 +100,11 @@ server.search(base.dn, authorize, async (req, res, next) => {
       if (uid) usersQuery = usersQuery.getAll(uid, {index: 'username'}).limit(1)
     }
     const rUsers = await usersQuery.merge(user => ({
+      gidnumber: r.table('users_groups')
+        .getAll(user('id'), {index: 'user_id'})
+        .eqJoin('group_id', r.table('groups'))
+        .zip()
+        .max('gidnumber')('gidnumber'),
       groupnames: r.table('users_groups')
         .getAll(user('id'), {index: 'user_id'})
         .eqJoin('group_id', r.table('groups'))
@@ -116,8 +121,12 @@ server.search(base.dn, authorize, async (req, res, next) => {
         entryuuid: rUser.id,
         displayname,
         uid: rUser.username,
+        uidnumber: rUser.uidnumber,
         mail: rUser.email,
+        loginshell: 'bash',
+        homedirectory: `/home/${rUser.username}`
       }
+      if (rUser.gidnumber) attributes.gidnumber = rUser.gidnumber
       if (rUser.groupnames.length) {
         attributes.memberOf = [
           ...rUser.groupnames.map(groupname => `cn=${groupname},${groups.dn}`),
@@ -159,7 +168,8 @@ server.search(base.dn, authorize, async (req, res, next) => {
     rGroups.forEach(rGroup => {
       const attributes = {
         entryuuid: rGroup.id,
-        cn: rGroup.groupname
+        cn: rGroup.groupname,
+        gidnumber: rGroup.gidnumber,
       }
       if (rGroup.members.length) {
         attributes.memberuid = rGroup.members.map(member => `uid=${member},${users.dn}`)
