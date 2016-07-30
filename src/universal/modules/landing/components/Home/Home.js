@@ -37,6 +37,15 @@ export default class Home extends Component {
   render() {
     const {isAuthenticating, isAuthenticated, user, dispatch} = this.props
 
+    if (!__CLIENT__) {
+      return (
+        <div>
+          <h3 style={{textAlign: 'center'}}>Loading...</h3>
+          <LinearProgress />
+        </div>
+      )
+    }
+
     if (isAuthenticating) {
       return (
         <div>
@@ -116,7 +125,7 @@ export default class Home extends Component {
                     <ListItem rightIcon={<ContentCopy />} onTouchTap={this.copySvnURL}>
                       <strong>URL: </strong>
                       <TextField style={{height: 'initial'}} underlineStyle={{bottom: 0}}
-                          value={`svn+ssh://${hostname}/svn`}
+                          value={`svn+ssh://${hostname.replace(/\/\/(portal\.)?/, '//')}/svn`}
                           ref={c => this.svnTextField = c}
                       />
                     </ListItem>
@@ -150,8 +159,10 @@ export default class Home extends Component {
       <div className={styles.home}>
         <h3 className={styles.header}>Welcome to our member portal!</h3>
         <div className={styles.login}>
-          <RaisedButton className={styles.button} secondary label="Sign Up" onTouchTap={() => dispatch(push('/signup'))} />
-          <RaisedButton className={styles.button} primary label="Log In" onTouchTap={() => dispatch(push('/login'))} />
+          <RaisedButton className={styles.button} secondary label="Sign Up"
+                        containerElement={<Link to="/signup" />} linkButton />
+          <RaisedButton className={styles.button} primary label="Log In"
+                        containerElement={<Link to="/login" />} linkButton />
         </div>
       </div>
     )
