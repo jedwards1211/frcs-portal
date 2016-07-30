@@ -25,7 +25,8 @@
     "lint": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json",
     "ldap:dev": "NODE_ENV=development node ./src/server/ldap/ldapServer.babel.js",
-    "ldap:prod": "NODE_ENV=production node ./src/server/ldap/ldapServer.babel.js"
+    "ldap:prod": "NODE_ENV=production node ./src/server/ldap/ldapServer.babel.js",
+    "shell": "babel-node ./src/server/database/shell.js"
   },
   "author": "Andy Edwards <jedwards@fastmail.com>",
   "license": "MIT",
@@ -33,7 +34,7 @@
     "assets-webpack-plugin": "3.4.0",
     "ava": "0.14.0",
     "babel-cli": "6.8.0",
-    "babel-core": "6.8.0",
+    "babel-core": "^6.8.0",
     "babel-eslint": "^6.1.2",
     "babel-loader": "6.2.4",
     "babel-plugin-add-module-exports": "0.2.0",
@@ -57,8 +58,8 @@
     "happypack": "2.1.0",
     "immutable-devtools": "0.0.7",
     "json-loader": "0.5.4",
-    "node-sass": "^3.8.0",
     "node-libs-browser": "1.0.0",
+    "node-sass": "^3.8.0",
     "null-loader": "0.1.1",
     "postcss-loader": "0.9.1",
     "postcss-modules-values": "1.1.2",

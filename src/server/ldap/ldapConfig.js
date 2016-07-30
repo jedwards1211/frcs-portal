@@ -1,4 +1,5 @@
 import logger from '../logger'
+import {parseDN} from 'ldapjs'
 
 function checkMissing(...envvars) {
   envvars.forEach(envvar => {
