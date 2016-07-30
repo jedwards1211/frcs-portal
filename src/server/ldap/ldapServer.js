@@ -132,7 +132,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           uid: rUser.username,
           uidnumber: rUser.uidnumber,
           mail: rUser.email,
-          loginshell: 'bash',
+          loginshell: '/bin/bash',
           homedirectory: `/home/${rUser.username}`,
           shadowLastChange: Math.floor(new Date(rUser.strategies.local.lastChange).getTime() / 86400000),
           shadowExpire: '',
