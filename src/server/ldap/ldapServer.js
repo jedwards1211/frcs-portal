@@ -130,9 +130,9 @@ server.search(base.dn, authorize, async (req, res, next) => {
           loginshell: 'bash',
           homedirectory: `/home/${rUser.username}`,
           shadowLastChange: 0,
-          shadowExpire: ' ',
+          shadowExpire: '',
           shadowFlag: 0,
-          shadowInactive: ' ',
+          shadowInactive: '',
           shadowMax: 99999,
           shadowMin: 0,
           shadowWarning: 7
