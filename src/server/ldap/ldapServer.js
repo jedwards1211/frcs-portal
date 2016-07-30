@@ -192,7 +192,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           gidnumber: String(rGroup.gidnumber),
         }
         if (rGroup.members.length) {
-          attributes.memberuid = rGroup.members.map(member => `uid=${member},${users.dn}`)
+          attributes.memberuid = rGroup.members
         }
         const group = {
           dn: `cn=${rGroup.groupname},${groups.dn}`,
