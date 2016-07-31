@@ -125,7 +125,7 @@ export default class Home extends Component {
                     <ListItem rightIcon={<ContentCopy />} onTouchTap={this.copySvnURL}>
                       <strong>URL: </strong>
                       <TextField style={{height: 'initial'}} underlineStyle={{bottom: 0}}
-                          value={`svn+ssh://${hostname.replace(/\/\/(portal\.)?/, '//')}/svn`}
+                          value={`svn+ssh://${hostname.replace(/^(portal\.)?/, '')}/svn`}
                           ref={c => this.svnTextField = c}
                       />
                     </ListItem>
