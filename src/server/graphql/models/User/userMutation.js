@@ -91,7 +91,7 @@ export default {
           },
           uidnumber: r.branch(
             r.table('users').filter(u => u('uidnumber')).isEmpty(),
-            process.env.MIN_UID_NUMBER,
+            parseInt(process.env.MIN_UID_NUMBER),
             r.table('users').max(u => u('uidnumber'))('uidnumber').add(1)
           )
         })
