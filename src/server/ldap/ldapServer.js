@@ -29,14 +29,14 @@ function matches(entry, req) {
     return req.dn.equals(entry.dn)
   }
   const result = helper()
-  if (result) console.log('  [matched] ', entry.dn.toString())
+  if (result) logger.log('  [matched] ', entry.dn.toString())
   return result
 }
 
 function wrapNext(next) {
   return (err, ...args) => {
-    if (err) console.error('  [error]   ', err.message, err.stack)
-    else console.log('  [success]')
+    if (err) logger.error('  [error]   ', err.message, err.stack)
+    else logger.log('  [success]')
     return next(err, ...args)
   }
 }
@@ -45,7 +45,7 @@ async function run(next, operation) {
   try {
     return await operation(next)
   } catch (err) {
-    console.error('  [error]   ', err.message, err.stack)
+    logger.error('  [error]   ', err.message, err.stack)
     return next(new ldap.UnknownError(err.message))
   }
 }
@@ -69,7 +69,7 @@ server.bind(base.dn, async (req, res, next) => {
 
       const user = await getUserByEmail(uid) || await getUserByUsername(uid)
       if (!user) return next(new ldap.InvalidCredentialsError())
-      console.log('  [matched] ', user.username, user.id)
+      logger.log('  [matched] ', user.username, user.id)
 
       const {strategies} = user
       if (!(strategies.local && strategies.local.isVerified)) {
@@ -90,7 +90,6 @@ server.bind(base.dn, async (req, res, next) => {
 
 server.search(base.dn, authorize, async (req, res, next) => {
   return run(next, async next => {
-    console.log("TEST")
     logger.log('\n[search] ', req.toString())
     next = wrapNext(next)
 
@@ -125,7 +124,6 @@ server.search(base.dn, authorize, async (req, res, next) => {
         const displayname = rUser.firstName || rUser.lastName
           ? [rUser.firstName, rUser.lastName].filter(i => Boolean(i)).join(' ')
           : rUser.username
-        console.log(JSON.stringify(rUser, null, 2))
         const attributes = {
           entryuuid: rUser.id,
           displayname,
@@ -162,7 +160,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
         }
 
         if (matches(user, req)) {
-          console.log('  [user]    ', rUser.username, rUser.id)
+          logger.log('  [user]    ', rUser.username, rUser.id)
           res.send(user)
         }
       })
@@ -204,7 +202,7 @@ server.search(base.dn, authorize, async (req, res, next) => {
           ...attributes
         }
         if (matches(group, req)) {
-          console.log('  [group]   ', rGroup.groupname, rGroup.id)
+          logger.log('  [group]   ', rGroup.groupname, rGroup.id)
           res.send(group)
         }
       })
